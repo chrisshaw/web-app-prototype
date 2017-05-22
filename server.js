@@ -5,6 +5,7 @@ var path = require('path');
 var PORT = process.env.PORT || 8080;
 var app = express();
 
+
 // Serve static content for the app from the "public" directory in the application directory.
 // this goes before any body-parser calls - static files don't need parsing.
 app.use("/public", express.static(path.join(__dirname, 'public')));
@@ -19,5 +20,7 @@ app.use(bodyParser.text({ type: 'text/html' }));
 
 // routing handled here
 require("./routes/routesController.js")(app);
+// api routing handled here
+require("./routes/apiController.js")(app);
 
 app.listen(PORT);

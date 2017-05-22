@@ -32,31 +32,28 @@ import uuid from 'uuid';
 import {combineReducers } from 'redux';
 
 //  The below are required and map to the components dispatcher
-const chatReducer = (state={}, action) => {
+const mainReducer = (state={}, action) => {
     // SEARCH_TEXT
-    // switch(action.type){
-    // //     case 'USER_LIST':
-    // //         return Object.assign({},state, {users: action.users});
-   
-        
-    //     }
+    switch(action.type){
+        case 'FOCUS_AREA':
+            return Object.assign({},state, {area: action.area});     
+        }
     return state;
 }
 
 //  The below are required and map to the components dispatcher
-const userReducer = (state={}, action) => {
+// const userReducer = (state={}, action) => {
   
-    // switch(action.type){
-    //     case 'ADD_USERNAME':
-    //         return Object.assign({},state, {username: action.username})
+//     // switch(action.type){
+//     //     case 'ADD_USERNAME':
+//     //         return Object.assign({},state, {username: action.username})
       
-    //     }
-    return state;
-}
+//     //     }
+//     return state;
+// }
 
 const reducers = combineReducers({
-    chatState : chatReducer,
-    userState : userReducer,
+    mainState : mainReducer
 
 })
 

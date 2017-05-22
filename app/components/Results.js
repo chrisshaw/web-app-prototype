@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import {connect } from 'react-redux';
-// import {newTodo, deleteTodo} from '../actions';
+import uuid from 'uuid';
 
 
 class Results extends Component{
@@ -11,11 +11,42 @@ class Results extends Component{
     }
    
     render(){
-        console.log("in results");
+
+        var component = this;
+        console.log('my focuse areas: ',this.props.area);   
+        if (this.props.area){
+          
+
+    
+            var grade =   this.props.area.grade;
+            var title =  this.props.area.title;
+            var resultComponents = this.props.area.objectives.map(function(result) {
+                    return <div key={uuid.v4()}> {result}</div>
+
+            })
+
+
+        }
+        
         return(
-             <div>The Results</div>
+
+             <div className="margin-top">
+                Grade: {grade}
+                <br />
+                Title: {title}
+                <br />
+                {resultComponents}
+                </div>
         )
     }
 }
 
-export default Results;
+const mapStateToProps = (store,ownProps) => {
+
+    return {
+        area: store.mainState.area,
+        
+    }
+
+}
+export default connect(mapStateToProps)(Results);

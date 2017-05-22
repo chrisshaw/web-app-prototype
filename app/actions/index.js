@@ -1,10 +1,10 @@
-// exports.newTodo = (text)=> {
-//   // console.log("action", text);
-//   return {
-//       type: 'ADD_TODO',
-//       text,
-//     }
-// }
+exports.focusAreaResults = (area)=> {
+  // console.log("action", text);
+  return {
+      type: 'FOCUS_AREA',
+      area,
+    }
+}
 
 // exports.deleteTodo = (id)=> {
 //   // console.log("action", text);
