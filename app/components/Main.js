@@ -26,7 +26,7 @@ class Main extends Component{
                     <SearchBar />    
                 </Col>
                 <Col xs={12} md={8} >
-                    <Results />       
+                    <Results focusarea={this.props.area}/>       
                 </Col>
             </Grid>
             </div>
@@ -34,4 +34,13 @@ class Main extends Component{
     }
 }
 
-export default Main;
+const mapStateToProps = (store,ownProps) => {
+
+    return {
+        area: store.mainState.area,
+        
+    }
+
+}
+export default connect(mapStateToProps)(Main);
+

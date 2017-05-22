@@ -1,4 +1,4 @@
-module.exports = {
+module.exports = {[{
     "focusAreaInfos": [
         {
             "autoAcceptChangesSetting": false,
@@ -856,4 +856,6 @@ module.exports = {
             "isAKdsQuestion": true
         }
     ]
-}
+},
+
+]}

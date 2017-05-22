@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import {connect } from 'react-redux';
 import {searchQuery} from '../actions';
 import helper from '../helper'
+import {Row, Col, Panel} from 'react-bootstrap';
 // var axios = require("axios");
 // import {focusAreaResults} from '../actions';
 
@@ -44,16 +45,18 @@ class SearchBar extends Component{
     render() {
         return (
             <div className="margin-top">
-                <div>Please enter the grade level:</div>
-                <input
-                    type="text"
-                    value={this.state.value}
-                    placeholder="Search by Grade Level e.g. 6"
-                    onChange={(e) => this.handleChange(e, this.state.value)}
-                    onKeyUp={(e) => this.handleChange(e, this.state.value)}
-                    ref={el => this.inputTitle = el}
-                />
-                <div>Hit Enter to Search</div>
+                <Panel>
+                    <div>Please enter the grade level:</div>
+                    <input
+                        type="text"
+                        value={this.state.value}
+                        placeholder="Search by Grade Level e.g. 6"
+                        onChange={(e) => this.handleChange(e, this.state.value)}
+                        onKeyUp={(e) => this.handleChange(e, this.state.value)}
+                        ref={el => this.inputTitle = el}
+                    />
+                    <div>Hit Enter to Search</div>
+                </Panel>
             </div>
   
         );
