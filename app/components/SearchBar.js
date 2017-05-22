@@ -9,54 +9,53 @@ import {Row, Col, Panel} from 'react-bootstrap';
 class SearchBar extends Component{
     constructor(props){
         super(props);
-        this.state = {value: ""}; //setting initial default state
+        this.state = {selectValue: ""}; //setting initial default state
 
     }
 
-    getValidationState() {
-        const length = this.state.value.length;
-        if (length > 10) return 'success';
-        else if (length > 5) return 'warning';
-        else if (length > 0) return 'error';
-    }
+    // getValidationState() {
+    //     const length = this.state.value.length;
+    //     if (length > 10) return 'success';
+    //     else if (length > 5) return 'warning';
+    //     else if (length > 0) return 'error';
+    // }
 
-    handleChange(e, queryString) {
-        // console.log(e.target.value)
-        this.setState({ value: e.target.value });
-        // if enter pressed send it to server for processing
-        if (e.keyCode == 13) {
-            // do something with the value -- send for processing
-            console.log(queryString, " query submitted");
-            // var component = this;
-            // return axios.get('/focusarea/6').then(function(response) {
-            //     console.log("what is heare", response.data);
-            //     //    this.props.dispatch(deleteTodo(this.props.id));
-            //     component.props.dispatch(focusAreaResults(response.data))
-            //     return ;
-            // })
-            helper.sendSearchQuery(this.state.value, this.props.dispatch);
-            // reset state after use
-            this.setState({value: ""});
-        }
-
+    handleChange(e) {
+        // when a grade option is selected this handles the change
+        this.setState({ selectValue: e.target.value });
+            // this is only temporary as we only have grade 6 focus area data
+            if (e.target.value === '6'){
+                 console.log(e.target.value, " query submitted");
+                helper.sendSearchQuery(e.target.selectValue, this.props.dispatch);
+                // reset state after use
+                this.setState({selectValue: ""});
+                helper.clearResults("", this.props.dispatch);
+            } else {
+                 // clear old display results data
+                var noDataMsg= "No Results for Grade " + e.target.value;
+                helper.clearResults(noDataMsg, this.props.dispatch);
+            }
     }
 
 
     render() {
+
         return (
             <div className="margin-top">
-                <Panel>
-                    <div>Please enter the grade level:</div>
-                    <input
-                        type="text"
-                        value={this.state.value}
+              
+                    <div>Please select a grade level:</div>
+                    <select value={this.state.selectValue}
                         placeholder="Search by Grade Level e.g. 6"
-                        onChange={(e) => this.handleChange(e, this.state.value)}
-                        onKeyUp={(e) => this.handleChange(e, this.state.value)}
-                        ref={el => this.inputTitle = el}
-                    />
-                    <div>Hit Enter to Search</div>
-                </Panel>
+                        onChange={(e) => this.handleChange(e)}
+                        ref={el => this.inputTitle = el}>
+                        <option selected>Grade</option>
+                        <option value="6">Grade 6</option>
+                        <option value="7">Grade 7</option>
+                        <option value="8">Grade 8</option>
+                    </select>
+                
+                    
+          
             </div>
   
         );

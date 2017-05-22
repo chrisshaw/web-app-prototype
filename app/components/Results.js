@@ -40,7 +40,11 @@ class Results extends Component{
                     </td>
                     </tr>
             })
+
+            
         }
+
+    
         
         // basic table structure
         const tableInstance = (
@@ -57,7 +61,7 @@ class Results extends Component{
         return(
 
              <div className="margin-top">
-              
+                    {this.props.noResultsMsg}
                     <Row>
                         {name}
                     </Row>

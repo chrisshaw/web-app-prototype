@@ -36,7 +36,10 @@ const mainReducer = (state={}, action) => {
     // SEARCH_TEXT
     switch(action.type){
         case 'FOCUS_AREA':
-            return Object.assign({},state, {area: action.area});     
+            return Object.assign({},state, {area: action.area});    
+        case 'NO_DATA_MSG':
+            return Object.assign({},state, {noResultsMsg: action.noResultsMsg});    
+
         }
     return state;
 }

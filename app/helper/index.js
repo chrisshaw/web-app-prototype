@@ -1,5 +1,5 @@
 var axios = require("axios");
-import {focusAreaResults} from '../actions';
+import {focusAreaResults, noResults} from '../actions';
 
 // Helper Functions
 var helpers = {
@@ -11,6 +11,11 @@ var helpers = {
             dispatch(focusAreaResults(response.data))
             return ;
         })
+   },
+   clearResults: function(noDataMsg, dispatch){
+       // clear stored results
+        dispatch(focusAreaResults(""));
+        dispatch(noResults(noDataMsg));
    }
 
 

@@ -26,7 +26,7 @@ class Main extends Component{
                     <SearchBar />    
                 </Col>
                 <Col xs={12} md={8} >
-                    <Results focusarea={this.props.area}/>       
+                    <Results focusarea={this.props.area} noResultsMsg={this.props.noResultsMsg}/>       
                 </Col>
             </Grid>
             </div>
@@ -38,6 +38,7 @@ const mapStateToProps = (store,ownProps) => {
 
     return {
         area: store.mainState.area,
+        noResultsMsg:  store.mainState.noResultsMsg,
         
     }
 
