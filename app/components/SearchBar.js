@@ -21,7 +21,7 @@ class SearchBar extends Component{
         // this is only temporary as we only have grade 6 focus area data
         if (e.target.value === '6'){
             // send to query data from server via api
-            helper.sendSearchQuery(e.target.selectValue, this.props.dispatch); 
+            helper.sendSearchQuery(e.target.value, this.props.dispatch); 
             // clear old display data
             helper.clearResults("", this.props.dispatch);
         } else if (e.target.value){
