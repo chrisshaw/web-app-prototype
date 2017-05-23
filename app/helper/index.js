@@ -17,6 +17,7 @@ var helpers = {
         dispatch(focusAreaResults(""));
         dispatch(noResults(noDataMsg));
    }
+   
 
 
  };

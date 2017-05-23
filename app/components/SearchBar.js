@@ -16,6 +16,7 @@ class SearchBar extends Component{
     handleChange(e) {
         // when a grade option is selected this handles the change and what happens next
         // update the state to the selected value
+       
         this.setState({ selectValue: e.target.value });
         // handle when grade = 6
         // this is only temporary as we only have grade 6 focus area data
@@ -35,6 +36,10 @@ class SearchBar extends Component{
             var noDataMsg= "No Results " + endMsg;
             // update message property so it is displayed in Results Component - via central redux store
             helper.clearResults(noDataMsg, this.props.dispatch);
+        }
+        if ( window.location !== '/') {
+              console.log("etestet");
+            
         }
     }
 

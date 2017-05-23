@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import {connect } from 'react-redux';
 import uuid from 'uuid';
 import {Row, Col, Table, Panel} from 'react-bootstrap';
-
+import {Link} from 'react-router';
 
 class Results extends Component{
     constructor(props){
@@ -36,13 +36,15 @@ class Results extends Component{
             //         for a focus area map each objective in the result data array
                     
                     var objComponents = result.playlists[0].objectives.map(function(objresults) {
-                        return <li className="format-table-content" key={uuid.v4()}> {objresults.title} </li>
+
+                        return <li className="format-table-content" key={uuid.v4()}> 
+                            {objresults.title} </li>
                     })
                     
                     // return <div  key={uuid.v4()}>{objComponents}</div>
                     return <Panel className="focus-area-body results-content" key={uuid.v4()} onClick={(e) => component.handleClick(e, result.title)}>
             
-                        <div className="format-table-content"  key={uuid.v4()}><h4> {result.playlists[0].title}</h4></div>
+                        <Link to='/detail'><div className="format-table-content"  key={uuid.v4()}><h4> {result.playlists[0].title}</h4></div></Link>
                         <ul   key={uuid.v4()}><p>{objComponents}</p></ul>
                 
                     </Panel>

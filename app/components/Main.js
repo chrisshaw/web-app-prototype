@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
 import {connect } from 'react-redux';
-import SearchBar from './SearchBar';
-import Results from './Results';
 import Nav from './Navbar';
+import QueryBuilder from './QueryBuilder';
 
 
 import {Grid, Row, Col} from 'react-bootstrap';
@@ -21,28 +20,13 @@ class Main extends Component{
 
         return(
             <div>
-            <Nav /> 
-            <Grid>  
-                <Col xs={12} md={4}>
-                    <SearchBar />    
-                </Col>
-                <Col xs={12} md={8} >
-                    <Results focusarea={this.props.area} noResultsMsg={this.props.noResultsMsg}/>       
-                </Col>
-            </Grid>
+              <Nav /> 
+              {this.props.children}
             </div>
         )
     }
 }
 
-const mapStateToProps = (store,ownProps) => {
 
-    return {
-        area: store.mainState.area,
-        noResultsMsg:  store.mainState.noResultsMsg,
-        
-    }
-
-}
-export default connect(mapStateToProps)(Main);
+export default Main;
 
