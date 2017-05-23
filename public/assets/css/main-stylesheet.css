@@ -1,10 +1,15 @@
 .margin-top {
-    margin-top: 100px;
+    margin-top: 50px;
+}
+body, p, h1, h2, h3, h4 {
+    color: #584f4f;
+}
+body {
+    padding-bottom: 50px;
+    background-color: #808080;
 }
 .logo {
     width: 60%;
-    /* height: 50%; */
-    /* margin-left: 10px; */
     margin-top: 2%;
     margin-left: 20%;
     margin-right: 20%;
@@ -13,13 +18,27 @@
 .login-items {
     color: white;
 }
-/*a:focus {
-   background-color: #808080;
-   color: #2FBB2F;
+td {
+    word-wrap: break-word;
 }
-a:hover {
-    background-color: #808080;
-}*/
+table { 
+  width: 100%; 
+  border-collapse: collapse; 
+  table-layout: fixed;
+}
+.format-table-content {
+    padding-left: 20px;
+}
+.results-content:hover {
+    background-color: #2FBB2F;
+    color: white;
+}
+.results-content, .query-builder, .focus-area-header  {
+     background-color: gainsboro;
+}
+.query-builder {
+    min-height: 40px;
+}
 .custom-nav-right {
     margin-left: auto;
     margin-right: auto;
@@ -36,4 +55,27 @@ a:hover {
 }
 .navbar-brand {
     color: #808080;
+}
+.panel-body {
+    min-height: 150px;
+
+}
+.panel-default {
+    margin-bottom: 0px;
+    border-color: #808080;
+}
+.format-query-item {
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+.focus-area-body {
+    border-top:none;
+}
+/*.focus-area-header {
+    background-color: white;
+}*/
+.format-results-msg-item  {
+    margin-top: 7.5%;
+    color: #2FBB2F;
+    font-size: 15px;
 }

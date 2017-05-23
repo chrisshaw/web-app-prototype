@@ -17,7 +17,7 @@ class Nav extends Component{
     <div >
         <Row>
         <Col md={8} xs={12} className="custom-nav-left">
-            <img src="./public/assets/img/sidekick.png" className="logo" />
+            <img src="./public/assets/img/sidekick.png" className="logo" alt="Sidekick" />
         </Col>
         <Col md={4} xs={12} className="custom-nav-right">
             <ul className="nav navbar-nav">

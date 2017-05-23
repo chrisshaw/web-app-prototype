@@ -2,8 +2,9 @@ import {createStore, compose} from 'redux';
 import {persistStore, autoRehydrate} from 'redux-persist';
 import reducer from '../reducer';
 
-// var defaultState = {
-// };
+const initialState = { 
+  noResultsMsg: "Please build a query"
+};
 
 const configureStore = (initialState={}) => {
     var store = createStore(reducer, initialState, compose(

@@ -13,6 +13,7 @@ class Main extends Component{
     constructor(props){
         super(props);
         // this.state = {}; //setting initial default state
+         console.log("initial state", this.props.noResultsMsg);
 
     }
    
