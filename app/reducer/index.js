@@ -39,7 +39,8 @@ const mainReducer = (state={}, action) => {
             return Object.assign({},state, {area: action.area});    
         case 'NO_DATA_MSG':
             return Object.assign({},state, {noResultsMsg: action.noResultsMsg});    
-
+        case 'VIEW_DETAIL':
+            return Object.assign({},state, {fadetail: action.fadetail});    
         }
     return state;
 }

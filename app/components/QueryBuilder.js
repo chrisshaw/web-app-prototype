@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
-import {connect } from 'react-redux';
 import SearchBar from './SearchBar';
 import Results from './Results';
-
 import {Grid, Row, Col} from 'react-bootstrap';
 // import {newTodo, deleteTodo} from '../actions';
 
@@ -12,6 +10,7 @@ class QueryBuilder extends Component{
         super(props);
         // this.state = {}; //setting initial default state
          console.log("initial state", this.props.noResultsMsg);
+         console.log("initial state", this.props.focusarea);
 
     }
     // {React.cloneElement(this.props.children, {focusarea: this.props.area, noResultsMsg: this.props.noResultsMsg})}
@@ -24,7 +23,7 @@ class QueryBuilder extends Component{
                     <SearchBar />    
                 </Col>
                 <Col xs={12} md={8} >
-                    <Results focusarea={this.props.area} noResultsMsg={this.props.noResultsMsg} />          
+                    <Results focusarea={this.props.focusarea} noResultsMsg={this.props.noResultsMsg} />          
                 </Col>
             </Grid>
             </div>
@@ -32,14 +31,14 @@ class QueryBuilder extends Component{
     }
 }
 
-const mapStateToProps = (store,ownProps) => {
+// const mapStateToProps = (store,ownProps) => {
 
-    return {
-        area: store.mainState.area,
-        noResultsMsg:  store.mainState.noResultsMsg,
+//     return {
+//         area: store.mainState.area,
+//         noResultsMsg:  store.mainState.noResultsMsg,
         
-    }
+//     }
 
-}
-export default connect(mapStateToProps)(QueryBuilder);
+// }
+export default QueryBuilder;
 

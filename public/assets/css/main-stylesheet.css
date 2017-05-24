@@ -8,6 +8,10 @@ body {
     padding-bottom: 50px;
     background-color: #808080;
 }
+.focus-area-detail-header {
+    color: white;
+}
+
 .logo {
     width: 60%;
     margin-top: 2%;
@@ -18,9 +22,17 @@ body {
 .login-items {
     color: white;
 }
+.row-padding {
+    margin-left: 10px;
+    margin-right: 10px;
+}
+.hr-color {
+        border-top: 1px solid whitesmoke;
+}
 td {
     word-wrap: break-word;
 }
+
 table { 
   width: 100%; 
   border-collapse: collapse; 

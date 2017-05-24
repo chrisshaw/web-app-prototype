@@ -11,3 +11,10 @@ exports.noResults = (noResultsMsg)=> {
       noResultsMsg,
     }
 }
+
+exports.viewDetailFocusArea = (fadetail) => {
+    return {
+      type: 'VIEW_DETAIL',
+      fadetail,
+    }
+}
