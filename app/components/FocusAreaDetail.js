@@ -28,7 +28,7 @@ class FocusAreaDetail extends Component{
                 return <Row key={uuid.v4()}>
                     
                     <Col md={10} xs={12} key={uuid.v4()}>
-                            <Col md={5} xs={1} key={uuid.v4()}><div className="format-table-content" key={uuid.v4()}><h6>{objresource.title}</h6></div></Col>
+                            <Col md={12} xs={12} key={uuid.v4()}><div className="format-table-content" key={uuid.v4()}><h6>{objresource.title}</h6></div></Col>
                             
                             <br />
 
