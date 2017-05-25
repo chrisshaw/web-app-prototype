@@ -1,5 +1,5 @@
-.margin-top {
-    margin-top: 50px;
+.wrapper {
+    margin-top: 290px;
 }
 body, p, h1, h2, h3, h4 {
     color: #584f4f;
@@ -54,19 +54,36 @@ table {
 .custom-nav-right {
     margin-left: auto;
     margin-right: auto;
-    margin-top: 3%;
+    align-content: right;
+    /*margin-top: 3%;*/
 }
 .custom-nav-left {
     margin: 0 auto;
 }
-.navbar {
+.navbar-toggle {
+    border: 1px solid white;
+}
+.nav-header {
     background-color: #2FBB2F;
+}
+.nav-menu {
+     background-color: #2FBB2F;
 }
 .navbar-left, .navbar-right {
     margin: 0 auto;
 }
 .navbar-brand {
     color: #808080;
+}
+navbar {
+    max-height: 200px;
+}
+.navbar-toggle .icon-bar {
+  display: block;
+  width: 22px;
+  height: 2px;
+  background-color: white;
+  border-radius: 1px;
 }
 .panel-body {
     min-height: 150px;
@@ -91,3 +108,11 @@ table {
     color: #2FBB2F;
     font-size: 15px;
 }
+
+
+@media (max-width: 768px){
+    .wrapper {
+        margin-top: 150px;
+    }
+}
+

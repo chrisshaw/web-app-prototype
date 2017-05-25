@@ -37,15 +37,11 @@ class SearchBar extends Component{
             // update message property so it is displayed in Results Component - via central redux store
             helper.clearResults(noDataMsg, this.props.dispatch);
         }
-        if ( window.location !== '/') {
-              console.log("etestet");
-            
-        }
     }
 
     render() {
         return (
-            <div className="margin-top">
+            <div >
                 <Panel className="query-builder">
                     <Row>
                         <h3 className="text-center">Query Builder</h3>

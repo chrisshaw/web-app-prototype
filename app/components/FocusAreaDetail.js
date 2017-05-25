@@ -11,51 +11,44 @@ class FocusAreaDetail extends Component{
     }
 
     render(){
-
         // set this to a variable so the context can be referenced within the map function below
         var component = this;
-        console.log(this.props.fadetail);
-        // if there are focus area results then display them
         var title = this.props.fadetail.playlists[0].title;
         var description = this.props.fadetail.playlists[0].description;
         var keyTerms =  this.props.fadetail.playlists[0].keyTerms;
         var courses = this.props.fadetail.focusAreaInfos[0].courses[0].name;
         var resultComponents = component.props.fadetail.playlists[0].objectives.map(function(result, index) {
-
-
+            // the focus areas are stored in an array so each on needs to be mapped for display
             var objectiveresources = result.resources.map(function(objresource, index) {
-                console.log("objresource", objresource);
+                // the objectives are  stored in an array so  each item needs to be mapped
                 return <Row key={uuid.v4()}>
-                    
-                    <Col md={10} xs={12} key={uuid.v4()}>
+                        
+                        <Col md={10} xs={12} key={uuid.v4()}>
                             <Col md={12} xs={12} key={uuid.v4()}><div className="format-table-content" key={uuid.v4()}><h6>{objresource.title}</h6></div></Col>
-                            
                             <br />
-
-
-                    </Col>
-          
+                        </Col>
                     </Row>
             })
 
-                
-        return <Row key={uuid.v4()}>
-            <Col md={1} key={uuid.v4()}/>
-            <Col md={10} xs={12} key={uuid.v4()}>
-                <Panel className="focus-area-header" key={uuid.v4()}>
-                    <div className="format-table-content" key={uuid.v4()}><h5><strong>Objective {index + 1}</strong></h5></div>
-                    <div className="format-table-content" key={uuid.v4()}><h6>{result.title}</h6></div>
-                    <hr className="hr-color"/>
+                  
+            return <Row key={uuid.v4()}>
+                <Col md={1} key={uuid.v4()}/>
+                <Col md={10} xs={12} key={uuid.v4()}>
+                    <Panel className="focus-area-header" key={uuid.v4()}>
+                        <div className="format-table-content" key={uuid.v4()}><h5><strong>Objective {index + 1}</strong></h5></div>
+                        <div className="format-table-content" key={uuid.v4()}><h6>{result.title}</h6></div>
+                        <hr className="hr-color"/>
 
-                     <div className="format-table-content" key={uuid.v4()}><h5><strong>Resources</strong></h5></div>
-                        {objectiveresources}
+                        <div className="format-table-content" key={uuid.v4()}><h5><strong>Resources</strong></h5></div>
+                            {objectiveresources}
 
-                </Panel>
-            </Col>
-            <Col md={1}  key={uuid.v4()}/>
-            </Row>
+                    </Panel>
+                </Col>
+                <Col md={1}  key={uuid.v4()}/>
+                </Row>
         })
 
+        // the resources are also stored in an array so  each item needs to be mapped
         var resources = component.props.fadetail.playlists[0].introduction.resources.map(function(resource, index) {
 
             return <Row key={uuid.v4()}>
@@ -67,9 +60,7 @@ class FocusAreaDetail extends Component{
             </Row>
         })
 
-
-
-
+        // the final html that will be returned to UI
         return(
              <div className="margin-top">
               <Row className="row-padding">
@@ -80,7 +71,7 @@ class FocusAreaDetail extends Component{
 
              <br />
              <Row className="row-padding">
-     
+                <Col md={1} ></Col>
                 <Col md={4} xs={12} >
  
                         <Panel className="focus-area-header">
@@ -97,7 +88,7 @@ class FocusAreaDetail extends Component{
                         </Panel>
                         
                 </Col>
-               <Col md={8} xs={12} >
+               <Col md={7} xs={12} >
                     <Row>
                         <Col md={1}/>
                         <Col md={10} xs={12} >
@@ -112,7 +103,7 @@ class FocusAreaDetail extends Component{
                             <h4>Introductory Materials</h4>
                             <hr/>
                             <h5>Resources</h5>
-                            <p>{resources}</p>
+                            {resources}
 
                         </Panel>
                     </Col>

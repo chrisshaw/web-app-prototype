@@ -16,15 +16,12 @@ class Main extends Component{
     }
    
     render(){
-
-        // console.log("initial state noResultsMsg", this.props.noResultsMsg);
-        // console.log("initial state fadetail", this.props.fadetail);
-        // console.log("initial state focusarea", this.props.area);
-
         return(
             <div>
               <Nav /> 
-               {React.cloneElement(this.props.children, {fadetail: this.props.fadetail, focusarea: this.props.area, noResultsMsg: this.props.noResultsMsg})}
+                <div className="wrapper">
+                    {React.cloneElement(this.props.children, {fadetail: this.props.fadetail, focusarea: this.props.area, noResultsMsg: this.props.noResultsMsg})}
+                </div>
             </div>
         )
     }
@@ -32,13 +29,11 @@ class Main extends Component{
 
 
 const mapStateToProps = (store,ownProps) => {
-
     return {
         area: store.mainState.area,
         noResultsMsg: store.mainState.noResultsMsg,
         fadetail: store.mainState.fadetail,
     }
-
 }
 export default connect(mapStateToProps)(Main);
 
