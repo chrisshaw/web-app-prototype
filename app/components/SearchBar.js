@@ -35,6 +35,8 @@ class SearchBar extends Component{
             }
             var noDataMsg= "No Results " + endMsg;
             // update message property so it is displayed in Results Component - via central redux store
+            // this.props.dispatch is a function it takes action as arg, 
+            // this function is required to dispatch an action to the redux store.
             helper.clearResults(noDataMsg, this.props.dispatch);
         }
     }
