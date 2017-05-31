@@ -5,7 +5,5 @@ var db_url = process.env.ARANGO_URI ||  'http://'+ db_login +':' + db_pwd + '@12
 
 db = new Database(db_url);
 //  db = arango.Connection("http://user:pass@your.host.com/database");
-// clear out old data
-db.dropDatabase("sidekick");
 // module.exports = true;
 module.exports = db;

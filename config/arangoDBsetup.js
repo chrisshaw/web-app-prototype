@@ -4,21 +4,12 @@ var db = require('./arangoConnection.js');
 // allows query templates to be used - can pass in variables and reuse.
 var aqlQuery = require('arangojs').aqlQuery;
 var graph = require('arangojs').Graph;
-// var ngssInputDataObj = require('./InputData/NGSS.js');
-// var fs = require('fs');
-// var ngssInputDataObj = JSON.parse(fs.readFileSync('./InputData/NGSS.js', 'utf8'));
-// var jsonNGSS = JSON.parse(ngssInputDataObj);
-// console.log(obj)
 
-// module.exports = function(app){
-
-// create a new database
-// db.createDatabase('sidekick').then(
-//     () => console.log('Database created'),
-//     err => console.error('Failed to create database:', err)
-// );
-
-db.useDatabase('sidekick');
+// clear out old data
+db.dropDatabase("sidekick").then(
+    // recreate it
+    () => {db.useDatabase('sidekick')}
+)
 // create handle to collection before we start using it
 // vertices
 var ngss = db.collection('ngss');
