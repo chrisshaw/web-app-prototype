@@ -28,12 +28,12 @@ function createAndPopulateGraph() {
     // comment out once created
     var ngss = db.collection('ngss');
     var css =  db.collection('css');
-    var subject = db.collection('subject');
-    var grade = db.collection('grade');
+    // var subject = db.collection('subject');
+    // var grade = db.collection('grade');
     // edges
-    var isChildOf = db.edgeCollection('achievedAfter');
+    var achievedAfter = db.edgeCollection('achievedAfter');
     var isPartOf = db.edgeCollection('isPartOf');
-    var hasChild = db.edgeCollection('achievedBefore');
+    var achievedBefore = db.edgeCollection('achievedBefore');
     var isAlignedTo = db.edgeCollection('isAlignedTo');
     // var achievedBefore = db.edgeCollection('achievedBefore');
     // var achievedAfter = db.edgeCollection('achievedAfter');
@@ -50,15 +50,15 @@ function createAndPopulateGraph() {
                 () => console.log("collection created"),
                 err => console.log('Failed to create collection:', err)
             )
-            subject.create().then(
-                () => console.log("collection created"),
-                err => console.log('Failed to create collection:', err)
-            )
-            grade.create().then(
-                () => console.log("collection created"),
-                err => console.log('Failed to create collection:', err)
-            );
-            isChildOf.create().then(
+            // subject.create().then(
+            //     () => console.log("collection created"),
+            //     err => console.log('Failed to create collection:', err)
+            // )
+            // grade.create().then(
+            //     () => console.log("collection created"),
+            //     err => console.log('Failed to create collection:', err)
+            // );
+            achievedAfter.create().then(
                 () => console.log("collection created"),
                 err => console.log('Failed to create collection:', err)
             );
@@ -67,10 +67,10 @@ function createAndPopulateGraph() {
                 err => console.log('Failed to create collection:', err)
             );
             isPartOf.create().then(
-            () => console.log("collection created"),
-            err => console.log('Failed to create collection:', err)
+                () => console.log("collection created"),
+                err => console.log('Failed to create collection:', err)
             )
-            hasChild.create().then(
+            achievedBefore.create().then(
                 () => console.log("collection created"),
                 err => console.log('Failed to create collection:', err)
             )
@@ -176,7 +176,7 @@ function createAndPopulateGraph() {
                             let vertexFrom = "ngss/"+NSSResourceObj._key;
                             let vertexTo = "ngss/"+standard2[standard2.length-1]; 
                             // save this to the edge collection --- achievedBefore
-                            hasChild.save({
+                            achievedBefore.save({
                                 _from: vertexFrom,
                                 _to: vertexTo
                             }).then(
@@ -195,7 +195,7 @@ function createAndPopulateGraph() {
                             // ngss/_key from child - [isChildOf] -> ngss/_key to parent
                             let vertexFrom = 'ngss/' +  NSSResourceObj._key;
                             let vertexTo = 'ngss/' + standard2[standard2.length-1];
-                            isChildOf.save({
+                            achievedAfter.save({
                                 _from: vertexFrom,
                                 _to: vertexTo
                             }).then(
