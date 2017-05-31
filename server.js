@@ -17,7 +17,7 @@ app.use(bodyParser.json({ type: "application/vnd.api+json" }));
 // parse an HTML body into a string 
 app.use(bodyParser.text({ type: 'text/html' }));
 // Populate the data - comment out for database population from file
-// require('./data.js');
+require('./arangoData.js');
 // routing handled here
 require("./routes/routesController.js")(app);
 // api routing handled here
