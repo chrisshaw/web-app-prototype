@@ -11,9 +11,9 @@ var graph = require('arangojs').Graph;
 var fs = require('fs');
 
 // rename database from sidekick as required
-
 db.useDatabase("sidekick");
 var fa =  db.collection('focusarea');
+fa.drop();
 fa.create().then(
     () => {FocusArea()},
     err => console.log('Failed to create collection:', err)
@@ -22,7 +22,7 @@ fa.create().then(
 
 function FocusArea(){
     const readline = require('readline');
-   
+
 
     var lineReader = require('readline').createInterface({
         input: require('fs').createReadStream('./InputData/FocusAreas.csv')
@@ -59,18 +59,18 @@ function FocusArea(){
             "Standard" : dataArr[6]
         },
         "Objective 3": {
-            "Description" : dataArr[3],
-            "Standard" : dataArr[7]
+            "Description" : dataArr[7],
+            "Standard" : dataArr[8]
         },
         "Objective 4": {
-            "Description" : dataArr[8],
-            "Standard" : dataArr[3]
-        },
-        "Objective 5": {
             "Description" : dataArr[9],
             "Standard" : dataArr[10]
         },
-        "Type":  dataArr[11]
+        "Objective 5": {
+            "Description" : dataArr[11],
+            "Standard" : dataArr[12]
+        },
+        "Type":  dataArr[13]
     }
     // console.log(faObj);
     // now save to the database

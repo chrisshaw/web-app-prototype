@@ -9,7 +9,7 @@ var cssInputDataObj = JSON.parse(fs.readFileSync('./InputData/CCSS-eng.js', 'utf
 
 // !!!!!!! Be CAREFUL -- this will clear out database and recreate all of it!!!!!!
 // comment out lines 14 - 32 if the database exists and you dont want do drop it and recreate from scratch
-
+fa.drop();
 db.dropDatabase("sidekick").then(
     // create a new database
     db.createDatabase('sidekick').then(
