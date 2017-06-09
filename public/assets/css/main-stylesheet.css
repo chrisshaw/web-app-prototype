@@ -1,5 +1,5 @@
 .wrapper {
-    margin-top: 290px;
+    margin-top: 100px;
 }
 body, p, h1, h2, h3, h4 {
     color: #584f4f;
@@ -113,7 +113,7 @@ navbar {
 
 @media (max-width: 768px){
     .wrapper {
-        margin-top: 160px;
+        margin-top: 120px;
     }
 }
 

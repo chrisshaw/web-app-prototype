@@ -9,9 +9,9 @@ import {Router, Route, hashHistory, browserHistory} from "react-router";
 var routes = (
     <Router history={browserHistory}>
         <Route component={Main} > 
-             <Route path='/' component={QueryBuilder} /> 
-             <Route path='/detail' component={FocusAreaDetail} /> 
-        </Route>    
+            <Route path='/' component={QueryBuilder} /> 
+            <Route path='/detail' component={FocusAreaDetail} />
+        </Route>
     </Router>
 )
 

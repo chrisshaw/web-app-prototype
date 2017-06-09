@@ -1,28 +1,28 @@
 import React, { Component } from 'react';
 import {connect } from 'react-redux';
-import Nav from './Navbar';
+// import Nav from './Navbar';
 import QueryBuilder from './QueryBuilder';
-
-
 import {Grid, Row, Col} from 'react-bootstrap';
 // import {newTodo, deleteTodo} from '../actions';
-
+import MyAppNav from './MyAppNav.js';
+import injectTapEventPlugin from 'react-tap-event-plugin';
 
 class Main extends Component{
     constructor(props){
         super(props);
-        // this.state = {}; //setting initial default state
+        injectTapEventPlugin();
 
     }
-   
+    
     render(){
         return(
             <div>
-              <Nav /> 
+                <MyAppNav />
                 <div className="wrapper">
                     {React.cloneElement(this.props.children, {fadetail: this.props.fadetail, focusarea: this.props.area, noResultsMsg: this.props.noResultsMsg})}
                 </div>
             </div>
+            
         )
     }
 }
