@@ -4,6 +4,7 @@ import IndexRoute from "react-router";
 import Main from "./components/Main.js";
 import QueryBuilder from "./components/QueryBuilder.js";
 import FocusAreaDetail from "./components/FocusAreaDetail.js";
+import DataImportCSV from "./components/DataImportCSV.js";
 import {Router, Route, hashHistory, browserHistory} from "react-router";
 
 var routes = (
@@ -11,6 +12,8 @@ var routes = (
         <Route component={Main} > 
             <Route path='/' component={QueryBuilder} /> 
             <Route path='/detail' component={FocusAreaDetail} />
+            <Route path='/csv' component={DataImportCSV} />
+
         </Route>
     </Router>
 )

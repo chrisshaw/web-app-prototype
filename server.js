@@ -16,9 +16,9 @@ app.use(bodyParser.text());
 app.use(bodyParser.json({ type: "application/vnd.api+json" }));
 // parse an HTML body into a string 
 app.use(bodyParser.text({ type: 'text/html' }));
-// // routing handled here
-require("./routes/routesController.js")(app);
 // api routing handled here
 require("./routes/apiController.js")(app);
+// // routing handled here
+require("./routes/routesController.js")(app);
 
 app.listen(PORT);

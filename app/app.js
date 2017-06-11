@@ -5,13 +5,16 @@ var ReactDOM = require("react-dom");
 import routes from "./routes.js";
 import configureStore from './store';
 import {Provider} from 'react-redux'
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+import {syncHistoryWithStore} from 'react-router-redux';
+import {Router, browserHistory} from 'react-router';
+import getMuiTheme from 'material-ui/styles/getMuiTheme';
+import darkBaseTheme from 'material-ui/styles/baseThemes/darkBaseTheme';
 
-import {syncHistoryWithStore} from 'react-router-redux'
-import {Router, browserHistory} from 'react-router'
 
 // // This file should not need to be changed
-ReactDOM.render(<Provider store={configureStore()}>
+ReactDOM.render(<MuiThemeProvider muiTheme={getMuiTheme(darkBaseTheme)}><Provider store={configureStore()}>
 {routes}
-</Provider>, document.getElementById("app"));
+</Provider></MuiThemeProvider>, document.getElementById("app"));
 
 
