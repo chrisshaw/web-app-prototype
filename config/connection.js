@@ -4,7 +4,7 @@ var mongoose = require('mongoose');
 // mongodb://sidekick:sidekick2017:@ds113702.mlab.com:13702/sidekick
 
 var keys = require('./keys.js');
-var db_url = 'mongodb://' + keys.mongoUser+ ':' + keys.mongoPass + ':@' + keys.mongoHost + ':' + mongoPort + '/' + keys.mongoDatabase;
+var db_url = 'mongodb://' + keys.mongoUser+ ':' + keys.mongoPass + ':@' + keys.mongoHost + ':' + keys.mongoPort + '/' + keys.mongoDatabase;
 var connection = mongoose.connect(db_url);
 // export the connection
 module.exports = connection;
