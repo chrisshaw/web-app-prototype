@@ -84,6 +84,11 @@ table {
   align-items: 'center';
   justify-content: 'center';
 }
+/*.submit-csv-button {
+    margin-left: '35%' !important;
+    margin-top: 12px;
+    margin-bottom: 12px;
+}*/
 /*.navbar-toggle {
     border: 1px solid white;
 }

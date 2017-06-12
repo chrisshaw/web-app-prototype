@@ -17,7 +17,7 @@ const navBarTheme = getMuiTheme({
     // primary2Color:  "#2FBB2F",
     // primary3Color: grey400,
     // this one overrides the underline in tabs
-    accent1Color: "#FFFFFF",
+    accent1Color: "#E91E63",
     // accent2Color: grey100,
     // accent3Color: grey500,
     // alternateTextColor: white,

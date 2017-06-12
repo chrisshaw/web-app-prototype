@@ -4,6 +4,7 @@ import Paper from 'material-ui/Paper';
 import RaisedButton from 'material-ui/RaisedButton';
 import FontIcon from 'material-ui/FontIcon';
 import {Grid, Row, Col} from 'react-bootstrap';
+import helper from '../helper';
 
 const style = {
   height: '80vh',
@@ -15,8 +16,10 @@ const style = {
   alignItems: 'center',
   justifyContent: 'center',
   button: {
-    margin: 12,
-    background: "#2FBB2F"
+    marginTop: 12,
+    marginBottom: 12,
+    display: 'block',
+    backgroundColor: "#2FBB2F"
   },
 };
 
@@ -26,8 +29,12 @@ class DataImportCSV extends Component{
         // injectTapEventPlugin();
 
     }
-    handleTouchTap(){
-        alert("ok do something now!")
+    handleTouchTap(e){
+        // alert("ok do something now!")
+        // console.log(e.target.files)
+        // capture file - now do something with it
+        helper.submitCSVFile(e);
+
     }
     render(){
         return(
@@ -40,18 +47,19 @@ class DataImportCSV extends Component{
                     </Col>
                 </Row>
                 <Row>
-                    <Col xs={4} md={4} />
-                    <Col xs={4} md={4} >
+                    <Col xs={2} md={4} />
+                    <Col xs={8} md={4} >
                         <RaisedButton
-                        target="_blank"
-                        label="Github Link"
-                        onTouchTap={this.handleTouchTap}
+                        label="Upload File"
                         secondary={true}
                         style={style.button}
-                        icon={<FontIcon className="muidocs-icon-file-upload" />}
-                        />
+                        type="submit"
+                        containerElement='label' // <-- Just add me!
+                        icon={<FontIcon className="muidocs-icon-navigation-expand-more" />}>
+                        <input type="file" style={{ display: 'none' }} onChange={e => this.handleTouchTap(e)}/>
+                        </RaisedButton>
                     </Col>
-                    <Col xs={4} md={4} />
+                    <Col xs={2} md={4} />
             </Row>
             </Grid>
             
