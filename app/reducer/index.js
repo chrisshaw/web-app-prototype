@@ -43,7 +43,39 @@ const mainReducer = (state={}, action) => {
             return Object.assign({},state, {fadetail: action.fadetail});    
         case 'VIEW_CSV_DATA':
             return Object.assign({},state, {csvdata: action.csvdata}); 
-        }
+        case 'UPDATE_CSV_NAME':
+            console.log(action.name, action.id)
+            return Object.assign({},state, {
+            
+                csvdata: state.csvdata.map(data => data.id === action.id ?
+                    // transform the one with a matching id
+                    { ...data, name: action.name } : 
+                    // otherwise return original data
+                    data
+                ) 
+            })   
+        case 'UPDATE_CSV_GRADE':
+            return Object.assign({},state, {
+            
+                csvdata: state.csvdata.map(data => data.id === action.id ?
+                    // transform the one with a matching id
+                    { ...data, grade: action.grade } : 
+                    // otherwise return original data
+                    data
+                ) 
+            })    
+        case 'UPDATE_CSV_FA':
+            return Object.assign({},state, {
+            
+                csvdata: state.csvdata.map(data => data.id === action.id ?
+                    // transform the one with a matching id
+                    { ...data, focusArea: action.focusArea } : 
+                    // otherwise return original data
+                    data
+                ) 
+            })            
+    };
+        
     return state;
 }
 

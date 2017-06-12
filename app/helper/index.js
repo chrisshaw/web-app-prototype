@@ -1,6 +1,6 @@
 var axios = require("axios");
 
-import {focusAreaResults, noResults, viewDetailFocusArea, viewUploadedCSVData} from '../actions';
+import {focusAreaResults, noResults, viewDetailFocusArea, viewUploadedCSVData, updateCSVDataName, updateCSVDataGrade, updateCSVDataFA} from '../actions';
 
 // Helper Functions
 var helpers = {
@@ -52,6 +52,21 @@ var helpers = {
                     reader.readAsBinaryString(file);
                 }
     },
+
+    updateCSV: function(action, id, type, dispatch){
+        console.log(action, id);
+        if (type === 'name'){
+            dispatch(updateCSVDataName(action, id ))
+        }
+        if (type === 'grade'){
+            dispatch(updateCSVDataGrade(action, id ))
+        }
+        if (type === 'focusArea'){
+            dispatch(updateCSVDataFA(action, id ))
+        }
+       
+
+    }
 
    
 

@@ -27,3 +27,47 @@ exports.viewUploadedCSVData = (csvdata) => {
     }
 }
 
+exports.updateCSVDataName = (name, id) => {
+  console.log("action id, name", id, name);
+    return {
+      type: 'UPDATE_CSV_NAME',
+      id: id,
+      name,
+    }
+}
+
+exports.updateCSVDataGrade = (grade, id) => {
+  console.log("action id, name", id, grade);
+    return {
+      type: 'UPDATE_CSV_GRADE',
+      id: id,
+      grade,
+    }
+}
+
+exports.updateCSVDataFA = (focusArea, id) => {
+  console.log("action id, name", id, focusArea);
+    return {
+      type: 'UPDATE_CSV_FA',
+      id: id,
+      focusArea,
+    }
+}
+
+
+// exports.updateCSVData = (csvdata[i].name) => {
+//     return { 
+//           [action.id]: {
+//             name: {$set: action.payload}
+//           }
+// }
+
+
+// case 'SOME_ACTION':
+//   return update(state, { 
+//     contents: { 
+//       [action.id]: {
+//         text: {$set: action.payload}
+//       }
+//     }
+//   });

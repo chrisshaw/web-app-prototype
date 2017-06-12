@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import {connect } from 'react-redux';
 import uuid from 'uuid';
 import {Row, Col, Table, Panel} from 'react-bootstrap';
-import DataImportTable from './DataImportTable';
+
 
 class FocusAreaDetail extends Component{
     constructor(props){

@@ -22,6 +22,7 @@ module.exports = function(app){
                 dataArr.push(data);
             }
             let studentObj = {
+                "id": i,
                 "name": dataArr[0],
                 "grade": dataArr[1],
                 "focusArea": dataArr[2],
