@@ -18,3 +18,12 @@ exports.viewDetailFocusArea = (fadetail) => {
       fadetail,
     }
 }
+
+
+exports.viewUploadedCSVData = (csvdata) => {
+    return {
+      type: 'VIEW_CSV_DATA',
+      csvdata,
+    }
+}
+

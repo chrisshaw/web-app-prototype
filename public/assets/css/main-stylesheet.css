@@ -84,6 +84,10 @@ table {
   align-items: 'center';
   justify-content: 'center';
 }
+/*tr {
+  /*background-color: '#e57373' !important;*/
+  /*color: "#000000" !important;
+}*/
 /*.submit-csv-button {
     margin-left: '35%' !important;
     margin-top: 12px;

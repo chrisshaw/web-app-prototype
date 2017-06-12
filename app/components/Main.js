@@ -33,6 +33,13 @@ const navBarTheme = getMuiTheme({
     // position: "fixed",
     height: 190, 
   },
+  paper: {
+    color: '#000000'
+  },
+  table: {
+    color: '#000000',
+    textColor: '#000000',
+  }
 //   tabs: {
 //     top: 190,
 //   },

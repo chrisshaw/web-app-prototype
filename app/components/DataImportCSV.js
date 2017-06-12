@@ -5,6 +5,8 @@ import RaisedButton from 'material-ui/RaisedButton';
 import FontIcon from 'material-ui/FontIcon';
 import {Grid, Row, Col} from 'react-bootstrap';
 import helper from '../helper';
+import uuid from 'uuid';
+import DataImportTable from './DataImportTable';
 
 const style = {
   height: '80vh',
@@ -21,6 +23,9 @@ const style = {
     display: 'block',
     backgroundColor: "#2FBB2F"
   },
+  paper: {
+      color: '#000000'
+  }
 };
 
 class DataImportCSV extends Component{
@@ -33,16 +38,21 @@ class DataImportCSV extends Component{
         // alert("ok do something now!")
         // console.log(e.target.files)
         // capture file - now do something with it
-        helper.submitCSVFile(e);
+        helper.submitCSVFile(e, this.props.dispatch);
 
     }
     render(){
+
+ 
+
+        // add a save button and a clear button
+
         return(
             <Grid>  
                 <Row>
                     <Col xs={12} md={12}>
                         <Paper className="data-import-paper" style={style} zDepth={3} >
-                            contains a table
+                            <DataImportTable />
                         </Paper>
                     </Col>
                 </Row>
@@ -67,5 +77,14 @@ class DataImportCSV extends Component{
     }
 }
 
-export default DataImportCSV;
+
+
+const mapStateToProps = (store,ownProps) => {
+    return {
+        csvdata: store.mainState.csvdata,
+        
+    }
+}
+
+export default connect(mapStateToProps)(DataImportCSV);
 

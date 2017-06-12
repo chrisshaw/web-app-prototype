@@ -41,6 +41,8 @@ const mainReducer = (state={}, action) => {
             return Object.assign({},state, {noResultsMsg: action.noResultsMsg});    
         case 'VIEW_DETAIL':
             return Object.assign({},state, {fadetail: action.fadetail});    
+        case 'VIEW_CSV_DATA':
+            return Object.assign({},state, {csvdata: action.csvdata}); 
         }
     return state;
 }

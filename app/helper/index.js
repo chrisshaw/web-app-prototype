@@ -1,6 +1,6 @@
 var axios = require("axios");
 
-import {focusAreaResults, noResults, viewDetailFocusArea} from '../actions';
+import {focusAreaResults, noResults, viewDetailFocusArea, viewUploadedCSVData} from '../actions';
 
 // Helper Functions
 var helpers = {
@@ -25,7 +25,7 @@ var helpers = {
 //       console.log("in here", file[0]);
 //    }
    
-    submitCSVFile: function(e){
+    submitCSVFile: function(e, dispatch){
                 var files = e.target.files || e.dataTransfer.files 
                
                 if (files) {
@@ -41,18 +41,12 @@ var helpers = {
                             buffer: buffer
                         }; 
 
-                        // console.log(postObj);
                         
-                        return axios.post('/csv/file', postObj).then(function(result){
-                                console.log("result of save", result);
+                        return axios.post('/csv/file', postObj).then(function(response){
+                            console.log(response.data)
+                               dispatch(viewUploadedCSVData(response.data))
 
-                                // indicate if successful or not
-                                // store.dispatch({
-                                //     type: 'UPDATE_PROFILEIMAGE',
-                                //     profile_image: result.data
-                                // })
-                                // console.log("waht is this value", result.data.imgsrc);
-                                // console.log("profile iage",store.getState())
+                        
                         })
                     }
                     reader.readAsBinaryString(file);
