@@ -62,7 +62,7 @@ class Main extends Component{
             <div>
                 <MyAppNav/>
                 <div className="wrapper">
-                    {React.cloneElement(this.props.children, {fadetail: this.props.fadetail, focusarea: this.props.area, noResultsMsg: this.props.noResultsMsg})}
+                {this.props.children}
                 </div>
             </div>
             </MuiThemeProvider>
@@ -70,6 +70,9 @@ class Main extends Component{
     }
 }
 
+// <div className="wrapper">
+//                     {React.cloneElement(this.props.children, {fadetail: this.props.fadetail, focusarea: this.props.area, noResultsMsg: this.props.noResultsMsg})}
+//                 </div>
 
 const mapStateToProps = (store,ownProps) => {
     return {
