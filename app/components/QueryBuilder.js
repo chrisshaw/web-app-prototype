@@ -1,29 +1,53 @@
 import React, { Component } from 'react';
-import SearchBar from './SearchBar';
-import Results from './Results';
 import {Grid, Row, Col} from 'react-bootstrap';
+import PathBuilderDrawer from './PathBuilderDrawer.js';
+import RaisedButton from 'material-ui/RaisedButton';
+import helper from '../helper';
+import {connect } from 'react-redux';
+
+// const style = {
+//     drawer: {
+//         color: '#808080',
+//         zIndex: 100,
+//         position: 'fixed',
+//         top: '300px'
+//     },
+//     span: {
+//         color: '#FFFFFF',
+    
+//     },
+//     button: {
+//         marginTop: 12,
+//         marginBottom: 12,
+//         // display: 'block',
+//         backgroundColor: "#2FBB2F"
+//     }
+// }
 
 class QueryBuilder extends Component{
-    constructor(props){
+   constructor(props) {
         super(props);
-        // this.state = {}; //setting initial default state
+
     }
 
     render(){
+
+        
         return(
             <div>
-                <Grid>  
-                    <Col xs={12} md={4}>
-                        <SearchBar />    
-                    </Col>
-                    <Col xs={12} md={8} >
-                        <Results focusarea={this.props.focusarea} noResultsMsg={this.props.noResultsMsg} />          
-                    </Col>
-                </Grid>
+                BuildQueryhere!!!
             </div>
         )
     }
 }
 
-export default QueryBuilder;
+// export default PathBuilder;
+
+const mapStateToProps = (store,ownProps) => {
+    return {
+        toggledrawer: store.mainState.toggledrawer,
+    }
+}
+
+export default connect(mapStateToProps)(QueryBuilder);
 

@@ -42,17 +42,21 @@ module.exports = function(app){
         let queryStandards = ['CCSS.Math.Content.HSS-MD.A','CCSS.ELA-Literacy.SL.3.2','CCSS.Math.Content.HSN-RN.A.1','CCSS.ELA-Literacy.RI.11-12.1', 'CCSS.ELA-LITERACY.RI.9-10.8','CCSS.ELA-Literacy.RI.11-12.6', 'CCSS.ELA-LITERACY.L.9-10.2']
         // let queryStandards = ['CCSS.Math.Content.HSS-MD.A'];
         let querySubjects = ['english'];
-        let queryTopics = []; //e.g., ['immigration','identity']
-
-        var query = aql`FOR fa, edge, path IN 1..999 outbound ${queryFa} thenFocusOn filter length(${querySubjects}) > 0 ? fa.subject in ${querySubjects} : true filter length(${queryTopics}) > 0 ? fa.topic any in ${queryTopics} : true filter length(${queryStandards}) > 0 ? fa.standardConnections any in ${queryStandards} : true RETURN {focusArea: fa, indexOnPath: length(path.vertices)}`;
+        let queryTopics = []; //e.g., ['immigration','identity'
+       
+        let queryGrades = [] //e.g., ['9','12'] which you'll have to derive from the student group--what grades are the students in
+        var query = aql`FOR fa, edge, path IN 1..999 outbound ${queryFa} thenFocusOn 
+        filter length(${querySubjects}) > 0 ? fa.subject in ${querySubjects} : true 
+        filter length(${queryGrades}) > 0 ? fa.grade any in ${queryGrades} : true
+        filter length(${queryTopics}) > 0 ? fa.topic any in ${queryTopics} : true 
+        filter length(${queryStandards}) > 0 ? fa.standardConnections any in ${queryStandards} : true 
+        RETURN {focusArea: fa, indexOnPath: length(path.vertices)}`;
 
         db.query(query)
         .then(cursor => {
             // cursor is a cursor for the query result
             res.json(cursor._result);          
         });
-
-        
 
         
 

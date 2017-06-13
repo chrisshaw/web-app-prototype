@@ -1,6 +1,6 @@
 var axios = require("axios");
 
-import {focusAreaResults, noResults, viewDetailFocusArea, viewUploadedCSVData, updateCSVDataName, updateCSVDataGrade, updateCSVDataFA} from '../actions';
+import {focusAreaResults, noResults, viewDetailFocusArea, viewUploadedCSVData, updateCSVDataName, updateCSVDataGrade, updateCSVDataFA, closePathBuilderDrawer} from '../actions';
 
 // Helper Functions
 var helpers = {
@@ -66,6 +66,11 @@ var helpers = {
         }
        
 
+    },
+
+    toggleDrawer: function(action, dispatch){
+        console.log("toggledrawer", action);
+        dispatch(closePathBuilderDrawer(action))
     }
 
    

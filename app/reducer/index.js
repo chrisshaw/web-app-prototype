@@ -31,8 +31,9 @@ import uuid from 'uuid';
 // the reducer function
 import {combineReducers } from 'redux';
 
+const intialstate = {toggledrawer: false}
 //  The below are required and map to the components dispatcher
-const mainReducer = (state={}, action) => {
+const mainReducer = (state=intialstate, action) => {
     // SEARCH_TEXT
     switch(action.type){
         case 'FOCUS_AREA':
@@ -44,9 +45,7 @@ const mainReducer = (state={}, action) => {
         case 'VIEW_CSV_DATA':
             return Object.assign({},state, {csvdata: action.csvdata}); 
         case 'UPDATE_CSV_NAME':
-            console.log(action.name, action.id)
             return Object.assign({},state, {
-            
                 csvdata: state.csvdata.map(data => data.id === action.id ?
                     // transform the one with a matching id
                     { ...data, name: action.name } : 
@@ -56,7 +55,6 @@ const mainReducer = (state={}, action) => {
             })   
         case 'UPDATE_CSV_GRADE':
             return Object.assign({},state, {
-            
                 csvdata: state.csvdata.map(data => data.id === action.id ?
                     // transform the one with a matching id
                     { ...data, grade: action.grade } : 
@@ -73,7 +71,9 @@ const mainReducer = (state={}, action) => {
                     // otherwise return original data
                     data
                 ) 
-            })            
+            })    
+        case 'TOGGLE_DRAWER':
+            return Object.assign({},state, {toggledrawer: action.toggledrawer});         
     };
         
     return state;

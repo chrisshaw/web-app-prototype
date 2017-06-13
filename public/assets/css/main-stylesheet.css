@@ -32,6 +32,20 @@ body {
     width: 100%;
     
 }
+.drawer-wrapper {
+    position: fixed !important;
+    top: 250px !important;
+    /*margin-left: 0px;
+    margin-right: 0px;*/
+    width: 100%;
+
+
+}
+
+.row {
+    margin-right: 10px;
+    margin-left: 10px;
+}
 
 /*  to here */
 .login-items {

@@ -54,6 +54,14 @@ exports.updateCSVDataFA = (focusArea, id) => {
     }
 }
 
+exports.closePathBuilderDrawer = (toggledrawer) => {
+   console.log(toggledrawer)
+    return {
+      type: 'TOGGLE_DRAWER',
+      toggledrawer,
+    }
+}
+
 
 // exports.updateCSVData = (csvdata[i].name) => {
 //     return { 

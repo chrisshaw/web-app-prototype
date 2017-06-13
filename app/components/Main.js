@@ -39,6 +39,15 @@ const navBarTheme = getMuiTheme({
   table: {
     color: '#000000',
     textColor: '#000000',
+  },
+  drawer : {
+    color: '#BDBDBD',
+    textColor: '#000000',
+    // zIndex: 100,
+    position: 'fixed',
+    top: '430px',
+    width: '430px'
+
   }
 //   tabs: {
 //     top: 190,
@@ -62,7 +71,7 @@ class Main extends Component{
             <div>
                 <MyAppNav/>
                 <div className="wrapper">
-                {this.props.children}
+                   {this.props.children}
                 </div>
             </div>
             </MuiThemeProvider>

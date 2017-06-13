@@ -69,7 +69,6 @@ const MyAppNav = () => (
             />
             <Tabs className="sticky-navbar-tabs">
                 <Tab label="Home" containerElement={<Link to="/"/>}/>
-                <Tab label="????" containerElement={<Link to="/"/>}/>
                 <Tab label="Import Data" containerElement={<Link to="/csv"/>}/>
             </Tabs>
         </div>

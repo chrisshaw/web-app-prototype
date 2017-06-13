@@ -10,6 +10,7 @@ const configureStore = (initialState={}) => {
     var store = createStore(reducer, initialState, compose(
       autoRehydrate()
     ));
+    // persistStore(store).purge(); /// 
     persistStore(store);
     return store;
 }
