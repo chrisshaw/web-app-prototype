@@ -110,6 +110,9 @@ table {
 .hidden-class {
     display: none;
 }
+/*input {
+    color: black;
+}*/
 /*.info-messages {
     padding: 10px;
 }*/

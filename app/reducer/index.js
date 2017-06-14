@@ -34,7 +34,8 @@ import {combineReducers } from 'redux';
 const intialstate = {
   toggledrawer: false,
   grouplist: [],
-  grouptabs: []
+  grouptabs: [],
+  selectedgrouplist: [],
   
 }
 //  The below are required and map to the components dispatcher
@@ -96,10 +97,64 @@ const mainReducer = (state={intialstate}, action) => {
             } else {
                 return Object.assign({},state, {grouplist: action.grouplist});    
             }
-        // case 'UPDATE_GROUP_TABS':
-        //     return Object.assign({},state, {grouptabs: action.grouptabs});    
-        
+        case 'UPDATE_SELECTED_GROUPS':
+        // console.log(state.selectedgrouplist)
+            // see what action is being performed - delete or add
+            var newItem ="";
+            if (action.delete) {
+                // console.log(action.delete, "in  delreducer")
+                // use filter here to remove deleted group name from selected list
+                var newGroups = state.selectedgrouplist.filter((group) => {
+                    if (group.name === action.item){
+                        return false;
+                    }
+                    return true;
+
+                });
+                return Object.assign({},state, {selectedgrouplist: newGroups}); 
             
+            } else {
+                // newItem = state.grouplist.map((group) => {
+                //     console.log(group)
+                //     if (group.name === action.item){
+                //         console.log(group.name)
+                //         var newObj = {name: group.name, id: group.id};
+                //         return newObj;
+                //     } else {
+                //         return
+                //     }
+                //     // return false;
+
+                // });
+                for (var i=0; i < state.grouplist.length; i++){
+                    if (state.grouplist[i].name === action.item){
+                        var newObj = {name: state.grouplist[i].name, id: state.grouplist[i].id};
+                        // var newGroups = state.grouplist.splice(i, 1);
+                        // console.log(newGroups)
+                        var newGroups = state.grouplist.filter((group) => {
+                
+                            if (group.id === newObj.id){
+                                return false;
+                                }
+                                return true;
+
+                            });
+                        
+                    } 
+
+                }
+
+                // don't duplicate
+                
+
+                if (!state.selectedgrouplist) {
+                    return Object.assign({selectedgrouplist: []},state, {selectedgrouplist:  [newObj]});    
+                } else {
+                    
+                    return Object.assign({selectedgrouplist: []},state, {selectedgrouplist:  [...state.selectedgrouplist, newObj], grouplist: newGroups});    
+                }
+                
+            } 
     };
         
     return state;

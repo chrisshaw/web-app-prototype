@@ -11,7 +11,7 @@ import getMuiTheme from 'material-ui/styles/getMuiTheme';
 
 const navBarTheme = getMuiTheme({
   palette: {
-    textColor: '#FFFFFF',
+    textColor: '#616161',
     // this one is for the tabs bar
     primary1Color: "#2FBB2F",
     // primary2Color:  "#2FBB2F",
@@ -50,7 +50,10 @@ const navBarTheme = getMuiTheme({
   },
   chip: {
       backgroundColor: '#424242',
-  }
+      textColor: '#FFFFFF',
+  },
+ 
+
 //   tabs: {
 //     top: 190,
 //   },

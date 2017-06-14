@@ -70,6 +70,14 @@ exports.updateGroupList = (deleteGroup, id, grouplist) => {
       grouplist,
     }
 }
+exports.saveSelectedGroup = (addOrRemove, item) => {
+  console.log("addOrRemove, item", addOrRemove, item)
+    return {
+      type: 'UPDATE_SELECTED_GROUPS',
+      delete: addOrRemove,
+      item
+    }
+}
 // exports.updateGroupTabs = (grouptabs) => {
 //     return {
 //       type: 'UPDATE_GROUP_TABS',
