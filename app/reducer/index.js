@@ -40,6 +40,7 @@ const intialstate = {
 }
 //  The below are required and map to the components dispatcher
 const mainReducer = (state={intialstate}, action) => {
+    console.log("IS ANYTHGIN GEGGKG NERERE")
     // SEARCH_TEXT
     switch(action.type){
         // case 'FOCUS_AREA':
@@ -95,7 +96,7 @@ const mainReducer = (state={intialstate}, action) => {
                 return Object.assign({},state, {grouplist: newGroups}); 
             
             } else {
-                return Object.assign({},state, {grouplist: action.grouplist});    
+                return Object.assign({},state, {grouplist: action.grouplist, selectedgrouplist: []});    
             }
         case 'UPDATE_SELECTED_GROUPS':
         // console.log(state.selectedgrouplist)
@@ -105,6 +106,7 @@ const mainReducer = (state={intialstate}, action) => {
                 // console.log(action.delete, "in  delreducer")
                 // use filter here to remove deleted group name from selected list
                 var newGroups = state.selectedgrouplist.filter((group) => {
+                    // add it back to the grouplist...
                     if (group.name === action.item){
                         return false;
                     }
@@ -113,46 +115,34 @@ const mainReducer = (state={intialstate}, action) => {
                 });
                 return Object.assign({},state, {selectedgrouplist: newGroups}); 
             
-            } else {
-                // newItem = state.grouplist.map((group) => {
-                //     console.log(group)
-                //     if (group.name === action.item){
-                //         console.log(group.name)
-                //         var newObj = {name: group.name, id: group.id};
-                //         return newObj;
-                //     } else {
-                //         return
-                //     }
-                //     // return false;
-
-                // });
-                for (var i=0; i < state.grouplist.length; i++){
-                    if (state.grouplist[i].name === action.item){
-                        var newObj = {name: state.grouplist[i].name, id: state.grouplist[i].id};
-                        // var newGroups = state.grouplist.splice(i, 1);
-                        // console.log(newGroups)
-                        var newGroups = state.grouplist.filter((group) => {
-                
-                            if (group.id === newObj.id){
-                                return false;
-                                }
-                                return true;
-
-                            });
-                        
-                    } 
-
-                }
-
-                // don't duplicate
-                
-
-                if (!state.selectedgrouplist) {
-                    return Object.assign({selectedgrouplist: []},state, {selectedgrouplist:  [newObj]});    
-                } else {
+            } 
+            else {
+                // decrease groups list and increase selected
+                var newObj = {};
+                var newGroups = state.grouplist.filter((group) => {
                     
-                    return Object.assign({selectedgrouplist: []},state, {selectedgrouplist:  [...state.selectedgrouplist, newObj], grouplist: newGroups});    
-                }
+                    if (group.name === action.item){
+                        newObj = group;
+                        return false;
+                        }
+                        return true;
+
+                    });
+                
+                
+
+               console.log("newO??????bj", newObj);
+               if (newObj !== {}){
+                    if (!state.selectedgrouplist) {
+                        console.log("in here");
+                        return Object.assign({selectedgrouplist: []},state, {selectedgrouplist:  [newObj],  grouplist: newGroups});    
+                    } else {
+                        console.log("in here instead");
+                        
+                        return Object.assign({selectedgrouplist: []},state, {selectedgrouplist:  [...state.selectedgrouplist, newObj], grouplist: newGroups});    
+                    }
+               }
+                
                 
             } 
     };

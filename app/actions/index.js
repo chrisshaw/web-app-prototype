@@ -71,7 +71,6 @@ exports.updateGroupList = (deleteGroup, id, grouplist) => {
     }
 }
 exports.saveSelectedGroup = (addOrRemove, item) => {
-  console.log("addOrRemove, item", addOrRemove, item)
     return {
       type: 'UPDATE_SELECTED_GROUPS',
       delete: addOrRemove,

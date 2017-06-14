@@ -26,29 +26,31 @@ import uuid from 'uuid';
     };
     var hasGroups = [];
     if (this.props.grouplist){
-      hasGroups = this.props.grouplist;
-      var component = this;
-      var resultComponents = this.props.grouplist.map(function(result) {
-        return <Chip
-            key={result.id}
-            onRequestDelete={() => component.props.handleRequestDelete(result.id)}
-            style={styles.chip}
-            >
-            {result.name}
-          </Chip>
+       hasGroups = this.props.grouplist;
+    }
+    // var selectedArr = [];
+    // selectedArr = [...this.props.selectedgrouplist];
+    console.log("what is " , this.props.selectedgrouplist)
+    if (this.props.selectedgrouplist) {
+    // || (Object.keys(this.props.selectedgrouplist).length === 0 && this.props.selectedgrouplist.constructor === Object)){
+    // }  else {
+        console.log("what is this", this.props.selectedgrouplist)
+        var component = this;
+        var resultComponents = this.props.selectedgrouplist.map(function(result) {
+          return <Chip
+              key={result.id}
+              onRequestDelete={() => component.props.handleRequestDelete(result.id)}
+              style={styles.chip}
+              >
+              {result.name}
+            </Chip>
 
-        })
-    } 
+          })
+      }
+
     
     return (
-      <div style={styles.wrapper}>
-            {hasGroups.length === 0 &&
-              <Chip
-            key={uuid.v4}
-            style={styles.chip}
-            >
-            No Groups Found
-          </Chip>}          
+      <div style={styles.wrapper}>       
          {resultComponents} 
       </div>
     );

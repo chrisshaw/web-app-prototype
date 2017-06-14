@@ -4,7 +4,7 @@ import PathBuilderDrawer from './PathBuilderDrawer.js';
 import RaisedButton from 'material-ui/RaisedButton';
 import FlatButton from 'material-ui/FlatButton';
 import helper from '../helper';
-import {connect } from 'react-redux';
+import {connect} from 'react-redux';
 import GroupChip from './GroupChip';
 import AutoCompleteField from './AutoCompleteField';
 
@@ -16,6 +16,9 @@ class QueryBuilder extends Component{
         this.handleReset = this.handleReset.bind(this);
         // get initial data and set props
         helper.getGroups(this.props.dispatch);
+
+        console.log("selected groups", this.props);
+        console.log("all groups", this.props);
         // next
         // helper.getGroupFA(this.props.dispatch);
 
@@ -36,8 +39,9 @@ class QueryBuilder extends Component{
         helper.getGroups(this.props.dispatch); 
     }
     render(){
- console.log("selected groups", this.props.selectedgrouplist)
- console.log("all groups", this.props.grouplist)
+//  console.log("selected groups", this.props);
+//         console.log("all groups", this.props);
+        var component = this;
         return(<div>
                 <div className="query-builder-wrapper">
                 <h3> Build Path </h3>
@@ -46,8 +50,8 @@ class QueryBuilder extends Component{
                 <div className="query-builder-wrapper">
                 <Col xs={8} md={8} >
                     <h4> Students in my groups:</h4> 
-                    <AutoCompleteField grouplist={this.props.grouplist} selectedgrouplist={this.props.selectedgrouplist}/>
-                    <GroupChip className="text-center" secondary={true} grouplist={this.props.grouplist} handleRemove={this.handleRemove} handleRequestDelete={this.handleRequestDelete}/>
+                    <GroupChip className="text-center" secondary={true} selectedgrouplist={this.props.selectedgrouplist} handleRemove={this.handleRemove} handleRequestDelete={this.handleRequestDelete}/>
+                    <AutoCompleteField grouplist={component.props.grouplist} selectedgrouplist={component.props.selectedgrouplist}/>
                     <p><em>* select 'x' to remove any groups that are not required.</em></p>
                 </Col>
                 <Col className="reset-button text-center" xs={4} md={4} > 
@@ -65,8 +69,6 @@ const mapStateToProps = (store,ownProps) => {
     return {
         grouplist: store.mainState.grouplist,
         selectedgrouplist: store.mainState.selectedgrouplist,
-        
-
     }
 }
 

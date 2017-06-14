@@ -11,7 +11,7 @@ db.useDatabase(config.database.name);
 db.useBasicAuth(config.database.un, config.database.pw);
 // test connection
 db.get()
-.then(info => {
+.then(err => {
     // the database exists
     console.log(info);
 });
