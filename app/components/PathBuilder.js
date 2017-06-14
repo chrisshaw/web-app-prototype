@@ -4,6 +4,7 @@ import PathBuilderDrawer from './PathBuilderDrawer.js';
 import RaisedButton from 'material-ui/RaisedButton';
 import helper from '../helper';
 import {connect } from 'react-redux';
+import PathPaper from './PathPaper';
 
 const style = {
     drawer: {
@@ -20,7 +21,9 @@ const style = {
         marginTop: 12,
         marginBottom: 12,
         // display: 'block',
-        backgroundColor: "#2FBB2F"
+        backgroundColor: "#2FBB2F",
+        mariginLeft: '10px'
+
     }
 }
 
@@ -51,18 +54,21 @@ class PathBuilder extends Component{
                 <PathBuilderDrawer handleToggle={this.handleToggle} handleClose={this.handleClose} toggledrawer={this.props.toggledrawer}/>
                 <Grid>  
                     
-                    <Col xs={12} md={8} >
-                    <div  className="drawer-wrapper"> 
+                    <Row>
+             
+                    <Col md={12} >
                     <RaisedButton
-                    label="Show Path Builder"
-                    onTouchTap={this.handleToggle}
-                    style={style.button} 
-                    containerElement='label' 
-                    secondary={true}
-                    />
-  
-                    </div>
+                        label="Show Path Builder"
+                        onTouchTap={this.handleToggle}
+                        style={style.button} 
+                        containerElement='label' 
+                        secondary={true}
+                        />
+                    
+                     <PathPaper grouplist={this.props.grouplist} />
+                    
                     </Col>
+                    </Row>
                 </Grid>
             </div>
         )
@@ -74,6 +80,7 @@ class PathBuilder extends Component{
 const mapStateToProps = (store,ownProps) => {
     return {
         toggledrawer: store.mainState.toggledrawer,
+        grouplist: store.mainState.grouplist,
     }
 }
 

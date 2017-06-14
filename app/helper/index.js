@@ -81,7 +81,7 @@ var helpers = {
             return axios.get('/api/teacher/group').then(function(response) {
             // send results to redux store for use by Results component
                 console.log("getgroups results", response.data);
-                dispatch(updateGroupList(false, 0, response.data))
+                dispatch(updateGroupList(false, 0, response.data));
                 return ;
         })
     },

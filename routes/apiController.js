@@ -45,7 +45,7 @@ module.exports = function(app){
         let queryTopics = []; //e.g., ['immigration','identity'
        
         let queryGrades = [] //e.g., ['9','12'] which you'll have to derive from the student group--what grades are the students in
-        var query = aql`FOR fa, edge, path IN 1..999 outbound ${queryFa} thenFocusOn 
+        var query = aql`FOR fa, edge, path IN 1..999 outbound ${queryFa} thenFocusOn
         filter length(${querySubjects}) > 0 ? fa.subject in ${querySubjects} : true 
         filter length(${queryGrades}) > 0 ? fa.grade any in ${queryGrades} : true
         filter length(${queryTopics}) > 0 ? fa.topic any in ${queryTopics} : true 

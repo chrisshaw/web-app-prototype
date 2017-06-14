@@ -1,5 +1,5 @@
 .wrapper {
-    margin-top: 260px;
+    margin-top: 200px;
 }
 body, p, h1, h2, h3, h4 {
     color: #584f4f;
@@ -14,7 +14,7 @@ body {
 }
 
 .logo {
-    width: 60%;
+    width: 600px;
     /*margin-top: 2%;*/
     margin-left: 20%;
     margin-right: 20%;
@@ -27,14 +27,14 @@ body {
 }
 .sticky-navbar-tabs  {
     position: fixed !important;
-    top: 190px;
+    top: 130px;
     z-index: 1000;
     width: 100%;
     
 }
 .drawer-wrapper {
     position: fixed !important;
-    top: 250px !important;
+    top: 200px !important;
     /*margin-left: 0px;
     margin-right: 0px;*/
     width: 100%;
@@ -183,10 +183,10 @@ navbar {
 
 @media (max-width: 768px){
     .wrapper {
-        margin-top: 250px;
+        margin-top: 200px;
     }
     .logo {
-        width: 100%;
+        width: 80%;
         margin: 0;
     }
    .reset-button {

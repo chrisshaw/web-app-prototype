@@ -70,6 +70,12 @@ exports.updateGroupList = (deleteGroup, id, grouplist) => {
       grouplist,
     }
 }
+// exports.updateGroupTabs = (grouptabs) => {
+//     return {
+//       type: 'UPDATE_GROUP_TABS',
+//       grouptabs,
+//     }
+// }
 
 
 

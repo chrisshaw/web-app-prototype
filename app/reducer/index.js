@@ -34,6 +34,7 @@ import {combineReducers } from 'redux';
 const intialstate = {
   toggledrawer: false,
   grouplist: [],
+  grouptabs: []
   
 }
 //  The below are required and map to the components dispatcher
@@ -95,6 +96,8 @@ const mainReducer = (state={intialstate}, action) => {
             } else {
                 return Object.assign({},state, {grouplist: action.grouplist});    
             }
+        // case 'UPDATE_GROUP_TABS':
+        //     return Object.assign({},state, {grouptabs: action.grouptabs});    
         
             
     };

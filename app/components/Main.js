@@ -31,7 +31,7 @@ const navBarTheme = getMuiTheme({
   appBar: {
     top: 0,
     // position: "fixed",
-    height: 190, 
+    height: 130, 
   },
   paper: {
     color: '#000000'
