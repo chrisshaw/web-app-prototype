@@ -14,6 +14,7 @@ class QueryBuilder extends Component{
         // this.handleRemove = this.handleRemove.bind(this);
         this.handleRequestDelete = this.handleRequestDelete.bind(this);
         this.handleReset = this.handleReset.bind(this);
+        this.getPaths = this.getPaths.bind(this);
         // get initial data and set props
         helper.getGroups(this.props.dispatch);
 
@@ -38,6 +39,10 @@ class QueryBuilder extends Component{
         // console.log("in reset");
         helper.getGroups(this.props.dispatch); 
     }
+    getPaths() {
+        helper.getPaths(this.props.dispatch); 
+
+    }
     render(){
 //  console.log("selected groups", this.props);
 //         console.log("all groups", this.props);
@@ -48,15 +53,25 @@ class QueryBuilder extends Component{
                 <p> Enter required criteria and submit to get reccommended paths. Or some other blurb...</p> 
                 </div>
                 <div className="query-builder-wrapper">
-                <Col xs={8} md={8} >
-                    <h4> Students in my groups:</h4> 
-                    <GroupChip className="text-center" secondary={true} selectedgrouplist={this.props.selectedgrouplist} handleRemove={this.handleRemove} handleRequestDelete={this.handleRequestDelete}/>
-                    <AutoCompleteField grouplist={component.props.grouplist} selectedgrouplist={component.props.selectedgrouplist}/>
-                    <p><em>* select 'x' to remove any groups that are not required.</em></p>
-                </Col>
-                <Col className="reset-button text-center" xs={4} md={4} > 
-                    <FlatButton containerElement='label' label="Reset Groups" onTouchTap={this.handleReset} />
-                </Col>
+                <Row>
+                    <Col xs={12} md={12} >
+                        <h4> Students in my groups:</h4>
+                        <div className="auto-text-alignment">
+                            <GroupChip className="text-center" style={{display: "inline"}} secondary={true} selectedgrouplist={this.props.selectedgrouplist} handleRemove={this.handleRemove} handleRequestDelete={this.handleRequestDelete}/>
+                            <AutoCompleteField style={{display: "inline"}} grouplist={component.props.grouplist} selectedgrouplist={component.props.selectedgrouplist}/>
+                        </div>
+                        <p><em>* select 'x' to remove any groups that are not required.</em></p>
+
+                    </Col>
+                    <Col xs={12} md={12} >
+                        <FlatButton containerElement='label' label="Reset Groups" onTouchTap={this.handleReset} />
+                    </Col>
+                </Row>
+                <Row>
+                    <Col xs={12} md={12} className="text-center" >
+                        <FlatButton containerElement='label' label="Get Reccommended Paths" onTouchTap={this.getPaths} />
+                    </Col>
+                </Row>
                 </div>
             </div>
         )

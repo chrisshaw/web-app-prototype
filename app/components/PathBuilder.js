@@ -65,7 +65,7 @@ class PathBuilder extends Component{
                         secondary={true}
                         />
                     
-                     <PathPaper grouplist={this.props.grouplist} />
+                     <PathPaper selectedgrouplist={this.props.selectedgrouplist} />
                     
                     </Col>
                     </Row>
@@ -81,6 +81,7 @@ const mapStateToProps = (store,ownProps) => {
     return {
         toggledrawer: store.mainState.toggledrawer,
         grouplist: store.mainState.grouplist,
+        selectedgrouplist: store.mainState.selectedgrouplist,
     }
 }
 

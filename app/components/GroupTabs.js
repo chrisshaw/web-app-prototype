@@ -32,16 +32,16 @@ class GroupTabs extends React.Component {
 
   render() {
     //// GET TABS from results
-    if ((this.props.grouplist) && (this.props.grouplist[0] !== null)){
+    if ((this.props.selectedgrouplist) && (this.props.selectedgrouplist[0] !== null)){
       //  console.log("in tab", this.props.grouplist)
     //   hasGroups = this.props.grouplist;
       var component = this;
-      var tabComponents = this.props.grouplist.map(function(result, index) {
+      var tabComponents = this.props.selectedgrouplist.map(function(result, index) {
         return  <Tab label={result.name} key={index} value={result.id} />
        })
-      var resultsComponents = this.props.grouplist.map(function(result, index) {
-        return  <Tab label={result.name} key={index} value={result.id} />
-       })
+      // var resultsComponents = this.props.grouplist.map(function(result, index) {
+      //   return  <Tab label={result.name} key={index} value={result.id} />
+      //  })
     } 
     
     return (

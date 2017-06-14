@@ -110,6 +110,9 @@ table {
 .hidden-class {
     display: none;
 }
+.auto-text-alignment {
+    display: inline;
+}
 /*input {
     color: black;
 }*/

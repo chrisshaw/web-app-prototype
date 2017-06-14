@@ -81,6 +81,9 @@ const mainReducer = (state={intialstate}, action) => {
             })    
         case 'TOGGLE_DRAWER':
             return Object.assign({},state, {toggledrawer: action.toggledrawer});    
+        case 'UPDATE_PATHS':
+        console.log("UPDATE_PATH");
+            return Object.assign({},state, {paths: action.paths});    
         case 'UPDATE_GROUPS':
             // see what action is being performed - delete or add
             let newObj = {};

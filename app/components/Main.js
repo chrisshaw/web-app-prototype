@@ -52,6 +52,10 @@ const navBarTheme = getMuiTheme({
       backgroundColor: '#424242',
       textColor: '#FFFFFF',
   },
+  flatButton : {
+    color: '#2FBB2F',
+    textColor: '#FFFFFF',
+  }
  
 
 //   tabs: {

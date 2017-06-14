@@ -1,6 +1,6 @@
 var axios = require("axios");
 
-import {saveSelectedGroup, updateGroupList, viewUploadedCSVData, updateCSVDataName, updateCSVDataGrade, updateCSVDataFA, closePathBuilderDrawer} from '../actions';
+import {updatePathList, saveSelectedGroup, updateGroupList, viewUploadedCSVData, updateCSVDataName, updateCSVDataGrade, updateCSVDataFA, closePathBuilderDrawer} from '../actions';
 
 // Helper Functions
 var helpers = {
@@ -78,11 +78,12 @@ var helpers = {
     },
     getGroups: function(dispatch){
         // console.log("in here get groups")
-            return axios.get('/api/teacher/group').then(function(response) {
+        return axios.get('/api/teacher/group').then(function(response) {
             // send results to redux store for use by Results component
-                console.log("getgroups results", response.data);
-                dispatch(updateGroupList(false, 0, response.data));
-                return ;
+                // console.log("getgroups results", response.data);
+            dispatch(updateGroupList(false, 0, response.data.groups));
+            console.log(response.data.groups);
+            return ;
         })
     },
     removeGroup: function(id, dispatch) {
@@ -94,6 +95,15 @@ var helpers = {
         //  dispatch(updateGroupList(false, id))
         console.log("in here", addOrRemove );
        dispatch(saveSelectedGroup(addOrRemove, e));
+    },
+    getPaths: function(dispatch){
+         return axios.get('/api/path').then(function(response) {
+            // send results to redux store for use by Results component
+                console.log("paths", response.data);
+                dispatch(updatePathList(response.data));
+                return ;
+        })
+
     }
 
  };

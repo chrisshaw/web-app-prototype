@@ -77,6 +77,14 @@ exports.saveSelectedGroup = (addOrRemove, item) => {
       item
     }
 }
+
+exports.updatePathList = (paths) => {
+  return {
+      type: 'UPDATE_PATHS',
+      paths
+    }
+
+}
 // exports.updateGroupTabs = (grouptabs) => {
 //     return {
 //       type: 'UPDATE_GROUP_TABS',
