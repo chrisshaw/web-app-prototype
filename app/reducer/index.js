@@ -31,17 +31,21 @@ import uuid from 'uuid';
 // the reducer function
 import {combineReducers } from 'redux';
 
-const intialstate = {toggledrawer: false}
+const intialstate = {
+  toggledrawer: false,
+  grouplist: [],
+  
+}
 //  The below are required and map to the components dispatcher
-const mainReducer = (state=intialstate, action) => {
+const mainReducer = (state={intialstate}, action) => {
     // SEARCH_TEXT
     switch(action.type){
-        case 'FOCUS_AREA':
-            return Object.assign({},state, {area: action.area});    
-        case 'NO_DATA_MSG':
-            return Object.assign({},state, {noResultsMsg: action.noResultsMsg});    
-        case 'VIEW_DETAIL':
-            return Object.assign({},state, {fadetail: action.fadetail});    
+        // case 'FOCUS_AREA':
+        //     return Object.assign({},state, {area: action.area});    
+        // case 'NO_DATA_MSG':
+        //     return Object.assign({},state, {noResultsMsg: action.noResultsMsg});    
+        // case 'VIEW_DETAIL':
+        //     return Object.assign({},state, {fadetail: action.fadetail});    
         case 'VIEW_CSV_DATA':
             return Object.assign({},state, {csvdata: action.csvdata}); 
         case 'UPDATE_CSV_NAME':
@@ -73,7 +77,26 @@ const mainReducer = (state=intialstate, action) => {
                 ) 
             })    
         case 'TOGGLE_DRAWER':
-            return Object.assign({},state, {toggledrawer: action.toggledrawer});         
+            return Object.assign({},state, {toggledrawer: action.toggledrawer});    
+        case 'UPDATE_GROUPS':
+            // see what action is being performed - delete or add
+            if (action.delete) {
+                // use filter here to remove deleted group
+                var newGroups = state.grouplist.filter((group) => {
+                    console.log("in here", action.id, "group id", group.id);
+                    if (group.id === action.id){
+                    return false;
+                    }
+                    return true;
+
+                });
+                return Object.assign({},state, {grouplist: newGroups}); 
+            
+            } else {
+                return Object.assign({},state, {grouplist: action.grouplist});    
+            }
+        
+            
     };
         
     return state;

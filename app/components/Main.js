@@ -47,7 +47,9 @@ const navBarTheme = getMuiTheme({
     position: 'fixed',
     top: '430px',
     width: '430px'
-
+  },
+  chip: {
+      backgroundColor: '#424242',
   }
 //   tabs: {
 //     top: 190,

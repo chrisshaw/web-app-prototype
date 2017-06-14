@@ -29,15 +29,15 @@ class PathBuilder extends Component{
         super(props);
         this.handleToggle = this.handleToggle.bind(this);
         this.handleClose = this.handleClose.bind(this);
-        console.log(this.props.toggledrawer, "intial state")
+        // console.log(this.props.toggledrawer, "intial state")
     }
     componentWillMount(){
          helper.toggleDrawer(false, this.props.dispatch);
-         console.log(this.props.toggledrawer, "mount state")
+        //  console.log(this.props.toggledrawer, "mount state")
     }
     handleToggle() {
         //    console.log(this.props.toggledrawer, "ssss;e");
-        console.log(this.props.toggledrawer, "handle state")
+        // console.log(this.props.toggledrawer, "handle state")
         helper.toggleDrawer(!this.props.toggledrawer, this.props.dispatch)
     }
     handleClose(){

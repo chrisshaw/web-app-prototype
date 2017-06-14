@@ -55,12 +55,22 @@ exports.updateCSVDataFA = (focusArea, id) => {
 }
 
 exports.closePathBuilderDrawer = (toggledrawer) => {
-   console.log(toggledrawer)
+    // action for main pathbuilder drawer - hide and show = false or true
     return {
       type: 'TOGGLE_DRAWER',
       toggledrawer,
     }
 }
+
+exports.updateGroupList = (deleteGroup, id, grouplist) => {
+    return {
+      type: 'UPDATE_GROUPS',
+      delete: deleteGroup,
+      id,
+      grouplist,
+    }
+}
+
 
 
 // exports.updateCSVData = (csvdata[i].name) => {

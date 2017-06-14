@@ -63,6 +63,29 @@ module.exports = function(app){
 
     })
 
+    app.get('/api/teacher/group', function(req, res){
+        //should pass in teacher id as param but for now it is hardcoded to 'Teacher 1'
+        let name = "Teacher 1";
+
+
+        // var query = aql`for v, edge, path in 1..2 outbound (FOR teacher IN teachers FILTER teacher.name == ${name} RETURN teacher._id)[0] teacherToGroups, groupToFocusArea, groupToStudents RETURN v`;
+        var query = aql`for v, edge, path in 1..2 outbound (FOR teacher IN teachers FILTER teacher.name == ${name} RETURN teacher._id)[0] teacherToGroups
+    SORT v.name
+    RETURN { 
+      name: v.name,
+      id: v._id
+    }`;
+
+        db.query(query)
+        .then(cursor => {
+            // cursor is a cursor for the query result
+            res.json(cursor._result);          
+        });
+
+
+    })
+    
+
 
 
    

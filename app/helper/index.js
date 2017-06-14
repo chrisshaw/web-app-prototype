@@ -1,26 +1,26 @@
 var axios = require("axios");
 
-import {focusAreaResults, noResults, viewDetailFocusArea, viewUploadedCSVData, updateCSVDataName, updateCSVDataGrade, updateCSVDataFA, closePathBuilderDrawer} from '../actions';
+import {updateGroupList, viewUploadedCSVData, updateCSVDataName, updateCSVDataGrade, updateCSVDataFA, closePathBuilderDrawer} from '../actions';
 
 // Helper Functions
 var helpers = {
-   sendSearchQuery: function(value, dispatch){
-       console.log("value", value);
-       // hardcoded to grade 6 for testing - need to pass in the value
-       return axios.get('/focusarea/6').then(function(response) {
-            // send results to redux store for use by Results component
-            dispatch(focusAreaResults(response.data))
-            return ;
-        })
-   },
-   clearResults: function(noDataMsg, dispatch){
-       // clear stored results
-        dispatch(focusAreaResults(""));
-        dispatch(noResults(noDataMsg));
-   },
-   getFADetails: function(faDetails, dispatch){
-        console.log("faDetails", faDetails); 
-   },
+//    sendSearchQuery: function(value, dispatch){
+//        console.log("value", value);
+//        // hardcoded to grade 6 for testing - need to pass in the value
+//        return axios.get('/focusarea/6').then(function(response) {
+//             // send results to redux store for use by Results component
+//             dispatch(focusAreaResults(response.data))
+//             return ;
+//         })
+//    },
+//    clearResults: function(noDataMsg, dispatch){
+//        // clear stored results
+//         dispatch(focusAreaResults(""));
+//         dispatch(noResults(noDataMsg));
+//    },
+//    getFADetails: function(faDetails, dispatch){
+//         console.log("faDetails", faDetails); 
+//    },
 //    submitCSVFile: function(file){
 //       console.log("in here", file[0]);
 //    }
@@ -71,10 +71,23 @@ var helpers = {
     toggleDrawer: function(action, dispatch){
         console.log("toggledrawer", action);
         dispatch(closePathBuilderDrawer(action))
+    },
+    // deletes groups from path builder list when deleted
+    editGroupsList: function(action, dispatch){
+        // dispatch(updateGroupList(action));
+    },
+    getGroups: function(dispatch){
+        console.log("in here get groups")
+            return axios.get('/api/teacher/group').then(function(response) {
+            // send results to redux store for use by Results component
+                console.log("getgroups results", response.data);
+                dispatch(updateGroupList(false, 0, response.data))
+                return ;
+        })
+    },
+    removeGroup(id, dispatch) {
+        dispatch(updateGroupList(true, id))
     }
-
-   
-
 
  };
 // We export the helpers function (which contains getGithubInfo)
