@@ -11,7 +11,7 @@ import AutoCompleteField from './AutoCompleteField';
 class QueryBuilder extends Component{
    constructor(props) {
         super(props);
-        this.handleRemove = this.handleRemove.bind(this);
+        // this.handleRemove = this.handleRemove.bind(this);
         this.handleRequestDelete = this.handleRequestDelete.bind(this);
         this.handleReset = this.handleReset.bind(this);
         // get initial data and set props
@@ -23,11 +23,11 @@ class QueryBuilder extends Component{
         // helper.getGroupFA(this.props.dispatch);
 
     }
-    handleRemove() {
-        // action triggered when a chip is deleted - must remove from the prop by sending update to the store
-        console.log("in handle remove");
-        // helper.editGroupsList(groupid, this.props.dispatch)
-    }
+    // handleRemove() {
+    //     // action triggered when a chip is deleted - must remove from the prop by sending update to the store
+    //     console.log("in handle remove");
+    //     // helper.editGroupsList(groupid, this.props.dispatch)
+    // }
     handleRequestDelete(id) {
         console.log("id of group for delete", id);
         // filter grouplist based on id

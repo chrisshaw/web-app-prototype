@@ -83,25 +83,37 @@ const mainReducer = (state={intialstate}, action) => {
             return Object.assign({},state, {toggledrawer: action.toggledrawer});    
         case 'UPDATE_GROUPS':
             // see what action is being performed - delete or add
+            let newObj = {};
             if (action.delete) {
                 // use filter here to remove deleted group
-                var newGroups = state.grouplist.filter((group) => {
-                    console.log("in here", action.id, "group id", group.id);
+                // remove from selectedgrouplist and add back to grouplist
+                var newGroups = state.selectedgrouplist.filter((group) => {
+                    console.log("in here remove group", group.id, "group id", action.id);
                     if (group.id === action.id){
-                    return false;
+                        newObj = group;
+                        console.log("newobj", newObj)
+                        return false;
                     }
                     return true;
 
                 });
-                return Object.assign({},state, {grouplist: newGroups}); 
-            
-            } else {
+                
+                // in case of corrupt data 
+                if (newObj !== {}){
+                    // update
+                    return Object.assign({},state, {selectedgrouplist: newGroups, grouplist: [...state.grouplist, newObj] }); 
+                } else {
+                    // no change
+                    return Object.assign({},state, {selectedgrouplist: state.selectedgrouplist, grouplist: state.grouplist }); 
+                }
+            } 
+            else {
                 return Object.assign({},state, {grouplist: action.grouplist, selectedgrouplist: []});    
             }
         case 'UPDATE_SELECTED_GROUPS':
         // console.log(state.selectedgrouplist)
             // see what action is being performed - delete or add
-            var newItem ="";
+            let newItem ="";
             if (action.delete) {
                 // console.log(action.delete, "in  delreducer")
                 // use filter here to remove deleted group name from selected list
@@ -118,7 +130,7 @@ const mainReducer = (state={intialstate}, action) => {
             } 
             else {
                 // decrease groups list and increase selected
-                var newObj = {};
+                let newObj = {};
                 var newGroups = state.grouplist.filter((group) => {
                     
                     if (group.name === action.item){
@@ -128,17 +140,14 @@ const mainReducer = (state={intialstate}, action) => {
                         return true;
 
                     });
-                
-                
 
-               console.log("newO??????bj", newObj);
                if (newObj !== {}){
+                   // if new Obj is not empty make changes
                     if (!state.selectedgrouplist) {
-                        console.log("in here");
+                        // initially when array is empty do this
                         return Object.assign({selectedgrouplist: []},state, {selectedgrouplist:  [newObj],  grouplist: newGroups});    
-                    } else {
-                        console.log("in here instead");
-                        
+                    } else {     
+                        // after there is at least one item do this
                         return Object.assign({selectedgrouplist: []},state, {selectedgrouplist:  [...state.selectedgrouplist, newObj], grouplist: newGroups});    
                     }
                }

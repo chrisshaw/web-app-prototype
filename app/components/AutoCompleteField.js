@@ -24,9 +24,12 @@ var dataSource1 = [];
         if (dataSource1.indexOf(e) !== -1){
              helper.updateSelectedGroup(e, false, this.props.dispatch);
         }
+
     }
-  render() {;
-    if (this.props.grouplist){
+  render() {
+    // if it exists or is not empty array
+    // console.log("this.props.grouplist", this.props.grouplist[0]);
+    if ((this.props.grouplist) && (this.props.grouplist[0] !== null)){
         dataSource1 = this.props.grouplist.map(function(group, index) {
             // strip out just the name for the autocomplete field
                 return group.name             
