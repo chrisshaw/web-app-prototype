@@ -31,7 +31,7 @@ class PathBuilderDrawer extends Component{
 
    constructor(props) {
         super(props);
-        console.log(this.props);
+        // console.log(this.props);
         // this.handleToggle = this.handleToggle.bind(this);
         // this.handleClose = this.handleClose.bind(this);
         // console.log(this.props.toggledrawer, "intial state")

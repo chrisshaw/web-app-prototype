@@ -35,7 +35,7 @@ var helpers = {
                     var reader = new FileReader();
                     reader.onload = function(e) {
                         var buffer = e.target.result;
-                        console.log(buffer);
+                        // console.log(buffer);
                         var postObj = {
                             name: file.name,
                             buffer: buffer
@@ -43,7 +43,7 @@ var helpers = {
 
                         
                         return axios.post('/csv/file', postObj).then(function(response){
-                            console.log(response.data)
+                            // console.log(response.data)
                                dispatch(viewUploadedCSVData(response.data))
 
                         
@@ -54,7 +54,7 @@ var helpers = {
     },
 
     updateCSV: function(action, id, type, dispatch){
-        console.log(action, id);
+        // console.log(action, id);
         if (type === 'name'){
             dispatch(updateCSVDataName(action, id ))
         }
@@ -69,7 +69,7 @@ var helpers = {
     },
 
     toggleDrawer: function(action, dispatch){
-        console.log("toggledrawer", action);
+        // console.log("toggledrawer", action);
         dispatch(closePathBuilderDrawer(action))
     },
     // deletes groups from path builder list when deleted
@@ -86,49 +86,55 @@ var helpers = {
         })
     },
     // get FA and Grade for selected groups
-    getFAandGrade: function(selectedGroups, dispatch){
+    getFAandGrade: function(selectedGroups, i, dispatch){
+        console.log("selectedGroups", selectedGroups, i );
         return new Promise((resolve, reject) => {
-            for (var i = 0; i < selectedGroups.length; i++){
+            // for (var i = 0; i < selectedGroups.length; i++){
+
                 var newSearch = true;
-                var foundCounter = 0;
+                // var foundCounter = 0;
                 var searchTerm=selectedGroups[i].id + "/" + selectedGroups[i].name  ;
+              
                 console.log("searchTerm", searchTerm);
-
                 axios.get('/api/fa/grade/'+searchTerm).then(function(response) {
-
+                    // console.log('sssss', response.data);
                     if (Object.keys(response.data).length !== 0){
-                        if (foundCounter > 0) {
+                        if (i > 0) {
                             newSearch = false;
                         }
-                        foundCounter++;
-                        console.log("with group name", response.data);
+                        // foundCounter++;
+                        console.log("searchTerm", searchTerm);
+                       console.log("searchinitial returned",i, response.data);
                         dispatch(initialQueryData(response.data, newSearch));
-                    }                 
-                }).then(() => resolve())
-            }
-        }) 
+                    }    
+                    return i;         
+                }).then((i) => resolve(i))
+            })
+        // }) 
     },
-    getPaths: function(searchArr, dispatch){
+    getPaths: function(searchArr, i, dispatch){
         // for each group / fa do a query
-        for (var i=0; i < searchArr.length; i++){ 
+        // for (var i=0; i < searchArr.length; i++){ 
             var newPaths = true;
-            var foundCounter = 0;
+            console.log("xxx", i, searchArr[i])
+            // var foundCounter = 0;
             return axios.post('/api/path/', searchArr[i]).then(function(response) {
                     // send results to redux store for use by Results component
                     // console.log('/api/path/', i, searchArr[i],response.data);
                     if (Object.keys(response.data).length !== 0){
-                        if (foundCounter > 0) {
-                            console.log('newPaths', newPaths);
+                        if (i > 0) {
+                            // console.log('newPaths', newPaths);
                             newPaths = false;
                         }
-                        foundCounter++;
-                        console.log('found counter', foundCounter);
+                        // foundCounter++;
+                        // console.log('found counter', foundCounter);
+                        console.log("path returned",i, response.data);
                         dispatch(updatePathList(response.data, newPaths));
                     }
                     
-                    return ;
+                    return  i;
             })
-        }
+        // }
     },
     removeGroup: function(id, dispatch) {
         dispatch(updateGroupList(true, id))

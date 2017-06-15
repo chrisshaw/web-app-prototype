@@ -36,7 +36,7 @@ const styles = {
 class DataImportTable extends Component {
     constructor(props){
         super(props);
-        console.log(this);
+        // console.log(this);
         // let boundActionCreators = bindActionCreators(updateCSVDataName, dispatch)
         
     //        updateCSV: function(action, id, dispatch){
@@ -94,7 +94,7 @@ class DataImportTable extends Component {
     // }
     render() {
         var component = this;
-          console.log("csvdata", this.props.csvdata)
+        //   console.log("csvdata", this.props.csvdata)
         if (this.props.csvdata) {
             var resultsComponent = component.props.csvdata.map( function (row, index){
                 return (<TableRow key={uuid.v4()}>

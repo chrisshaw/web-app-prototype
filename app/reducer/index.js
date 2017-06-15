@@ -41,7 +41,7 @@ const intialstate = {
 }
 //  The below are required and map to the components dispatcher
 const mainReducer = (state={intialstate}, action) => {
-    console.log("IS ANYTHGIN GEGGKG NERERE")
+
     // SEARCH_TEXT
     switch(action.type){
         // case 'FOCUS_AREA':
@@ -84,25 +84,26 @@ const mainReducer = (state={intialstate}, action) => {
             return Object.assign({},state, {toggledrawer: action.toggledrawer});    
         case 'UPDATE_PATHS':
         
-            console.log("state.paths", state.paths, "action.paths", action.paths);
+            console.log("in update paths state.paths", state.paths)
+             console.log("in update paths  action.paths", action.paths);
             // if ((Object.keys(action.paths).length !== 0) && (state.paths)){
             if (!action.newPaths) {
-                console.log('should be false:', action.newPaths);
+                console.log('in update path should be false:', action.newPaths);
                 return Object.assign({},state, {paths: [...state.paths, action.paths]});
         //    } else if (!state.paths) {
              } else if (action.newPaths) {
-                 console.log('should be true:', action.newPaths);
+                 console.log('in update path should be true:', action.newPaths);
                 return Object.assign({},state, {paths: [action.paths]});
            }
         case 'UPDATE_SEARCH_TERMS':
            // clear out old state if a new search
            if (!action.newSearch) {
                 // console.log("serach terms", state.searchTerms)
-                 console.log('should be false:', action.newSearch);
+                //  console.log('should be false:', action.newSearch);
                 return Object.assign({},state, {initialSearchTerms: [...state.initialSearchTerms, action.initialSearchTerms]});
            } else if (action.newSearch) {
                // append serach items to state in a current search
-               console.log('should be true:', action.newSearch);
+            //    console.log('should be true:', action.newSearch);
                 // console.log("serach terms", state.searchTerms, action.searchTerms)
                 return Object.assign({},state, {initialSearchTerms: [action.initialSearchTerms]});
            }

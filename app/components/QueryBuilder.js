@@ -29,7 +29,7 @@ class QueryBuilder extends Component{
     //     // helper.editGroupsList(groupid, this.props.dispatch)
     // }
     handleRequestDelete(id) {
-        console.log("id of group for delete", id);
+        // console.log("id of group for delete", id);
         // filter grouplist based on id
         // console.log(this)
         helper.removeGroup(id, this.props.dispatch);
@@ -38,18 +38,51 @@ class QueryBuilder extends Component{
         // console.log("in reset");
         helper.getGroups(this.props.dispatch); 
     }
-    getPaths() {
+    getPaths(i) {
         // **TO HERE -- make this a promise cos then need to get paths
-        helper.getFAandGrade(this.props.selectedgrouplist, this.props.dispatch).then(() => {
-            //initially we have groups, fa and grade - in an array of objects - this.props.searchTerm
-            console.log("this.props.searchTerm wiht group name", this.props.initialSearchTerms);
-            // just dealing with initial search for now
-            helper.getPaths(this.props.initialSearchTerms, this.props.dispatch); 
-        }); 
+        // console.log("sending this to server", this.props.selectedgrouplist);
+        // for (var i = 0; i < this.props.selectedgrouplist.length; i++){
+        var component = this;
+        if (component.props.selectedgrouplist){
+           
+               
+                console.log("i", i, "this.props.selectedgrouplist", this.props.selectedgrouplist);
+                helper.getFAandGrade(this.props.selectedgrouplist, i, this.props.dispatch).then((i) => {
+                //initially we have groups, fa and grade - in an array of objects - this.props.searchTerm
+                // console.log("this.props.searchTerm wiht group name", this.props.initialSearchTerms);
+                // just dealing with initial search for now\
+                console.log("search terms begin sent", this.props.initialSearchTerms);
+                // console.log(i);
+
+                console.log(i)
+
+                helper.getPaths(this.props.initialSearchTerms, i, this.props.dispatch).catch(function (error) {
+                        console.log(error);
+                    }).then(function(i){
+                        
+                        // console.log("i", i);
+                        i++;
+                        console.log("this.props.initialSearchTerms", component.props.selectedgrouplist.length);
+                         if (i < component.props.selectedgrouplist.length){
+                            console.log("recorsive call");
+                            component.getPaths(i); //call itself
+                         }
+                    
+                    })   
+                })
+            
+           
+
+        }
+        
     
     }
     render(){
         var component = this;
+        if ( this.props.selectedgrouplist){
+             var arrLength = this.props.selectedgrouplist.length;
+        }
+       
         return(<div>
                 <div className="query-builder-wrapper">
                 <h3> Build Path </h3>
@@ -72,7 +105,7 @@ class QueryBuilder extends Component{
                 </Row>
                 <Row>
                     <Col xs={12} md={12} className="text-center" >
-                        <FlatButton containerElement='label' label="Get Reccommended Paths" onTouchTap={this.getPaths} />
+                        <FlatButton containerElement='label' label="Get Reccommended Paths" onTouchTap={() => this.getPaths(0)} />
                     </Col>
                 </Row>
                 </div>

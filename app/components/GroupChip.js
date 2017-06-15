@@ -10,7 +10,7 @@ import uuid from 'uuid';
 
   constructor(props) {
     super(props)
-     console.log("in render", this.props.grouplist)
+    //  console.log("in render", this.props.grouplist)
   }
 
 
@@ -30,11 +30,11 @@ import uuid from 'uuid';
     }
     // var selectedArr = [];
     // selectedArr = [...this.props.selectedgrouplist];
-    console.log("what is " , this.props.selectedgrouplist)
+    // console.log("what is " , this.props.selectedgrouplist)
     if (this.props.selectedgrouplist) {
     // || (Object.keys(this.props.selectedgrouplist).length === 0 && this.props.selectedgrouplist.constructor === Object)){
     // }  else {
-        console.log("what is this", this.props.selectedgrouplist)
+        // console.log("what is this", this.props.selectedgrouplist)
         var component = this;
         var resultComponents = this.props.selectedgrouplist.map(function(result) {
           return <Chip
