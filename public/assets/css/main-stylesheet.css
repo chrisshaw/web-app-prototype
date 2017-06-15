@@ -113,6 +113,16 @@ table {
 .auto-text-alignment {
     display: inline;
 }
+.fa-headings{
+    font-size: 20px;
+}
+.fa-chips {
+    display: inline;
+
+}
+.chip-float {
+    float: left;
+}
 /*input {
     color: black;
 }*/
