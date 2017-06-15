@@ -1,6 +1,6 @@
 var axios = require("axios");
 
-import {updatePathList, saveSelectedGroup, updateGroupList, viewUploadedCSVData, updateCSVDataName, updateCSVDataGrade, updateCSVDataFA, closePathBuilderDrawer} from '../actions';
+import {initialQueryData, updatePathList, saveSelectedGroup, updateGroupList, viewUploadedCSVData, updateCSVDataName, updateCSVDataGrade, updateCSVDataFA, closePathBuilderDrawer} from '../actions';
 
 // Helper Functions
 var helpers = {
@@ -81,31 +81,61 @@ var helpers = {
         return axios.get('/api/teacher/group').then(function(response) {
             // send results to redux store for use by Results component
                 // console.log("getgroups results", response.data);
-            dispatch(updateGroupList(false, 0, response.data.groups));
-            console.log(response.data.groups);
-            return ;
+            dispatch(updateGroupList(false, 0, response.data));
+            return response.data;
         })
+    },
+    // get FA and Grade for selected groups
+    getFAandGrade: function(selectedGroups, dispatch){
+        return new Promise((resolve, reject) => {
+            for (var i = 0; i < selectedGroups.length; i++){
+                var newSearch = true;
+                var foundCounter = 0;
+                var searchTerm=selectedGroups[i].id + "/" + selectedGroups[i].name  ;
+                console.log("searchTerm", searchTerm);
+
+                axios.get('/api/fa/grade/'+searchTerm).then(function(response) {
+
+                    if (Object.keys(response.data).length !== 0){
+                        if (foundCounter > 0) {
+                            newSearch = false;
+                        }
+                        foundCounter++;
+                        console.log("with group name", response.data);
+                        dispatch(initialQueryData(response.data, newSearch));
+                    }                 
+                }).then(() => resolve())
+            }
+        }) 
+    },
+    getPaths: function(searchArr, dispatch){
+        // for each group / fa do a query
+        for (var i=0; i < searchArr.length; i++){ 
+            var newPaths = true;
+            var foundCounter = 0;
+            return axios.post('/api/path/', searchArr[i]).then(function(response) {
+                    // send results to redux store for use by Results component
+                    // console.log('/api/path/', i, searchArr[i],response.data);
+                    if (Object.keys(response.data).length !== 0){
+                        if (foundCounter > 0) {
+                            console.log('newPaths', newPaths);
+                            newPaths = false;
+                        }
+                        foundCounter++;
+                        console.log('found counter', foundCounter);
+                        dispatch(updatePathList(response.data, newPaths));
+                    }
+                    
+                    return ;
+            })
+        }
     },
     removeGroup: function(id, dispatch) {
         dispatch(updateGroupList(true, id))
     },
     updateSelectedGroup: function(e, addOrRemove, dispatch){
-        //addOrRemove == true then remove
-        //addOrRemove == false then add
-        //  dispatch(updateGroupList(false, id))
-        console.log("in here", addOrRemove );
        dispatch(saveSelectedGroup(addOrRemove, e));
     },
-    getPaths: function(dispatch){
-         return axios.get('/api/path').then(function(response) {
-            // send results to redux store for use by Results component
-                console.log("paths", response.data);
-                dispatch(updatePathList(response.data));
-                return ;
-        })
-
-    }
-
  };
 // We export the helpers function (which contains getGithubInfo)
 module.exports = helpers;

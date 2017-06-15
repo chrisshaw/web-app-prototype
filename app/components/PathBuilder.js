@@ -48,7 +48,7 @@ class PathBuilder extends Component{
     }
     render(){
 
-        
+        console.log("paths in paper", this.props.paths);
         return(
             <div>
                 <PathBuilderDrawer handleToggle={this.handleToggle} handleClose={this.handleClose} toggledrawer={this.props.toggledrawer}/>
@@ -65,7 +65,7 @@ class PathBuilder extends Component{
                         secondary={true}
                         />
                     
-                     <PathPaper selectedgrouplist={this.props.selectedgrouplist} />
+                     <PathPaper selectedgrouplist={this.props.selectedgrouplist} paths={this.props.paths} />
                     
                     </Col>
                     </Row>
@@ -82,6 +82,7 @@ const mapStateToProps = (store,ownProps) => {
         toggledrawer: store.mainState.toggledrawer,
         grouplist: store.mainState.grouplist,
         selectedgrouplist: store.mainState.selectedgrouplist,
+        paths: store.mainState.paths
     }
 }
 

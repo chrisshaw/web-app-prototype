@@ -78,13 +78,26 @@ exports.saveSelectedGroup = (addOrRemove, item) => {
     }
 }
 
-exports.updatePathList = (paths) => {
+exports.updatePathList = (paths, newPaths) => {
   return {
       type: 'UPDATE_PATHS',
-      paths
+      paths,
+      newPaths
     }
 
 }
+exports.initialQueryData = (initialSearchTerms, newSearch) => {
+  console.log("in action", initialSearchTerms)
+  // newSearch is a boolean - true of false.
+  // will be true for every new search
+  return {
+      type: 'UPDATE_SEARCH_TERMS',
+      initialSearchTerms,
+      newSearch
+    }
+
+}
+
 // exports.updateGroupTabs = (grouptabs) => {
 //     return {
 //       type: 'UPDATE_GROUP_TABS',

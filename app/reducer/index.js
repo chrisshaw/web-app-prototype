@@ -36,7 +36,8 @@ const intialstate = {
   grouplist: [],
   grouptabs: [],
   selectedgrouplist: [],
-  
+  initialSearchTerms: [],
+  paths: [],  
 }
 //  The below are required and map to the components dispatcher
 const mainReducer = (state={intialstate}, action) => {
@@ -82,8 +83,29 @@ const mainReducer = (state={intialstate}, action) => {
         case 'TOGGLE_DRAWER':
             return Object.assign({},state, {toggledrawer: action.toggledrawer});    
         case 'UPDATE_PATHS':
-        console.log("UPDATE_PATH");
-            return Object.assign({},state, {paths: action.paths});    
+        
+            console.log("state.paths", state.paths, "action.paths", action.paths);
+            // if ((Object.keys(action.paths).length !== 0) && (state.paths)){
+            if (!action.newPaths) {
+                console.log('should be false:', action.newPaths);
+                return Object.assign({},state, {paths: [...state.paths, action.paths]});
+        //    } else if (!state.paths) {
+             } else if (action.newPaths) {
+                 console.log('should be true:', action.newPaths);
+                return Object.assign({},state, {paths: [action.paths]});
+           }
+        case 'UPDATE_SEARCH_TERMS':
+           // clear out old state if a new search
+           if (!action.newSearch) {
+                // console.log("serach terms", state.searchTerms)
+                 console.log('should be false:', action.newSearch);
+                return Object.assign({},state, {initialSearchTerms: [...state.initialSearchTerms, action.initialSearchTerms]});
+           } else if (action.newSearch) {
+               // append serach items to state in a current search
+               console.log('should be true:', action.newSearch);
+                // console.log("serach terms", state.searchTerms, action.searchTerms)
+                return Object.assign({},state, {initialSearchTerms: [action.initialSearchTerms]});
+           }
         case 'UPDATE_GROUPS':
             // see what action is being performed - delete or add
             let newObj = {};
@@ -91,10 +113,8 @@ const mainReducer = (state={intialstate}, action) => {
                 // use filter here to remove deleted group
                 // remove from selectedgrouplist and add back to grouplist
                 var newGroups = state.selectedgrouplist.filter((group) => {
-                    console.log("in here remove group", group.id, "group id", action.id);
                     if (group.id === action.id){
                         newObj = group;
-                        console.log("newobj", newObj)
                         return false;
                     }
                     return true;

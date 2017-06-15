@@ -17,9 +17,8 @@ class QueryBuilder extends Component{
         this.getPaths = this.getPaths.bind(this);
         // get initial data and set props
         helper.getGroups(this.props.dispatch);
-
-        console.log("selected groups", this.props);
-        console.log("all groups", this.props);
+        var searchObj = {};
+ 
         // next
         // helper.getGroupFA(this.props.dispatch);
 
@@ -40,12 +39,16 @@ class QueryBuilder extends Component{
         helper.getGroups(this.props.dispatch); 
     }
     getPaths() {
-        helper.getPaths(this.props.dispatch); 
-
+        // **TO HERE -- make this a promise cos then need to get paths
+        helper.getFAandGrade(this.props.selectedgrouplist, this.props.dispatch).then(() => {
+            //initially we have groups, fa and grade - in an array of objects - this.props.searchTerm
+            console.log("this.props.searchTerm wiht group name", this.props.initialSearchTerms);
+            // just dealing with initial search for now
+            helper.getPaths(this.props.initialSearchTerms, this.props.dispatch); 
+        }); 
+    
     }
     render(){
-//  console.log("selected groups", this.props);
-//         console.log("all groups", this.props);
         var component = this;
         return(<div>
                 <div className="query-builder-wrapper">
@@ -84,6 +87,7 @@ const mapStateToProps = (store,ownProps) => {
     return {
         grouplist: store.mainState.grouplist,
         selectedgrouplist: store.mainState.selectedgrouplist,
+        initialSearchTerms: store.mainState.initialSearchTerms,
     }
 }
 
