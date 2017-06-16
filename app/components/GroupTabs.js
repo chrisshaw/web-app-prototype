@@ -73,13 +73,6 @@ class GroupTabs extends React.Component {
         })
       } 
 
-var parser = new DOMParser;
-// var dom = parser.parseFromString(
-//     '<!doctype html><body>' + encodedStr,
-//     'text/html');
-// var decodedString = dom.body.textContent;
-
-
 
       if (this.props.paths) {
         var i = 0;
@@ -89,15 +82,61 @@ var parser = new DOMParser;
                 var faComponents = result.results.map(function(fa, index) {
                     j++;
                     // console.log('next',component.props.paths[i].results[j].focusArea["Focus Area"]);
-                    if (j < index){
-                        console.log('next',component.props.paths[i].results[j].focusArea["Focus Area"]);
+                    // to get next FA and related standards from results
+                    if (j < result.results.length){
+                        // console.log(component.props.paths[i].results[j].focusArea.standardConnections);
+                        var nextFA = <Col className="chip-float"><Chip
+                                  key={uuid.v4()}
+                                  style={styles.chip}
+                                  >
+                                  {component.props.paths[i].results[j].focusArea["Focus Area"]}
+                                </Chip>
+                                </Col>
+                        
+                        // remove duplicate standards so they arent displayed
+                        var newNextStandardsArr = [];
+                        newNextStandardsArr.push(component.props.paths[i].results[j].focusArea.standardConnections[0]);
+
+                        for (var k = 1; k < component.props.paths[i].results[j].focusArea.standardConnections.length-1; k++) {
+                            // filter out duplicates
+                            if (component.props.paths[i].results[j].focusArea.standardConnections[k-1]!== component.props.paths[i].results[j].focusArea.standardConnections[k]){
+
+                                 newNextStandardsArr.push(component.props.paths[i].results[j].focusArea.standardConnections[k]);
+
+
+                            }
+                        }
+                        var nextStandards = newNextStandardsArr.map(function(standard, index){
+                        
+                        return   <Col className="chip-float"><Chip
+                                  key={uuid.v4()}
+                                  style={styles.chip}
+                                  >
+                                  {standard}
+                                </Chip>
+                                </Col>
+                        })
+                         
+                        
                         // get data and display
+                        // console.log(index, "index /j", j);
                     }
                      
-                    
-                     console.log(index, "index /j", j);
-                    var faStandards = fa.focusArea.standardConnections.map(function(standard, index){
-        
+                    var newStandardsArr = [];
+                    newStandardsArr.push(fa.focusArea.standardConnections[0]);
+
+                    for (var k = 1; k < fa.focusArea.standardConnections.length-1; k++) {
+                        // filter out duplicates
+                        if (fa.focusArea.standardConnections[k-1]!== fa.focusArea.standardConnections[k]){
+
+                              newStandardsArr.push(fa.focusArea.standardConnections[k]);
+
+
+                        }
+                    }
+                   
+                    var faStandards = newStandardsArr.map(function(standard, index){
+                      // console.log(standard)
                       return   <Col className="chip-float"><Chip
                                   key={uuid.v4()}
                                   style={styles.chip}
@@ -128,13 +167,15 @@ var parser = new DOMParser;
                                    {faStandards}
                                  </Row>
                                 <div>Connected To: </div>
+                                  {nextFA}
+                                {nextStandards}
                             
                             </div>)
                      
                   })
         
                   i++; // to get next array item for display
-                  console.log(index, "index / i", i);
+                  // console.log(index, "index / i", i);
                 
                 
                 return (<SwipeableViews  key={uuid.v4()}
@@ -146,23 +187,6 @@ var parser = new DOMParser;
                 </SwipeableViews>)
         })
       } 
-
-      // now map the fa details for each group
-      // if (this.props.paths) {
-      //   var tabComponents = this.props.paths.map(function(result, index) {
-      //           return  <Tab label={result.groupname} key={index} value={index} />
-      //   })
-      // } 
-// <div >
-//                     <h2 style={styles.headline}>Tabs with slide effect</h2>
-//                     Swipe to see the next slide.<br />
-//                   </div>
-//                   <div style={styles.slide}>
-//                     slide n°2
-//                   </div>
-//                   <div  style={styles.slide}>
-//                     slide n°3
-//                   </div>
 
     return  <div key={uuid.v4()}>
                 <Tabs
