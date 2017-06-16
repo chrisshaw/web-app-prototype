@@ -52,7 +52,7 @@ class PathBuilderDrawer extends Component{
         const style = {
             drawer: {
                 color: '#808080',
-                zIndex: 100,
+                zIndex: 2000,
                 position: 'fixed',
                 top: '300px'
             },
@@ -82,7 +82,7 @@ class PathBuilderDrawer extends Component{
                         style={style.drawer}
                     
                     >
-                    <div  className="drawer-wrapper">  
+                  
                         <Row className="text-center">
                             <Col md={2} />
                             <Col xs={12} md={8}>
@@ -95,7 +95,7 @@ class PathBuilderDrawer extends Component{
                         </Row>
 
 
-                    </div>
+             
                     
                     </Drawer>
                 </div>

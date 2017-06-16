@@ -48,8 +48,8 @@ body {
 .query-builder-wrapper {
     margin-left: 20px;
     margin-right:  20px;
-    margin-top: 20px;
-    margin-bottom: 20px;
+    margin-top: 10px;
+    margin-bottom: 10px;
 
 }
 .reset-button {
@@ -111,7 +111,9 @@ table {
     display: none;
 }
 .auto-text-alignment {
-    display: inline;
+    /*display: inline;
+    */
+    min-height: 50px;
 }
 .fa-headings{
     font-size: 20px; 
@@ -141,6 +143,10 @@ table {
     padding: 20px;
     background-color: #FFFFFF;
     margin-top: 5px;
+}
+.drawer-button-wrapper {
+    margin: 14px;
+    margin-left: 14px;
 }
 /*input {
     color: black;
@@ -226,6 +232,10 @@ navbar {
     }
    .reset-button {
         margin-top: 0px;
+    }
+    .drawer-button-wrapper {
+        margin: auto;
+        /*margin-left: 14px;*/
     }
 
 }

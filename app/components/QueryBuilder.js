@@ -3,10 +3,18 @@ import {Grid, Row, Col} from 'react-bootstrap';
 import PathBuilderDrawer from './PathBuilderDrawer.js';
 import RaisedButton from 'material-ui/RaisedButton';
 import FlatButton from 'material-ui/FlatButton';
+import IconButton from 'material-ui/IconButton';
 import helper from '../helper';
 import {connect} from 'react-redux';
 import GroupChip from './GroupChip';
 import AutoCompleteField from './AutoCompleteField';
+// import Github from 'material-ui/lib/svg-icons/custom/github';
+
+
+
+
+
+
 
 class QueryBuilder extends Component{
    constructor(props) {
@@ -15,9 +23,14 @@ class QueryBuilder extends Component{
         this.handleRequestDelete = this.handleRequestDelete.bind(this);
         this.handleReset = this.handleReset.bind(this);
         this.getPaths = this.getPaths.bind(this);
+        this.handleShowGroups = this.handleShowGroups.bind(this);
         // get initial data and set props
         helper.getGroups(this.props.dispatch);
         var searchObj = {};
+        this.state ={
+            showGroups: false, 
+            groupState: "Open" 
+        }
  
         // next
         // helper.getGroupFA(this.props.dispatch);
@@ -38,12 +51,17 @@ class QueryBuilder extends Component{
         // console.log("in reset");
         helper.getGroups(this.props.dispatch); 
     }
+    handleShowGroups() {
+        // toggle between true and false
+        this.setState({showGroups: !this.state.showGroups})
+        this.state.showGroups ?  this.setState({groupState: "Open"}) : this.setState({groupState: "Close"})
+    }
     getPaths(i) {
         // **TO HERE -- make this a promise cos then need to get paths
         // console.log("sending this to server", this.props.selectedgrouplist);
         // for (var i = 0; i < this.props.selectedgrouplist.length; i++){
         var component = this;
-        if (component.props.selectedgrouplist){
+        if ((component.props.selectedgrouplist) && (component.props.selectedgrouplist.length !== 0)){
            
                
                 console.log("i", i, "this.props.selectedgrouplist", this.props.selectedgrouplist);
@@ -78,38 +96,72 @@ class QueryBuilder extends Component{
         
     
     }
+
+
     render(){
+
+        var styles = {
+            button : {
+                backgroundColor: '#9E9E9E'
+            }
+        }
+
+       
         var component = this;
         if ( this.props.selectedgrouplist){
              var arrLength = this.props.selectedgrouplist.length;
         }
        
         return(<div>
-                <div className="query-builder-wrapper">
-                <h3> Build Path </h3>
-                <p> Enter required criteria and submit to get reccommended paths. Or some other blurb...</p> 
-                </div>
-                <div className="query-builder-wrapper">
                 <Row>
                     <Col xs={12} md={12} >
-                        <h4> Students in my groups:</h4>
-                        <div className="auto-text-alignment">
-                            <GroupChip className="text-center" style={{display: "inline"}} secondary={true} selectedgrouplist={this.props.selectedgrouplist} handleRemove={this.handleRemove} handleRequestDelete={this.handleRequestDelete}/>
-                            <AutoCompleteField style={{display: "inline"}} grouplist={component.props.grouplist} selectedgrouplist={component.props.selectedgrouplist}/>
+                        <div className="query-builder-wrapper">
+                        <h3> Build Path </h3>
+                        <p> Enter required criteria and submit to get reccommended paths. Or some other blurb...</p> 
                         </div>
-                        <p><em>* select 'x' to remove any groups that are not required.</em></p>
-
-                    </Col>
-                    <Col xs={12} md={12} >
-                        <FlatButton containerElement='label' label="Reset Groups" onTouchTap={this.handleReset} />
                     </Col>
                 </Row>
+                <div className="query-builder-wrapper">
+                    <Row>
+                        <Col xs={2} md={2} >
+                            <FlatButton style={styles.button} containerElement='label' label={this.state.groupState} onTouchTap={this.handleShowGroups} />
+                        </Col>
+                        <Col xs={10} md={10} >
+                            
+                            <div className="auto-text-alignment">
+                                <h4 className="chip-float"> Students in my groups:</h4>
+                                <GroupChip className="text-center" style={{display: "inline"}} secondary={true} selectedgrouplist={this.props.selectedgrouplist} handleRemove={this.handleRemove} handleRequestDelete={this.handleRequestDelete}/> 
+                            </div>
+                            
+                        </Col>
+                    </Row>
+                </div>
+
+
+                <div className={this.state.showGroups ? "query-builder-wrapper" : "query-builder-wrapper hide"} >
+                    <Row>
+                        <Col xs={12} md={6} >
+                            <AutoCompleteField  grouplist={component.props.grouplist} selectedgrouplist={component.props.selectedgrouplist}/>
+                        </Col>
+                        <Col xs={12} md={6} > 
+                            <div className='drawer-button-wrapper'> 
+                                <FlatButton style={styles.button} containerElement='label' label="Reset Groups" onTouchTap={this.handleReset} />
+                            </div>
+                        </Col>
+                        
+                    </Row>
+                    <Row>
+                        <Col xs={12} md={12} >  
+                            <p><em>* select 'x' to remove any groups that are not required.</em></p> 
+                        </Col>
+                    </Row>
+                </div>
                 <Row>
-                    <Col xs={12} md={12} className="text-center" >
+                    <Col xs={12} md={12} className="text-center" >            
                         <FlatButton containerElement='label' label="Get Reccommended Paths" onTouchTap={() => this.getPaths(0)} />
                     </Col>
                 </Row>
-                </div>
+      
             </div>
         )
     }

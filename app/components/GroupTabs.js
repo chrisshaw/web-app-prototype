@@ -48,6 +48,11 @@ class GroupTabs extends React.Component {
       value: value,
     });
   };
+  componentDidMount(){
+    this.setState({
+      value: 0,
+    });
+  }
 
   render() {
     //// GET TABS from results
