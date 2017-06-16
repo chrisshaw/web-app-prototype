@@ -18,12 +18,13 @@ const styles = {
     textAlign: 'left',
     height: '200px',
     backgroundColor: "#FFFFFF",
-    borderTop: '1px solid',
+    overflowX: 'none',
   },
     chip: {
       margin: 4,
       position: "relative",
-      display: "flex"
+      display: "flex",
+      overflowX: "auto",
     },
     wrapper: {
       display: 'flex',
@@ -77,15 +78,21 @@ class GroupTabs extends React.Component {
       if (this.props.paths) {
         var i = 0;
         var component = this;
+        // there will be one results component returned for each pathway / group.
         var resultsComponents = this.props.paths.map(function(result, index) {
                 var j = 0;
+                // there will be may Focus Areas returned for each pathway / group
                 var faComponents = result.results.map(function(fa, index) {
+                    
+                    // as well as the current FA and Standards
+                    /// we need to  get display the next FA and related standards from results
+                    // that is what this piece of code does
+                    // ****start of next standard part of code  -- maybe make a function and pass
+                    // in j, i, result.results (should have access to this.props.path so no need to pass)
                     j++;
-                    // console.log('next',component.props.paths[i].results[j].focusArea["Focus Area"]);
-                    // to get next FA and related standards from results
                     if (j < result.results.length){
                         // console.log(component.props.paths[i].results[j].focusArea.standardConnections);
-                        var nextFA = <Col className="chip-float"><Chip
+                        var nextFA = <Col key={uuid.v4()} className="chip-float"><Chip
                                   key={uuid.v4()}
                                   style={styles.chip}
                                   >
@@ -95,6 +102,7 @@ class GroupTabs extends React.Component {
                         
                         // remove duplicate standards so they arent displayed
                         var newNextStandardsArr = [];
+                        var displayNextStandards;
                         newNextStandardsArr.push(component.props.paths[i].results[j].focusArea.standardConnections[0]);
 
                         for (var k = 1; k < component.props.paths[i].results[j].focusArea.standardConnections.length-1; k++) {
@@ -102,13 +110,13 @@ class GroupTabs extends React.Component {
                             if (component.props.paths[i].results[j].focusArea.standardConnections[k-1]!== component.props.paths[i].results[j].focusArea.standardConnections[k]){
 
                                  newNextStandardsArr.push(component.props.paths[i].results[j].focusArea.standardConnections[k]);
-
+                        
 
                             }
                         }
                         var nextStandards = newNextStandardsArr.map(function(standard, index){
                         
-                        return   <Col className="chip-float"><Chip
+                        return   <Col key={uuid.v4()} className="chip-float"><Chip
                                   key={uuid.v4()}
                                   style={styles.chip}
                                   >
@@ -116,60 +124,62 @@ class GroupTabs extends React.Component {
                                 </Chip>
                                 </Col>
                         })
-                         
                         
-                        // get data and display
-                        // console.log(index, "index /j", j);
-                    }
+                    }  // ****end of next standard part of code
                      
+                    // this is where the standards for a FA are mapped for display
+                    // the duplicates are removed as this makes it look better
                     var newStandardsArr = [];
                     newStandardsArr.push(fa.focusArea.standardConnections[0]);
-
                     for (var k = 1; k < fa.focusArea.standardConnections.length-1; k++) {
                         // filter out duplicates
                         if (fa.focusArea.standardConnections[k-1]!== fa.focusArea.standardConnections[k]){
-
                               newStandardsArr.push(fa.focusArea.standardConnections[k]);
-
-
                         }
                     }
-                   
+                    // actual mapping of new reduced standards array
                     var faStandards = newStandardsArr.map(function(standard, index){
-                      // console.log(standard)
-                      return   <Col className="chip-float"><Chip
-                                  key={uuid.v4()}
-                                  style={styles.chip}
-                                  >
-                                  {standard}
-                                </Chip>
-                                </Col>
+
+                        return   <Col  key={uuid.v4()} className="chip-float"><Chip
+                                    key={uuid.v4()}
+                                    style={styles.chip}
+                                    >
+                                    {standard}
+                                  </Chip>
+                                  </Col>
                     })
-                  
+                
 
-
-                    
-                    // console.log(fa.focusArea["Focus Area"].toString());
-                    return (<div key={uuid.v4()} style={styles.slide}>
-                              <h3 className='fa-headings'>{fa.focusArea["Focus Area"].toString()}</h3>
-                                <Row className='fa-chips'>
+                    /// this return is to facomponent - it displays all the data for one fa within a path
+                    return (  <div key={uuid.v4()} className="fa-wrapper"><Row className="fa-tab-view-rows"><Col key={uuid.v4()} md={12}><div key={uuid.v4()} style={styles.slide}>
+                                <Row key={uuid.v4()}>
+                                  <Col md={3} xs={12}>
+                                    <h3  key={uuid.v4()} className='fa-headings'>Focus Area:  </h3>
+                                  </Col>
+                                  <Col md={9} xs={12}>
+                                    <h3  key={uuid.v4()} className='fa-headings'><span className='fa-headings-span'>{fa.focusArea["Focus Area"].toString()}</span></h3>
+                                  </Col>
+                                </Row>
+                                 <hr />
+                                <Row key={uuid.v4()}>
                                   <Col  className="chip-float" key={uuid.v4()}>
                                     <Chip
                                       key={uuid.v4()}
                                       style={styles.chip}
                                       >
-                                      {fa.focusArea.subject}
-                                    
+                                      {fa.focusArea.subject}      
                                     </Chip>
-
-                                   
                                   </Col>
-                                   {faStandards}
-                                 </Row>
-                                <div>Connected To: </div>
+                                  {faStandards}
+                                </Row>
+                                 <Row key={uuid.v4()}>
+                                 <div className="chip-float-text">Connected To: </div>
                                   {nextFA}
-                                {nextStandards}
-                            
+                                  {nextStandards}
+                                </Row>
+                                </div>
+                                </Col>
+                              </Row>
                             </div>)
                      
                   })
@@ -178,21 +188,21 @@ class GroupTabs extends React.Component {
                   // console.log(index, "index / i", i);
                 
                 
-                return (<SwipeableViews  key={uuid.v4()}
+                return (<div  key={uuid.v4()}
                   index={component.state.slideIndex}
                   onChangeIndex={component.handleChange}
                 >
 
                   {faComponents}
-                </SwipeableViews>)
+                </div>)
         })
       } 
 
+                // {resultsComponents}
+      console.log(resultsComponents)
+
     return  <div key={uuid.v4()}>
-                <Tabs
-                  onChange={component.handleChange}
-                  value={component.state.slideIndex}
-                >
+                <Tabs>
                     {tabComponents}
                 </Tabs>
                 {resultsComponents}

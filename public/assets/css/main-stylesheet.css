@@ -114,14 +114,33 @@ table {
     display: inline;
 }
 .fa-headings{
-    font-size: 20px;
+    font-size: 20px; 
+    
 }
-.fa-chips {
+.fa-headings-span {
+     font-size: 20px;
+     color: #2FBB2F;
+}
+/*.fa-chips {
     display: inline;
 
-}
+}*/
 .chip-float {
     float: left;
+}
+.chip-float-text {
+    float: left;
+    padding: 10px;
+}
+.fa-tab-view-rows{
+    margin-left: 20px;
+    margin-right: 20px;
+    /*padding-bottom: 20px;*/
+}
+.fa-wrapper {
+    padding: 20px;
+    background-color: #FFFFFF;
+    margin-top: 5px;
 }
 /*input {
     color: black;
