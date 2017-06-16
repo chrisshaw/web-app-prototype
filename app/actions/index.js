@@ -1,92 +1,95 @@
-exports.focusAreaResults = (area)=> {
+const action = {
+
+focusAreaResults: (area)=> {
   return {
       type: 'FOCUS_AREA',
       area,
     }
-}
+},
 
-exports.noResults = (noResultsMsg)=> {
+noResults: (noResultsMsg)=> {
   return {
       type: 'NO_DATA_MSG',
       noResultsMsg,
     }
-}
+},
 
-exports.viewDetailFocusArea = (fadetail) => {
+viewDetailFocusArea : (fadetail) => {
     return {
       type: 'VIEW_DETAIL',
       fadetail,
     }
-}
+},
 
 
-exports.viewUploadedCSVData = (csvdata) => {
+viewUploadedCSVData: (csvdata) => {
     return {
       type: 'VIEW_CSV_DATA',
       csvdata,
     }
-}
+},
 
-exports.updateCSVDataName = (name, id) => {
+updateCSVDataName: (name, id) => {
   console.log("action id, name", id, name);
     return {
       type: 'UPDATE_CSV_NAME',
       id: id,
       name,
     }
-}
+},
 
-exports.updateCSVDataGrade = (grade, id) => {
+updateCSVDataGrade: (grade, id) => {
   console.log("action id, name", id, grade);
     return {
       type: 'UPDATE_CSV_GRADE',
       id: id,
       grade,
     }
-}
+},
 
-exports.updateCSVDataFA = (focusArea, id) => {
+updateCSVDataFA: (focusArea, id) => {
   console.log("action id, name", id, focusArea);
     return {
       type: 'UPDATE_CSV_FA',
       id: id,
       focusArea,
     }
-}
+},
 
-exports.closePathBuilderDrawer = (toggledrawer) => {
+closePathBuilderDrawer: (toggledrawer) => {
     // action for main pathbuilder drawer - hide and show = false or true
     return {
       type: 'TOGGLE_DRAWER',
       toggledrawer,
     }
-}
+},
 
-exports.updateGroupList = (deleteGroup, id, grouplist) => {
+updateGroupList: (deleteGroup, id, grouplist) => {
     return {
       type: 'UPDATE_GROUPS',
       delete: deleteGroup,
       id,
       grouplist,
     }
-}
-exports.saveSelectedGroup = (addOrRemove, item) => {
+},
+
+saveSelectedGroup : (addOrRemove, item) => {
     return {
       type: 'UPDATE_SELECTED_GROUPS',
       delete: addOrRemove,
       item
     }
-}
+},
 
-exports.updatePathList = (paths, newPaths) => {
+updatePathList: (paths, newPaths) => {
   return {
       type: 'UPDATE_PATHS',
       paths,
       newPaths
     }
 
-}
-exports.initialQueryData = (initialSearchTerms, newSearch) => {
+},
+initialQueryData: (initialSearchTerms, newSearch) => {
   console.log("in action", initialSearchTerms)
   // newSearch is a boolean - true of false.
   // will be true for every new search
@@ -96,15 +99,63 @@ exports.initialQueryData = (initialSearchTerms, newSearch) => {
       newSearch
     }
 
+},
+updateTopicList: (deleteGroup, id, topiclist) => {
+   //pulls for display in autopopulate dropdown to selected list for query
+  return {
+      type: 'UPDATE_TOPICS',
+      delete: deleteGroup,
+      id,
+      topiclist,
+    }
+},
+saveSelectedTopics: (addOrRemove, item) => {
+  //saves to selected list for query and in chips
+    return {
+      type: 'UPDATE_SELECTED_TOPICS',
+      delete: addOrRemove,
+      item
+    }
+},
+updateSubjectContentList: (deleteGroup, id, subjectcontentlist) => {
+  console.log( subjectcontentlist, "updateSubjectContentList");
+   //pulls for display in autopopulate dropdown to selected list for query
+    return {
+      type: 'UPDATE_SUBJECTS',
+      delete: deleteGroup,
+      id,
+      subjectcontentlist,
+    }
+},
+saveSelectedSubjects: (addOrRemove, item) => {
+  //saves to selected list for query and in chips
+    return {
+      type: 'UPDATE_SELECTED_SUBJECTS',
+      delete: addOrRemove,
+      item
+    }
+},
+updateStandardsList: (deleteGroup, id, standardslist) => {
+   //pulls for display in autopopulate dropdown to selected list for query
+    return {
+      type: 'UPDATE_STANDARDS',
+      delete: deleteGroup,
+      id,
+      standardslist,
+    }
+},
+saveSelectedStandards: (addOrRemove, item) => {
+  //saves to selected list for query and in chips
+    return {
+      type: 'UPDATE_SELECTED_STANDARDS',
+      delete: addOrRemove,
+      item
+    }
+}
 }
 
-// exports.updateGroupTabs = (grouptabs) => {
-//     return {
-//       type: 'UPDATE_GROUP_TABS',
-//       grouptabs,
-//     }
-// }
 
+module.exports = action;
 
 
 // exports.updateCSVData = (csvdata[i].name) => {

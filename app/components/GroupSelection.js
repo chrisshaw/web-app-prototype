@@ -113,7 +113,7 @@ class GroupSelection extends Component{
                         </Col>
                         <Col xs={10} md={10} >
                             <div className="auto-text-alignment">
-                                <h4 className="chip-float"> Students in my groups:</h4>
+                                <p className="search-text chip-float"> Students in my groups:</p>
                                 <GroupChip className="text-center" style={{display: "inline"}} secondary={true} selectedgrouplist={this.props.selectedgrouplist} handleRemove={this.handleRemove} handleRequestDelete={this.handleRequestDelete}/> 
                             </div>
                             

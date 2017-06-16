@@ -34,8 +34,14 @@ import {combineReducers } from 'redux';
 const intialstate = {
   toggledrawer: false,
   grouplist: [],
+  standardslist: [],
+  subjectcontentlist: [],
+  topiclist: [],
   grouptabs: [],
+  selectedsubjectcontentlist: [],
+  selectedstandardslist: [],
   selectedgrouplist: [],
+  selectedtopiclist: [],
   initialSearchTerms: [],
   paths: [],  
 }
@@ -108,12 +114,15 @@ const mainReducer = (state={intialstate}, action) => {
                 return Object.assign({},state, {initialSearchTerms: [action.initialSearchTerms]});
            }
         case 'UPDATE_GROUPS':
-            // see what action is being performed - delete or add
+            //pulls for display in autopopulate dropdown to selected list for query
+            // delete portion not currently in use - old code
+             
             let newObj = {};
             if (action.delete) {
                 // use filter here to remove deleted group
                 // remove from selectedgrouplist and add back to grouplist
                 var newGroups = state.selectedgrouplist.filter((group) => {
+                    //  console.log("gggg", group.name, action.item);
                     if (group.id === action.id){
                         newObj = group;
                         return false;
@@ -134,14 +143,109 @@ const mainReducer = (state={intialstate}, action) => {
             else {
                 return Object.assign({},state, {grouplist: action.grouplist, selectedgrouplist: []});    
             }
+         case 'UPDATE_TOPICS':
+            //pulls for display in autopopulate dropdown to selected list for query
+            // delete portion not currently in use - old code
+            let newTopicObj = {};
+            if (action.delete) {
+                // use filter here to remove deleted group
+                // remove from selectedgrouplist and add back to grouplist
+                let newGroups = state.selectedtopiclist.filter((group) => {
+                     console.log("ssss", group.name, action.item);
+                    if (group.id === action.id){
+                        newTopicObj = group;
+                        return false;
+                    }
+                    return true;
+
+                });
+                
+                // in case of corrupt data 
+                if (newTopicObj !== {}){
+                    // update
+                    return Object.assign({},state, {selectedtopiclist: newGroups, topiclist: [...state.topiclist, newTopicObj] }); 
+                } else {
+                    // no change
+                    return Object.assign({},state, {selectedtopiclist: state.selectedtopiclist, topiclist: state.topiclist }); 
+                }
+            } 
+            else {
+                return Object.assign({},state, {topiclist: action.topiclist, selectedtopiclist: []});    
+            }
+        case 'UPDATE_SUBJECTS':
+            //pulls for display in autopopulate dropdown to selected list for query
+            // delete portion not currently in use - old code
+            console.log(action, "in update subjects rducer")
+            let newSubjectObj = {};
+            if (action.delete) {
+                
+                // use filter here to remove deleted group
+                // remove from selectedgrouplist and add back to grouplist
+                let newGroups = state.selectedsubjectcontentlist.filter((group) => {
+                     console.log("zzzzz", group.name, action.item);
+                    if (group.id === action.id){
+                         console.log("zzzzz", group.name, action.item);
+                        newSubjectObj = group;
+                        return false;
+                    }
+                    return true;
+
+                });
+                
+                console.log("newGroups subject", newGroups);
+                // in case of corrupt data 
+                if (newSubjectObj !== {}){
+                    // update
+                    return Object.assign({},state, {selectedsubjectcontentlist: newGroups, subjectcontentlist: [...state.subjectcontentlist, newSubjectObj] }); 
+                } else {
+                    // no change
+                    return Object.assign({},state, {selectedsubjectcontentlist: state.selectedsubjectcontentlist, subjectcontentlist: state.subjectcontentlist }); 
+                }
+            } 
+            else {
+                return Object.assign({},state, {subjectcontentlist: action.subjectcontentlist, selectedsubjectcontentlist: []});    
+            }
+        case 'UPDATE_STANDARDS':
+            //pulls for display in autopopulate dropdown to selected list for query
+            // delete portion not currently in use - old code
+            console.log(action, "in update subjects rducer")
+            let newStandardObj = {};
+            if (action.delete) {
+                
+                // use filter here to remove deleted group
+                // remove from selectedgrouplist and add back to grouplist
+                let newGroups = state.selectedstandardslist.filter((group) => {
+                    //  console.log("zzzzz", group.name, action.item);
+                    if (group.id === action.id){
+                        //  console.log("zzzzz", group.name, action.item);
+                        newStandardObj = group;
+                        return false;
+                    }
+                    return true;
+
+                });
+                
+                // console.log("newGroups subject", newGroups);
+                // in case of corrupt data 
+                if (newSubjectObj !== {}){
+                    // update
+                    return Object.assign({},state, {selectedstandardslist: newGroups, standardslist: [...state.standardslist, newStandardObj] }); 
+                } else {
+                    // no change
+                    return Object.assign({},state, {selectedstandardslist: state.selectedstandardslist, standardslist: state.standardslist }); 
+                }
+            } 
+            else {
+                return Object.assign({},state, {standardslist: action.standardslist, selectedstandardslist: []});    
+            }
         case 'UPDATE_SELECTED_GROUPS':
-        // console.log(state.selectedgrouplist)
-            // see what action is being performed - delete or add
+            // saves to selected list for query and in chips
+            // see what action is being performed - delete or add to selected list
             let newItem ="";
             if (action.delete) {
                 // console.log(action.delete, "in  delreducer")
                 // use filter here to remove deleted group name from selected list
-                var newGroups = state.selectedgrouplist.filter((group) => {
+                let newGroups = state.selectedgrouplist.filter((group) => {
                     // add it back to the grouplist...
                     if (group.name === action.item){
                         return false;
@@ -155,7 +259,7 @@ const mainReducer = (state={intialstate}, action) => {
             else {
                 // decrease groups list and increase selected
                 let newObj = {};
-                var newGroups = state.grouplist.filter((group) => {
+                let newGroups = state.grouplist.filter((group) => {
                     
                     if (group.name === action.item){
                         newObj = group;
@@ -175,16 +279,147 @@ const mainReducer = (state={intialstate}, action) => {
                         return Object.assign({selectedgrouplist: []},state, {selectedgrouplist:  [...state.selectedgrouplist, newObj], grouplist: newGroups});    
                     }
                }
+            
                 
-                
+              
             } 
+        case 'UPDATE_SELECTED_SUBJECTS':
+            // saves to selected list for query and in chips
+            // see what action is being performed - delete or add to selected list
+            let newSubjectItem ="";
+            if (action.delete) {
+                // console.log(action.delete, "in  delreducer")
+                // use filter here to remove deleted group name from selected list
+                let newGroups = state.selectedsubjectcontentlist.filter((group) => {
+                    // add it back to the grouplist...
+                    if (group.name === action.item){
+                        return false;
+                    }
+                    return true;
+
+                });
+                return Object.assign({},state, {selectedsubjectcontentlist: newGroups}); 
+            
+            } 
+            else {
+                // decrease groups list and increase selected
+                let newObj = {};
+                let newGroups = state.subjectcontentlist.filter((group) => {
+                    console.log(group.name, action.item);
+                    if (group.name === action.item){
+                        newObj = group;
+                        return false;
+                        }
+                        return true;
+
+                    });
+
+               if (newObj !== {}){
+                   // if new Obj is not empty make changes
+                    if (!state.selectedsubjectcontentlist) {
+                        // initially when array is empty do this
+                        return Object.assign({selectedsubjectcontentlist: []},state, {selectedsubjectcontentlist:  [newObj],  subjectcontentlist: newGroups});    
+                    } else {     
+                        // after there is at least one item do this
+                        return Object.assign({selectedsubjectcontentlist: []},state, {selectedsubjectcontentlist:  [...state.selectedsubjectcontentlist, newObj], subjectcontentlist: newGroups});    
+                    }
+               }
+                 
+            } 
+        case 'UPDATE_SELECTED_TOPICS':
+            // saves to selected list for query and in chips
+            // see what action is being performed - delete or add to selected lis
+            let newTopicItem ="";
+            if (action.delete) {
+                 console.log(group.name, action.item);
+                // console.log(action.delete, "in  delreducer")
+                // use filter here to remove deleted group name from selected list
+                var newGroups = state.selectedtopiclist.filter((group) => {
+                    // add it back to the grouplist...
+                    if (group.name === action.item){
+                        return false;
+                    }
+                    return true;
+
+                });
+                return Object.assign({},state, {selectedtopiclist: newGroups}); 
+            
+            } 
+            else {
+                // decrease groups list and increase selected
+                let newObj = {};
+                let newGroups = state.topiclist.filter((group) => {
+                    
+                if (group.name === action.item){
+                    newObj = group;
+                    return false;
+                    }
+                    return true;
+
+                });
+
+               if (newObj !== {}){
+                   // if new Obj is not empty make changes
+                    if (!state.selectedtopiclist) {
+                        // initially when array is empty do this
+                        return Object.assign({selectedtopiclist: []},state, {selectedtopiclist:  [newObj],  topiclist: newGroups});    
+                    } else {     
+                        // after there is at least one item do this
+                        return Object.assign({selectedtopiclist: []},state, {selectedtopiclist:  [...state.selectedtopiclist, newObj], topiclist: newGroups});    
+                    }
+               }
+            }  
+            case 'UPDATE_SELECTED_STANDARDS':
+            // saves to selected list for query and in chips
+            // see what action is being performed - delete or add to selected lis
+            let newStandardItem ="";
+            if (action.delete) {
+                 console.log(group.name, action.item);
+                // console.log(action.delete, "in  delreducer")
+                // use filter here to remove deleted group name from selected list
+                let newGroups = state.selectedstandardslist.filter((group) => {
+                    // add it back to the grouplist...
+                    if (group.name === action.item){
+                        return false;
+                    }
+                    return true;
+
+                });
+                return Object.assign({},state, {selectedstandardslist: newGroups}); 
+            
+            } 
+            else {
+                // decrease groups list and increase selected
+                let newObj = {};
+                let newGroups = state.standardslist.filter((group) => {
+                    
+                if (group.name === action.item){
+                    newObj = group;
+                    return false;
+                    }
+                    return true;
+
+                });
+
+               if (newObj !== {}){
+                   // if new Obj is not empty make changes
+                    if (!state.selectedstandardslist) {
+                        // initially when array is empty do this
+                        return Object.assign({selectedstandardslist: []},state, {selectedstandardslist:  [newObj],  standardslist: newGroups});    
+                    } else {     
+                        // after there is at least one item do this
+                        return Object.assign({selectedstandardslist: []},state, {selectedstandardslist:  [...state.selectedstandardslist, newObj], standardslist: newGroups});    
+                    }
+               }
+            } 
+             
     };
         
     return state;
 }
 
 //  The below are required and map to the components dispatcher
-// const userReducer = (state={}, action) => {
+// const queryReducer = (state={}, action) => {
   
 //     // switch(action.type){
 //     //     case 'ADD_USERNAME':
@@ -195,7 +430,7 @@ const mainReducer = (state={intialstate}, action) => {
 // }
 
 const reducers = combineReducers({
-    mainState : mainReducer
+    mainState : mainReducer,
 
 })
 

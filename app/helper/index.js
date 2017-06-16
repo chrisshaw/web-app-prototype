@@ -1,7 +1,7 @@
 var axios = require("axios");
 
-import {initialQueryData, updatePathList, saveSelectedGroup, updateGroupList, viewUploadedCSVData, updateCSVDataName, updateCSVDataGrade, updateCSVDataFA, closePathBuilderDrawer} from '../actions';
-
+// import {initialQueryData, updatePathList, saveSelectedGroup, updateGroupList, viewUploadedCSVData, updateCSVDataName, updateCSVDataGrade, updateCSVDataFA, closePathBuilderDrawer} from '../actions';
+import actions from '../actions';
 // Helper Functions
 var helpers = {
 //    sendSearchQuery: function(value, dispatch){
@@ -44,7 +44,7 @@ var helpers = {
                         
                         return axios.post('/csv/file', postObj).then(function(response){
                             // console.log(response.data)
-                               dispatch(viewUploadedCSVData(response.data))
+                               dispatch(action.viewUploadedCSVData(response.data))
 
                         
                         })
@@ -56,13 +56,13 @@ var helpers = {
     updateCSV: function(action, id, type, dispatch){
         // console.log(action, id);
         if (type === 'name'){
-            dispatch(updateCSVDataName(action, id ))
+            dispatch(actions.updateCSVDataName(action, id ))
         }
         if (type === 'grade'){
-            dispatch(updateCSVDataGrade(action, id ))
+            dispatch(actions.updateCSVDataGrade(action, id ))
         }
         if (type === 'focusArea'){
-            dispatch(updateCSVDataFA(action, id ))
+            dispatch(actions.updateCSVDataFA(action, id ))
         }
        
 
@@ -70,7 +70,7 @@ var helpers = {
 
     toggleDrawer: function(action, dispatch){
         // console.log("toggledrawer", action);
-        dispatch(closePathBuilderDrawer(action))
+        dispatch(actions.closePathBuilderDrawer(action))
     },
     // deletes groups from path builder list when deleted
     editGroupsList: function(action, dispatch){
@@ -81,12 +81,33 @@ var helpers = {
         return axios.get('/api/teacher/group').then(function(response) {
             // send results to redux store for use by Results component
                 // console.log("getgroups results", response.data);
-            dispatch(updateGroupList(false, 0, response.data));
+            dispatch(actions.updateGroupList(false, 0, response.data));
             return response.data;
         })
     },
+    getTopics: function(dispatch){
+        // for now these are hard coded!!!!!
+        var topicArr = [{id: 0, name: "Immigration as something"}, {id: 1, name: "Identity Through DNA"}]
+        // console.log("getting topics", topicArr);
+        dispatch(actions.updateTopicList(false, 0, topicArr))
+       
+    },
+    getStandards: function(dispatch){
+        console.log("getting getStandards");
+        var standardsArr = [{id: 0, name: "AP-ENG-LANG.R.3"}, {id: 1, name: "CCSS.ELA-LITERACY.RL.9-10.3"}]
+        console.log("getting standards", standardsArr);
+        dispatch(actions.updateStandardsList(false, 0, standardsArr))
+
+    },
+    getSubjectContents: function(dispatch){
+        // console.log("getting getSubjectContents");
+        // ['AP-ENG-LANG.R.3', 'CCSS.ELA-LITERACY.RL.9-10.3'];
+        var subjectArr = [{id: 0, name: "english"}, {id: 1, name: "maths"}]
+        console.log("getting standardsArr", subjectArr);
+        dispatch(actions.updateSubjectContentList(false, 0, subjectArr))
+    },
     // get FA and Grade for selected groups
-    getFAandGrade: function(selectedGroups, i, dispatch){
+    getFAandGrade: function(selectedGroups, selectedStandards, selectedTopics, selectedSubjects, i, dispatch){
         console.log("selectedGroups", selectedGroups, i );
         return new Promise((resolve, reject) => {
             // for (var i = 0; i < selectedGroups.length; i++){
@@ -103,10 +124,16 @@ var helpers = {
                         if (i > 0) {
                             newSearch = false;
                         }
-                        // foundCounter++;
-                        console.log("searchTerm", searchTerm);
-                       console.log("searchinitial returned",i, response.data);
-                        dispatch(initialQueryData(response.data, newSearch));
+                        // add other search params to intial search terms
+                        //     console.log("response.data", response.data);
+                        //     console.log("in FA", selectedGroups, selectedStandards, selectedTopics, selectedSubjects);
+                        response.data.filter = {
+                            standards: selectedStandards,
+                            topics: selectedTopics,
+                            subjects: selectedSubjects
+                        }
+                         console.log("response.data", response.data);
+                        dispatch(actions.initialQueryData(response.data, newSearch));
                     }    
                     return i;         
                 }).then((i) => resolve(i))
@@ -130,7 +157,7 @@ var helpers = {
                         // foundCounter++;
                         // console.log('found counter', foundCounter);
                         console.log("path returned",i, response.data);
-                        dispatch(updatePathList(response.data, newPaths));
+                        dispatch(actions.updatePathList(response.data, newPaths));
                     }
                     
                     return  i;
@@ -138,10 +165,28 @@ var helpers = {
         // }
     },
     removeGroup: function(id, dispatch) {
-        dispatch(updateGroupList(true, id))
+        dispatch(actions.updateGroupList(true, id))
+    },
+    removeTopic: function(id, dispatch) {
+        dispatch(actions.updateTopicList(true, id))
+    },
+    removeSubject: function(id, dispatch) {
+        dispatch(actions.updateSubjectContentList(true, id))
+    },
+    removeStandards: function(id, dispatch) {
+        dispatch(actions.updateStandardsList(true, id))
     },
     updateSelectedGroup: function(e, addOrRemove, dispatch){
-       dispatch(saveSelectedGroup(addOrRemove, e));
+       dispatch(actions.saveSelectedGroup(addOrRemove, e));
+    },
+    updateSelectedTopic: function(e, addOrRemove, dispatch){
+       dispatch(actions.saveSelectedTopics(addOrRemove, e));
+    },
+    updateSelectedSubject: function(e, addOrRemove, dispatch){
+       dispatch(actions.saveSelectedSubjects(addOrRemove, e));
+    },
+    updateSelectedStandards: function(e, addOrRemove, dispatch){
+       dispatch(actions.saveSelectedStandards(addOrRemove, e));
     },
  };
 // We export the helpers function (which contains getGithubInfo)

@@ -203,6 +203,9 @@ navbar {
 .focus-area-body {
     border-top:none;
 }
+.search-text {
+    margin: 10px;
+}
 /*.focus-area-header {
     background-color: white;
 }*/

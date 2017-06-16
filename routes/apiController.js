@@ -59,8 +59,10 @@ module.exports = function(app){
         
         let queryFa = req.body.faid;
         // let resultArr = [];
-        let queryGrades = []; //e.g., ['9','12'] which you'll have to derive from the student group--what grades are the students in
-
+        let queryGrades = [];
+        let queryStandards = []; //e.g
+        let querySubjects = [];
+        let queryTopics = []; //e.g., ['immigration','identity'  
         // console.log(resultArr);
         // let query = aql`for v, edge, path in 1..3 outbound ${groups} groupToStudents, studentToCurrentFA RETURN v`
         // console.log(query);
@@ -74,10 +76,35 @@ module.exports = function(app){
         // // convert standards to UPPER 
         // let queryStandards = ['CCSS.ELA-LITERACY.RI.9-10.8', 'CCSS.ELA-LITERACY.L.9-10.1.A'];
         // let queryStandards = ['CCSS.Math.Content.HSS-MD.A','CCSS.ELA-Literacy.SL.3.2','CCSS.Math.Content.HSN-RN.A.1','CCSS.ELA-Literacy.RI.11-12.1', 'CCSS.ELA-LITERACY.RI.9-10.8','CCSS.ELA-Literacy.RI.11-12.6','CCSS.ELA-LITERACY.L.9-10.2']
-        let queryStandards = ['AP-ENG-LANG.R.3', 'CCSS.ELA-LITERACY.RL.9-10.3'];
-        let querySubjects = [];
-        let queryTopics = []; //e.g., ['immigration','identity'     
-       
+        // let queryStandards = ['AP-ENG-LANG.R.3', 'CCSS.ELA-LITERACY.RL.9-10.3'];
+        console.log("submect:", req.body.filter.subjects, req.body.filter.standards, req.body.filter.grades)
+        if (req.body.filter.subjects){
+            if (req.body.filter.subjects.length > 1){
+                for (var i = 0; i < req.body.filter.subjects.length; i++){
+                    queryGrades.push(req.body.filter.subjects[i].name);
+                }
+            }
+        }
+        if (req.body.filter.standards){
+            if (req.body.filter.standards.length > 1){
+                for (var i = 0; i < req.body.filter.standards.length; i++){
+                    queryStandards.push(req.body.filter.standards[i].name.toUpperCase());
+                }
+            }
+        }
+        if (req.body.filter.grades){
+            if(req.body.filter.grades.length > 1){
+                for (var i = 0; i < req.body.filter.grades.length; i++){
+                    queryStandards.push(req.body.filter.grades[i].name)
+                }
+            } 
+        }
+        // if (req.body.filter.topics.length > 1){
+        //     for (var i = 0; i < req.body.filter.topics.length; i++){
+        //         queryStandards.push(req.body.filter.topics[i].name)
+        //     }
+        // } 
+        // queryGrades = req.body.filter.subjects.name;  
         var query = aql`FOR fa, edge, path IN 1..999 outbound ${queryFa} thenFocusOn filter length(${querySubjects}) > 0 ? fa.subject in ${querySubjects} : true filter length(${queryGrades}) > 0 ? fa.grade any in ${queryGrades} : true filter length(${queryTopics}) > 0 ? fa.topic any in ${queryTopics} : true filter length(${queryStandards}) > 0 ? fa.standardConnections any in ${queryStandards} : true RETURN {focusArea: fa, indexOnPath: length(path.vertices)}`;
         console.log(query);
         var resultObj = { "grade":req.body.grade,
