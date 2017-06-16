@@ -93,9 +93,10 @@ var helpers = {
 
                 var newSearch = true;
                 // var foundCounter = 0;
+
                 var searchTerm=selectedGroups[i].id + "/" + selectedGroups[i].name  ;
               
-                console.log("searchTerm", searchTerm);
+                console.log(i, "searchTerm", searchTerm);
                 axios.get('/api/fa/grade/'+searchTerm).then(function(response) {
                     // console.log('sssss', response.data);
                     if (Object.keys(response.data).length !== 0){

@@ -39,13 +39,13 @@ class GroupTabs extends React.Component {
     super(props);
     this.handleChange = this.handleChange.bind(this);
     this.state = {
-      slideIndex: 0,
+      value: '0',
     };
   }
 
   handleChange = (value) => {
     this.setState({
-      slideIndex: value,
+      value: value,
     });
   };
 
@@ -68,11 +68,11 @@ class GroupTabs extends React.Component {
       var component = this;
       // reset tabs
       // var tabComponents = "";
-      if (this.props.paths) {
-        var tabComponents = this.props.paths.map(function(result, index) {
-                return  <Tab label={result.groupname} key={index} value={index} />
-        })
-      } 
+      // if (this.props.paths) {
+      //   var tabComponents = this.props.paths.map(function(result, index) {
+      //           return  <Tab label={result.groupname} key={index} value={index} />
+      //   })
+      // } 
 
 
       if (this.props.paths) {
@@ -188,27 +188,29 @@ class GroupTabs extends React.Component {
                   // console.log(index, "index / i", i);
                 
                 
-                return (<div  key={uuid.v4()}
-                  index={component.state.slideIndex}
-                  onChangeIndex={component.handleChange}
-                >
-
-                  {faComponents}
-                </div>)
+                return (<Tab key={uuid.v4()} label={result.groupname} value={index}>
+                    {faComponents}
+                    </Tab>)
         })
       } 
 
-                // {resultsComponents}
-      console.log(resultsComponents)
 
-    return  <div key={uuid.v4()}>
-                <Tabs>
-                    {tabComponents}
-                </Tabs>
-                {resultsComponents}
-              </div>
 
-  
+    // return  <div key={uuid.v4()}>
+    //             <Tabs>
+    //                 {tabComponents}
+    //             </Tabs>
+    //             {resultsComponents}
+    //           </div>
+
+    return  <Tabs
+        value={this.state.value}
+        onChange={this.handleChange}
+      >
+       
+       {resultsComponents}
+      
+      </Tabs>
 
 
 

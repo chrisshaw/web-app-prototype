@@ -64,7 +64,9 @@ class QueryBuilder extends Component{
                         i++;
                         console.log("this.props.initialSearchTerms", component.props.selectedgrouplist.length);
                          if (i < component.props.selectedgrouplist.length){
-                            console.log("recorsive call");
+                            console.log("recorsive call", i);
+                            component.getPaths(i);
+
                          }
                     
                     })   
