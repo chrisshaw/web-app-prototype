@@ -8,12 +8,10 @@ import helper from '../helper';
 import {connect} from 'react-redux';
 import GroupChip from './GroupChip';
 import AutoCompleteField from './AutoCompleteField';
-// import Github from 'material-ui/lib/svg-icons/custom/github';
-
-
-
-
-
+import GroupSelection from './GroupSelection';
+import TopicSelection from './TopicSelection';
+import SubjectContentSelection from './SubjectContentSelection';
+import StandardSelection from './StandardSelection';
 
 
 class QueryBuilder extends Component{
@@ -121,41 +119,10 @@ class QueryBuilder extends Component{
                         </div>
                     </Col>
                 </Row>
-                <div className="query-builder-wrapper">
-                    <Row>
-                        <Col xs={2} md={2} >
-                            <FlatButton style={styles.button} containerElement='label' label={this.state.groupState} onTouchTap={this.handleShowGroups} />
-                        </Col>
-                        <Col xs={10} md={10} >
-                            
-                            <div className="auto-text-alignment">
-                                <h4 className="chip-float"> Students in my groups:</h4>
-                                <GroupChip className="text-center" style={{display: "inline"}} secondary={true} selectedgrouplist={this.props.selectedgrouplist} handleRemove={this.handleRemove} handleRequestDelete={this.handleRequestDelete}/> 
-                            </div>
-                            
-                        </Col>
-                    </Row>
-                </div>
-
-
-                <div className={this.state.showGroups ? "query-builder-wrapper" : "query-builder-wrapper hide"} >
-                    <Row>
-                        <Col xs={12} md={6} >
-                            <AutoCompleteField  grouplist={component.props.grouplist} selectedgrouplist={component.props.selectedgrouplist}/>
-                        </Col>
-                        <Col xs={12} md={6} > 
-                            <div className='drawer-button-wrapper'> 
-                                <FlatButton style={styles.button} containerElement='label' label="Reset Groups" onTouchTap={this.handleReset} />
-                            </div>
-                        </Col>
-                        
-                    </Row>
-                    <Row>
-                        <Col xs={12} md={12} >  
-                            <p><em>* select 'x' to remove any groups that are not required.</em></p> 
-                        </Col>
-                    </Row>
-                </div>
+                <GroupSelection />
+                <TopicSelection />
+                <SubjectContentSelection />
+                <StandardSelection />
                 <Row>
                     <Col xs={12} md={12} className="text-center" >            
                         <FlatButton containerElement='label' label="Get Reccommended Paths" onTouchTap={() => this.getPaths(0)} />
