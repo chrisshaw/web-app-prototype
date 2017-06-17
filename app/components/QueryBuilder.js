@@ -140,7 +140,7 @@ class QueryBuilder extends Component{
                     <Col xs={12} md={12} >
                         <div className="query-builder-wrapper">
                         <h3> Build Path </h3>
-                        <p> Enter required criteria and submit to get reccommended paths. Or some other blurb...</p> 
+                        <p> Enter Groups and filter criteria below and submit to get reccommended paths. </p> 
                         </div>
                     </Col>
                 </Row>
@@ -174,7 +174,7 @@ class QueryBuilder extends Component{
     }
 }
 
-// export default PathBuilder;
+
 
 const mapStateToProps = (store,ownProps) => {
     return {

@@ -72,7 +72,12 @@ body {
 td {
     word-wrap: break-word;
 }
-
+/*a {
+    color: '#808080'
+}*/
+/*a:active {
+     color: '#808080'
+}*/
 table { 
   width: 100%; 
   border-collapse: collapse; 

@@ -30,8 +30,13 @@ const styles = {
       display: 'flex',
       flexWrap: 'wrap',
     },
-    // tab: {
-    //   color: '#000000'
+    // active {
+		// 		a {
+		// 			color: #fff;
+		// 			border-bottom: 2px solid #fff;
+		// // 		}
+    // tab : {
+    //   color: '#808080'
     // }
 
 };
@@ -196,7 +201,7 @@ class GroupTabs extends React.Component {
                   // console.log(index, "index / i", i);
                 
                 
-                return (<Tab inkBarStyle={{background: '#A35FE3'}} key={uuid.v4()} label={result.groupname} value={index}>
+                return (<Tab buttonStyle={{textColor: '#808080'}} key={uuid.v4()} label={result.groupname} value={index} >
                     {faComponents}
                     </Tab>)
         })
@@ -212,6 +217,7 @@ class GroupTabs extends React.Component {
     //           </div>
 
     return  <Tabs inkBarStyle={{background: '#A35FE3'}}
+        initialSelectedIndex={0}
         value={this.state.value}
         onChange={this.handleChange}
       >

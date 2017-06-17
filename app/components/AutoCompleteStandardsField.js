@@ -39,6 +39,9 @@ var dataSource1 = [];
     return (
         <div>
             <AutoComplete
+            underlineShow={true}
+            underlineStyle={{textColor: '#A35FE3'}}
+            listStyle={{textColor: '#A35FE3'}}
             value={this.state.textFieldValue}
             floatingLabelText="Type 'r', case insensitive"
             filter={AutoComplete.caseInsensitiveFilter}
