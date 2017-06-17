@@ -93,9 +93,9 @@ var helpers = {
        
     },
     getStandards: function(dispatch){
-        console.log("getting getStandards");
+        // console.log("getting getStandards");
         var standardsArr = [{id: 0, name: "AP-ENG-LANG.R.3"}, {id: 1, name: "CCSS.ELA-LITERACY.RL.9-10.3"}]
-        console.log("getting standards", standardsArr);
+        // console.log("getting standards", standardsArr);
         dispatch(actions.updateStandardsList(false, 0, standardsArr))
 
     },
@@ -103,12 +103,12 @@ var helpers = {
         // console.log("getting getSubjectContents");
         // ['AP-ENG-LANG.R.3', 'CCSS.ELA-LITERACY.RL.9-10.3'];
         var subjectArr = [{id: 0, name: "english"}, {id: 1, name: "maths"}]
-        console.log("getting standardsArr", subjectArr);
+        // console.log("getting standardsArr", subjectArr);
         dispatch(actions.updateSubjectContentList(false, 0, subjectArr))
     },
     // get FA and Grade for selected groups
     getFAandGrade: function(selectedGroups, selectedStandards, selectedTopics, selectedSubjects, i, dispatch){
-        console.log("selectedGroups", selectedGroups, i );
+        // console.log("selectedGroups", selectedGroups, i );
         return new Promise((resolve, reject) => {
             // for (var i = 0; i < selectedGroups.length; i++){
 
@@ -117,7 +117,7 @@ var helpers = {
 
                 var searchTerm=selectedGroups[i].id + "/" + selectedGroups[i].name  ;
               
-                console.log(i, "searchTerm", searchTerm);
+                // console.log(i, "searchTerm", searchTerm);
                 axios.get('/api/fa/grade/'+searchTerm).then(function(response) {
                     // console.log('sssss', response.data);
                     if (Object.keys(response.data).length !== 0){
@@ -132,7 +132,7 @@ var helpers = {
                             topics: selectedTopics,
                             subjects: selectedSubjects
                         }
-                         console.log("response.data", response.data);
+                        //  console.log("response.data", response.data);
                         dispatch(actions.initialQueryData(response.data, newSearch));
                     }    
                     return i;         
@@ -144,7 +144,7 @@ var helpers = {
         // for each group / fa do a query
         // for (var i=0; i < searchArr.length; i++){ 
             var newPaths = true;
-            console.log("xxx", i, searchArr[i])
+            // console.log("xxx", i, searchArr[i])
             // var foundCounter = 0;
             return axios.post('/api/path/', searchArr[i]).then(function(response) {
                     // send results to redux store for use by Results component
@@ -156,7 +156,7 @@ var helpers = {
                         }
                         // foundCounter++;
                         // console.log('found counter', foundCounter);
-                        console.log("path returned",i, response.data);
+                        // console.log("path returned",i, response.data);
                         dispatch(actions.updatePathList(response.data, newPaths));
                     }
                     

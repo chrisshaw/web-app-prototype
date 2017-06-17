@@ -10,6 +10,7 @@ import TopicChip from './TopicChip';
 import AutoCompleteTopicField from './AutoCompleteTopicField';
 import ExpandMoreIcon from "./ExpandMoreIcon";
 import ExpandLessIcon from "./ExpandLessIcon";
+import ResetIcon from "./ResetIcon";
 
 class TopicSelection extends Component{
    constructor(props) {
@@ -33,7 +34,7 @@ class TopicSelection extends Component{
     }
     handleReset() {
         helper.getTopics(this.props.dispatch); 
-        console.log("getting topics", this.props.topiclist);
+        // console.log("getting topics", this.props.topiclist);
 
     }
     handleShowGroups() {
@@ -44,10 +45,10 @@ class TopicSelection extends Component{
     render(){
         var styles = {
             button : {
-                backgroundColor: '#9E9E9E'
+                // backgroundColor: '#9E9E9E'
             }
         }  
-        console.log("topiclist", this.props.topiclist)
+        // console.log("topiclist", this.props.topiclist)
         var component = this;
         if ( this.props.selectedtopiclist){
              var arrLength = this.props.selectedtopiclist.length;
@@ -79,7 +80,7 @@ class TopicSelection extends Component{
                         </Col>
                         <Col xs={12} md={6} > 
                             <div className='drawer-button-wrapper'> 
-                                <FlatButton style={styles.button} containerElement='label' label="Reset Topics" onTouchTap={this.handleReset} />
+                                <div className="reset-button" onTouchTap={this.handleReset} ><ResetIcon /> Reset </div>
                             </div>
                         </Col>
                         

@@ -14,9 +14,9 @@ const MyAppNav = () => (
             title={<div className="text-center"><span><img src="./public/assets/img/sidekick.png" className="logo" alt="Sidekick" /></span></div>}
             showMenuIconButton={false}
             />
-            <Tabs className="sticky-navbar-tabs">
-                <Tab label="Home" containerElement={<Link to="/"/>}/>
-                <Tab label="Import Data" containerElement={<Link to="/csv"/>}/>
+            <Tabs  className="sticky-navbar-tabs">
+                <Tab inkBarStyle={{background: '#A35FE3'}} label="Home" containerElement={<Link to="/"/>}/>
+                <Tab  inkBarStyle={{background: '#A35FE3'}} label="Import Data" containerElement={<Link to="/csv"/>}/>
             </Tabs>
         </div>
 

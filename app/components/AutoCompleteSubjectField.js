@@ -28,7 +28,7 @@ var dataSource1 = [];
     }
   render() {
     // if it exists or is not empty array
-    console.log("subjectcontentlist", this.props.subjectcontentlist)
+    // console.log("subjectcontentlist", this.props.subjectcontentlist)
     if ((this.props.subjectcontentlist) && (this.props.subjectcontentlist[0] !== null)){
         dataSource1 = this.props.subjectcontentlist.map(function(group, index) {
             // strip out just the name for the autocomplete field

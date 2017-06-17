@@ -10,6 +10,7 @@ import GroupChip from './GroupChip';
 import AutoCompleteField from './AutoCompleteField';
 import ExpandMoreIcon from "./ExpandMoreIcon";
 import ExpandLessIcon from "./ExpandLessIcon";
+import ResetIcon from "./ResetIcon";
 
 class GroupSelection extends Component{
    constructor(props) {
@@ -57,7 +58,7 @@ class GroupSelection extends Component{
 
         var styles = {
             button : {
-                backgroundColor: '#9E9E9E'
+                // backgroundColor: '#9E9E9E'
             }
         }
 
@@ -94,15 +95,15 @@ class GroupSelection extends Component{
                         </Col>
                         <Col xs={12} md={6} > 
                             <div className='drawer-button-wrapper'> 
-                                
-                                <FlatButton style={styles.button} containerElement='label' label="Reset Groups" onTouchTap={this.handleReset} />
+                                <div className="reset-button" onTouchTap={this.handleReset} ><ResetIcon className="reset-icon" /> Reset</div>
                             </div>
                         </Col>
                         
                     </Row>
                     <Row>
                         <Col xs={12} md={12} >  
-                            <p><em>* select 'x' to remove any groups that are not required.</em></p> 
+                            <p><em>! this is a required field.</em></p> 
+                            <p><em>* select 'x' to remove individual groups from selected group list.</em></p> 
                         </Col>
                     </Row>
                 </div>

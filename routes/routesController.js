@@ -1,6 +1,6 @@
 
 var path = require('path');
-var Student = require('../models/student');
+// var Student = require('../models/student');
 
 module.exports = function(app){
 

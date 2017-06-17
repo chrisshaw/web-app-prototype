@@ -31,40 +31,25 @@ class PathBuilderDrawer extends Component{
 
    constructor(props) {
         super(props);
-        // console.log(this.props);
-        // this.handleToggle = this.handleToggle.bind(this);
-        // this.handleClose = this.handleClose.bind(this);
-        // console.log(this.props.toggledrawer, "intial state")
+
     }
-    // componentWillMount(){
-    //      helper.toggleDrawer(false, this.props.dispatch);
-    //      console.log(this.props.toggledrawer, "mount state")
-    // }
-    // handleToggle() {
-    //     //    console.log(this.props.toggledrawer, "ssss;e");
-    //     console.log(this.props.toggledrawer, "handle state")
-    //     helper.toggleDrawer(!this.props.toggledrawer, this.props.dispatch)
-    // }
-    // handleClose(){
-    //     helper.toggleDrawer(false, this.props.dispatch);
-    // }
+
     render() {
         const style = {
             drawer: {
-                color: '#808080',
+                // color: '#808080',
                 zIndex: 2000,
                 position: 'fixed',
                 top: '300px'
             },
             span: {
-                color: '#FFFFFF',
+                // color: '#FFFFFF',
             
             },
             button: {
                 marginTop: 12,
                 marginBottom: 12,
-                // display: 'block',
-                backgroundColor: "#2FBB2F"
+                // backgroundColor: "#2FBB2F"
             },
 
 

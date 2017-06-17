@@ -11,52 +11,79 @@ import getMuiTheme from 'material-ui/styles/getMuiTheme';
 
 const navBarTheme = getMuiTheme({
   palette: {
-    textColor: '#616161',
-    // this one is for the tabs bar
-    primary1Color: "#2FBB2F",
+    textColor: '#000000',
+    // this one is for the tabs bar and appBar 
+    primary1Color: "#FFFFFF",
+    primary2Color: "#40C83C",
     // primary2Color:  "#2FBB2F",
-    // primary3Color: grey400,
+    primary3Color: '#A35FE3',
     // this one overrides the underline in tabs
-    accent1Color: "#E91E63",
-    // accent2Color: grey100,
-    // accent3Color: grey500,
-    // alternateTextColor: white,
+    accent1Color: "#40C83C",
+    accent2Color: '#A35FE3',
+    accent3Color: '#A35FE3',
+    alternateTextColor: '#000000',
     // canvasColor: white,
     // borderColor: grey300,
-    // disabledColor: fade(darkBlack, 0.3),
+    disabledColor: '#FFFFFF',
     // pickerHeaderColor: cyan500,
     // clockCircleColor: fade(darkBlack, 0.07),
     // shadowColor: fullBlack,
   },
+
   appBar: {
     top: 0,
-    // position: "fixed",
+    backgroundColor: '#FFFFFF',
     height: 130, 
   },
   paper: {
-    color: '#000000'
+    // color: '#000000'
   },
   table: {
-    color: '#000000',
-    textColor: '#000000',
+    // color: '#000000',
+    // textColor: '#000000',
+    border: '1px #E6E6E6 solid'
   },
   drawer : {
-    color: '#BDBDBD',
-    textColor: '#000000',
+    // color: '#BDBDBD',
+    // textColor: '#000000',
     // zIndex: 100,
     position: 'fixed',
     top: '430px',
     width: '430px'
   },
   chip: {
-      backgroundColor: '#424242',
-      textColor: '#FFFFFF',
+    //   backgroundColor: '#424242',
+    //   textColor: '#FFFFFF',
   },
   flatButton : {
-    color: '#2FBB2F',
-    textColor: '#FFFFFF',
+    color: '#000000',
+    // textColor: '#FFFFFF',
 
-  }
+  },
+  raisedButton : {
+    color: '#40C83C',
+    // textColor: '#FFFFFF',
+
+  },
+//   button: {
+//       color: '#000000',
+//   }
+// //   dialog: {
+//       zIndex: 3000,
+    //   }
+    zIndex: {
+        // menu: 1000,
+        // appBar: 1100,
+        // leftNavOverlay: 1200,
+        // leftNav: 1300,
+        dialogOverlay: 1400,
+        dialog: 1500,
+        drawer: 1300,
+        // layer: 2000,
+        // popover: 5000,
+        // snackbar: 2900,
+        // tooltip: 3000
+    },
  
 
 //   tabs: {

@@ -10,6 +10,7 @@ import SubjectContentChip from './SubjectContentChip';
 import AutoCompleteSubjectField from './AutoCompleteSubjectField';
 import ExpandMoreIcon from "./ExpandMoreIcon";
 import ExpandLessIcon from "./ExpandLessIcon";
+import ResetIcon from "./ResetIcon";
 
 class SubjectContentSelection extends Component{
    constructor(props) {
@@ -45,14 +46,14 @@ class SubjectContentSelection extends Component{
 
         var styles = {
             button : {
-                backgroundColor: '#9E9E9E'
+                // backgroundColor: '#9E9E9E'
             }
         }
     
         var component = this;
-             console.log("subjectcontentlist", this.props.subjectcontentlist)
+            //  console.log("subjectcontentlist", this.props.subjectcontentlist)
 
-        console.log("selectedsubjectcontentlist", this.props.selectedsubjectcontentlist)
+        // console.log("selectedsubjectcontentlist", this.props.selectedsubjectcontentlist)
         if ( this.props.selectedsubjectcontentlist){
              var arrLength = this.props.selectedsubjectcontentlist.length;
         }
@@ -83,7 +84,7 @@ class SubjectContentSelection extends Component{
                         </Col>
                         <Col xs={12} md={6} > 
                             <div className='drawer-button-wrapper'> 
-                                <FlatButton style={styles.button} containerElement='label' label="Reset Subjects" onTouchTap={this.handleReset} />
+                                <div className="reset-button" onTouchTap={this.handleReset} ><ResetIcon /> Reset</div>
                             </div>
                         </Col>
                         

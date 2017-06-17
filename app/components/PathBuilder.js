@@ -8,7 +8,8 @@ import PathPaper from './PathPaper';
 
 const style = {
     drawer: {
-        color: '#808080',
+        // color: '#808080',
+        // backgroundColor: '#FFFFFF',
         zIndex: 100,
         position: 'fixed',
         top: '300px'
@@ -21,7 +22,7 @@ const style = {
         marginTop: 12,
         marginBottom: 12,
         // display: 'block',
-        backgroundColor: "#2FBB2F",
+        // backgroundColor: "#2FBB2F",
         mariginLeft: '10px'
 
     }
@@ -48,7 +49,7 @@ class PathBuilder extends Component{
     }
     render(){
 
-        console.log("paths in paper", this.props.paths);
+        // console.log("paths in paper", this.props.paths);
         return(
             <div>
                 <PathBuilderDrawer handleToggle={this.handleToggle} handleClose={this.handleClose} toggledrawer={this.props.toggledrawer}/>

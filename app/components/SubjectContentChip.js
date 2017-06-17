@@ -25,7 +25,7 @@ import uuid from 'uuid';
       },
     };
     var hasGroups = [];
-    console.log("in chip this.props.selectedsubjectcontentlist", this.props.selectedsubjectcontentlist);
+    // console.log("in chip this.props.selectedsubjectcontentlist", this.props.selectedsubjectcontentlist);
     // if (this.props.subjectcontentlist){
     //    hasGroups = this.props.subjectcontentlist;
     // }

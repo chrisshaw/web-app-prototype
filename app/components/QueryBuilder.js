@@ -13,6 +13,7 @@ import TopicSelection from './TopicSelection';
 import SubjectContentSelection from './SubjectContentSelection';
 import StandardsSelection from './StandardSelection';
 import TimeLineSelection from './TimeLineSelection';
+import Dialog from 'material-ui/Dialog';
 
 
 class QueryBuilder extends Component{
@@ -23,12 +24,15 @@ class QueryBuilder extends Component{
         this.handleReset = this.handleReset.bind(this);
         this.getPaths = this.getPaths.bind(this);
         this.handleShowGroups = this.handleShowGroups.bind(this);
+        this.handleClose = this.handleClose.bind(this);
         // get initial data and set props
         helper.getGroups(this.props.dispatch);
         var searchObj = {};
         this.state ={
             showGroups: false, 
-            groupState: "Open" 
+            // groupState: "Open" 
+            nogoupselected: false,
+            // nopathreturned: false
         }
  
         // next
@@ -45,6 +49,7 @@ class QueryBuilder extends Component{
         // filter grouplist based on id
         // console.log(this)
         helper.removeGroup(id, this.props.dispatch);
+       
     }
     handleReset() {
         // console.log("in reset");
@@ -55,55 +60,72 @@ class QueryBuilder extends Component{
         this.setState({showGroups: !this.state.showGroups})
         this.state.showGroups ?  this.setState({groupState: "Open"}) : this.setState({groupState: "Close"})
     }
+    handleClose = () => {
+        this.setState({nogoupselected: false});
+    };
     getPaths(i) {
         // **TO HERE -- make this a promise cos then need to get paths
         // console.log("sending this to server", this.props.selectedgrouplist);
         // for (var i = 0; i < this.props.selectedgrouplist.length; i++){
-
         var component = this;
         if ((component.props.selectedgrouplist) && (component.props.selectedgrouplist.length !== 0)){
            
                
-                console.log("i", i, "this.props.selectedgrouplist", this.props.selectedgrouplist);
+                // console.log("i", i, "this.props.selectedgrouplist", this.props.selectedgrouplist);
                 // (selectedGroups, selectedStandards, selectedTopics, selectedSubjects, i, dispatch)
                 helper.getFAandGrade(this.props.selectedgrouplist, this.props.selectedstandardslist, this.props.selectedtopiclist, this.props.selectedsubjectcontentlist, i, this.props.dispatch).then((i) => {
                 //initially we have groups, fa and grade - in an array of objects - this.props.searchTerm
-                // console.log("this.props.searchTerm wiht group name", this.props.initialSearchTerms);
-                // just dealing with initial search for now\
-                console.log("search terms begin sent", this.props.initialSearchTerms);
-                // console.log(i);
-
-                console.log(i)
-
+      
                 helper.getPaths(this.props.initialSearchTerms, i, this.props.dispatch).catch(function (error) {
                         console.log(error);
                     }).then(function(i){
                         
                         // console.log("i", i);
                         i++;
-                        console.log("this.props.initialSearchTerms", component.props.selectedgrouplist.length);
+                        // console.log("this.props.initialSearchTerms", component.props.selectedgrouplist.length);
                          if (i < component.props.selectedgrouplist.length){
-                            console.log("recorsive call", i);
+                            // console.log("recorsive call", i);
                             component.getPaths(i);
 
-                         }
+                         } 
                     
                     })   
                 })
             
            
 
+        } else {
+            // no group selected message
+            this.setState({nogoupselected: true})
         }
+        // if nothing found
+        // if ((i === component.props.selectedgrouplist.length) && (noPaths === component.props.selectedgrouplist.length-1)) {
+        //     component.setState({nopathreturned: true})
+        //     console.log("no paths!", this.props.paths);
+        // }
         
     
     }
 
 
     render(){
+        const actions = [
+            <FlatButton
+                label="Cancel"
+                onTouchTap={this.handleClose}
+            />
+            ];
+
 
         var styles = {
             button : {
-                backgroundColor: '#9E9E9E'
+                // backgroundColor: '#9E9E9E'
+            },
+            dialog : {
+                width: '50vw',
+                position: 'absolute',
+                left: '50vw',
+                zIndex: 1500,
             }
         }
 
@@ -121,6 +143,20 @@ class QueryBuilder extends Component{
                         <p> Enter required criteria and submit to get reccommended paths. Or some other blurb...</p> 
                         </div>
                     </Col>
+                </Row>
+                <Row>
+                <Dialog
+              
+                title="No Group Selected"
+                actions={actions}
+                style={{zIndex: 2000}}
+                modal={false}
+                open={this.state.nogoupselected}
+                onRequestClose={this.handleClose}
+                >
+                   Please select at least one Group option.
+                    </Dialog>
+
                 </Row>
                 <GroupSelection />
                 <TopicSelection />

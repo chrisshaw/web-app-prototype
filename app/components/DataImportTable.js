@@ -162,7 +162,7 @@ class DataImportTable extends Component {
                     </TableRowColumn>
                 </TableRow>)
             })
-            console.log(resultsComponent);
+            // console.log(resultsComponent);
 
         }
         return (

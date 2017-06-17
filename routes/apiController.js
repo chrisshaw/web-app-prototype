@@ -48,7 +48,7 @@ module.exports = function(app){
 
     app.post('/api/path/', function(req, res){
         // had to do a post in order to send over object
-        console.log("posted req.body", req.body);
+        // console.log("posted req.body", req.body);
         // grab input fields from the req.params 
       
         // let standards = req.params.standards;
@@ -77,7 +77,7 @@ module.exports = function(app){
         // let queryStandards = ['CCSS.ELA-LITERACY.RI.9-10.8', 'CCSS.ELA-LITERACY.L.9-10.1.A'];
         // let queryStandards = ['CCSS.Math.Content.HSS-MD.A','CCSS.ELA-Literacy.SL.3.2','CCSS.Math.Content.HSN-RN.A.1','CCSS.ELA-Literacy.RI.11-12.1', 'CCSS.ELA-LITERACY.RI.9-10.8','CCSS.ELA-Literacy.RI.11-12.6','CCSS.ELA-LITERACY.L.9-10.2']
         // let queryStandards = ['AP-ENG-LANG.R.3', 'CCSS.ELA-LITERACY.RL.9-10.3'];
-        console.log("submect:", req.body.filter.subjects, req.body.filter.standards, req.body.filter.grades)
+        // console.log("submect:", req.body.filter.subjects, req.body.filter.standards, req.body.filter.grades)
         if (req.body.filter.subjects){
             if (req.body.filter.subjects.length > 1){
                 for (var i = 0; i < req.body.filter.subjects.length; i++){
@@ -137,7 +137,7 @@ module.exports = function(app){
         var newgroup = group.replace(/[\ ]+[' ]+/g, " "); 
         var groupname = req.params.name;
         var resultObj = {};
-        console.log(newgroup);
+        // console.log(newgroup);
         // one query per group to get fa and grade  
         getgroups(newgroup).then((result) => {
             // console.log("wwant to see this", result._result);
@@ -170,7 +170,7 @@ module.exports = function(app){
     })
 
     app.get('/api/teacher/group', function(req, res){
-        console.log('/api/teacher/group');
+        // console.log('/api/teacher/group');
         //should pass in teacher id as param but for now it is hardcoded to 'Teacher 1'
         let name = "Teacher 1";
         var query = aql`for v, edge, path in 1..2 outbound (FOR teacher IN teachers FILTER teacher.name == ${name} RETURN teacher._id)[0] teacherToGroups

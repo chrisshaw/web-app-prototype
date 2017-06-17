@@ -10,6 +10,7 @@ import GroupChip from './GroupChip';
 import AutoCompleteField from './AutoCompleteField';
 import ExpandMoreIcon from "./ExpandMoreIcon";
 import ExpandLessIcon from "./ExpandLessIcon";
+import ResetIcon from "./ResetIcon";
 
 class TimeLineSelection extends Component{
    constructor(props) {
@@ -98,7 +99,7 @@ class TimeLineSelection extends Component{
                         </Col>
                         <Col xs={12} md={6} > 
                             <div className='drawer-button-wrapper'> 
-                                <FlatButton style={styles.button} containerElement='label' label="Reset Groups" onTouchTap={this.handleReset} />
+                                <div className="reset-button" onTouchTap={this.handleReset} ><ResetIcon /> Reset </div>
                             </div>
                         </Col>
                         

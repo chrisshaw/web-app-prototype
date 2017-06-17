@@ -10,6 +10,7 @@ import StandardsChip from './StandardsChip';
 import AutoCompleteStandardsField from './AutoCompleteStandardsField';
 import ExpandMoreIcon from "./ExpandMoreIcon";
 import ExpandLessIcon from "./ExpandLessIcon";
+import ResetIcon from "./ResetIcon";
 // import Github from 'material-ui/lib/svg-icons/custom/github';
 
 class StandardsSelection extends Component{
@@ -65,7 +66,7 @@ class StandardsSelection extends Component{
 
        
         var component = this;
-        console.log("standardslist", this.props.standardslist)
+        // console.log("standardslist", this.props.standardslist)
         if ( this.props.selectedstandardslist){
              var arrLength = this.props.selectedstandardslist.length;
         }
@@ -96,7 +97,7 @@ class StandardsSelection extends Component{
                         </Col>
                         <Col xs={12} md={6} > 
                             <div className='drawer-button-wrapper'> 
-                                <FlatButton style={styles.button} containerElement='label' label="Reset Standards" onTouchTap={this.handleReset} />
+                                <div className="reset-button" onTouchTap={this.handleReset} ><ResetIcon /> Reset</div>
                             </div>
                         </Col>
                         

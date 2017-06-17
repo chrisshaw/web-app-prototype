@@ -21,10 +21,10 @@ const style = {
     marginTop: 12,
     marginBottom: 12,
     display: 'block',
-    backgroundColor: "#2FBB2F"
+    // backgroundColor: "#2FBB2F"
   },
   paper: {
-      color: '#000000'
+    //   color: '#000000'
   }
 };
 
