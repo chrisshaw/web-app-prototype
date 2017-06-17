@@ -87,7 +87,7 @@ var helpers = {
     },
     getTopics: function(dispatch){
         // for now these are hard coded!!!!!
-        var topicArr = [{id: 0, name: "Immigration as something"}, {id: 1, name: "Identity Through DNA"}]
+        var topicArr = [{id: 0, name: "Immigration"}, {id: 1, name: "Identity"}]
         // console.log("getting topics", topicArr);
         dispatch(actions.updateTopicList(false, 0, topicArr))
        

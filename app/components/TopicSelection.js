@@ -8,7 +8,8 @@ import helper from '../helper';
 import {connect} from 'react-redux';
 import TopicChip from './TopicChip';
 import AutoCompleteTopicField from './AutoCompleteTopicField';
-// import Github from 'material-ui/lib/svg-icons/custom/github';
+import ExpandMoreIcon from "./ExpandMoreIcon";
+import ExpandLessIcon from "./ExpandLessIcon";
 
 class TopicSelection extends Component{
    constructor(props) {
@@ -23,7 +24,7 @@ class TopicSelection extends Component{
         // state for hide/show selection and text/icon
         this.state ={
             showGroups: false, 
-            groupState: "Open" 
+            // groupState: "Open" 
         }
     }
     handleRequestDelete(id) {
@@ -38,7 +39,7 @@ class TopicSelection extends Component{
     handleShowGroups() {
         // toggle between true and false and change the displayed message
         this.setState({showGroups: !this.state.showGroups})
-        this.state.showGroups ?  this.setState({groupState: "Open"}) : this.setState({groupState: "Close"})
+        // this.state.showGroups ?  this.setState({groupState: "Open"}) : this.setState({groupState: "Close"})
     }
     render(){
         var styles = {
@@ -54,10 +55,13 @@ class TopicSelection extends Component{
        
         return(<div><div className="query-builder-wrapper">
                     <Row>
-                        <Col xs={2} md={2} >
-                            <FlatButton style={styles.button} containerElement='label' label={this.state.groupState} onTouchTap={this.handleShowGroups} />
+                        <Col xs={1} md={1} >
+
+                            <div className={this.state.showGroups ? "hide" : "expand-icon"} onTouchTap={this.handleShowGroups}><ExpandMoreIcon /></div>
+                            <div className={this.state.showGroups ? "expand-icon" : "hide"} onTouchTap={this.handleShowGroups}><ExpandLessIcon /></div>
+                         
                         </Col>
-                        <Col xs={10} md={10} >
+                        <Col xs={11} md={11} >
                             <div className="auto-text-alignment">
                                 <p className="search-text chip-float"> will explore</p>
                                 <TopicChip className="text-center" style={{display: "inline"}} secondary={true} selectedtopiclist={this.props.selectedtopiclist} handleRemove={this.handleRemove} handleRequestDelete={this.handleRequestDelete}/> 

@@ -8,7 +8,8 @@ import helper from '../helper';
 import {connect} from 'react-redux';
 import SubjectContentChip from './SubjectContentChip';
 import AutoCompleteSubjectField from './AutoCompleteSubjectField';
-// import Github from 'material-ui/lib/svg-icons/custom/github';
+import ExpandMoreIcon from "./ExpandMoreIcon";
+import ExpandLessIcon from "./ExpandLessIcon";
 
 class SubjectContentSelection extends Component{
    constructor(props) {
@@ -23,7 +24,7 @@ class SubjectContentSelection extends Component{
         var searchObj = {};
         this.state ={
             showGroups: false, 
-            groupState: "Open" 
+            // groupState: "Open" 
         }
 
    }
@@ -38,7 +39,7 @@ class SubjectContentSelection extends Component{
     handleShowGroups() {
         // toggle between true and false
         this.setState({showGroups: !this.state.showGroups})
-        this.state.showGroups ?  this.setState({groupState: "Open"}) : this.setState({groupState: "Close"})
+        // this.state.showGroups ?  this.setState({groupState: "Open"}) : this.setState({groupState: "Close"})
     }
     render(){
 
@@ -58,10 +59,13 @@ class SubjectContentSelection extends Component{
        
         return(<div><div className="query-builder-wrapper">
                     <Row>
-                        <Col xs={2} md={2} >
-                            <FlatButton style={styles.button} containerElement='label' label={this.state.groupState} onTouchTap={this.handleShowGroups} />
+                        <Col xs={1} md={1} >
+
+                            <div className={this.state.showGroups ? "hide" : "expand-icon"} onTouchTap={this.handleShowGroups}><ExpandMoreIcon /></div>
+                            <div className={this.state.showGroups ? "expand-icon" : "hide"} onTouchTap={this.handleShowGroups}><ExpandLessIcon /></div>
+                         
                         </Col>
-                        <Col xs={10} md={10} >
+                        <Col xs={11} md={11} >
                             <div className="auto-text-alignment">
                                 <p className="search-text chip-float">to learn content in </p>
                                 <SubjectContentChip className="text-center" style={{display: "inline"}} secondary={true} selectedsubjectcontentlist={this.props.selectedsubjectcontentlist} handleRemove={this.handleRemove} handleRequestDelete={this.handleRequestDelete}/> 

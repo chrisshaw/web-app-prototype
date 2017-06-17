@@ -8,7 +8,8 @@ import helper from '../helper';
 import {connect} from 'react-redux';
 import GroupChip from './GroupChip';
 import AutoCompleteField from './AutoCompleteField';
-// import Github from 'material-ui/lib/svg-icons/custom/github';
+import ExpandMoreIcon from "./ExpandMoreIcon";
+import ExpandLessIcon from "./ExpandLessIcon";
 
 class GroupSelection extends Component{
    constructor(props) {
@@ -23,7 +24,7 @@ class GroupSelection extends Component{
         var searchObj = {};
         this.state ={
             showGroups: false, 
-            groupState: "Open" 
+            // groupState: "Open" 
         }
  
         // next
@@ -48,48 +49,8 @@ class GroupSelection extends Component{
     handleShowGroups() {
         // toggle between true and false
         this.setState({showGroups: !this.state.showGroups})
-        this.state.showGroups ?  this.setState({groupState: "Open"}) : this.setState({groupState: "Close"})
+        // this.state.showGroups ?  this.setState({groupState: "Open"}) : this.setState({groupState: "Close"})
     }
-    // getPaths(i) {
-    //     // **TO HERE -- make this a promise cos then need to get paths
-    //     // console.log("sending this to server", this.props.selectedgrouplist);
-    //     // for (var i = 0; i < this.props.selectedgrouplist.length; i++){
-    //     var component = this;
-    //     if ((component.props.selectedgrouplist) && (component.props.selectedgrouplist.length !== 0)){
-           
-               
-    //             console.log("i", i, "this.props.selectedgrouplist", this.props.selectedgrouplist);
-    //             helper.getFAandGrade(this.props.selectedgrouplist, i, this.props.dispatch).then((i) => {
-    //             //initially we have groups, fa and grade - in an array of objects - this.props.searchTerm
-    //             // console.log("this.props.searchTerm wiht group name", this.props.initialSearchTerms);
-    //             // just dealing with initial search for now\
-    //             console.log("search terms begin sent", this.props.initialSearchTerms);
-    //             // console.log(i);
-
-    //             console.log(i)
-
-    //             helper.getPaths(this.props.initialSearchTerms, i, this.props.dispatch).catch(function (error) {
-    //                     console.log(error);
-    //                 }).then(function(i){
-                        
-    //                     // console.log("i", i);
-    //                     i++;
-    //                     console.log("this.props.initialSearchTerms", component.props.selectedgrouplist.length);
-    //                      if (i < component.props.selectedgrouplist.length){
-    //                         console.log("recorsive call", i);
-    //                         component.getPaths(i);
-
-    //                      }
-                    
-    //                 })   
-    //             })
-            
-           
-
-    //     }
-        
-    
-    // }
 
 
     render(){
@@ -108,10 +69,14 @@ class GroupSelection extends Component{
        
         return(<div><div className="query-builder-wrapper">
                     <Row>
-                        <Col xs={2} md={2} >
-                            <FlatButton style={styles.button} containerElement='label' label={this.state.groupState} onTouchTap={this.handleShowGroups} />
+                        <Col xs={1} md={1} >
+
+                            <div className={this.state.showGroups ? "hide" : "expand-icon"} onTouchTap={this.handleShowGroups}><ExpandMoreIcon /></div>
+
+                            <div className={this.state.showGroups ? "expand-icon" : "hide"} onTouchTap={this.handleShowGroups}><ExpandLessIcon /></div>
+                         
                         </Col>
-                        <Col xs={10} md={10} >
+                        <Col xs={11} md={11} >
                             <div className="auto-text-alignment">
                                 <p className="search-text chip-float"> Students in my groups:</p>
                                 <GroupChip className="text-center" style={{display: "inline"}} secondary={true} selectedgrouplist={this.props.selectedgrouplist} handleRemove={this.handleRemove} handleRequestDelete={this.handleRequestDelete}/> 
@@ -129,6 +94,7 @@ class GroupSelection extends Component{
                         </Col>
                         <Col xs={12} md={6} > 
                             <div className='drawer-button-wrapper'> 
+                                
                                 <FlatButton style={styles.button} containerElement='label' label="Reset Groups" onTouchTap={this.handleReset} />
                             </div>
                         </Col>
