@@ -44,7 +44,7 @@ var helpers = {
                         
                         return axios.post('/csv/file', postObj).then(function(response){
                             // console.log(response.data)
-                               dispatch(action.viewUploadedCSVData(response.data))
+                               dispatch(actions.viewUploadedCSVData(response.data))
 
                         
                         })

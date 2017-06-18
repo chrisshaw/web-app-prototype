@@ -111,16 +111,13 @@ class QueryBuilder extends Component{
     render(){
         const actions = [
             <FlatButton
-                label="Cancel"
+                label="Close"
                 onTouchTap={this.handleClose}
             />
             ];
 
 
         var styles = {
-            button : {
-                // backgroundColor: '#9E9E9E'
-            },
             dialog : {
                 width: '50vw',
                 position: 'absolute',

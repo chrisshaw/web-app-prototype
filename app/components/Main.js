@@ -14,20 +14,15 @@ const navBarTheme = getMuiTheme({
     textColor: '#808080',
     // this one is for the tabs bar and appBar 
     primary1Color: "#FFFFFF",
-    primary2Color: "#40C83C",
-    // primary2Color:  "#2FBB2F",
-    primary3Color: '#A35FE3',
+    // primary2Color: "#40C83C",
+    // primary3Color: '#A35FE3',
     // this one overrides the underline in tabs
     accent1Color: "#40C83C",
     accent2Color: '#A35FE3',
     accent3Color: '#808080',
-    alternateTextColor: '#808080',
-    // canvasColor: white,
-    // borderColor: grey300,
-    disabledColor: '#FFFFFF',
-    // pickerHeaderColor:'#808080',
-    // clockCircleColor: fade(darkBlack, 0.07),
-    // shadowColor: '#808080',
+    alternateTextColor: '#FFFFFF',
+    disabledColor: '#E6E6E6',
+    
   },
 
   appBar: {
@@ -49,11 +44,6 @@ const navBarTheme = getMuiTheme({
       backgroundColor: '#A35FE3',
       textColor: '#FFFFFF',
   },
-  flatButton : {
-    textColor: '#40C83C',
-    backgroundColor: '#FFFFFF',
-
-  },
   raisedButton : {
     textColor: '#FFFFFF',
     // color: '#FFFFFF',
@@ -61,6 +51,12 @@ const navBarTheme = getMuiTheme({
     // textColor: '#FFFFFF',
 
   },
+  flatButton : {
+    textColor: '#40C83C',
+    backgroundColor: '#FFFFFF',
+
+  },
+
   tabs : {
     textColor: '#808080',
     // alternateTextColor: '#808080',

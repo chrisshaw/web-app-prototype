@@ -23,7 +23,8 @@ const style = {
         marginBottom: 12,
         // display: 'block',
         // backgroundColor: "#2FBB2F",
-        // color: '#FFFFFF',
+        // color: '#FFFFFF', 
+        fontColor: '#FFFFFF',
         mariginLeft: '10px'
 
     }

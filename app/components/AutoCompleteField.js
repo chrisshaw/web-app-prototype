@@ -38,13 +38,20 @@ var dataSource1 = [];
    
     return (
         <div>
-            <AutoComplete
+          <AutoComplete
+            hintText="Type and select from list"
             value={this.state.textFieldValue}
-            floatingLabelText="Type 'r', case insensitive"
+            floatingLabelText="Type 'g' or 'G', case insensitive"
+            floatingLabelStyle={{color: '#A35FE3'}}
             filter={AutoComplete.caseInsensitiveFilter}
             dataSource={dataSource1}
+            underlineShow={true}
             onUpdateInput={(e) => this._handleTextFieldChange(e)}
+            underlineDisabledStyle={{ borderColor: '#E6E6E6'}}
+            underlineFocusStyle={{borderColor: '#A35FE3'}}
+            listStyle={{textColor: '#A35FE3'}}
             />
+      
         </div>
 
     )}

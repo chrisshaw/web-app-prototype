@@ -118,7 +118,6 @@ saveSelectedTopics: (addOrRemove, item) => {
     }
 },
 updateSubjectContentList: (deleteGroup, id, subjectcontentlist) => {
-  console.log( subjectcontentlist, "updateSubjectContentList");
    //pulls for display in autopopulate dropdown to selected list for query
     return {
       type: 'UPDATE_SUBJECTS',

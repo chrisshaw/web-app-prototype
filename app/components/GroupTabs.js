@@ -5,6 +5,8 @@ import SwipeableViews from 'react-swipeable-views';
 import uuid from 'uuid';
 import Chip from 'material-ui/Chip';
 import {Grid, Row, Col} from 'react-bootstrap';
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+import getMuiTheme from 'material-ui/styles/getMuiTheme';
 
 const styles = {
   headline: {
@@ -38,8 +40,31 @@ const styles = {
     // tab : {
     //   color: '#808080'
     // }
+    
 
 };
+
+const muiTheme = getMuiTheme({
+      palette: {
+    textColor: '#808080',
+    // this one is for the tabs bar and appBar 
+    primary1Color: "#FFFFFF",
+    // primary2Color: "#40C83C",
+    // primary3Color: '#A35FE3',
+    // this one overrides the underline in tabs
+    accent1Color: "#40C83C",
+    accent2Color: '#A35FE3',
+    accent3Color: '#808080',
+    alternateTextColor: '#808080',
+    disabledColor: '#E6E6E6',
+    
+  },
+    chip: {
+      backgroundColor: '#A35FE3',
+      textColor: '#FFFFFF',
+  },
+
+});
 
 class GroupTabs extends React.Component {
 
@@ -201,7 +226,7 @@ class GroupTabs extends React.Component {
                   // console.log(index, "index / i", i);
                 
                 
-                return (<Tab buttonStyle={{textColor: '#808080'}} key={uuid.v4()} label={result.groupname} value={index} >
+                return (<Tab key={uuid.v4()} label={result.groupname} value={index} >
                     {faComponents}
                     </Tab>)
         })
@@ -216,7 +241,7 @@ class GroupTabs extends React.Component {
     //             {resultsComponents}
     //           </div>
 
-    return  <Tabs inkBarStyle={{background: '#A35FE3'}}
+    return  <MuiThemeProvider muiTheme={muiTheme}><Tabs inkBarStyle={{background: '#A35FE3'}}
         initialSelectedIndex={0}
         value={this.state.value}
         onChange={this.handleChange}
@@ -224,7 +249,7 @@ class GroupTabs extends React.Component {
        
        {resultsComponents}
       
-      </Tabs>
+      </Tabs></MuiThemeProvider>
 
 
 

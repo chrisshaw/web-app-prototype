@@ -72,11 +72,8 @@ body {
 td {
     word-wrap: break-word;
 }
-/*a {
-    color: '#808080'
-}*/
-/*a:active {
-     color: '#808080'
+/*.auto-complete-text:active{
+    color: purple
 }*/
 table { 
   width: 100%; 
@@ -196,6 +193,9 @@ navbar {
   background-color: white;
   border-radius: 1px;
 }*/
+.raised-button-color {
+    color: '#FFFFFF' !important
+}
 .panel-body {
     min-height: 150px;
 

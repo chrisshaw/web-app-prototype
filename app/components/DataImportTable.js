@@ -14,7 +14,7 @@ import React, { Component } from 'react';
 import uuid from 'uuid';
 import Edit from 'react-edit-inline';
 import helper from '../helper';
-// import action from '../actions';  //removed 
+// import action from '../actions';   
 
 
 const styles = {
@@ -51,11 +51,6 @@ class DataImportTable extends Component {
         fixedFooter: true,
         stripedRows: false,
         showRowHover: false,
-        selectable: true,
-        multiSelectable: false,
-        enableSelectAll: false,
-        deselectOnClickaway: true,
-        showCheckboxes: true,
         height: '300px',
 
     };
@@ -98,7 +93,6 @@ class DataImportTable extends Component {
         if (this.props.csvdata) {
             var resultsComponent = component.props.csvdata.map( function (row, index){
                 return (<TableRow key={uuid.v4()}>
-                    <TableRowColumn style={{color: '#000000'}}>{row.id}</TableRowColumn>
                     <TableRowColumn style={{color: '#000000'}}>
                         <Edit
                             validate={component.customValidateText}
@@ -171,24 +165,15 @@ class DataImportTable extends Component {
             height={this.state.height}
             fixedHeader={this.state.fixedHeader}
             fixedFooter={this.state.fixedFooter}
-            selectable={this.state.selectable}
-            multiSelectable={this.state.multiSelectable}
             >
-            <TableHeader
-                displaySelectAll={this.state.showCheckboxes}
-                adjustForCheckbox={this.state.showCheckboxes}
-                enableSelectAll={this.state.enableSelectAll}
-            >
+            <TableHeader>
                 <TableRow >
-                <TableHeaderColumn tooltip="ID">ID</TableHeaderColumn>
                 <TableHeaderColumn tooltip="Student Name">Student Name</TableHeaderColumn>
                 <TableHeaderColumn tooltip="The Grade">Grade</TableHeaderColumn>
                 <TableHeaderColumn tooltip="Current Focus Area">Current Focus Area</TableHeaderColumn>
                 </TableRow>
             </TableHeader>
             <TableBody
-                displayRowCheckbox={this.state.showCheckboxes}
-                deselectOnClickaway={this.state.deselectOnClickaway}
                 showRowHover={this.state.showRowHover}
                 stripedRows={this.state.stripedRows}
             >
