@@ -41,7 +41,7 @@ var dataSource1 = [];
         <AutoComplete
             hintText="Type and select from list"
             value={this.state.textFieldValue}
-            floatingLabelText="Type 'g', case insensitive"
+            floatingLabelText="Type 'g' or 'G', case insensitive"
             floatingLabelStyle={{color: '#A35FE3'}}
             filter={AutoComplete.caseInsensitiveFilter}
             dataSource={dataSource1}

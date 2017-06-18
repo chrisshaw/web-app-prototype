@@ -33,7 +33,8 @@ const navBarTheme = getMuiTheme({
   paper: {
   },
   table: {
-    border: '1px #E6E6E6 solid'
+    border: '1px #E6E6E6 solid',
+    color: '#808080',
   },
   drawer : {
     position: 'fixed',
