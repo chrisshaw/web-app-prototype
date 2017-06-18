@@ -102,8 +102,8 @@ class GroupSelection extends Component{
                     </Row>
                     <Row>
                         <Col xs={12} md={12} >  
-                            <p><em>! this is a required field.</em></p> 
-                            <p><em>* select 'x' to remove individual groups from selected group list.</em></p> 
+                            <p><strong>* this is a required field.</strong></p> 
+                            <p><em>** select 'x' to remove individual groups from selected group list.</em></p> 
                         </Col>
                     </Row>
                 </div>

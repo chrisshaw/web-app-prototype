@@ -104,7 +104,7 @@ class StandardsSelection extends Component{
                     </Row>
                     <Row>
                         <Col xs={12} md={12} >  
-                            <p><em>* select 'x' to remove any groups that are not required.</em></p> 
+                            <p><em>* select 'x' to remove any standards that are not required.</em></p> 
                         </Col>
                     </Row>
                 </div>
