@@ -30,7 +30,7 @@ viewUploadedCSVData: (csvdata) => {
 },
 
 updateCSVDataName: (name, id) => {
-  console.log("action id, name", id, name);
+  // console.log("action id, name", id, name);
     return {
       type: 'UPDATE_CSV_NAME',
       id: id,
@@ -39,7 +39,7 @@ updateCSVDataName: (name, id) => {
 },
 
 updateCSVDataGrade: (grade, id) => {
-  console.log("action id, name", id, grade);
+  // console.log("action id, name", id, grade);
     return {
       type: 'UPDATE_CSV_GRADE',
       id: id,
@@ -48,7 +48,7 @@ updateCSVDataGrade: (grade, id) => {
 },
 
 updateCSVDataFA: (focusArea, id) => {
-  console.log("action id, name", id, focusArea);
+  // console.log("action id, name", id, focusArea);
     return {
       type: 'UPDATE_CSV_FA',
       id: id,
@@ -90,7 +90,7 @@ updatePathList: (paths, newPaths) => {
 
 },
 initialQueryData: (initialSearchTerms, newSearch) => {
-  console.log("in action", initialSearchTerms)
+  // console.log("in action", initialSearchTerms)
   // newSearch is a boolean - true of false.
   // will be true for every new search
   return {

@@ -47,6 +47,7 @@ class PathBuilder extends Component{
         helper.toggleDrawer(!this.props.toggledrawer, this.props.dispatch)
     }
     handleClose(){
+        console.log("clsig")
         helper.toggleDrawer(false, this.props.dispatch);
     }
     render(){

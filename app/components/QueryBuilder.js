@@ -25,6 +25,7 @@ class QueryBuilder extends Component{
         this.getPaths = this.getPaths.bind(this);
         this.handleShowGroups = this.handleShowGroups.bind(this);
         this.handleClose = this.handleClose.bind(this);
+        this.handleSubmit = this.handleSubmit.bind(this);
         // get initial data and set props
         helper.getGroups(this.props.dispatch);
         var searchObj = {};
@@ -61,16 +62,24 @@ class QueryBuilder extends Component{
         this.state.showGroups ?  this.setState({groupState: "Open"}) : this.setState({groupState: "Close"})
     }
     handleClose = () => {
+
         this.setState({nogoupselected: false});
     };
+    handleSubmit(i) {
+        console.log("this.props.closeDrawer()")
+       if (this.props.selectedgrouplist.length !== 0) {
+           this.props.closeDrawer();
+       }
+       this.getPaths(i);
+        
+    }
     getPaths(i) {
         // **TO HERE -- make this a promise cos then need to get paths
         // console.log("sending this to server", this.props.selectedgrouplist);
         // for (var i = 0; i < this.props.selectedgrouplist.length; i++){
         var component = this;
         if ((component.props.selectedgrouplist) && (component.props.selectedgrouplist.length !== 0)){
-           
-               
+            
                 // console.log("i", i, "this.props.selectedgrouplist", this.props.selectedgrouplist);
                 // (selectedGroups, selectedStandards, selectedTopics, selectedSubjects, i, dispatch)
                 helper.getFAandGrade(this.props.selectedgrouplist, this.props.selectedstandardslist, this.props.selectedtopiclist, this.props.selectedsubjectcontentlist, i, this.props.dispatch).then((i) => {
@@ -166,7 +175,7 @@ class QueryBuilder extends Component{
 
                 <Row>
                     <Col xs={12} md={12} className="text-center" >            
-                        <FlatButton containerElement='label' label="Get Reccommended Paths" onTouchTap={() => this.getPaths(0)} />
+                        <FlatButton containerElement='label' label="Get Reccommended Paths" onTouchTap={() => this.handleSubmit(0)} />
                     </Col>
                 </Row>
       
