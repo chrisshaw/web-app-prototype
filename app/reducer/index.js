@@ -44,6 +44,7 @@ const intialstate = {
   selectedtopiclist: [],
   initialSearchTerms: [],
   paths: [],  
+//   nopathdata: []
 }
 //  The below are required and map to the components dispatcher
 const mainReducer = (state={intialstate}, action) => {
@@ -58,6 +59,8 @@ const mainReducer = (state={intialstate}, action) => {
         //     return Object.assign({},state, {fadetail: action.fadetail});    
         case 'VIEW_CSV_DATA':
             return Object.assign({},state, {csvdata: action.csvdata}); 
+        // case 'NO_DATA_FOR_GROUP':
+        //     return Object.assign({},state, {nopathdata: [...state.nopathdata, newObj] ); 
         case 'UPDATE_CSV_NAME':
             return Object.assign({},state, {
                 csvdata: state.csvdata.map(data => data.id === action.id ?

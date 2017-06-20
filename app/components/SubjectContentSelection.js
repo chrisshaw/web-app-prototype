@@ -100,11 +100,11 @@ class SubjectContentSelection extends Component{
     }
 }
 
-const mapStateToProps = (store,ownProps) => {
+const mapStateToProps = (store) => {
     return {
         subjectcontentlist: store.mainState.subjectcontentlist,
         selectedsubjectcontentlist: store.mainState.selectedsubjectcontentlist,
-        initialSearchTerms: store.mainState.initialSearchTerms,
+        // initialSearchTerms: store.mainState.initialSearchTerms,
     }
 }
 

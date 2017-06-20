@@ -71,56 +71,63 @@ module.exports = function(app){
         //     // cursor is a cursor for the query result
         //    console.log(cursor._result);         
         // });
-       
+        
        
         // // convert standards to UPPER 
         // let queryStandards = ['CCSS.ELA-LITERACY.RI.9-10.8', 'CCSS.ELA-LITERACY.L.9-10.1.A'];
         // let queryStandards = ['CCSS.Math.Content.HSS-MD.A','CCSS.ELA-Literacy.SL.3.2','CCSS.Math.Content.HSN-RN.A.1','CCSS.ELA-Literacy.RI.11-12.1', 'CCSS.ELA-LITERACY.RI.9-10.8','CCSS.ELA-Literacy.RI.11-12.6','CCSS.ELA-LITERACY.L.9-10.2']
         // let queryStandards = ['AP-ENG-LANG.R.3', 'CCSS.ELA-LITERACY.RL.9-10.3'];
         // console.log("submect:", req.body.filter.subjects, req.body.filter.standards, req.body.filter.grades)
-        if (req.body.filter.subjects){
-            if (req.body.filter.subjects.length > 1){
-                for (var i = 0; i < req.body.filter.subjects.length; i++){
-                    queryGrades.push(req.body.filter.subjects[i].name);
+        // console.log(req.body, "req.body")
+        // if (Object.keys(req.body).length > 0 ){
+ 
+            if (req.body.filter.subjects){
+                if (req.body.filter.subjects.length > 0){
+                    for (var i = 0; i < req.body.filter.subjects.length; i++){
+                        querySubjects.push(req.body.filter.subjects[i].name);
+                    }
                 }
             }
-        }
-        if (req.body.filter.standards){
-            if (req.body.filter.standards.length > 1){
-                for (var i = 0; i < req.body.filter.standards.length; i++){
-                    queryStandards.push(req.body.filter.standards[i].name.toUpperCase());
+            if (req.body.filter.standards){
+                if (req.body.filter.standards.length > 0){
+                    for (var i = 0; i < req.body.filter.standards.length; i++){
+                        queryStandards.push(req.body.filter.standards[i].name.toUpperCase());
+                    }
                 }
             }
-        }
-        if (req.body.filter.grades){
-            if(req.body.filter.grades.length > 1){
-                for (var i = 0; i < req.body.filter.grades.length; i++){
-                    queryStandards.push(req.body.filter.grades[i].name)
-                }
-            } 
-        }
-        // if (req.body.filter.topics.length > 1){
-        //     for (var i = 0; i < req.body.filter.topics.length; i++){
-        //         queryStandards.push(req.body.filter.topics[i].name)
-        //     }
-        // } 
-        // queryGrades = req.body.filter.subjects.name;  
-        var query = aql`FOR fa, edge, path IN 1..999 outbound ${queryFa} thenFocusOn filter length(${querySubjects}) > 0 ? fa.subject in ${querySubjects} : true filter length(${queryGrades}) > 0 ? fa.grade any in ${queryGrades} : true filter length(${queryTopics}) > 0 ? fa.topic any in ${queryTopics} : true filter length(${queryStandards}) > 0 ? fa.standardConnections any in ${queryStandards} : true RETURN {focusArea: fa, indexOnPath: length(path.vertices)}`;
-        console.log(query);
-        var resultObj = { "grade":req.body.grade,
-                        "initialfa": req.body.faid,
-                        "groupid": req.body.group,
-                        "groupname":  req.body.groupname}
-        db.query(query)
-        .then(cursor => {
-            // cursor is a cursor for the query result
-            resultObj.results = cursor._result;
-            console.log(resultObj);
-            res.json(resultObj);          
-        });
+            if (req.body.grade){
+                // if(req.body.grades.length > 0){
+                    // for (var i = 0; i < req.body.grade.length; i++){
+                        queryGrades.push(req.body.grade.toString())
+                    // }
+                // } 
+            }
+            if (req.body.filter.topics){
+                if (req.body.filter.topics.length > 0){
+                    for (var i = 0; i < req.body.filter.topics.length; i++){
+                        // console.log("queryTopics ????", queryTopics, req.body.filter.topics[0].name)
+                        queryTopics.push(req.body.filter.topics[0].name)
+                    }
+                } 
+            }
+            // console.log("queryTopics", queryTopics, req.body.filter.topics[0].name)
+            // queryGrades = req.body.filter.subjects.name;  
+            var query = aql`FOR fa, edge, path IN 1..999 outbound ${queryFa} thenFocusOn filter length(${querySubjects}) > 0 ? fa.subject in ${querySubjects} : true filter length(${queryGrades}) > 0 ? fa.grade any in ${queryGrades} : true filter length(${queryTopics}) > 0 ? fa.topic any in ${queryTopics} : true filter length(${queryStandards}) > 0 ? fa.standardConnections any in ${queryStandards} : true RETURN {focusArea: fa, indexOnPath: length(path.vertices)}`;
+            console.log(query);
+            var resultObj = { "grade":req.body.grade,
+                            "initialfa": req.body.faid,
+                            "groupid": req.body.group,
+                            "groupname":  req.body.groupname}
+            db.query(query)
+            .then(cursor => {
+                // cursor is a cursor for the query result
+                resultObj.results = cursor._result;
+                // console.log( resultObj.results);
+               
+                res.json(resultObj);          
+            });
 
         
-
 
     })
 
@@ -142,7 +149,7 @@ module.exports = function(app){
         getgroups(newgroup).then((result) => {
             // console.log("wwant to see this", result._result);
             // hopefully different groups will have different current fa but can handle this scenario in another release
-            // 
+            // console.log("results:", result._result);
             if (result._result.length > 0){
                 resultObj.group = newgroup;
                 resultObj.groupname = groupname;
@@ -161,7 +168,7 @@ module.exports = function(app){
                 }
                 
             }
-            // console.log(resultObj);
+            // console.log('result obj', resultObj);
             res.json(resultObj);
         });
 

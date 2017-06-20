@@ -113,17 +113,21 @@ var helpers = {
             // for (var i = 0; i < selectedGroups.length; i++){
 
                 var newSearch = true;
+            
                 // var foundCounter = 0;
 
                 var searchTerm=selectedGroups[i].id + "/" + selectedGroups[i].name  ;
-              
+                // console.log(searchTerm);
                 // console.log(i, "searchTerm", searchTerm);
                 axios.get('/api/fa/grade/'+searchTerm).then(function(response) {
-                    // console.log('sssss', response.data);
-                    if (Object.keys(response.data).length !== 0){
+                   
+                    if (Object.keys(response.data).length > 0){
                         if (i > 0) {
                             newSearch = false;
                         }
+                        
+            
+                    
                         // add other search params to intial search terms
                         //     console.log("response.data", response.data);
                         //     console.log("in FA", selectedGroups, selectedStandards, selectedTopics, selectedSubjects);
@@ -149,7 +153,7 @@ var helpers = {
             return axios.post('/api/path/', searchArr[i]).then(function(response) {
                     // send results to redux store for use by Results component
                     // console.log('/api/path/', i, searchArr[i],response.data);
-                    if (Object.keys(response.data).length !== 0){
+                    // if (Object.keys(response.data).length !== 0){
                         if (i > 0) {
                             // console.log('newPaths', newPaths);
                             newPaths = false;
@@ -158,8 +162,9 @@ var helpers = {
                         // console.log('found counter', foundCounter);
                         // console.log("path returned",i, response.data);
                         dispatch(actions.updatePathList(response.data, newPaths));
-                    }
-                    
+                    // } else if (Object.keys(response.data).length === 0) {
+
+                    // }
                     return  i;
             })
         // }

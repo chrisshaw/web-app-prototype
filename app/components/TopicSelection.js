@@ -96,11 +96,11 @@ class TopicSelection extends Component{
     }
 }
 
-const mapStateToProps = (store,ownProps) => {
+const mapStateToProps = (store) => {
     return {
         topiclist: store.mainState.topiclist,
         selectedtopiclist: store.mainState.selectedtopiclist,
-        initialSearchTerms: store.mainState.initialSearchTerms,
+        // initialSearchTerms: store.mainState.initialSearchTerms,
     }
 }
 

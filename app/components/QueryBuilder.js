@@ -75,23 +75,27 @@ class QueryBuilder extends Component{
                 // (selectedGroups, selectedStandards, selectedTopics, selectedSubjects, i, dispatch)
                 helper.getFAandGrade(this.props.selectedgrouplist, this.props.selectedstandardslist, this.props.selectedtopiclist, this.props.selectedsubjectcontentlist, i, this.props.dispatch).then((i) => {
                 //initially we have groups, fa and grade - in an array of objects - this.props.searchTerm
-      
-                helper.getPaths(this.props.initialSearchTerms, i, this.props.dispatch).catch(function (error) {
-                        console.log(error);
-                    }).then(function(i){
-                        
-                        // console.log("i", i);
-                        i++;
-                        // console.log("this.props.initialSearchTerms", component.props.selectedgrouplist.length);
-                         if (i < component.props.selectedgrouplist.length){
-                            // console.log("recorsive call", i);
-                            component.getPaths(i);
+                    // console.log("intial:",this.props.initialSearchTerms);
+                 
+                        helper.getPaths(this.props.initialSearchTerms, i, this.props.dispatch).catch(function (error) {
+                            
+                            }).then(function(i){
+                                
+                                // console.log("i", i);
+                                i++;
+                                // console.log("this.props.initialSearchTerms", component.props.selectedgrouplist.length);
+                                if (i < component.props.selectedgrouplist.length){
+                                    // console.log("recorsive call", i);
+                                    component.getPaths(i);
 
-                         } 
+                                } 
+                            
+                            }) 
+                        
                     
-                    })   
+                   
                 })
-            
+                
            
 
         } else {
@@ -173,7 +177,7 @@ class QueryBuilder extends Component{
 
 
 
-const mapStateToProps = (store,ownProps) => {
+const mapStateToProps = (store) => {
     return {
         grouplist: store.mainState.grouplist,
         selectedgrouplist: store.mainState.selectedgrouplist,

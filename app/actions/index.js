@@ -150,7 +150,15 @@ saveSelectedStandards: (addOrRemove, item) => {
       delete: addOrRemove,
       item
     }
-}
+},
+// noPathList: (groupid, groupname) => {
+//   //saves to selected list for query and in chips
+//     return {
+//       type: 'NO_DATA_FOR_GROUP',
+//       groupid,
+//       groupname
+//     }
+// }
 }
 
 

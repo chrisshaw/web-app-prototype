@@ -112,11 +112,11 @@ class GroupSelection extends Component{
     }
 }
 
-const mapStateToProps = (store,ownProps) => {
+const mapStateToProps = (store) => {
     return {
         grouplist: store.mainState.grouplist,
         selectedgrouplist: store.mainState.selectedgrouplist,
-        initialSearchTerms: store.mainState.initialSearchTerms,
+        // initialSearchTerms: store.mainState.initialSearchTerms,
     }
 }
 

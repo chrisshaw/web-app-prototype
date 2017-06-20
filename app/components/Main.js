@@ -124,12 +124,12 @@ class Main extends Component{
 //                     {React.cloneElement(this.props.children, {fadetail: this.props.fadetail, focusarea: this.props.area, noResultsMsg: this.props.noResultsMsg})}
 //                 </div>
 
-const mapStateToProps = (store,ownProps) => {
-    return {
-        area: store.mainState.area,
-        noResultsMsg: store.mainState.noResultsMsg,
-        fadetail: store.mainState.fadetail,
-    }
-}
-export default connect(mapStateToProps)(Main);
+// const mapStateToProps = (store) => {
+//     return {
+//         area: store.mainState.area,
+//         // noResultsMsg: store.mainState.noResultsMsg,
+//         // fadetail: store.mainState.fadetail,
+//     }
+// }
+export default Main;
 

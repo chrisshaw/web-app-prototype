@@ -7,6 +7,7 @@ import Chip from 'material-ui/Chip';
 import {Grid, Row, Col} from 'react-bootstrap';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
+import {connect} from 'react-redux';
 
 const styles = {
   headline: {
@@ -118,7 +119,9 @@ class GroupTabs extends React.Component {
         var component = this;
         // there will be one results component returned for each pathway / group.
         var resultsComponents = this.props.paths.map(function(result, index) {
-                var j = 0;
+         
+                if (result.results.length > 0) {
+                                 var j = 0;
                 // there will be may Focus Areas returned for each pathway / group
                 var faComponents = result.results.map(function(fa, index) {
                     
@@ -225,6 +228,11 @@ class GroupTabs extends React.Component {
                   i++; // to get next array item for display
                   // console.log(index, "index / i", i);
                 
+                  
+                } else {
+                  var faComponents = <p className="no-paths-message"> No paths for {result.groupname}. Please change search filteres and try again.</p>
+                }
+ 
                 
                 return (<Tab key={uuid.v4()} label={result.groupname} value={index} >
                     {faComponents}
@@ -256,4 +264,12 @@ class GroupTabs extends React.Component {
   }
 }
 
-export default GroupTabs;
+
+const mapStateToProps = (store,ownProps) => {
+    return {
+        paths: store.mainState.paths,
+
+    }
+}
+
+export default connect(mapStateToProps)(GroupTabs);

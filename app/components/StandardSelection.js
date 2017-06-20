@@ -113,11 +113,11 @@ class StandardsSelection extends Component{
     }
 }
 
-const mapStateToProps = (store,ownProps) => {
+const mapStateToProps = (store) => {
     return {
         standardslist: store.mainState.standardslist,
         selectedstandardslist: store.mainState.selectedstandardslist,
-        initialSearchTerms: store.mainState.initialSearchTerms,
+        // initialSearchTerms: store.mainState.initialSearchTerms,
     }
 }
 

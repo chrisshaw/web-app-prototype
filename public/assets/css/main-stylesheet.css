@@ -153,6 +153,10 @@ table {
     margin: 14px;
     margin-left: 14px;
 }
+.no-paths-message {
+    text-align: center;
+    margin: 40px;
+}
 /*input {
     color: black;
 }*/
@@ -193,6 +197,7 @@ navbar {
   background-color: white;
   border-radius: 1px;
 }*/
+
 .raised-button-color {
     color: '#FFFFFF' !important
 }
