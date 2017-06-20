@@ -97,11 +97,7 @@ class GroupSelection extends Component{
                         <Col xs={12} md={12} >
                             <AutoCompleteField  grouplist={component.props.grouplist} selectedgrouplist={this.props.selectedgrouplist} handleRemove={this.handleRemove} handleRequestDelete={this.handleRequestDelete}/>
                         </Col>
-                        <Col xs={12} md={12} > 
-                            <div className='drawer-button-wrapper'> 
-                               
-                            </div>
-                        </Col>
+
                         
                     </Row>
                     <Row>
@@ -110,7 +106,7 @@ class GroupSelection extends Component{
                             <p><em>** select 'x' to remove individual groups from selected group list.</em></p> 
                         </Col>
                         <Col xs={4} md={4} >  
-                         <div className="text-center" onTouchTap={this.handleReset} ><ResetIcon className="reset-icon" /> Reset</div>
+                         <div className="reset-button text-center" onTouchTap={this.handleReset} ><ResetIcon className="reset-icon" /> Reset</div>
                         </Col>  
                     </Row>
                 </div>
