@@ -11,6 +11,7 @@ import AutoCompleteField from './AutoCompleteField';
 import ExpandMoreIcon from "./ExpandMoreIcon";
 import ExpandLessIcon from "./ExpandLessIcon";
 import ResetIcon from "./ResetIcon";
+import ChipInput from 'material-ui-chip-input'
 
 class GroupSelection extends Component{
    constructor(props) {
@@ -52,7 +53,12 @@ class GroupSelection extends Component{
         this.setState({showGroups: !this.state.showGroups})
         // this.state.showGroups ?  this.setState({groupState: "Open"}) : this.setState({groupState: "Close"})
     }
-
+    handleAddChip() {
+            console.log("test add")
+    }
+     handleDeleteChip() {
+  console.log("test delete")
+    }
 
     render(){
 
@@ -61,8 +67,6 @@ class GroupSelection extends Component{
                 // backgroundColor: '#9E9E9E'
             }
         }
-
-       
         var component = this;
         if ( this.props.selectedgrouplist){
              var arrLength = this.props.selectedgrouplist.length;
@@ -80,7 +84,7 @@ class GroupSelection extends Component{
                         <Col xs={11} md={11} >
                             <div className="auto-text-alignment">
                                 <p className="search-text chip-float"> Students in my groups</p>
-                                <GroupChip className="text-center" style={{display: "inline"}} secondary={true} selectedgrouplist={this.props.selectedgrouplist} handleRemove={this.handleRemove} handleRequestDelete={this.handleRequestDelete}/> 
+                                <div className={this.state.showGroups ? "hide" : "expand-icon"} ><GroupChip className="text-center" style={{display: "inline"}} secondary={true} selectedgrouplist={this.props.selectedgrouplist} handleRemove={this.handleRemove} handleRequestDelete={this.handleRequestDelete}/> </div>
                             </div>
                             
                         </Col>
@@ -90,21 +94,24 @@ class GroupSelection extends Component{
 
                 <div className={this.state.showGroups ? "query-builder-wrapper" : "query-builder-wrapper hide"} >
                     <Row>
-                        <Col xs={12} md={6} >
-                            <AutoCompleteField  grouplist={component.props.grouplist} selectedgrouplist={component.props.selectedgrouplist}/>
+                        <Col xs={12} md={12} >
+                            <AutoCompleteField  grouplist={component.props.grouplist} selectedgrouplist={this.props.selectedgrouplist} handleRemove={this.handleRemove} handleRequestDelete={this.handleRequestDelete}/>
                         </Col>
-                        <Col xs={12} md={6} > 
+                        <Col xs={12} md={12} > 
                             <div className='drawer-button-wrapper'> 
-                                <div className="reset-button" onTouchTap={this.handleReset} ><ResetIcon className="reset-icon" /> Reset</div>
+                               
                             </div>
                         </Col>
                         
                     </Row>
                     <Row>
-                        <Col xs={12} md={12} >  
+                        <Col xs={8} md={8} >  
                             <p><strong>* this is a required field.</strong></p> 
                             <p><em>** select 'x' to remove individual groups from selected group list.</em></p> 
                         </Col>
+                        <Col xs={4} md={4} >  
+                         <div className="text-center" onTouchTap={this.handleReset} ><ResetIcon className="reset-icon" /> Reset</div>
+                        </Col>  
                     </Row>
                 </div>
                 </div>

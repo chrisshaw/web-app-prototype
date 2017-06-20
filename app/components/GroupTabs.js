@@ -230,7 +230,7 @@ class GroupTabs extends React.Component {
                 
                   
                 } else {
-                  var faComponents = <p className="no-paths-message"> No paths for {result.groupname}. Please change search filteres and try again.</p>
+                  var faComponents = <p className="no-paths-message"> No paths for {result.groupname}. Please change search filters and try again.</p>
                 }
  
                 

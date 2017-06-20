@@ -24,10 +24,10 @@ import uuid from 'uuid';
         flexWrap: 'wrap',
       },
     };
-    var hasGroups = [];
-    if (this.props.grouplist){
-       hasGroups = this.props.grouplist;
-    }
+    // var hasGroups = [];
+    // if (this.props.grouplist){
+    //    hasGroups = this.props.grouplist;
+    // }
     // var selectedArr = [];
     // selectedArr = [...this.props.selectedgrouplist];
     // console.log("what is " , this.props.selectedgrouplist)
