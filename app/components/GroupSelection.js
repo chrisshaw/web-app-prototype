@@ -84,7 +84,7 @@ class GroupSelection extends Component{
                         <Col xs={11} md={11} >
                             <div className="auto-text-alignment">
                                 <p className="search-text chip-float"> Students in my groups</p>
-                                <div className={this.state.showGroups ? "hide" : "expand-icon"} ><GroupChip className="text-center" style={{display: "inline"}} secondary={true} selectedgrouplist={this.props.selectedgrouplist} handleRemove={this.handleRemove} handleRequestDelete={this.handleRequestDelete}/> </div>
+                                <div className={this.state.showGroups ? "hide" : "expand-icon"} ><GroupChip className="text-center" style={{display: "inline"}} secondary={true} selectedgrouplist={this.props.selectedgrouplist} handleRequestDelete={this.handleRequestDelete}/> </div>
                             </div>
                             
                         </Col>
@@ -95,7 +95,7 @@ class GroupSelection extends Component{
                 <div className={this.state.showGroups ? "query-builder-wrapper" : "query-builder-wrapper hide"} >
                     <Row>
                         <Col xs={12} md={12} >
-                            <AutoCompleteField  grouplist={component.props.grouplist} selectedgrouplist={this.props.selectedgrouplist} handleRemove={this.handleRemove} handleRequestDelete={this.handleRequestDelete}/>
+                            <AutoCompleteField  grouplist={component.props.grouplist} selectedgrouplist={this.props.selectedgrouplist}/>
                         </Col>
 
                         

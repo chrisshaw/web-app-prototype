@@ -21,16 +21,21 @@ import uuid from 'uuid';
 
 var dataSource1 = [];
 
- class AutoCompleteField extends Component {
+ class AutoCompleteTopicField extends Component {
 
   constructor(props) {
     super(props)
     
-     this.state = {textFieldValue: "dummy"}; //setting initial default state
-     this._handleTextFieldChange = this._handleTextFieldChange.bind(this);
+    this.state = {textFieldValue: "", searchText: ""}; //setting initial default state
+    this._handleTextFieldChange = this._handleTextFieldChange.bind(this);
+    // this.handleRequestDelete = this.handleRequestDelete.bind(this);
+    this.handleSelect = this.handleSelect.bind(this);
+
 
   }
-   
+    handleSelect(){
+        this.setState({searchText: ''})
+    }
     _handleTextFieldChange(e) {
         this.setState({
             textFieldValue: ""
@@ -82,11 +87,13 @@ var dataSource1 = [];
           <AutoComplete
             textFieldStyle={{fontSize: 14}}
             hintText="Type and select from list"
+             searchText={this.state.searchText}
             value={this.state.textFieldValue}
             floatingLabelStyle={{color: '#A35FE3'}}
             filter={AutoComplete.caseInsensitiveFilter}
             dataSource={dataSource1}
             underlineShow={true}
+            onNewRequest={this.handleSelect}
             onUpdateInput={(e) => this._handleTextFieldChange(e)}
             underlineDisabledStyle={{ borderColor: '#E6E6E6'}}
             underlineFocusStyle={{borderColor: '#A35FE3'}}
@@ -99,4 +106,4 @@ var dataSource1 = [];
     )}
 }
 
-export default connect()(AutoCompleteField);
+export default connect()(AutoCompleteTopicField);

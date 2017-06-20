@@ -27,15 +27,26 @@ var dataSource1 = [];
   constructor(props) {
     super(props)
     
-     this.state = {textFieldValue: ""}; //setting initial default state
-     this._handleTextFieldChange = this._handleTextFieldChange.bind(this);
+    this.state = {textFieldValue: "", searchText: ""}; //setting initial default state
+    this._handleTextFieldChange = this._handleTextFieldChange.bind(this);
+    this.handleRequestDelete = this.handleRequestDelete.bind(this);
+    this.handleSelect = this.handleSelect.bind(this);
 
   }
+    handleRequestDelete(id) {
+        // console.log("id of group for delete", id);
+        // filter grouplist based on id
+        // console.log(this)
+        helper.removeGroup(id, this.props.dispatch);
+    }
+    handleSelect(){
+        this.setState({searchText: ''})
+    }
    
     _handleTextFieldChange(e) {
-        // var node = ReactDOM.findDOMNode(this.autocomplete);
-        // this.autocomplete.setState({value: ''});
-        // console.log(node);
+        this.setState({searchText: ''})
+         this.setState({textFieldValue: e})
+
         // make sure a full word supplied is in grouplist
         if (dataSource1.indexOf(e) !== -1){
              helper.updateSelectedGroup(e, false, this.props.dispatch);
@@ -60,7 +71,7 @@ var dataSource1 = [];
         var resultComponents = this.props.selectedgrouplist.map(function(result) {
           return <Chip
               key={result.id}
-              onRequestDelete={() => component.props.handleRequestDelete(result.id)}
+              onRequestDelete={() => component.handleRequestDelete(result.id)}
               style={styles.chip}
               >
               {result.name}
@@ -78,17 +89,18 @@ var dataSource1 = [];
    
     return (
         <div>
-            <div style={styles.wrapper}>       
+          <div style={styles.wrapper}>       
           {resultComponents} 
           <AutoComplete
-            ref={ref => this.autocomplete = ref}
             textFieldStyle={{fontSize: 14}}
             hintText="Type and select from list"
+            searchText={this.state.searchText}
             value={this.state.textFieldValue}
             floatingLabelStyle={{color: '#A35FE3'}}
             filter={AutoComplete.caseInsensitiveFilter}
             dataSource={dataSource1}
             underlineShow={true}
+            onNewRequest={this.handleSelect}
             onUpdateInput={(e) => this._handleTextFieldChange(e)}
             underlineDisabledStyle={{ borderColor: '#E6E6E6'}}
             underlineFocusStyle={{borderColor: '#A35FE3'}}

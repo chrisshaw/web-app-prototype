@@ -87,8 +87,7 @@ class SubjectContentSelection extends Component{
                     </Row>
                     <Row>
                         <Col xs={8} md={8} >  
-                            <p><strong>* this is a required field.</strong></p> 
-                            <p><em>** select 'x' to remove individual groups from selected group list.</em></p> 
+                            <p><em>** select 'x' to remove individual subjects from selected subjects list.</em></p> 
                         </Col>
                         <Col xs={4} md={4} >  
                          <div className="reset-button text-center" onTouchTap={this.handleReset} ><ResetIcon className="reset-icon" /> Reset</div>

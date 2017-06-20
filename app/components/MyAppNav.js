@@ -38,6 +38,7 @@ const MyAppNav = () => (
             />
             <MuiThemeProvider muiTheme={muiTheme}><Tabs inkBarStyle={{background: '#A35FE3'}} className="sticky-navbar-tabs">
                 <Tab  label="Home" containerElement={<Link to="/"/>}/>
+                <Tab  label="Path Builder" containerElement={<Link to="/"/>}/>
                 <Tab  label="Import Data" containerElement={<Link to="/csv"/>}/>
             </Tabs></MuiThemeProvider>
         </div>
