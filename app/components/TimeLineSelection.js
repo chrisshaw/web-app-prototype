@@ -94,20 +94,14 @@ class TimeLineSelection extends Component{
 
                 <div className={this.state.showGroups ? "query-builder-wrapper" : "query-builder-wrapper hide"} >
                     <Row>
-                        <Col xs={12} md={6} >
+                        <Col xs={12} md={12} >
                             <AutoCompleteField  grouplist={component.props.grouplist} selectedgrouplist={component.props.selectedgrouplist}/>
                         </Col>
-                        <Col xs={12} md={6} > 
-                            <div className='drawer-button-wrapper'> 
-                                <div className="reset-button" onTouchTap={this.handleReset} ><ResetIcon /> Reset </div>
-                            </div>
-                        </Col>
+       
                         
                     </Row>
                     <Row>
-                        <Col xs={12} md={12} >  
-                            <p><em>* select 'x' to remove any groups that are not required.</em></p> 
-                        </Col>
+
                     </Row>
                 </div>
                 </div>

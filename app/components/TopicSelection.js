@@ -65,7 +65,7 @@ class TopicSelection extends Component{
                         <Col xs={11} md={11} >
                             <div className="auto-text-alignment">
                                 <p className="search-text chip-float"> will explore</p>
-                                <TopicChip className="text-center" style={{display: "inline"}} secondary={true} selectedtopiclist={this.props.selectedtopiclist} handleRemove={this.handleRemove} handleRequestDelete={this.handleRequestDelete}/> 
+                                <div className={this.state.showGroups ? "hide" : "expand-icon"} ><TopicChip className="text-center" style={{display: "inline"}} secondary={true} selectedtopiclist={this.props.selectedtopiclist} handleRemove={this.handleRemove} handleRequestDelete={this.handleRequestDelete}/></div> 
                             </div>
                             
                         </Col>
@@ -75,20 +75,18 @@ class TopicSelection extends Component{
 
                 <div className={this.state.showGroups ? "query-builder-wrapper" : "query-builder-wrapper hide"} >
                     <Row>
-                        <Col xs={12} md={6} >
-                            <AutoCompleteTopicField  topiclist={component.props.topiclist} selectedtopiclist={component.props.selectedtopiclist}/>
-                        </Col>
-                        <Col xs={12} md={6} > 
-                            <div className='drawer-button-wrapper'> 
-                                <div className="reset-button" onTouchTap={this.handleReset} ><ResetIcon /> Reset </div>
-                            </div>
-                        </Col>
-                        
+                        <Col xs={12} md={12} >
+                            <AutoCompleteTopicField  topiclist={component.props.topiclist} selectedtopiclist={component.props.selectedtopiclist} handleRemove={this.handleRemove} handleRequestDelete={this.handleRequestDelete}/>
+                        </Col>              
                     </Row>
                     <Row>
-                        <Col xs={12} md={12} >  
-                            <p><em>* select 'x' to remove any topics that are not required.</em></p> 
+                       <Col xs={8} md={8} >  
+                            <p><strong>* this is a required field.</strong></p> 
+                            <p><em>** select 'x' to remove individual groups from selected topic list.</em></p> 
                         </Col>
+                        <Col xs={4} md={4} >  
+                         <div className="reset-button text-center" onTouchTap={this.handleReset} ><ResetIcon className="reset-icon" /> Reset</div>
+                        </Col> 
                     </Row>
                 </div>
                 </div>

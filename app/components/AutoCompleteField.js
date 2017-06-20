@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+// import ReactDOM from "react-dom";
 import AutoComplete from 'material-ui/AutoComplete';
 import MenuItem from 'material-ui/MenuItem';
 import helper from '../helper';
@@ -26,15 +27,15 @@ var dataSource1 = [];
   constructor(props) {
     super(props)
     
-     this.state = {textFieldValue: "dummy"}; //setting initial default state
+     this.state = {textFieldValue: ""}; //setting initial default state
      this._handleTextFieldChange = this._handleTextFieldChange.bind(this);
 
   }
    
     _handleTextFieldChange(e) {
-        this.setState({
-            textFieldValue: ""
-        });
+        // var node = ReactDOM.findDOMNode(this.autocomplete);
+        // this.autocomplete.setState({value: ''});
+        // console.log(node);
         // make sure a full word supplied is in grouplist
         if (dataSource1.indexOf(e) !== -1){
              helper.updateSelectedGroup(e, false, this.props.dispatch);
@@ -80,6 +81,7 @@ var dataSource1 = [];
             <div style={styles.wrapper}>       
           {resultComponents} 
           <AutoComplete
+            ref={ref => this.autocomplete = ref}
             textFieldStyle={{fontSize: 14}}
             hintText="Type and select from list"
             value={this.state.textFieldValue}

@@ -3,10 +3,25 @@ import AutoComplete from 'material-ui/AutoComplete';
 import MenuItem from 'material-ui/MenuItem';
 import helper from '../helper';
 import {connect } from 'react-redux';
+import Chip from 'material-ui/Chip';
+import uuid from 'uuid';
+
+    var styles = {
+      chip: {
+        margin: 7,
+      },
+      wrapper: {
+        display: 'flex',
+        flexWrap: 'wrap',
+      },
+      auto: {
+          fontSize: 14
+      }
+    };
 
 var dataSource1 = [];
 
- class AutoCompleteTopicField extends Component {
+ class AutoCompleteField extends Component {
 
   constructor(props) {
     super(props)
@@ -18,9 +33,9 @@ var dataSource1 = [];
    
     _handleTextFieldChange(e) {
         this.setState({
-            textFieldValue: e
+            textFieldValue: ""
         });
-        // make sure a full word supplied is in grouplist
+        // make sure a full word supplied is in topiclist
         if (dataSource1.indexOf(e) !== -1){
              helper.updateSelectedTopic(e, false, this.props.dispatch);
         }
@@ -28,20 +43,46 @@ var dataSource1 = [];
     }
   render() {
     // if it exists or is not empty array
-    // console.log("this.props.grouplist", this.props.grouplist[0]);
+    // console.log("this.props.topiclist", this.props.topiclist[0]);
     if ((this.props.topiclist) && (this.props.topiclist[0] !== null)){
         dataSource1 = this.props.topiclist.map(function(group, index) {
             // strip out just the name for the autocomplete field
                 return group.name             
         })
     }
+
+     if (this.props.selectedtopiclist) {
+    // || (Object.keys(this.props.selectedtopiclist).length === 0 && this.props.selectedtopiclist.constructor === Object)){
+    // }  else {
+        // console.log("what is this", this.props.selectedtopiclist)
+        var component = this;
+        var resultComponents = this.props.selectedtopiclist.map(function(result) {
+          return <Chip
+              key={result.id}
+              onRequestDelete={() => component.props.handleRequestDelete(result.id)}
+              style={styles.chip}
+              >
+              {result.name}
+            </Chip>
+
+          })
+      }
+
+    
+    // return (
+    //   <div style={styles.wrapper}>       
+    //      
+    //   </div>
+    // );
    
     return (
         <div>
-        <AutoComplete
+            <div style={styles.wrapper}>       
+          {resultComponents} 
+          <AutoComplete
+            textFieldStyle={{fontSize: 14}}
             hintText="Type and select from list"
             value={this.state.textFieldValue}
-            floatingLabelText="Type 'g' or 'G', case insensitive"
             floatingLabelStyle={{color: '#A35FE3'}}
             filter={AutoComplete.caseInsensitiveFilter}
             dataSource={dataSource1}
@@ -52,8 +93,10 @@ var dataSource1 = [];
             listStyle={{textColor: '#A35FE3'}}
             />
         </div>
+      
+        </div>
 
     )}
 }
 
-export default connect()(AutoCompleteTopicField);
+export default connect()(AutoCompleteField);

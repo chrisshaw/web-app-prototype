@@ -69,7 +69,7 @@ class SubjectContentSelection extends Component{
                         <Col xs={11} md={11} >
                             <div className="auto-text-alignment">
                                 <p className="search-text chip-float">to learn content in </p>
-                                <SubjectContentChip className="text-center" style={{display: "inline"}} secondary={true} selectedsubjectcontentlist={this.props.selectedsubjectcontentlist} handleRemove={this.handleRemove} handleRequestDelete={this.handleRequestDelete}/> 
+                                <div className={this.state.showGroups ? "hide" : "expand-icon"} ><SubjectContentChip className="text-center" style={{display: "inline"}} secondary={true} selectedsubjectcontentlist={this.props.selectedsubjectcontentlist} handleRemove={this.handleRemove} handleRequestDelete={this.handleRequestDelete}/></div>
                             </div>
                             
                         </Col>
@@ -79,20 +79,20 @@ class SubjectContentSelection extends Component{
 
                 <div className={this.state.showGroups ? "query-builder-wrapper" : "query-builder-wrapper hide"} >
                     <Row>
-                        <Col xs={12} md={6} >
-                            <AutoCompleteSubjectField  subjectcontentlist={component.props.subjectcontentlist} selectedsubjectcontentlist={component.props.selectedsubjectcontentlist}/>
+                        <Col xs={12} md={12} >
+                            <AutoCompleteSubjectField  subjectcontentlist={component.props.subjectcontentlist} selectedsubjectcontentlist={component.props.selectedsubjectcontentlist}  handleRemove={this.handleRemove} handleRequestDelete={this.handleRequestDelete}/>
                         </Col>
-                        <Col xs={12} md={6} > 
-                            <div className='drawer-button-wrapper'> 
-                                <div className="reset-button" onTouchTap={this.handleReset} ><ResetIcon /> Reset</div>
-                            </div>
-                        </Col>
+              
                         
                     </Row>
                     <Row>
-                        <Col xs={12} md={12} >  
-                            <p><em>* select 'x' to remove any subjects that are not required.</em></p> 
+                        <Col xs={8} md={8} >  
+                            <p><strong>* this is a required field.</strong></p> 
+                            <p><em>** select 'x' to remove individual groups from selected group list.</em></p> 
                         </Col>
+                        <Col xs={4} md={4} >  
+                         <div className="reset-button text-center" onTouchTap={this.handleReset} ><ResetIcon className="reset-icon" /> Reset</div>
+                        </Col> 
                     </Row>
                 </div>
                 </div>
