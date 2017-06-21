@@ -154,19 +154,20 @@ module.exports = function(app){
         }
         // console.log("queryTopics", queryTopics, req.body.filter.topics[0].name)
         // queryGrades = req.body.filter.subjects.name;  
-        var query = aql`FOR fa, edge, path IN 1..999 outbound ${queryFa} thenFocusOn filter length(${querySubjects}) > 0 ? fa.subject in ${querySubjects} : true filter length(${queryGrades}) > 0 ? TO_ARRAY(fa.grade) any in ${queryGrades} : true filter length(${queryTopics}) > 0 ? fa.topic any in ${queryTopics} : true filter length(${queryStandards}) > 0 ? fa.standardConnections any in ${queryStandards} : true RETURN {focusArea: fa, indexOnPath: length(path.vertices)}`;
+        // var query = aql`FOR fa, edge, path IN 1..999 outbound ${queryFa} thenFocusOn filter length(${querySubjects}) > 0 ? fa.subject in ${querySubjects} : true filter length(${queryGrades}) > 0 ? TO_ARRAY(fa.grade) any in ${queryGrades} : true filter length(${queryTopics}) > 0 ? fa.topic any in ${queryTopics} : true filter length(${queryStandards}) > 0 ? fa.standardConnections any in ${queryStandards} : true RETURN {focusArea: fa, indexOnPath: length(path.vertices)}`;
+        var query = aql`for fa, edge, path in 0..999 outbound ${queryFa} thenFocusOn filter length(${querySubjects}) > 0 ? fa.subject in ${querySubjects} : true filter length(${queryGrades}) > 0 ? TO_ARRAY(fa.grade) any in ${queryGrades} : true filter length(${queryTopics}) > 0 ? fa.topics[* return UPPER(CURRENT)] any in ${queryTopics}[* return UPPER(CURRENT)] : true filter length(${queryStandards}) > 0 ? fa.standardConnections[* return UPPER(CURRENT)] any in ${queryStandards}[* return UPPER(CURRENT)] : true return {focusArea: fa}`;
         console.log(query);
         var resultObj = { "grade":req.body.grade,
                         "initialfa": req.body.faid,
                         "groupid": req.body.group,
                         "groupname":  req.body.groupname}
-                            console.log( resultObj);
+                            // console.log( resultObj);
         db.query(query)
         .then(cursor => {
             // cursor is a cursor for the query result
             resultObj.results = cursor._result;
             
-            
+            console.log( resultObj);
             res.json(resultObj);          
         });
 
