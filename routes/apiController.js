@@ -13,7 +13,8 @@ db.useBasicAuth(config.database.un, config.database.pw);
 db.get()
 .then(err => {
     // the database exists
-    console.log(info);
+    console.log("db", info);
+     console.log(err);
 });
 
 const aql = arangojs.aql;
@@ -118,11 +119,12 @@ module.exports = function(app){
                             "initialfa": req.body.faid,
                             "groupid": req.body.group,
                             "groupname":  req.body.groupname}
+                             console.log( resultObj);
             db.query(query)
             .then(cursor => {
                 // cursor is a cursor for the query result
                 resultObj.results = cursor._result;
-                // console.log( resultObj.results);
+               
                
                 res.json(resultObj);          
             });
@@ -147,6 +149,7 @@ module.exports = function(app){
         // console.log(newgroup);
         // one query per group to get fa and grade  
         getgroups(newgroup).then((result) => {
+            // console.log("grous:", result)
             // console.log("wwant to see this", result._result);
             // hopefully different groups will have different current fa but can handle this scenario in another release
             // console.log("results:", result._result);
@@ -156,14 +159,20 @@ module.exports = function(app){
                 for (var i = 0; i < result._result.length; i++ ){
                     let pos = result._result[i]._id.indexOf('/'); //gives you the numeric index of the symbol
                     let collection = result._result[i]._id.substr(0, pos); //creates a new string starting from the begin
+                    console.log(result._result);
                     if (collection === 'students'){
                         // just take first one as should all be same -- at least for now!!
+                        
                         resultObj.grade = result._result[i].grade;
+                        console.log('collection grade', resultObj.grade);
                     }
                     if (collection === 'focusAreas'){
+                          console.log('collection fa', i, collection);
                         // just take first one as should all be same
                         resultObj.faid = result._result[i]._id;
+                        console.log('collection fa', resultObj._id);
                     }
+                     console.log( resultObj);
                 // }
                 }
                 
@@ -177,6 +186,7 @@ module.exports = function(app){
     })
 
     app.get('/api/teacher/group', function(req, res){
+        console.log("(in here)")
         // console.log('/api/teacher/group');
         //should pass in teacher id as param but for now it is hardcoded to 'Teacher 1'
         let name = "Teacher 1";
@@ -190,6 +200,7 @@ module.exports = function(app){
                 
         db.query(query)
         .then(cursor => {
+               console.log("(in here)", cursor._result)
             // cursor is a cursor for the query result
             res.json(cursor._result);          
         });

@@ -69,8 +69,8 @@ var dataSource2 = [];
         })
     }
 
-    if ((this.props.subjectcontentlist) && (this.props.subjectcontentlist[0] !== null)){
-        dataSource2 = this.props.subjectcontentlist.map(function(group, index) {
+    if ((this.props.selectedsubjectcontentlist) && (this.props.selectedsubjectcontentlist[0] !== null)){
+        dataSource2 = this.props.selectedsubjectcontentlist.map(function(group, index) {
             // strip out just the name for the autocomplete field
                 return group.name
         })

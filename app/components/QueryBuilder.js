@@ -77,6 +77,7 @@ class QueryBuilder extends Component{
         // **TO HERE -- make this a promise cos then need to get paths
         // console.log("sending this to server", this.props.selectedgrouplist);
         // for (var i = 0; i < this.props.selectedgrouplist.length; i++){
+        console.log(i);
         var component = this;
         if ((component.props.selectedgrouplist) && (component.props.selectedgrouplist.length !== 0)){
             
@@ -84,7 +85,7 @@ class QueryBuilder extends Component{
                 // (selectedGroups, selectedStandards, selectedTopics, selectedSubjects, i, dispatch)
                 helper.getFAandGrade(this.props.selectedgrouplist, this.props.selectedstandardslist, this.props.selectedtopiclist, this.props.selectedsubjectcontentlist, i, this.props.dispatch).then((i) => {
                 //initially we have groups, fa and grade - in an array of objects - this.props.searchTerm
-                    // console.log("intial:",this.props.initialSearchTerms);
+                    console.log("intial:",this.props.initialSearchTerms);
                  
                         helper.getPaths(this.props.initialSearchTerms, i, this.props.dispatch).catch(function (error) {
                             
