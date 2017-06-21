@@ -11,7 +11,6 @@ import AutoCompleteField from './AutoCompleteField';
 import ExpandMoreIcon from "./ExpandMoreIcon";
 import ExpandLessIcon from "./ExpandLessIcon";
 import ResetIcon from "./ResetIcon";
-import ChipInput from 'material-ui-chip-input'
 
 class GroupSelection extends Component{
    constructor(props) {
@@ -53,21 +52,14 @@ class GroupSelection extends Component{
         this.setState({showGroups: !this.state.showGroups})
         // this.state.showGroups ?  this.setState({groupState: "Open"}) : this.setState({groupState: "Close"})
     }
-    handleAddChip() {
-            console.log("test add")
-    }
-     handleDeleteChip() {
-  console.log("test delete")
-    }
-
     render(){
 
-        var styles = {
-            button : {
-                // backgroundColor: '#9E9E9E'
-            }
-        }
-        var component = this;
+        // var styles = {
+        //     button : {
+        //         // backgroundColor: '#9E9E9E'
+        //     }
+        // }
+        // var component = this;
         if ( this.props.selectedgrouplist){
              var arrLength = this.props.selectedgrouplist.length;
         }
@@ -95,7 +87,7 @@ class GroupSelection extends Component{
                 <div className={this.state.showGroups ? "query-builder-wrapper" : "query-builder-wrapper hide"} >
                     <Row>
                         <Col xs={12} md={12} >
-                            <AutoCompleteField  grouplist={component.props.grouplist} selectedgrouplist={this.props.selectedgrouplist}/>
+                            <AutoCompleteField  grouplist={this.props.grouplist} selectedgrouplist={this.props.selectedgrouplist} handleRequestDelete={this.handleRequestDelete}/>
                         </Col>
 
                         

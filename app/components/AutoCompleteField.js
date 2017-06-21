@@ -6,6 +6,7 @@ import helper from '../helper';
 import {connect } from 'react-redux';
 import Chip from 'material-ui/Chip';
 import uuid from 'uuid';
+import ChipInput from 'material-ui-chip-input';
 
     var styles = {
       chip: {
@@ -21,6 +22,7 @@ import uuid from 'uuid';
     };
 
 var dataSource1 = [];
+var dataSource2 = [];
 
  class AutoCompleteField extends Component {
 
@@ -31,6 +33,8 @@ var dataSource1 = [];
     this._handleTextFieldChange = this._handleTextFieldChange.bind(this);
     this.handleRequestDelete = this.handleRequestDelete.bind(this);
     this.handleSelect = this.handleSelect.bind(this);
+    // this.handleAddChip = this.handleAddChip.bind(this);
+    // this.handleDeleteChip = this.handleDeleteChip.bind(this);
 
   }
     handleRequestDelete(id) {
@@ -44,7 +48,7 @@ var dataSource1 = [];
     }
    
     _handleTextFieldChange(e) {
-        this.setState({searchText: ''})
+        this.setState({searchText: e})
          this.setState({textFieldValue: e})
 
         // make sure a full word supplied is in grouplist
@@ -53,6 +57,7 @@ var dataSource1 = [];
         }
 
     }
+
   render() {
     // if it exists or is not empty array
     // console.log("this.props.grouplist", this.props.grouplist[0]);
@@ -60,6 +65,12 @@ var dataSource1 = [];
         dataSource1 = this.props.grouplist.map(function(group, index) {
             // strip out just the name for the autocomplete field
                 return group.name             
+        })
+    }
+    if ((this.props.selectedgrouplist) && (this.props.selectedgrouplist[0] !== null)){
+        dataSource2 = this.props.selectedgrouplist.map(function(group, index) {
+            // strip out just the name for the autocomplete field
+                return group.name
         })
     }
 
@@ -80,22 +91,34 @@ var dataSource1 = [];
           })
       }
 
-    
-    // return (
-    //   <div style={styles.wrapper}>       
-    //      
-    //   </div>
-    // );
+// this npm package works great - except for delete - need to rework to pass group.id instead of index or do some calculation to convert match name with group.id
+//            <ChipInput
+//             fullWidth={true}
+//             value={dataSource2}
+//             onRequestAdd={(chip) => this._handleTextFieldChange(chip)}
+//             onRequestDelete={this.props.handleRequestDelete}
+//             textFieldStyle={{fontSize: 14}}
+//             hintText="Type and select from list"
+//             searchText={this.state.searchText}
+//             floatingLabelStyle={{color: '#A35FE3'}}
+//             filter={AutoComplete.caseInsensitiveFilter}
+//             dataSource={dataSource1}
+//             underlineShow={true}
+//             onNewRequest={this.handleSelect}
+//             underlineDisabledStyle={{ borderColor: '#E6E6E6'}}
+//             underlineFocusStyle={{borderColor: '#A35FE3'}}
+//             listStyle={{textColor: '#A35FE3'}}
+// />
    
     return (
         <div>
-          <div style={styles.wrapper}>       
+          <div className="ac-wrapper" style={styles.wrapper}>       
           {resultComponents} 
           <AutoComplete
+            id="text-field-controlled"
             textFieldStyle={{fontSize: 14}}
-            hintText="Type and select from list"
             searchText={this.state.searchText}
-            value={this.state.textFieldValue}
+            value={dataSource2}
             floatingLabelStyle={{color: '#A35FE3'}}
             filter={AutoComplete.caseInsensitiveFilter}
             dataSource={dataSource1}
@@ -105,8 +128,10 @@ var dataSource1 = [];
             underlineDisabledStyle={{ borderColor: '#E6E6E6'}}
             underlineFocusStyle={{borderColor: '#A35FE3'}}
             listStyle={{textColor: '#A35FE3'}}
+            textareaStyle={{position: "absolute"}}
             />
         </div>
+
       
         </div>
 

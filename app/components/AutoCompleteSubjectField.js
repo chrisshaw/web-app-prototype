@@ -37,6 +37,7 @@ var dataSource1 = [];
         this.setState({searchText: ''})
     }
     _handleTextFieldChange(e) {
+         this.setState({searchText: e})
         this.setState({
             textFieldValue: ""
         });

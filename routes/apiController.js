@@ -106,13 +106,13 @@ module.exports = function(app){
                 if (req.body.filter.topics.length > 0){
                     for (var i = 0; i < req.body.filter.topics.length; i++){
                         // console.log("queryTopics ????", queryTopics, req.body.filter.topics[0].name)
-                        queryTopics.push(req.body.filter.topics[0].name)
+                        queryTopics.push(req.body.filter.topics[0].name.toLowerCase())
                     }
                 } 
             }
             // console.log("queryTopics", queryTopics, req.body.filter.topics[0].name)
             // queryGrades = req.body.filter.subjects.name;  
-            var query = aql`FOR fa, edge, path IN 1..999 outbound ${queryFa} thenFocusOn filter length(${querySubjects}) > 0 ? fa.subject in ${querySubjects} : true filter length(${queryGrades}) > 0 ? fa.grade any in ${queryGrades} : true filter length(${queryTopics}) > 0 ? fa.topic any in ${queryTopics} : true filter length(${queryStandards}) > 0 ? fa.standardConnections any in ${queryStandards} : true RETURN {focusArea: fa, indexOnPath: length(path.vertices)}`;
+            var query = aql`FOR fa, edge, path IN 1..999 outbound ${queryFa} thenFocusOn filter length(${querySubjects}) > 0 ? fa.subject in ${querySubjects} : true filter length(${queryGrades}) > 0 ? TO_ARRAY(fa.grade) any in ${queryGrades} : true filter length(${queryTopics}) > 0 ? fa.topic any in ${queryTopics} : true filter length(${queryStandards}) > 0 ? fa.standardConnections any in ${queryStandards} : true RETURN {focusArea: fa, indexOnPath: length(path.vertices)}`;
             console.log(query);
             var resultObj = { "grade":req.body.grade,
                             "initialfa": req.body.faid,

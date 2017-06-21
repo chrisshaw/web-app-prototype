@@ -7,39 +7,48 @@ import NavigationClose from 'material-ui/svg-icons/navigation/close';
 import Tabs, {Tab} from 'material-ui/Tabs';
 import FlatButton from 'material-ui/FlatButton';
 import {Link} from 'react-router';
+import ExpandMoreIcon from './ExpandMoreIcon';
+import HomeIcon from './HomeIcon';
+import UploadIcon from './UploadIcon';
 
-
-const muiTheme = getMuiTheme({
-    palette: {
-    textColor: '#808080',
-    // this one is for the tabs bar and appBar 
-    primary1Color: "#FFFFFF",
-    // primary2Color: "#40C83C",
-    // primary3Color: '#A35FE3',
-    // this one overrides the underline in tabs
-    accent1Color: "#40C83C",
-    accent2Color: '#A35FE3',
-    accent3Color: '#808080',
-    alternateTextColor: '#808080',
-    disabledColor: '#E6E6E6',
-    
+const styles = {
+//   smallIcon: {
+//     width: 36,
+//     height: 36,
+//   },
+  mediumIcon: {
+    width: 48,
+    height: 48,
   },
-  chip: {
-      backgroundColor: '#A35FE3',
-      textColor: '#FFFFFF',
+  largeIcon: {
+    width: 60,
+    height: 60,
   },
-});
+//   small: {
+//     width: 72,
+//     height: 72,
+//     padding: 16,
+//   },
+  medium: {
+    width: 96,
+    height: 96,
+    padding: 24,
+  },
+  large: {
+    width: 120,
+    height: 120,
+    padding: 30,
+  }
+};
 
 const MyAppNav = () => (
         <div >
             <AppBar className="sticky-navbar"
             title={<div className="text-center"><span><img src="./public/assets/img/sidekick.png" className="logo" alt="Sidekick" /></span></div>}
-            showMenuIconButton={false}
-            />
-            <MuiThemeProvider muiTheme={muiTheme}><Tabs inkBarStyle={{background: '#A35FE3'}} className="sticky-navbar-tabs">
-                <Tab  label="Home" containerElement={<Link to="/"/>}/>
-                <Tab  label="Import Data" containerElement={<Link to="/csv"/>}/>
-            </Tabs></MuiThemeProvider>
+            showMenuIconButton={true}
+            iconElementLeft={<IconButton  iconStyle={styles.mediumIcon} style={styles.medium} className="left-nav" containerElement={<Link to="/"/>} label="Home"><HomeIcon/></IconButton>}
+            iconElementRight={<IconButton iconStyle={styles.mediumIcon} style={styles.medium} className="right-nav" containerElement={<Link to="/csv"/>} label="Upload Data"><UploadIcon/></IconButton>}
+            />    
         </div>
 
 );
