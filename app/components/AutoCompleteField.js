@@ -34,7 +34,7 @@ var dataSource2 = [];
     this.handleRequestDelete = this.handleRequestDelete.bind(this);
     this.handleSelect = this.handleSelect.bind(this);
     // this.handleAddChip = this.handleAddChip.bind(this);
-    // this.handleDeleteChip = this.handleDeleteChip.bind(this);
+    this.handleDeleteChip = this.handleDeleteChip.bind(this);
 
   }
     handleRequestDelete(id) {
@@ -55,6 +55,19 @@ var dataSource2 = [];
         if (dataSource1.indexOf(e) !== -1){
              helper.updateSelectedGroup(e, false, this.props.dispatch);
         }
+
+    }
+    handleDeleteChip(chip, index){
+        console.log(chip, index)
+       for (var i=0; i<this.props.selectedgrouplist.length; i++){
+           console.log(this.props.selectedgrouplist[i].name)
+           if(this.props.selectedgrouplist[i].name === chip){
+             this.props.handleRequestDelete(this.props.selectedgrouplist[i].id);
+             return;
+           }
+       }
+       // find the group.id and pass to delete
+     
 
     }
 
@@ -112,25 +125,24 @@ var dataSource2 = [];
    
     return (
         <div>
-          <div className="ac-wrapper" style={styles.wrapper}>       
-          {resultComponents} 
-          <AutoComplete
-            id="text-field-controlled"
-            textFieldStyle={{fontSize: 14}}
-            searchText={this.state.searchText}
+
+        <ChipInput
+            fullWidth={true}
             value={dataSource2}
+            onRequestAdd={(chip) => this._handleTextFieldChange(chip)}
+            onRequestDelete={(chip, index) => this.handleDeleteChip(chip, index)}
+            textFieldStyle={{fontSize: 14}}
+            hintText="Type and select from list"
+            searchText={this.state.searchText}
             floatingLabelStyle={{color: '#A35FE3'}}
             filter={AutoComplete.caseInsensitiveFilter}
             dataSource={dataSource1}
             underlineShow={true}
             onNewRequest={this.handleSelect}
-            onUpdateInput={(e) => this._handleTextFieldChange(e)}
             underlineDisabledStyle={{ borderColor: '#E6E6E6'}}
             underlineFocusStyle={{borderColor: '#A35FE3'}}
             listStyle={{textColor: '#A35FE3'}}
-            textareaStyle={{position: "absolute"}}
-            />
-        </div>
+/>
 
       
         </div>

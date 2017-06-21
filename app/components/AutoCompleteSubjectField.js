@@ -5,6 +5,7 @@ import helper from '../helper';
 import {connect } from 'react-redux';
 import Chip from 'material-ui/Chip';
 import uuid from 'uuid';
+import ChipInput from 'material-ui-chip-input';
 
     var styles = {
       chip: {
@@ -20,7 +21,7 @@ import uuid from 'uuid';
     };
 
 var dataSource1 = [];
-
+var dataSource2 = [];
  class AutoCompleteSubjectField extends Component {
 
   constructor(props) {
@@ -30,7 +31,7 @@ var dataSource1 = [];
     this._handleTextFieldChange = this._handleTextFieldChange.bind(this);
     // this.handleRequestDelete = this.handleRequestDelete.bind(this);
     this.handleSelect = this.handleSelect.bind(this);
-
+    this.handleDeleteChip = this.handleDeleteChip.bind(this);
 
   }
     handleSelect(){
@@ -47,6 +48,17 @@ var dataSource1 = [];
         }
 
     }
+    handleDeleteChip(chip, index){
+        console.log(chip, index)
+        for (var i=0; i<this.props.selectedsubjectcontentlist.length; i++){
+            console.log(this.props.selectedsubjectcontentlist[i].name)
+            if(this.props.selectedsubjectcontentlist[i].name === chip){
+                this.props.handleRequestDelete(this.props.selectedsubjectcontentlist[i].id);
+                return;
+            }
+        }
+    // find the group.id and pass to delete
+}
   render() {
     // if it exists or is not empty array
     // console.log("this.props.subjectcontentlist", this.props.subjectcontentlist[0]);
@@ -54,6 +66,13 @@ var dataSource1 = [];
         dataSource1 = this.props.subjectcontentlist.map(function(group, index) {
             // strip out just the name for the autocomplete field
                 return group.name             
+        })
+    }
+
+    if ((this.props.subjectcontentlist) && (this.props.subjectcontentlist[0] !== null)){
+        dataSource2 = this.props.subjectcontentlist.map(function(group, index) {
+            // strip out just the name for the autocomplete field
+                return group.name
         })
     }
 
@@ -83,25 +102,24 @@ var dataSource1 = [];
    
     return (
         <div>
-            <div style={styles.wrapper}>       
-          {resultComponents} 
-          <AutoComplete
+        <ChipInput
+            fullWidth={true}
+            value={dataSource2}
+            onRequestAdd={(chip) => this._handleTextFieldChange(chip)}
+            onRequestDelete={(chip, index) => this.handleDeleteChip(chip, index)}
             textFieldStyle={{fontSize: 14}}
             hintText="Type and select from list"
-             searchText={this.state.searchText}
-            value={this.state.textFieldValue}
+            searchText={this.state.searchText}
             floatingLabelStyle={{color: '#A35FE3'}}
             filter={AutoComplete.caseInsensitiveFilter}
             dataSource={dataSource1}
             underlineShow={true}
-             onNewRequest={this.handleSelect}
-            onUpdateInput={(e) => this._handleTextFieldChange(e)}
+            onNewRequest={this.handleSelect}
             underlineDisabledStyle={{ borderColor: '#E6E6E6'}}
             underlineFocusStyle={{borderColor: '#A35FE3'}}
             listStyle={{textColor: '#A35FE3'}}
-            />
-        </div>
-      
+/>
+ 
         </div>
 
     )}
