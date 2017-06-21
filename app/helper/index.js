@@ -67,7 +67,16 @@ var helpers = {
        
 
     },
+    saveCSVData: function(data, dispatch){
+        console.log("data to be saved", data)
+        return axios.post('/csv/data', data).then(function(response){
+            console.log(response.data)
+            // dispatch(actions.viewUploadedCSVData(response.data))
+            return;
 
+                                
+        })
+    },
     toggleDrawer: function(action, dispatch){
         // console.log("toggledrawer", action);
         dispatch(actions.closePathBuilderDrawer(action))
@@ -86,6 +95,26 @@ var helpers = {
             dispatch(actions.updateGroupList(false, 0, response.data));
             return response.data;
         })
+    },
+    saveSelectedFA(e, dispatch){
+        // need name and id
+       dispatch(actions.saveSelectedFA(e));
+
+    },
+    getFocusArea: function(dispatch){
+        // for now these are hard coded!!!!!
+        console.log("here too")
+        // var topicArr = [{id: 0, name: "Immigration"}, {id: 1, name: "Identity"}]
+        return axios.get('/api/focusarea').then(function(response) {
+            console.log("is there data", response.data);
+            // send results to redux store for use by Results component
+                // console.log("getgroups results", response.data);
+            dispatch(actions.getFAList(response.data))
+            return;
+        })
+        // console.log("getting topics", topicArr);
+       
+       
     },
     getTopics: function(dispatch){
         // for now these are hard coded!!!!!

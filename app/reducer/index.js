@@ -59,8 +59,10 @@ const mainReducer = (state={intialstate}, action) => {
         //     return Object.assign({},state, {fadetail: action.fadetail});    
         case 'VIEW_CSV_DATA':
             return Object.assign({},state, {csvdata: action.csvdata}); 
-        // case 'NO_DATA_FOR_GROUP':
-        //     return Object.assign({},state, {nopathdata: [...state.nopathdata, newObj] ); 
+        case 'GET_FA':
+            return Object.assign({},state, {focusArea: action.focusArea});
+        case 'SELECTED_FA':
+            return Object.assign({},state, {selectedFocusArea: action.selectedFocusArea});
         case 'UPDATE_CSV_NAME':
             return Object.assign({},state, {
                 csvdata: state.csvdata.map(data => data.id === action.id ?
@@ -80,15 +82,23 @@ const mainReducer = (state={intialstate}, action) => {
                 ) 
             })    
         case 'UPDATE_CSV_FA':
-            return Object.assign({},state, {
-            
-                csvdata: state.csvdata.map(data => data.id === action.id ?
-                    // transform the one with a matching id
+           console.log("in reducer", action.focusArea);
+           if (state.csvdata){
+
+                return Object.assign({},state, {
+         
+                csvdata: state.csvdata.map(data => data.focusArea !== action.focusArea ?
+                    // map all to new FA
                     { ...data, focusArea: action.focusArea } : 
                     // otherwise return original data
                     data
                 ) 
-            })    
+            })   
+
+           } else {
+               return Object.assign({},state, {...state.csvdata})
+           }
+            
         case 'TOGGLE_DRAWER':
             return Object.assign({},state, {toggledrawer: action.toggledrawer});    
         case 'UPDATE_PATHS':

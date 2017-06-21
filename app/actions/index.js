@@ -47,15 +47,27 @@ updateCSVDataGrade: (grade, id) => {
     }
 },
 
-updateCSVDataFA: (focusArea, id) => {
+updateCSVDataFA: (focusArea) => {
   // console.log("action id, name", id, focusArea);
     return {
       type: 'UPDATE_CSV_FA',
-      id: id,
       focusArea,
     }
 },
-
+getFAList: (focusArea) => {
+    // console.log("action id, name", id, focusArea);
+    return {
+      type: 'GET_FA',
+      focusArea,
+    }
+},
+saveSelectedFA: (selectedFocusArea) => {
+    // console.log("action id, name", id, focusArea);
+    return {
+      type: 'SELECTED_FA',
+      selectedFocusArea,
+    }
+},
 closePathBuilderDrawer: (toggledrawer) => {
     // action for main pathbuilder drawer - hide and show = false or true
     return {

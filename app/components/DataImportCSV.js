@@ -2,11 +2,13 @@ import React, { Component } from 'react';
 import {connect } from 'react-redux';
 import Paper from 'material-ui/Paper';
 import RaisedButton from 'material-ui/RaisedButton';
+import FlatButton from 'material-ui/FlatButton';
 import FontIcon from 'material-ui/FontIcon';
 import {Grid, Row, Col} from 'react-bootstrap';
 import helper from '../helper';
 import uuid from 'uuid';
 import DataImportTable from './DataImportTable';
+import AutoCompleteCSVFAField from './AutoCompleteCSVFAField';
 
 const style = {
   height: '80vh',
@@ -31,30 +33,80 @@ const style = {
 class DataImportCSV extends Component{
     constructor(props){
         super(props);
+        this.handleUploadFile = this.handleUploadFile.bind(this);  
+        this.handleSaveFile = this.handleSaveFile.bind(this);  
         // injectTapEventPlugin();
+      
+    }
+    componentWillMount(){
+        // get the focus areas
+       
+        helper.getFocusArea(this.props.dispatch);
 
     }
-    handleTouchTap(e){
+    handleUploadFile(e){
         // alert("ok do something now!")
         // console.log(e.target.files)
         // capture file - now do something with it
         helper.submitCSVFile(e, this.props.dispatch);
 
     }
+    handleSaveFile(){
+        // alert("ok do something now!")
+        // console.log(e.target.files)
+        // capture file - now do something with it
+        // helper.submitCSVFile(e, this.props.dispatch);
+
+        console.log(this.props.csvdata);
+        helper.saveCSVData(this.props.csvdata, this.props.dispatch);
+    }
+    // handleChangeFA(){
+
+    //     helper.updateCSV(data.focusArea, this.tabIndex, "focusArea", this.dispatch ); 
+       
+    // }
+ 
     render(){
 
- 
+ console.log("selectedFocusArea", this.props.selectedFocusArea)
+  console.log("csv", this.props.csvdata)
 
         // add a save button and a clear button
 
         return(
             <Grid>  
+                
+                        {(this.props.csvdata) && (this.props.csvdata.length > 0) ? (
+                <Row>
+                    <Col xs={12} md={3} className="text-center" ><p className="focus-area-change">Update Focus Area to: </p></Col>
+            
+                    <Col xs={12} md={6}><div><AutoCompleteCSVFAField focusArea={this.props.focusArea} selectedFocusArea={this.props.selectedFocusArea}/></div>
+
+        </Col>
+                    <Col xs={12} md={3} />
+                </Row>) : ""}
+                            
+                
                 <Row>
                     <Col xs={12} md={12}>
                         <Paper className="data-import-paper" style={style} zDepth={3} >
-                            <DataImportTable />
+                            <DataImportTable csvdata={this.props.csvdata}  focusArea={this.props.focusArea} selectedFocusArea={this.props.selectedFocusArea}/>
                         </Paper>
                     </Col>
+                </Row>
+                <Row>
+                    <Col xs={2} md={4} />
+                    <Col xs={8} md={4} >
+                        <FlatButton
+                        label="Save Data"
+                        secondary={true}
+                        style={style.button}
+                        type="submit"
+                        containerElement='label' // <-- Just add me!
+                        onTouchTap={this.handleSaveFile}
+                        />
+                    </Col>
+                    <Col xs={2} md={4} />
                 </Row>
                 <Row>
                     <Col xs={2} md={4} />
@@ -66,7 +118,7 @@ class DataImportCSV extends Component{
                         type="submit"
                         containerElement='label' // <-- Just add me!
                         icon={<FontIcon className="muidocs-icon-navigation-expand-more" />}>
-                        <input type="file" style={{ display: 'none' }} onChange={e => this.handleTouchTap(e)}/>
+                        <input type="file" style={{ display: 'none' }} onChange={e => this.handleUploadFile(e)}/>
                         </RaisedButton>
                     </Col>
                     <Col xs={2} md={4} />
@@ -82,6 +134,8 @@ class DataImportCSV extends Component{
 const mapStateToProps = (store,ownProps) => {
     return {
         csvdata: store.mainState.csvdata,
+        focusArea:  store.mainState.focusArea,
+        selectedFocusArea: store.mainState.selectedFocusArea
         
     }
 }

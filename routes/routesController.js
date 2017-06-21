@@ -1,8 +1,20 @@
 
 var path = require('path');
-// var Student = require('../models/student');
+// // var Student = require('../models/student');
+// const db = arangojs(config.database.hostPort);
+// db.useDatabase(config.database.name);
+// db.useBasicAuth(config.database.un, config.database.pw);
+// // test connection
+// db.get()
+// .then(err => {
+//     // the database exists
+//     console.log("db", info);
+//      console.log(err);
+// });
 
 module.exports = function(app){
+
+
 
     app.post("/csv/file", function(req, res, next){
         // main entry point
@@ -37,30 +49,6 @@ module.exports = function(app){
 
         }
  
-        // send back array of data to be viewed / edited and then saved to database
-
-        // var newStudent = new Student(studentObj);
-        //     console.log(i, csvToArr.length-1 );
-        //     newStudent.save(function (err, student) {
-        //         if (err) return errCount++;
-        //         // if no error then save results to resultsArr for display
-        //             resultsArr.push(student);
-        //         // if all the csv data has been saved then return to client
-              
-        //         // var returnDataObj = {
-        //         //     data: resultsArr,
-        //         //     err: errCount
-        //         // }
-        //         // if (i >= csvToArr.length ){
-
-        //         //     console.log(returnDataObj);
-        //         //     res.json(returnDataObj);
-        //         // }
-        //     });
-        // if (errCount !== 0) {
-        // }
-        // query database and send back the data for display
-       
     })
 
     app.use(function(req, res){

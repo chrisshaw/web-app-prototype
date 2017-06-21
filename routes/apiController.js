@@ -21,31 +21,88 @@ const aql = arangojs.aql;
 
 module.exports = function(app){
 
+     app.post("/csv/data", function(req, res, next){
+        var studentObj = req.body;
+        // console.log(studentObj);
+        // save students to database
+        var students =  db.collection('students');
+        var groups =  db.collection('groups');
+        var teacherToGroups = db.edgeCollection('teacherToGroups');
+        var groupToStudents = db.edgeCollection('groupToStudents');
+        var studentToCurrentFA = db.edgeCollection('studentToCurrentFA');
+        students.save(studentObj).then(function(student){
+            var students =  student;   // has student id
+                 console.log(students)
+                 // all dummy ....
+                // create a group and get it - use key to make it unique
+               
+                var newgroupObj = {name: studentObj[0].focusArea + '_' + students[0]._key}
+                groups.save(newgroupObj).then(function(groups){
+                    console.log(groups)
+                    // map group to teacher 1 - teachers/1271022
+                    teacherToGroups.save({
+                        _from: 'teachers/2479769',
+                        _to: groups._id
+                    }).then(
+                        () => console.log("edge created"),
+                        err => console.log('Failed to create edge :', err)
+                    )
+                    // take the first FA
+                    let faQuery = studentObj[0].focusArea;
+                    // get FA id then do final edge mappings
+                    var query = aql`FOR fa in focusAreas FILTER fa["Focus Area"] == ${faQuery} RETURN fa._id`;
+                        console.log(query);
+                        db.query(query)
+                        .then(cursor => {
+                            
+                            
+                            // cursor is a cursor for the query result
+                                if (cursor._result.length > 0){
+                                    var focusArea = cursor._result[0];
+                                    console.log(focusArea)
+                                    for (var i = 0 ; i  < students.length; i++){
+                                    groupToStudents.save({
+                                        _from: groups._id,
+                                        _to: students[i]._id
+                                    }).then(
+                                        () => console.log("edge created"),
+                                        err => console.log('Failed to create edge :', err)
+                                    )
+                                
+                                    // students to fa
+                                    studentToCurrentFA.save({
+                                        _from: students[i]._id,
+                                        _to: focusArea
+                                    }).then(
+                                        () => console.log("edge created"),
+                                        err => console.log('Failed to create edge :', err)
+                                    )
+
+                                }        
+
+                            }
+                            
+                        });
+
+                    
+  
+                   
+
+                })
+
+            })
     
-    // // get request from client for grade
-    // app.get('/focusarea/:year', function(req, res){
-    //     console.log("req.params.year", req.params.year);
-    //     var year = parseInt(req.params.year); 
-    //     // take what we need out 
-    //     Course.find({'focusAreas.focusAreaInfos.courses.gradeLevel': year}).exec(function (err, course) {
-    //         if (err) return console.log(err);
-    //             console.log(course[0]);
-    //             // for now send whole object ignoring actual year requested
-    //             res.json(course[0]);
-    //         })
-    // })
-    // app.get('/api/fa/grades', function(req, res){
-    //     let groups = ['groups/1271115', 'groups/1271134', 'groups/1271087'];
-    //     for (var i = 0; i < groups.length; i++){
-    //         let query = aql`for v, edge, path in 1..3 outbound ${groups[i]} groupToStudents, studentToCurrentFA RETURN v`
-    //         console.log(query);
-    //         db.query(query)
-    //         .then(cursor => {
-    //             // cursor is a cursor for the query result
-    //           resultArr.push(cursor._result);        
-    //         });
-    //     }
-    // })
+     
+
+
+       
+       
+        // get group 1 id
+        // get FAid
+        // map to edge table
+
+     })
+
 
     app.post('/api/path/', function(req, res){
         // had to do a post in order to send over object
@@ -64,70 +121,54 @@ module.exports = function(app){
         let queryStandards = []; //e.g
         let querySubjects = [];
         let queryTopics = []; //e.g., ['immigration','identity'  
-        // console.log(resultArr);
-        // let query = aql`for v, edge, path in 1..3 outbound ${groups} groupToStudents, studentToCurrentFA RETURN v`
-        // console.log(query);
-        // db.query(query)
-        // .then(cursor => {
-        //     // cursor is a cursor for the query result
-        //    console.log(cursor._result);         
-        // });
-        
-       
-        // // convert standards to UPPER 
-        // let queryStandards = ['CCSS.ELA-LITERACY.RI.9-10.8', 'CCSS.ELA-LITERACY.L.9-10.1.A'];
-        // let queryStandards = ['CCSS.Math.Content.HSS-MD.A','CCSS.ELA-Literacy.SL.3.2','CCSS.Math.Content.HSN-RN.A.1','CCSS.ELA-Literacy.RI.11-12.1', 'CCSS.ELA-LITERACY.RI.9-10.8','CCSS.ELA-Literacy.RI.11-12.6','CCSS.ELA-LITERACY.L.9-10.2']
-        // let queryStandards = ['AP-ENG-LANG.R.3', 'CCSS.ELA-LITERACY.RL.9-10.3'];
-        // console.log("submect:", req.body.filter.subjects, req.body.filter.standards, req.body.filter.grades)
-        // console.log(req.body, "req.body")
-        // if (Object.keys(req.body).length > 0 ){
- 
-            if (req.body.filter.subjects){
-                if (req.body.filter.subjects.length > 0){
-                    for (var i = 0; i < req.body.filter.subjects.length; i++){
-                        querySubjects.push(req.body.filter.subjects[i].name);
-                    }
+
+
+        if (req.body.filter.subjects){
+            if (req.body.filter.subjects.length > 0){
+                for (var i = 0; i < req.body.filter.subjects.length; i++){
+                    querySubjects.push(req.body.filter.subjects[i].name);
                 }
             }
-            if (req.body.filter.standards){
-                if (req.body.filter.standards.length > 0){
-                    for (var i = 0; i < req.body.filter.standards.length; i++){
-                        queryStandards.push(req.body.filter.standards[i].name.toUpperCase());
-                    }
+        }
+        if (req.body.filter.standards){
+            if (req.body.filter.standards.length > 0){
+                for (var i = 0; i < req.body.filter.standards.length; i++){
+                    queryStandards.push(req.body.filter.standards[i].name.toUpperCase());
                 }
             }
-            if (req.body.grade){
-                // if(req.body.grades.length > 0){
-                    // for (var i = 0; i < req.body.grade.length; i++){
-                        queryGrades.push(req.body.grade.toString())
-                    // }
-                // } 
-            }
-            if (req.body.filter.topics){
-                if (req.body.filter.topics.length > 0){
-                    for (var i = 0; i < req.body.filter.topics.length; i++){
-                        // console.log("queryTopics ????", queryTopics, req.body.filter.topics[0].name)
-                        queryTopics.push(req.body.filter.topics[0].name.toLowerCase())
-                    }
-                } 
-            }
-            // console.log("queryTopics", queryTopics, req.body.filter.topics[0].name)
-            // queryGrades = req.body.filter.subjects.name;  
-            var query = aql`FOR fa, edge, path IN 1..999 outbound ${queryFa} thenFocusOn filter length(${querySubjects}) > 0 ? fa.subject in ${querySubjects} : true filter length(${queryGrades}) > 0 ? TO_ARRAY(fa.grade) any in ${queryGrades} : true filter length(${queryTopics}) > 0 ? fa.topic any in ${queryTopics} : true filter length(${queryStandards}) > 0 ? fa.standardConnections any in ${queryStandards} : true RETURN {focusArea: fa, indexOnPath: length(path.vertices)}`;
-            console.log(query);
-            var resultObj = { "grade":req.body.grade,
-                            "initialfa": req.body.faid,
-                            "groupid": req.body.group,
-                            "groupname":  req.body.groupname}
-                             console.log( resultObj);
-            db.query(query)
-            .then(cursor => {
-                // cursor is a cursor for the query result
-                resultObj.results = cursor._result;
-               
-               
-                res.json(resultObj);          
-            });
+        }
+        if (req.body.grade){
+            // if(req.body.grades.length > 0){
+                // for (var i = 0; i < req.body.grade.length; i++){
+                    queryGrades.push(req.body.grade.toString())
+                // }
+            // } 
+        }
+        if (req.body.filter.topics){
+            if (req.body.filter.topics.length > 0){
+                for (var i = 0; i < req.body.filter.topics.length; i++){
+                    // console.log("queryTopics ????", queryTopics, req.body.filter.topics[0].name)
+                    queryTopics.push(req.body.filter.topics[0].name.toLowerCase())
+                }
+            } 
+        }
+        // console.log("queryTopics", queryTopics, req.body.filter.topics[0].name)
+        // queryGrades = req.body.filter.subjects.name;  
+        var query = aql`FOR fa, edge, path IN 1..999 outbound ${queryFa} thenFocusOn filter length(${querySubjects}) > 0 ? fa.subject in ${querySubjects} : true filter length(${queryGrades}) > 0 ? TO_ARRAY(fa.grade) any in ${queryGrades} : true filter length(${queryTopics}) > 0 ? fa.topic any in ${queryTopics} : true filter length(${queryStandards}) > 0 ? fa.standardConnections any in ${queryStandards} : true RETURN {focusArea: fa, indexOnPath: length(path.vertices)}`;
+        console.log(query);
+        var resultObj = { "grade":req.body.grade,
+                        "initialfa": req.body.faid,
+                        "groupid": req.body.group,
+                        "groupname":  req.body.groupname}
+                            console.log( resultObj);
+        db.query(query)
+        .then(cursor => {
+            // cursor is a cursor for the query result
+            resultObj.results = cursor._result;
+            
+            
+            res.json(resultObj);          
+        });
 
         
 
@@ -185,6 +226,22 @@ module.exports = function(app){
         // })
     })
 
+
+    app.get('/api/focusarea', function(req, res){
+
+        var query = aql`FOR fa in focusAreas SORT fa["Focus Area"] RETURN {name: fa["Focus Area"], id: fa._id}`;
+               
+        console.log(query)    
+        db.query(query)
+        .then(cursor => {
+               console.log("(in here)", cursor._result)
+            // cursor is a cursor for the query result
+            res.json(cursor._result);          
+        });
+
+
+    //    res.json({data: "found"})
+    })
     app.get('/api/teacher/group', function(req, res){
         console.log("(in here)")
         // console.log('/api/teacher/group');

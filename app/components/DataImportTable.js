@@ -75,9 +75,9 @@ class DataImportTable extends Component {
             if (data.grade){
                 helper.updateCSV(data.grade, this.tabIndex, "grade", this.dispatch ); 
             } 
-            if (data.focusArea){
-                helper.updateCSV(data.focusArea, this.tabIndex, "focusArea", this.dispatch ); 
-            } 
+            // if (data.focusArea){
+            //     helper.updateCSV(data.focusArea, this.tabIndex, "focusArea", this.dispatch ); 
+            // } 
 
           
     }
@@ -89,15 +89,22 @@ class DataImportTable extends Component {
     // }
     render() {
         var component = this;
-        //   console.log("csvdata", this.props.csvdata)
+          console.log("selectedFocusArea table", this.props.selectedFocusArea)
+  
         if (this.props.csvdata) {
+            console.log("selectedFocusArea table", component.props.selectedFocusArea);
             var resultsComponent = component.props.csvdata.map( function (row, index){
+                if (component.props.selectedFocusArea){
+                    var displaySelectedFA = component.props.selectedFocusArea
+                } else {
+                     var displaySelectedFA = row.focusArea;
+                }
                 return (<TableRow key={uuid.v4()}>
                     <TableRowColumn style={{color: '#000000'}}>
                         <Edit
                             validate={component.customValidateText}
                             activeClassName="editing"
-                            text= {component.props.csvdata[index].name}
+                            text= {row.name}
                             tabIndex={row.id}
                             dispatch={component.props.dispatch}
                             paramName="name"
@@ -117,7 +124,7 @@ class DataImportTable extends Component {
                         <Edit
                             validate={component.customValidateText}
                             activeClassName="editing"
-                            text= {component.props.csvdata[index].grade}
+                            text= {row.grade}
                             tabIndex={row.id}
                             paramName="grade"
                             dispatch={component.props.dispatch}
@@ -134,25 +141,10 @@ class DataImportTable extends Component {
                         />
                     </TableRowColumn>
                     <TableRowColumn style={{color: '#000000'}}>
-                        <Edit
-                            validate={component.customValidateText}
-                            activeClassName="editing"
-                            text= {component.props.csvdata[index].focusArea}
-                            tabIndex={row.id}
-                            paramName="focusArea"
-                            dispatch={component.props.dispatch}
-                            change={component.dataChanged}
-                            style={{
-
-                                minWidth: 150,
-                                margin: 5,
-                                padding: 5,
-                                fontSize: 15,
-                                outline: 0,
-                                border: 0
-                            }}
-                        />
-                    
+     
+                       
+                           {displaySelectedFA}
+                       
                     </TableRowColumn>
                 </TableRow>)
             })
@@ -187,11 +179,13 @@ class DataImportTable extends Component {
 
 
 
-const mapStateToProps = (store,ownProps) => {
-    return {
-        csvdata: store.mainState.csvdata,     
-    }
-}
+// const mapStateToProps = (store,ownProps) => {
+//     return {
+//         csvdata: store.mainState.csvdata,    
+//         focusArea:  store.mainState.focusArea,
+//         selectedFocusArea: store.mainState.selectedFocusArea,
+//     }
+// }
 
-export default connect(mapStateToProps)(DataImportTable);
+export default connect()(DataImportTable);
 

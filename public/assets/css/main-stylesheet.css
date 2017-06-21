@@ -246,7 +246,10 @@ navbar {
     color: #2FBB2F;
     font-size: 15px;
 }
-
+.focus-area-change  {
+    margin: 0px;
+    margin-top: 15px;
+}
 .ac-wrapper {
     font-size: 16px; 
     line-height: 24px; 
