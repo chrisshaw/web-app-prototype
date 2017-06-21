@@ -9,6 +9,7 @@ import helper from '../helper';
 import uuid from 'uuid';
 import DataImportTable from './DataImportTable';
 import AutoCompleteCSVFAField from './AutoCompleteCSVFAField';
+import ReactDOM from "react-dom";
 
 const style = {
   height: '80vh',
@@ -46,9 +47,13 @@ class DataImportCSV extends Component{
     }
     handleUploadFile(e){
         // alert("ok do something now!")
-        // console.log(e.target.files)
-        // capture file - now do something with it
+        console.log(e);
+        // send to server
         helper.submitCSVFile(e, this.props.dispatch);
+        // reset input value
+        var node = ReactDOM.findDOMNode(this.inputEntry);
+        node.value="";
+        
 
     }
     handleSaveFile(){
@@ -118,7 +123,7 @@ class DataImportCSV extends Component{
                         type="submit"
                         containerElement='label' // <-- Just add me!
                         icon={<FontIcon className="muidocs-icon-navigation-expand-more" />}>
-                        <input type="file" style={{ display: 'none' }} onChange={e => this.handleUploadFile(e)}/>
+                        <input type="file" style={{ display: 'none' }} ref={el => this.inputEntry = el}  onChange={e => this.handleUploadFile(e)}/>
                         </RaisedButton>
                     </Col>
                     <Col xs={2} md={4} />

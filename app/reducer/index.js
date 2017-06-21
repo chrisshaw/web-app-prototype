@@ -58,6 +58,7 @@ const mainReducer = (state={intialstate}, action) => {
         // case 'VIEW_DETAIL':
         //     return Object.assign({},state, {fadetail: action.fadetail});    
         case 'VIEW_CSV_DATA':
+        console.log(action.csvdata)
             return Object.assign({},state, {csvdata: action.csvdata}); 
         case 'GET_FA':
             return Object.assign({},state, {focusArea: action.focusArea});

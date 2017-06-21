@@ -27,7 +27,7 @@ var helpers = {
    
     submitCSVFile: function(e, dispatch){
                 var files = e.target.files || e.dataTransfer.files 
-               
+               console.log("in here uploading file")
                 if (files) {
                     //send only the first one
                     var file = files[0];
@@ -68,14 +68,18 @@ var helpers = {
 
     },
     saveCSVData: function(data, dispatch){
-        console.log("data to be saved", data)
-        return axios.post('/csv/data', data).then(function(response){
-            console.log(response.data)
-            // dispatch(actions.viewUploadedCSVData(response.data))
-            return;
-
-                                
+       
+        if (data){
+             console.log("data to be saved", data)
+            return axios.post('/csv/data', data).then(function(response){
+            console.log("in here......")
+            // clear out data ???????
+            dispatch(actions.viewUploadedCSVData([]));
+            return;               
         })
+
+        }
+
     },
     toggleDrawer: function(action, dispatch){
         // console.log("toggledrawer", action);

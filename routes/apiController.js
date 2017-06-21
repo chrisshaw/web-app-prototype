@@ -32,7 +32,7 @@ module.exports = function(app){
         var studentToCurrentFA = db.edgeCollection('studentToCurrentFA');
         students.save(studentObj).then(function(student){
             var students =  student;   // has student id
-                 console.log(students)
+                 console.log(studentObj)
                  // all dummy ....
                 // create a group and get it - use key to make it unique
                
@@ -77,11 +77,11 @@ module.exports = function(app){
                                         () => console.log("edge created"),
                                         err => console.log('Failed to create edge :', err)
                                     )
-
+                                    
                                 }        
-
+                               
                             }
-                            
+                             res.json();
                         });
 
                     
