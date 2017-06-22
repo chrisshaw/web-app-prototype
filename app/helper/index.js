@@ -174,6 +174,7 @@ var helpers = {
                         //  console.log("response.data", response.data);
                         dispatch(actions.initialQueryData(response.data, newSearch));
                     }    
+                     console.log("fa and grade i", i);
                     return i;         
                 }).then((i) => resolve(i))
             })
@@ -195,12 +196,13 @@ var helpers = {
                         }
                         // foundCounter++;
                         // console.log('found counter', foundCounter);
-                        // console.log("path returned",i, response.data);
+                        console.log("path returned",i, response.data);
                         dispatch(actions.updatePathList(response.data, newPaths));
                     // } else if (Object.keys(response.data).length === 0) {
 
                     // }
-                    return  i;
+                    console.log(i);
+                    return i;
             })
         // }
     },

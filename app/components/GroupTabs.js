@@ -112,16 +112,17 @@ class GroupTabs extends React.Component {
       //           return  <Tab label={result.groupname} key={index} value={index} />
       //   })
       // } 
-
+console.log("*********", this.props.paths);
 
       if (this.props.paths) {
         var i = 0;
         var component = this;
         // there will be one results component returned for each pathway / group.
         var resultsComponents = this.props.paths.map(function(result, index) {
-                // console.log("tabs path", result);
+                console.log("tabs path", result.results.length);
                 if (result.results.length > 0) {
                 var j = 0;
+                i = index;
                 // there will be may Focus Areas returned for each pathway / group
                 var faComponents = result.results.map(function(fa, index) {
                     //  console.log("tabs fa", result);
@@ -225,7 +226,7 @@ class GroupTabs extends React.Component {
                      
                   })
         
-                  i++; // to get next array item for display
+                  // i++; // to get next array item for display
                   // console.log(index, "index / i", i);
                 
                   

@@ -14,7 +14,7 @@ import SubjectContentSelection from './SubjectContentSelection';
 import StandardsSelection from './StandardSelection';
 import TimeLineSelection from './TimeLineSelection';
 import Dialog from 'material-ui/Dialog';
-
+// import configureStore from '../store'
 
 class QueryBuilder extends Component{
    constructor(props) {
@@ -66,7 +66,7 @@ class QueryBuilder extends Component{
         this.setState({nogoupselected: false});
     };
     handleSubmit(i) {
-        console.log("this.props.closeDrawer()")
+        // console.log("this.props.closeDrawer()")
        if (this.props.selectedgrouplist.length !== 0) {
            this.props.closeDrawer();
        }
@@ -77,7 +77,7 @@ class QueryBuilder extends Component{
         // **TO HERE -- make this a promise cos then need to get paths
         // console.log("sending this to server", this.props.selectedgrouplist);
         // for (var i = 0; i < this.props.selectedgrouplist.length; i++){
-        console.log(i);
+        // console.log(i);
         var component = this;
         if ((component.props.selectedgrouplist) && (component.props.selectedgrouplist.length !== 0)){
             
@@ -85,18 +85,21 @@ class QueryBuilder extends Component{
                 // (selectedGroups, selectedStandards, selectedTopics, selectedSubjects, i, dispatch)
                 helper.getFAandGrade(this.props.selectedgrouplist, this.props.selectedstandardslist, this.props.selectedtopiclist, this.props.selectedsubjectcontentlist, i, this.props.dispatch).then((i) => {
                 //initially we have groups, fa and grade - in an array of objects - this.props.searchTerm
-                    console.log("intial:",this.props.initialSearchTerms);
-                 
+                    // console.log("intial:",this.props.initialSearchTerms);
+                  console.log("i", i);
                         helper.getPaths(this.props.initialSearchTerms, i, this.props.dispatch).catch(function (error) {
                             
                             }).then(function(i){
                                 
-                                // console.log("i", i);
+                               
                                 i++;
+                                // console.log(configureStore.getState(), "paths");
                                 // console.log("this.props.initialSearchTerms", component.props.selectedgrouplist.length);
                                 if (i < component.props.selectedgrouplist.length){
+                                   
                                     // console.log("recorsive call", i);
                                     component.getPaths(i);
+
 
                                 } 
                             
