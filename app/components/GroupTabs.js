@@ -46,7 +46,7 @@ const styles = {
 };
 
 const muiTheme = getMuiTheme({
-      palette: {
+    palette: {
     textColor: '#808080',
     // this one is for the tabs bar and appBar 
     primary1Color: "#FFFFFF",
@@ -119,12 +119,12 @@ class GroupTabs extends React.Component {
         var component = this;
         // there will be one results component returned for each pathway / group.
         var resultsComponents = this.props.paths.map(function(result, index) {
-         
+                // console.log("tabs path", result);
                 if (result.results.length > 0) {
-                                 var j = 0;
+                var j = 0;
                 // there will be may Focus Areas returned for each pathway / group
                 var faComponents = result.results.map(function(fa, index) {
-                    
+                    //  console.log("tabs fa", result);
                     // as well as the current FA and Standards
                     /// we need to  get display the next FA and related standards from results
                     // that is what this piece of code does
@@ -133,8 +133,8 @@ class GroupTabs extends React.Component {
                     j++;
                     if (j < result.results.length){
                         // console.log(component.props.paths[i].results[j].focusArea.standardConnections);
-                        var nextFA = <Col key={uuid.v4()} className="chip-float"><Chip
-                                  key={uuid.v4()}
+                        var nextFA = <Col key={index+200} className="chip-float"><Chip
+                                  key={index+2000}
                                   style={styles.chip}
                                   >
                                   {component.props.paths[i].results[j].focusArea["Focus Area"]}
@@ -156,9 +156,9 @@ class GroupTabs extends React.Component {
                             }
                         }
                         var nextStandards = newNextStandardsArr.map(function(standard, index){
-                        
-                        return   <Col key={uuid.v4()} className="chip-float"><Chip
-                                  key={uuid.v4()}
+                        //  console.log("tabs nextStandards", standard);
+                        return   <Col key={index+300} className="chip-float"><Chip
+                                  key={index+3000}
                                   style={styles.chip}
                                   >
                                   {standard}
@@ -181,8 +181,8 @@ class GroupTabs extends React.Component {
                     // actual mapping of new reduced standards array
                     var faStandards = newStandardsArr.map(function(standard, index){
 
-                        return   <Col  key={uuid.v4()} className="chip-float"><Chip
-                                    key={uuid.v4()}
+                        return   <Col key={index+400} className="chip-float"><Chip
+                                    key={index+4000}
                                     style={styles.chip}
                                     >
                                     {standard}
@@ -192,20 +192,20 @@ class GroupTabs extends React.Component {
                 
 
                     /// this return is to facomponent - it displays all the data for one fa within a path
-                    return (  <div key={uuid.v4()} className="fa-wrapper"><Row className="fa-tab-view-rows"><Col key={uuid.v4()} md={12}><div key={uuid.v4()} style={styles.slide}>
-                                <Row key={uuid.v4()}>
-                                  <Col md={3} xs={12}>
-                                    <h3  key={uuid.v4()} className='fa-headings'>Focus Area:  </h3>
+                    return (  <div  key={index+800} className="fa-wrapper"><Row className="fa-tab-view-rows"><Col md={12}><div style={styles.slide}>
+                                <Row >
+                                  <Col key={index+500} md={3} xs={12}>
+                                    <h3   className='fa-headings'>Focus Area:  </h3>
                                   </Col>
-                                  <Col md={9} xs={12}>
-                                    <h3  key={uuid.v4()} className='fa-headings'><span className='fa-headings-span'>{fa.focusArea["Focus Area"].toString()}</span></h3>
+                                  <Col key={index+600} md={9} xs={12}>
+                                    <h3  className='fa-headings'><span className='fa-headings-span'>{fa.focusArea["Focus Area"].toString()}</span></h3>
                                   </Col>
                                 </Row>
                                  <hr />
-                                <Row key={uuid.v4()}>
-                                  <Col  className="chip-float" key={uuid.v4()}>
+                                <Row >
+                                  <Col key={index+700} className="chip-float">
                                     <Chip
-                                      key={uuid.v4()}
+                                      key={index+5000}
                                       style={styles.chip}
                                       >
                                       {fa.focusArea.subject}      
@@ -213,7 +213,7 @@ class GroupTabs extends React.Component {
                                   </Col>
                                   {faStandards}
                                 </Row>
-                                 <Row key={uuid.v4()}>
+                                 <Row>
                                  <div className="chip-float-text">Connected To: </div>
                                   {nextFA}
                                   {nextStandards}
@@ -234,7 +234,7 @@ class GroupTabs extends React.Component {
                 }
  
                 
-                return (<Tab key={uuid.v4()} label={result.groupname} value={index} >
+                return (<Tab key={index+1000} label={result.groupname} value={index} >
                     {faComponents}
                     </Tab>)
         })

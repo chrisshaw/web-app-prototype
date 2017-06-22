@@ -58,9 +58,9 @@ var dataSource2 = [];
 
     }
     handleDeleteChip(chip, index){
-        console.log(chip, index)
+        // console.log(chip, index)
        for (var i=0; i<this.props.selectedgrouplist.length; i++){
-           console.log(this.props.selectedgrouplist[i].name)
+        //    console.log(this.props.selectedgrouplist[i].name)
            if(this.props.selectedgrouplist[i].name === chip){
              this.props.handleRequestDelete(this.props.selectedgrouplist[i].id);
              return;

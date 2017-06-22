@@ -137,7 +137,7 @@ var helpers = {
     getSubjectContents: function(dispatch){
         // console.log("getting getSubjectContents");
         // ['AP-ENG-LANG.R.3', 'CCSS.ELA-LITERACY.RL.9-10.3'];
-        var subjectArr = [{id: 0, name: "english"}, {id: 1, name: "maths"}]
+        var subjectArr = [{id: 0, name: "english"}, {id: 1, name: "math"}]
         // console.log("getting standardsArr", subjectArr);
         dispatch(actions.updateSubjectContentList(false, 0, subjectArr))
     },

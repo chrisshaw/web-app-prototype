@@ -9,10 +9,14 @@ import uuid from 'uuid';
  class GroupChip extends Component {
 
   constructor(props) {
-    super(props)
+    super(props);
+    this.onDelete = this.onDelete.bind(this);
     //  console.log("in render", this.props.grouplist)
   }
 
+  onDelete(id) {
+    this.props.handleRequestDelete(id);
+  }
 
   render() {
     var styles = {
@@ -39,7 +43,7 @@ import uuid from 'uuid';
         var resultComponents = this.props.selectedgrouplist.map(function(result) {
           return <Chip
               key={result.id}
-              onRequestDelete={() => component.props.handleRequestDelete(result.id)}
+              onRequestDelete={() => this.onDelete(result.id)}
               style={styles.chip}
               >
               {result.name}

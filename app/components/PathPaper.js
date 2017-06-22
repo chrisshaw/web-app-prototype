@@ -19,7 +19,7 @@ class PathPaper extends React.Component {
   render() {
     return (    
         <Paper style={style} zDepth={0}>
-            <GroupTabs selectedgrouplist={this.props.selectedgrouplist} />
+            <GroupTabs />
         </Paper>
     )}
 }

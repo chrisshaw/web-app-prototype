@@ -50,9 +50,9 @@ var dataSource2 = [];
         this.setState({searchText: ''})
     }
     handleDeleteChip(chip, index){
-    console.log(chip, index)
+    // console.log(chip, index)
     for (var i=0; i<this.props.selectedstandardslist.length; i++){
-        console.log(this.props.selectedstandardslist[i].name)
+        // console.log(this.props.selectedstandardslist[i].name)
         if(this.props.selectedstandardslist[i].name === chip){
             this.props.handleRequestDelete(this.props.selectedstandardslist[i].id);
             return;

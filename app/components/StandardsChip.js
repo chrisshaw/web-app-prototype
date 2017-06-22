@@ -8,9 +8,14 @@ import uuid from 'uuid';
  */
  class StandardsChip extends Component {
 
-  constructor(props) {
-    super(props)
+    constructor(props) {
+    super(props);
+    this.onDelete = this.onDelete.bind(this);
     //  console.log("in render", this.props.grouplist)
+  }
+
+  onDelete(id) {
+    this.props.handleRequestDelete(id);
   }
 
 
@@ -39,7 +44,7 @@ import uuid from 'uuid';
         var resultComponents = this.props.selectedstandardslist.map(function(result) {
           return <Chip
               key={result.id}
-              onRequestDelete={() => component.props.handleRequestDelete(result.id)}
+              onRequestDelete={() => this.onDelete(result.id)}
               style={styles.chip}
               >
               {result.name}
