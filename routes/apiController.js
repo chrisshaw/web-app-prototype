@@ -188,7 +188,7 @@ module.exports = function(app){
         var newgroup = group.replace(/[\ ]+[' ]+/g, " "); 
         var groupname = req.params.name;
         var resultObj = {};
-        // console.log(newgroup);
+         console.log(newgroup);
         // one query per group to get fa and grade  
         getgroups(newgroup).then((result) => {
             // console.log("grous:", result)

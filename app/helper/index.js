@@ -175,34 +175,45 @@ var helpers = {
                         dispatch(actions.initialQueryData(response.data, newSearch));
                     }    
                      console.log("fa and grade i", i);
+                     //return array containing i and path arr
+                     // this will be results[0] and results[1] below
                     return i;         
                 }).then((i) => resolve(i))
             })
         // }) 
     },
+    newPaths: function(paths, dispatch) {
+        // clear old path data
+        dispatch(actions.updatePathList(paths));
+    },
     getPaths: function(searchArr, i, dispatch){
         // for each group / fa do a query
         // for (var i=0; i < searchArr.length; i++){ 
-            var newPaths = true;
+            // var newPaths = true;
+            console.log(" i, pathArr in helper get pathx",  i)
             // console.log("xxx", i, searchArr[i])
             // var foundCounter = 0;
             return axios.post('/api/path/', searchArr[i]).then(function(response) {
                     // send results to redux store for use by Results component
                     // console.log('/api/path/', i, searchArr[i],response.data);
                     // if (Object.keys(response.data).length !== 0){
-                        if (i > 0) {
-                            // console.log('newPaths', newPaths);
-                            newPaths = false;
-                        }
+                        console.log("in here", i);
+                        // if (i > 0) {
+                        //     // console.log('newPaths', newPaths);
+                        //     newPaths = false;
+                        // }
                         // foundCounter++;
                         // console.log('found counter', foundCounter);
+                        // let currenathArr
+                        // pathArr.push(reponse.data);
                         console.log("path returned",i, response.data);
-                        dispatch(actions.updatePathList(response.data, newPaths));
+
+                        // dispatch(actions.updatePathList(response.data, newPaths));
                     // } else if (Object.keys(response.data).length === 0) {
 
                     // }
-                    console.log(i);
-                    return i;
+                   
+                    return [i, response.data];
             })
         // }
     },

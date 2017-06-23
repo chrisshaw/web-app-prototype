@@ -112,9 +112,9 @@ class GroupTabs extends React.Component {
       //           return  <Tab label={result.groupname} key={index} value={index} />
       //   })
       // } 
-console.log("*********", this.props.paths);
+console.log("********* prop patahs", this.props.paths);
 
-      if (this.props.paths) {
+      if (this.props.paths)  {
         var i = 0;
         var component = this;
         // there will be one results component returned for each pathway / group.

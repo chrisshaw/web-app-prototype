@@ -93,11 +93,10 @@ saveSelectedGroup : (addOrRemove, item) => {
     }
 },
 
-updatePathList: (paths, newPaths) => {
+updatePathList: (paths) => {
   return {
       type: 'UPDATE_PATHS',
-      paths,
-      newPaths
+      paths
     }
 
 },

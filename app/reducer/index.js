@@ -102,19 +102,18 @@ const mainReducer = (state={intialstate}, action) => {
             
         case 'TOGGLE_DRAWER':
             return Object.assign({},state, {toggledrawer: action.toggledrawer});    
-        case 'UPDATE_PATHS':
-        
-            // console.log("in update paths state.paths", state.paths)
-            //  console.log("in update paths  action.paths", action.paths);
-            // if ((Object.keys(action.paths).length !== 0) && (state.paths)){
-            if (!action.newPaths) {
-                // console.log('in update path should be false:', action.newPaths);
-                return Object.assign({},state, {paths: [...state.paths, action.paths]});
-        //    } else if (!state.paths) {
-             } else if (action.newPaths) {
-                //  console.log('in update path should be true:', action.newPaths);
-                return Object.assign({},state, {paths: [action.paths]});
-           }
+        case 'UPDATE_PATHS': 
+            // action.paths will be "" or an array of data
+            return Object.assign({},state, {paths: action.paths});
+      
+        //     if (!action.newPaths) {
+            
+        //         return Object.assign({},state, {paths: [...state.paths, action.paths]});
+       
+        //      } else if (action.newPaths) {
+        //         //  console.log('in update path should be true:', action.newPaths);
+        //         return Object.assign({},state, {paths: [action.paths]});
+        //    }
         case 'UPDATE_SEARCH_TERMS':
            // clear out old state if a new search
            if (!action.newSearch) {
