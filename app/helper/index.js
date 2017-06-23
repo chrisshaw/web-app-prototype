@@ -27,7 +27,7 @@ var helpers = {
    
     submitCSVFile: function(e, dispatch){
                 var files = e.target.files || e.dataTransfer.files 
-               console.log("in here uploading file")
+            //    console.log("in here uploading file")
                 if (files) {
                     //send only the first one
                     var file = files[0];
@@ -91,9 +91,9 @@ var helpers = {
     },
     getGroups: function(dispatch){
         // console.log("in here get groups")
-         console.log("in here");
+        //  console.log("in here");
         return axios.get('/api/teacher/group').then(function(response) {
-            console.log("is there data", response.data);
+            // console.log("is there data", response.data);
             // send results to redux store for use by Results component
                 // console.log("getgroups results", response.data);
             dispatch(actions.updateGroupList(false, 0, response.data));
@@ -107,10 +107,10 @@ var helpers = {
     },
     getFocusArea: function(dispatch){
         // for now these are hard coded!!!!!
-        console.log("here too")
+        // console.log("here too")
         // var topicArr = [{id: 0, name: "Immigration"}, {id: 1, name: "Identity"}]
         return axios.get('/api/focusarea').then(function(response) {
-            console.log("is there data", response.data);
+            // console.log("is there data", response.data);
             // send results to redux store for use by Results component
                 // console.log("getgroups results", response.data);
             dispatch(actions.getFAList(response.data))
@@ -174,7 +174,7 @@ var helpers = {
                         //  console.log("response.data", response.data);
                         dispatch(actions.initialQueryData(response.data, newSearch));
                     }    
-                     console.log("fa and grade i", i);
+                    //  console.log("fa and grade i", i);
                      //return array containing i and path arr
                      // this will be results[0] and results[1] below
                     return i;         
@@ -190,14 +190,14 @@ var helpers = {
         // for each group / fa do a query
         // for (var i=0; i < searchArr.length; i++){ 
             // var newPaths = true;
-            console.log(" i, pathArr in helper get pathx",  i)
+            // console.log(" i, pathArr in helper get pathx",  i)
             // console.log("xxx", i, searchArr[i])
             // var foundCounter = 0;
             return axios.post('/api/path/', searchArr[i]).then(function(response) {
                     // send results to redux store for use by Results component
                     // console.log('/api/path/', i, searchArr[i],response.data);
                     // if (Object.keys(response.data).length !== 0){
-                        console.log("in here", i);
+                        // console.log("in here", i);
                         // if (i > 0) {
                         //     // console.log('newPaths', newPaths);
                         //     newPaths = false;
@@ -206,7 +206,7 @@ var helpers = {
                         // console.log('found counter', foundCounter);
                         // let currenathArr
                         // pathArr.push(reponse.data);
-                        console.log("path returned",i, response.data);
+                        // console.log("path returned",i, response.data);
 
                         // dispatch(actions.updatePathList(response.data, newPaths));
                     // } else if (Object.keys(response.data).length === 0) {

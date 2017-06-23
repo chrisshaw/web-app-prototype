@@ -90,7 +90,7 @@ class QueryBuilder extends Component{
        
         var component = this;
         if ((component.props.selectedgrouplist) && (component.props.selectedgrouplist.length !== 0)){
-                 console.log("before get frades", i);
+            //    /  console.log("before get frades", i);
                 // console.log("i", i, "this.props.selectedgrouplist", this.props.selectedgrouplist);
                 // (selectedGroups, selectedStandards, selectedTopics, selectedSubjects, i, dispatch)
                 helper.getFAandGrade(this.props.selectedgrouplist, this.props.selectedstandardslist, this.props.selectedtopiclist, this.props.selectedsubjectcontentlist, i, this.props.dispatch).then((i) => {
@@ -98,15 +98,15 @@ class QueryBuilder extends Component{
                     // console.log("intial:",this.props.initialSearchTerms);
                     // let nexti = results[0];
                     // let 
-                       console.log("before get path", i);
+                    //    console.log("before get path", i);
                         helper.getPaths(this.props.initialSearchTerms, i, this.props.dispatch).catch(function (error) {
                             
                             }).then(function(pathresults){
                                 let counter =  pathresults[0];
                                 counter++;
-                                console.log("pathresults", pathresults);
+                                // console.log("pathresults", pathresults);
                                 pathArr.push(pathresults[1]); 
-                                console.log(pathArr);
+                                // console.log(pathArr);
                                 // pathresults[0]++;
                                 // i++;
                                 // console.log(configureStore.getState(), "paths");
@@ -212,9 +212,7 @@ class QueryBuilder extends Component{
 
 const mapStateToProps = (store) => {
     return {
-        grouplist: store.mainState.grouplist,
         selectedgrouplist: store.mainState.selectedgrouplist,
-        topiclist: store.mainState.topiclist,
         selectedtopiclist: store.mainState.selectedtopiclist,
         initialSearchTerms: store.mainState.initialSearchTerms,
         selectedstandardslist: store.mainState.selectedstandardslist, 

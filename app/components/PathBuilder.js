@@ -47,7 +47,7 @@ class PathBuilder extends Component{
         helper.toggleDrawer(!this.props.toggledrawer, this.props.dispatch)
     }
     handleClose(){
-        console.log("clsig")
+        // console.log("clsig")
         helper.toggleDrawer(false, this.props.dispatch);
     }
     render(){
@@ -68,7 +68,7 @@ class PathBuilder extends Component{
                         secondary={true}
                         />
                     
-                     <PathPaper selectedgrouplist={this.props.selectedgrouplist} />
+                     <PathPaper />
                     
                     </Col>
                     </Row>
@@ -83,8 +83,8 @@ class PathBuilder extends Component{
 const mapStateToProps = (store) => {
     return {
         toggledrawer: store.mainState.toggledrawer,
-        grouplist: store.mainState.grouplist,
-        selectedgrouplist: store.mainState.selectedgrouplist,
+        // grouplist: store.mainState.grouplist,
+        // selectedgrouplist: store.mainState.selectedgrouplist,
         // paths: store.mainState.paths
     }
 }

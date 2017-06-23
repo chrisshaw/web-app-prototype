@@ -90,14 +90,6 @@ class GroupTabs extends React.Component {
 
   render() {
     //// GET TABS from results
-    // if ((this.props.selectedgrouplist) && (this.props.selectedgrouplist[0] !== null)){
-      //  console.log("in tab", this.props.grouplist)
-    //   hasGroups = this.props.grouplist;
-      var component = this;
-      
-      // var resultsComponents = this.props.grouplist.map(function(result, index) {
-      //   return  <Tab label={result.name} key={index} value={result.id} />
-      //  })
 
       // display any paths   
       // paths is an array of objects
@@ -105,21 +97,12 @@ class GroupTabs extends React.Component {
       // this array of paths is what will be displayed in each group tab
       // they just need to be matched  
       var component = this;
-      // reset tabs
-      // var tabComponents = "";
-      // if (this.props.paths) {
-      //   var tabComponents = this.props.paths.map(function(result, index) {
-      //           return  <Tab label={result.groupname} key={index} value={index} />
-      //   })
-      // } 
-console.log("********* prop patahs", this.props.paths);
 
       if (this.props.paths)  {
         var i = 0;
         var component = this;
         // there will be one results component returned for each pathway / group.
         var resultsComponents = this.props.paths.map(function(result, index) {
-                console.log("tabs path", result.results.length);
                 if (result.results.length > 0) {
                 var j = 0;
                 i = index;
@@ -240,16 +223,6 @@ console.log("********* prop patahs", this.props.paths);
                     </Tab>)
         })
       } 
-
-
-
-    // return  <div key={uuid.v4()}>
-    //             <Tabs>
-    //                 {tabComponents}
-    //             </Tabs>
-    //             {resultsComponents}
-    //           </div>
-
     return  <MuiThemeProvider muiTheme={muiTheme}><Tabs inkBarStyle={{background: '#A35FE3'}}
         initialSelectedIndex={0}
         value={this.state.value}
@@ -259,9 +232,6 @@ console.log("********* prop patahs", this.props.paths);
        {resultsComponents}
       
       </Tabs></MuiThemeProvider>
-
-
-
   }
 }
 

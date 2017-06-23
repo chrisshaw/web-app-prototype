@@ -102,8 +102,7 @@ const mainReducer = (state={intialstate}, action) => {
             
         case 'TOGGLE_DRAWER':
             return Object.assign({},state, {toggledrawer: action.toggledrawer});    
-        case 'UPDATE_PATHS': 
-            // action.paths will be "" or an array of data
+        case 'UPDATE_PATHS':
             return Object.assign({},state, {paths: action.paths});
       
         //     if (!action.newPaths) {
