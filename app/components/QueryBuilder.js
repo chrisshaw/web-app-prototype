@@ -78,7 +78,10 @@ class QueryBuilder extends Component{
             // array to store new paths
             pathArr = [];
             this.getPaths(i);
-       }
+       } else {
+            // no group selected message
+            this.setState({nogoupselected: true})
+        }
 
 
         
@@ -131,10 +134,7 @@ class QueryBuilder extends Component{
                 
            
 
-        } else {
-            // no group selected message
-            this.setState({nogoupselected: true})
-        }
+        } 
         // if nothing found
         // if ((i === component.props.selectedgrouplist.length) && (noPaths === component.props.selectedgrouplist.length-1)) {
         //     component.setState({nopathreturned: true})

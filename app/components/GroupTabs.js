@@ -100,14 +100,15 @@ class GroupTabs extends React.Component {
 
       if (this.props.paths)  {
         // var i = 0;
-        var component = this;
-        var tabindex = this.state.value;
-        var groupname = this.props.paths[tabindex].groupname;
+       
         // console.log(this.props.paths)
         // there will be one results component returned for each pathway / group.
-
+         var tabindex = this.state.value;
         // console.log("Being called", this.props.paths[tabindex].results.length);
         if (this.props.paths[tabindex].results.length > 0) {
+          var component = this;
+         
+          var groupname = this.props.paths[tabindex].groupname;
           var j = 0;
           // i = 0;
           var start = Date.now();
@@ -220,7 +221,7 @@ class GroupTabs extends React.Component {
         console.log("fa end", Date.now()-start);      
           
         } else {
-          var faComponents = <p className="no-paths-message"> No paths for {component.props.paths[tabindex].groupname}. Please change search filters and try again.</p>
+          var faComponents = <p className="no-paths-message"> No paths for {this.props.paths[tabindex].groupname}. Please change search filters and try again.</p>
         }
   
 
