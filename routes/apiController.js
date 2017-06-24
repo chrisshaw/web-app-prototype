@@ -103,6 +103,20 @@ module.exports = function(app){
 
      })
 
+// Consolidated Query!! To TEST
+// for group_id in ['groups/2481161', 'groups/2481175', 'groups/2504201']
+//     let queryFa = (for v, edge, path in 0..3 outbound group_id groupToStudents, studentToCurrentFA 
+//         let fa = (for vv in OUTBOUND v studentToCurrentFA  return vv)
+//         FILTER LENGTH(fa) != 0 
+//         RETURN {_id: fa[0]._id})
+//     let newArr = []
+//     let queryGrades = (for v, edge, path in 0..3 outbound group_id groupToStudents FILTER v.grade != null RETURN DISTINCT v.grade)
+//     let queryStandards = []
+//     let querySubjects = []
+//     let queryTopics = []
+// let mainQuery = (for fa, edge, path in 0..999 outbound queryFa[0] thenFocusOn filter length(querySubjects) > 0 ? fa.subject in querySubjects : true filter length(queryGrades) > 0 ? TO_ARRAY(fa.grade) any in queryGrades : true filter length(queryTopics) > 0 ? fa.topics[* return UPPER(CURRENT)] any in queryTopics[* return UPPER(CURRENT)] : true filter length(queryStandards) > 0 ? fa.standardConnections[* return UPPER(CURRENT)] any in queryStandards[* return UPPER(CURRENT)] : true return {focusArea: fa})
+// RETURN {group: group_id, fa: mainQuery}
+
 
     app.post('/api/path/', function(req, res){
         // had to do a post in order to send over object
@@ -178,6 +192,18 @@ module.exports = function(app){
     // need to reject error too!
     function getgroups(input) {
         return new Promise(function (resolve, reject) {
+
+        // use to build one query
+        //             let groupid1 = 'groups/2481175'
+        // let groupid2 = 'groups/2481161'
+        // let NEWARR = []
+
+        // FOR x IN UNION_DISTINCT (PUSH(NEWARR,
+        // for v, edge, path in 1..3 outbound groupid1 groupToStudents, studentToCurrentFA SORT groupid1, v DESC RETURN DISTINCT {group: groupid1, v}),
+        // PUSH(NEWARR,
+        // for v, edge, path in 1..3 outbound groupid2 groupToStudents, studentToCurrentFA SORT groupid2, v RETURN  DISTINCT {group: groupid2, v}))
+        // RETURN x"
+
             var query = aql`for v, edge, path in 1..3 outbound ${input} groupToStudents, studentToCurrentFA RETURN v`;
             resolve(db.query(query));
         });
