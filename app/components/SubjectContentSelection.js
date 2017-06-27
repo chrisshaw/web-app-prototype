@@ -15,17 +15,14 @@ import ResetIcon from "./ResetIcon";
 class SubjectContentSelection extends Component{
    constructor(props) {
         super(props);
-        // this.handleRemove = this.handleRemove.bind(this);
         this.handleRequestDelete = this.handleRequestDelete.bind(this);
         this.handleReset = this.handleReset.bind(this);
-        // this.getPaths = this.getPaths.bind(this);
         this.handleShowGroups = this.handleShowGroups.bind(this);
         // get initial data and set props
         helper.getSubjectContents(this.props.dispatch);     
         var searchObj = {};
         this.state ={
             showGroups: false, 
-            // groupState: "Open" 
         }
 
    }
@@ -34,37 +31,28 @@ class SubjectContentSelection extends Component{
         helper.removeSubject(id, this.props.dispatch);
     }
     handleReset() {
-        // console.log("in reset");
         helper.getSubjectContents(this.props.dispatch); 
     }
     handleShowGroups() {
         // toggle between true and false
         this.setState({showGroups: !this.state.showGroups})
-        // this.state.showGroups ?  this.setState({groupState: "Open"}) : this.setState({groupState: "Close"})
     }
     render(){
 
         var styles = {
             button : {
-                // backgroundColor: '#9E9E9E'
             }
         }
     
         var component = this;
-            //  console.log("subjectcontentlist", this.props.subjectcontentlist)
-
-        // console.log("selectedsubjectcontentlist", this.props.selectedsubjectcontentlist)
         if ( this.props.selectedsubjectcontentlist){
              var arrLength = this.props.selectedsubjectcontentlist.length;
-        }
-       
+        }    
         return(<div><div className="query-builder-wrapper">
                     <Row>
                         <Col xs={1} md={1} >
-
                             <div className={this.state.showGroups ? "hide" : "expand-icon"} onTouchTap={this.handleShowGroups}><ExpandMoreIcon /></div>
-                            <div className={this.state.showGroups ? "expand-icon" : "hide"} onTouchTap={this.handleShowGroups}><ExpandLessIcon /></div>
-                         
+                            <div className={this.state.showGroups ? "expand-icon" : "hide"} onTouchTap={this.handleShowGroups}><ExpandLessIcon /></div>                       
                         </Col>
                         <Col xs={11} md={11} >
                             <div className="auto-text-alignment">
@@ -75,15 +63,11 @@ class SubjectContentSelection extends Component{
                         </Col>
                     </Row>
                 </div>
-
-
                 <div className={this.state.showGroups ? "query-builder-wrapper" : "query-builder-wrapper hide"} >
                     <Row>
                         <Col xs={12} md={12} >
                             <AutoCompleteSubjectField  subjectcontentlist={component.props.subjectcontentlist} selectedsubjectcontentlist={component.props.selectedsubjectcontentlist}  handleRemove={this.handleRemove} handleRequestDelete={this.handleRequestDelete}/>
-                        </Col>
-              
-                        
+                        </Col>                     
                     </Row>
                     <Row>
                         <Col xs={8} md={8} >  
@@ -103,7 +87,6 @@ const mapStateToProps = (store) => {
     return {
         subjectcontentlist: store.mainState.subjectcontentlist,
         selectedsubjectcontentlist: store.mainState.selectedsubjectcontentlist,
-        // initialSearchTerms: store.mainState.initialSearchTerms,
     }
 }
 

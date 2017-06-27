@@ -5,8 +5,6 @@ import SvgIcon from 'material-ui/SvgIcon';
 class HomeIcon extends Component{
     constructor(props){
         super(props);
-        // this.state = {}; //setting initial default state
-        // this.handleClick=this.handleClick.bind(this);
     }
 
     render() {

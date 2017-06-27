@@ -24,10 +24,8 @@ const style = {
     marginTop: 12,
     marginBottom: 12,
     display: 'block',
-    // backgroundColor: "#2FBB2F"
   },
   paper: {
-    //   color: '#000000'
   }
 };
 
@@ -36,18 +34,13 @@ class DataImportCSV extends Component{
         super(props);
         this.handleUploadFile = this.handleUploadFile.bind(this);  
         this.handleSaveFile = this.handleSaveFile.bind(this);  
-        // injectTapEventPlugin();
-      
     }
     componentWillMount(){
         // get the focus areas
-       
         helper.getFocusArea(this.props.dispatch);
 
     }
     handleUploadFile(e){
-        // alert("ok do something now!")
-        console.log(e);
         // send to server
         helper.submitCSVFile(e, this.props.dispatch);
         // reset input value
@@ -57,25 +50,9 @@ class DataImportCSV extends Component{
 
     }
     handleSaveFile(){
-        // alert("ok do something now!")
-        // console.log(e.target.files)
-        // capture file - now do something with it
-        // helper.submitCSVFile(e, this.props.dispatch);
-
-        console.log(this.props.csvdata);
         helper.saveCSVData(this.props.csvdata, this.props.dispatch);
     }
-    // handleChangeFA(){
-
-    //     helper.updateCSV(data.focusArea, this.tabIndex, "focusArea", this.dispatch ); 
-       
-    // }
- 
     render(){
-
- console.log("selectedFocusArea", this.props.selectedFocusArea)
-  console.log("csv", this.props.csvdata)
-
         // add a save button and a clear button
 
         return(

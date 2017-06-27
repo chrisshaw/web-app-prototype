@@ -1,20 +1,7 @@
 
 var path = require('path');
-// // var Student = require('../models/student');
-// const db = arangojs(config.database.hostPort);
-// db.useDatabase(config.database.name);
-// db.useBasicAuth(config.database.un, config.database.pw);
-// // test connection
-// db.get()
-// .then(err => {
-//     // the database exists
-//     console.log("db", info);
-//      console.log(err);
-// });
 
 module.exports = function(app){
-
-
 
     app.post("/csv/file", function(req, res, next){
         // main entry point
@@ -41,9 +28,7 @@ module.exports = function(app){
             }
             // create array of objects to be saved to database
             studentsArr.push(studentObj);
-            console.log(i,csvToArr.length );
             if (i >= csvToArr.length-1 ){
-                console.log(studentsArr);
                 res.json(studentsArr);
             }
 

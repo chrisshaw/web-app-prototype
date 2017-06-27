@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+// import ReactDOM from "react-dom";
 import AutoComplete from 'material-ui/AutoComplete';
 import MenuItem from 'material-ui/MenuItem';
 import helper from '../helper';
@@ -20,58 +21,53 @@ import ChipInput from 'material-ui-chip-input';
       }
     };
 
-var dataSource1 = [];
-var dataSource2 = [];
- class AutoCompleteStandardsField extends Component {
+
+
+ class AutoCompleteStandrdsField extends Component {
 
   constructor(props) {
     super(props)
-    
-    this.state = {textFieldValue: "", searchText: ""}; //setting initial default state
-    this._handleTextFieldChange = this._handleTextFieldChange.bind(this);
-    // this.handleRequestDelete = this.handleRequestDelete.bind(this);
-    this.handleSelect = this.handleSelect.bind(this);
-    this.handleDeleteChip = this.handleDeleteChip.bind(this);
-
+        this.state = {textFieldValue: "", searchText: ""}; //setting initial default state
+        this._handleTextFieldChange = this._handleTextFieldChange.bind(this);
+        this.handleRequestDelete = this.handleRequestDelete.bind(this);
+        this.handleSelect = this.handleSelect.bind(this);
+        this.handleDeleteChip = this.handleDeleteChip.bind(this);
   }
+    handleRequestDelete(id) {
+        // filter standardslist based on id
+        helper.removeGroup(id, this.props.dispatch);
+    }
+    handleSelect(){
+        this.setState({searchText: ''})
+    }
    
-    _handleTextFieldChange(e) {
+    _handleTextFieldChange(e, dataSource1) {
         this.setState({searchText: e})
-        this.setState({
-            textFieldValue: ""
-        });
-        // make sure a full word supplied is in grouplist
+        this.setState({textFieldValue: e})
+        // make sure a full word supplied is in standardslist
         if (dataSource1.indexOf(e) !== -1){
              helper.updateSelectedStandards(e, false, this.props.dispatch);
         }
 
     }
-     handleSelect(){
-        this.setState({searchText: ''})
-    }
     handleDeleteChip(chip, index){
-    // console.log(chip, index)
-    for (var i=0; i<this.props.selectedstandardslist.length; i++){
-        // console.log(this.props.selectedstandardslist[i].name)
-        if(this.props.selectedstandardslist[i].name === chip){
-            this.props.handleRequestDelete(this.props.selectedstandardslist[i].id);
-            return;
-        }
+       for (var i=0; i<this.props.selectedstandardslist.length; i++){
+           if(this.props.selectedstandardslist[i].name === chip){
+             this.props.handleRequestDelete(this.props.selectedstandardslist[i]._id);
+             return;
+           }
+       }
     }
-    // find the group.id and pass to delete
-    
-
-}
   render() {
+    var dataSource1 = [];
+    var dataSource2 = [];
     // if it exists or is not empty array
-    // console.log("this.props.grouplist", this.props.grouplist[0]);
     if ((this.props.standardslist) && (this.props.standardslist[0] !== null)){
         dataSource1 = this.props.standardslist.map(function(group, index) {
             // strip out just the name for the autocomplete field
                 return group.name             
         })
     }
-    
     if ((this.props.selectedstandardslist) && (this.props.selectedstandardslist[0] !== null)){
         dataSource2 = this.props.selectedstandardslist.map(function(group, index) {
             // strip out just the name for the autocomplete field
@@ -80,14 +76,11 @@ var dataSource2 = [];
     }
 
      if (this.props.selectedstandardslist) {
-    // || (Object.keys(this.props.selectedgrouplist).length === 0 && this.props.selectedgrouplist.constructor === Object)){
-    // }  else {
-        // console.log("what is this", this.props.selectedgrouplist)
         var component = this;
         var resultComponents = this.props.selectedstandardslist.map(function(result) {
           return <Chip
-              key={result.id}
-              onRequestDelete={() => component.props.handleRequestDelete(result.id)}
+              key={result._id}
+              onRequestDelete={() => component.handleRequestDelete(result._id)}
               style={styles.chip}
               >
               {result.name}
@@ -95,13 +88,6 @@ var dataSource2 = [];
 
           })
       }
-
-    
-    // return (
-    //   <div style={styles.wrapper}>       
-    //      
-    //   </div>
-    // );
    
     return (
         <div>
@@ -109,7 +95,7 @@ var dataSource2 = [];
         <ChipInput
             fullWidth={true}
             value={dataSource2}
-            onRequestAdd={(chip) => this._handleTextFieldChange(chip)}
+            onRequestAdd={(chip) => this._handleTextFieldChange(chip, dataSource1)}
             onRequestDelete={(chip, index) => this.handleDeleteChip(chip, index)}
             textFieldStyle={{fontSize: 14}}
             hintText="Type and select from list"
@@ -124,9 +110,10 @@ var dataSource2 = [];
             listStyle={{textColor: '#A35FE3'}}
 />
 
+      
         </div>
 
     )}
 }
 
-export default connect()(AutoCompleteStandardsField);
+export default connect()(AutoCompleteStandrdsField);

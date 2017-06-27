@@ -11,7 +11,6 @@ import uuid from 'uuid';
   constructor(props) {
     super(props);
     this.onDelete = this.onDelete.bind(this);
-    //  console.log("in render", this.props.grouplist)
   }
 
   onDelete(id) {
@@ -28,22 +27,12 @@ import uuid from 'uuid';
         flexWrap: 'wrap',
       },
     };
-    // var hasGroups = [];
-    // if (this.props.grouplist){
-    //    hasGroups = this.props.grouplist;
-    // }
-    // var selectedArr = [];
-    // selectedArr = [...this.props.selectedgrouplist];
-    // console.log("what is " , this.props.selectedgrouplist)
     if (this.props.selectedgrouplist) {
-    // || (Object.keys(this.props.selectedgrouplist).length === 0 && this.props.selectedgrouplist.constructor === Object)){
-    // }  else {
-        // console.log("what is this", this.props.selectedgrouplist)
         var component = this;
         var resultComponents = this.props.selectedgrouplist.map(function(result) {
-          return <Chip
-              key={result.id}
-              onRequestDelete={() => this.onDelete(result.id)}
+          return <Chip 
+              key={result._id}
+              onRequestDelete={() => component.onDelete(result._id)}
               style={styles.chip}
               >
               {result.name}

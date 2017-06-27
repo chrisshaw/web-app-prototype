@@ -3,7 +3,7 @@ import {Tabs, Tab} from 'material-ui/Tabs';
 // From https://github.com/oliviertassinari/react-swipeable-views
 import SwipeableViews from 'react-swipeable-views';
 import uuid from 'uuid';
-import Chip from 'material-ui/Chip';
+// import Chip from 'material-ui/Chip';removed as this component slows down rendering on this page
 import {Grid, Row, Col} from 'react-bootstrap';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
@@ -20,29 +20,12 @@ const styles = {
     padding: 10,
     textAlign: 'left',
     height: '200px',
-    // backgroundColor: "#FFFFFF",
     overflowX: 'none',
   },
-    chip: {
-      margin: 4,
-      position: "relative",
-      display: "flex",
-      overflowX: "auto",
-    },
     wrapper: {
       display: 'flex',
       flexWrap: 'wrap',
     },
-    // active {
-		// 		a {
-		// 			color: #fff;
-		// 			border-bottom: 2px solid #fff;
-		// // 		}
-    // tab : {
-    //   color: '#808080'
-    // }
-    
-
 };
 
 const muiTheme = getMuiTheme({
@@ -89,32 +72,22 @@ class GroupTabs extends React.Component {
   }
 
   render() {
-    //// GET TABS from results
-
+      //// GET TABS from results
       // display any paths   
       // paths is an array of objects
       // each array item is an object with a group, grade, faid, and an array of paths in "results" field in order
       // this array of paths is what will be displayed in each group tab
-      // they just need to be matched  
-      // var component = this;
-
+      // they just need to be matched  s
       if (this.props.paths)  {
-        // var i = 0;
-       
-        // console.log(this.props.paths)
         // there will be one results component returned for each pathway / group.
-         var tabindex = this.state.value;
-        // console.log("Being called", this.props.paths[tabindex].results.length);
+        var tabindex = this.state.value;
         if (this.props.paths[tabindex].results.length > 0) {
-          var component = this;
-         
+          var component = this; 
           var groupname = this.props.paths[tabindex].groupname;
           var j = 0;
-          // i = 0;
           var start = Date.now();
           // there will be may Focus Areas returned for each pathway / group
           var faComponents = this.props.paths[tabindex].results.map(function(fa, index) {
-            //  console.log("tabs fa", result);
             // as well as the current FA and Standards
             /// we need to  get display the next FA and related standards from results
             // that is what this piece of code does
@@ -122,16 +95,10 @@ class GroupTabs extends React.Component {
             // in j, i, result.results (should have access to this.props.path so no need to pass)
             j++;
             if (j < component.props.paths[tabindex].results.length){
-              // console.log(component.props.paths[tabindex].results[j].focusArea["Focus Area"]);
-                // console.log(component.props.paths[i].results[j].focusArea.standardConnections);
-                var nextFA = <Col key={index+200} className="chip-float"><Chip
-                          key={index+2000}
-                          style={styles.chip}
-                          >
+                var nextFA = <Col  className="chip-float"><div className="chip">
                           {component.props.paths[tabindex].results[j].focusArea["Focus Area"]}
-                        </Chip>
-                        </Col>
-                
+                        </div>
+                        </Col>           
                 // remove duplicate standards so they arent displayed
                 var newNextStandardsArr = [];
                 var displayNextStandards;
@@ -147,13 +114,11 @@ class GroupTabs extends React.Component {
                     }
                 }
                 var nextStandards = newNextStandardsArr.map(function(standard, index){
-                //  console.log("tabs nextStandards", standard);
-                return   <Col key={index+300} className="chip-float"><Chip
-                          key={index+3000}
-                          style={styles.chip}
-                          >
+                // console.log("tabs nextStandards", standard);
+                // should make so every array item has unique key in arango??
+                return   <Col key={index} className="chip-float"><div className="chip">
                           {standard}
-                        </Chip>
+                        </div>
                         </Col>
                 })
                 
@@ -172,69 +137,53 @@ class GroupTabs extends React.Component {
             // actual mapping of new reduced standards array
             var faStandards = newStandardsArr.map(function(standard, index){
 
-                return   <Col key={index+400} className="chip-float"><Chip
-                            key={index+4000}
-                            style={styles.chip}
-                            >
+                return   <Col key={index } className="chip-float"><div className="chip">
                             {standard}
-                          </Chip>
+                          </div>
                           </Col>
             })
         
 
             /// this return is to facomponent - it displays all the data for one fa within a path
-            return (  <div  key={index+800} className="fa-wrapper"><Row className="fa-tab-view-rows"><Col md={12}><div style={styles.slide}>
+            return (  <div  key={fa.focusArea._id} className="fa-wrapper"><Row className="fa-tab-view-rows"><Col md={12}><div style={styles.slide}>
                         <Row >
-                          <Col key={index+500} md={3} xs={12}>
+                          <Col  md={3} xs={12}>
                             <h3   className='fa-headings'>Focus Area:  </h3>
                           </Col>
-                          <Col key={index+600} md={9} xs={12}>
+                          <Col  md={9} xs={12}>
                             <h3  className='fa-headings'><span className='fa-headings-span'>{fa.focusArea["Focus Area"].toString()}</span></h3>
                           </Col>
                         </Row>
                           <hr />
                         <Row >
-                          <Col key={index+700} className="chip-float">
-                            <Chip
-                              key={index+5000}
-                              style={styles.chip}
-                              >
+                          <Col className="chip-float">
+                            <div className="chip">                    
                               {fa.focusArea.subject}      
-                            </Chip>
+                            </div>
                           </Col>
                           {faStandards}
                         </Row>
                           <Row>
                           <div className="chip-float-text">Connected To: </div>
-                          {nextFA}
-                          {nextStandards}
+                            {nextFA}
+                            {nextStandards}
                         </Row>
                         </div>
                         </Col>
                       </Row>
-                    </div>)
-              
+                    </div>)         
           })
-
-          // i++; // to get next array item for display
-          // console.log(index, "index / i", i);
-        console.log("fa end", Date.now()-start);      
-          
+       
         } else {
-          var faComponents = <p className="no-paths-message"> No paths for {this.props.paths[tabindex].groupname}. Please change search filters and try again.</p>
+          var faComponents = <p className="no-paths-message"> No paths for {this.props.paths[tabindex].group.name}. Please change search filters and try again.</p>
         }
-  
 
-        start = Date.now();
-        // console.log("resstart",Date.now());
         var resultsComponents = this.props.paths.map(function(result, index) {
-        return <Tab key={index} label={result.groupname} value={index} >
+        return <Tab key={index} label={result.group.name} value={index} >
                   {faComponents}
                   </Tab>
         })     
-        
-        console.log("rs end", Date.now()-start);      
-        // })
+    
       } 
 
  

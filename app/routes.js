@@ -3,7 +3,6 @@ import ReactRouter from "react-router";
 import IndexRoute from "react-router";
 import Main from "./components/Main.js";
 import PathBuilder from "./components/PathBuilder.js";
-// import FocusAreaDetail from "./components/FocusAreaDetail.js";
 import DataImportCSV from "./components/DataImportCSV.js";
 import {Router, Route, hashHistory, browserHistory} from "react-router";
 

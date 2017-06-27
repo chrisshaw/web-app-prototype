@@ -3,11 +3,8 @@ import Paper from 'material-ui/Paper';
 import GroupTabs from './GroupTabs';
 
 const style = {
-  // height: 100,
   width: '100%',
   textAlign: 'center',
-//   display: 'inline-block',
-  
 };
 
 class PathPaper extends React.Component {

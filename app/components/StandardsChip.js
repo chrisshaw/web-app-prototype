@@ -11,7 +11,6 @@ import Chip from 'material-ui/Chip';
     constructor(props) {
     super(props);
     this.onDelete = this.onDelete.bind(this);
-    //  console.log("in render", this.props.grouplist)
   }
 
   onDelete(id) {
@@ -33,23 +32,16 @@ import Chip from 'material-ui/Chip';
     if (this.props.standardslist){
        hasGroups = this.props.standardslist;
     }
-    // var selectedArr = [];
-    // selectedArr = [...this.props.selectedgrouplist];
-    // console.log("what is " , this.props.selectedgrouplist)
     if (this.props.selectedstandardslist) {
-    // || (Object.keys(this.props.selectedgrouplist).length === 0 && this.props.selectedgrouplist.constructor === Object)){
-    // }  else {
-        // console.log("what is this", this.props.selectedgrouplist)
         var component = this;
         var resultComponents = this.props.selectedstandardslist.map(function(result) {
           return <Chip
-              key={result.id}
-              onRequestDelete={() => this.onDelete(result.id)}
+              key={result._id}
+              onRequestDelete={() => component.onDelete(result._id)}
               style={styles.chip}
               >
               {result.name}
             </Chip>
-
           })
       }
 

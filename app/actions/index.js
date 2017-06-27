@@ -147,6 +147,7 @@ saveSelectedSubjects: (addOrRemove, item) => {
 },
 updateStandardsList: (deleteGroup, id, standardslist) => {
    //pulls for display in autopopulate dropdown to selected list for query
+   console.log("in action", deleteGroup, id, standardslist)
     return {
       type: 'UPDATE_STANDARDS',
       delete: deleteGroup,

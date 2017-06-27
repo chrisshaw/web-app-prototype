@@ -12,10 +12,6 @@ import HomeIcon from './HomeIcon';
 import UploadIcon from './UploadIcon';
 
 const styles = {
-//   smallIcon: {
-//     width: 36,
-//     height: 36,
-//   },
   mediumIcon: {
     width: 48,
     height: 48,
@@ -24,11 +20,6 @@ const styles = {
     width: 60,
     height: 60,
   },
-//   small: {
-//     width: 72,
-//     height: 72,
-//     padding: 16,
-//   },
   medium: {
     width: 96,
     height: 96,

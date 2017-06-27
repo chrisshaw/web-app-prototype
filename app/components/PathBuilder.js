@@ -8,8 +8,6 @@ import PathPaper from './PathPaper';
 
 const style = {
     drawer: {
-        // color: '#808080',
-        // backgroundColor: '#FFFFFF',
         zIndex: 100,
         position: 'fixed',
         top: '300px'
@@ -21,9 +19,6 @@ const style = {
     button: {
         marginTop: 12,
         marginBottom: 12,
-        // display: 'block',
-        // backgroundColor: "#2FBB2F",
-        // color: '#FFFFFF', 
         fontColor: '#FFFFFF',
         mariginLeft: '10px'
 
@@ -35,19 +30,14 @@ class PathBuilder extends Component{
         super(props);
         this.handleToggle = this.handleToggle.bind(this);
         this.handleClose = this.handleClose.bind(this);
-        // console.log(this.props.toggledrawer, "intial state")
     }
     componentWillMount(){
          helper.toggleDrawer(false, this.props.dispatch);
-        //  console.log(this.props.toggledrawer, "mount state")
     }
     handleToggle() {
-        //    console.log(this.props.toggledrawer, "ssss;e");
-        // console.log(this.props.toggledrawer, "handle state")
         helper.toggleDrawer(!this.props.toggledrawer, this.props.dispatch)
     }
     handleClose(){
-        // console.log("clsig")
         helper.toggleDrawer(false, this.props.dispatch);
     }
     render(){
@@ -55,21 +45,17 @@ class PathBuilder extends Component{
         return(
             <div>
                 <PathBuilderDrawer handleToggle={this.handleToggle} handleClose={this.handleClose} toggledrawer={this.props.toggledrawer}/>
-                <Grid>  
-                    
-                    <Row>
-             
+                <Grid>                   
+                    <Row>       
                     <Col md={12} >
-                    <RaisedButton
-                        label="Show Path Builder"
-                        onTouchTap={this.handleToggle}
-                        style={style.button} 
-                        containerElement='label' 
-                        secondary={true}
-                        />
-                    
-                     <PathPaper />
-                    
+                        <RaisedButton
+                            label="Show Path Builder"
+                            onTouchTap={this.handleToggle}
+                            style={style.button} 
+                            containerElement='label' 
+                            secondary={true}
+                            />         
+                     <PathPaper />             
                     </Col>
                     </Row>
                 </Grid>
@@ -83,9 +69,6 @@ class PathBuilder extends Component{
 const mapStateToProps = (store) => {
     return {
         toggledrawer: store.mainState.toggledrawer,
-        // grouplist: store.mainState.grouplist,
-        // selectedgrouplist: store.mainState.selectedgrouplist,
-        // paths: store.mainState.paths
     }
 }
 

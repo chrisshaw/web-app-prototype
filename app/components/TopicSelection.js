@@ -19,13 +19,11 @@ class TopicSelection extends Component{
         this.handleReset = this.handleReset.bind(this);
         this.handleShowGroups = this.handleShowGroups.bind(this);
         // get initial data and set props
-        // helper.getGroups(this.props.dispatch);
         helper.getTopics(this.props.dispatch);    
         var searchObj = {};
         // state for hide/show selection and text/icon
         this.state ={
             showGroups: false, 
-            // groupState: "Open" 
         }
     }
     handleRequestDelete(id) {
@@ -34,21 +32,16 @@ class TopicSelection extends Component{
     }
     handleReset() {
         helper.getTopics(this.props.dispatch); 
-        // console.log("getting topics", this.props.topiclist);
-
     }
     handleShowGroups() {
         // toggle between true and false and change the displayed message
-        this.setState({showGroups: !this.state.showGroups})
-        // this.state.showGroups ?  this.setState({groupState: "Open"}) : this.setState({groupState: "Close"})
+        this.setState({showGroups: !this.state.showGroups});
     }
     render(){
         var styles = {
             button : {
-                // backgroundColor: '#9E9E9E'
             }
         }  
-        // console.log("topiclist", this.props.topiclist)
         var component = this;
         if ( this.props.selectedtopiclist){
              var arrLength = this.props.selectedtopiclist.length;
@@ -57,23 +50,18 @@ class TopicSelection extends Component{
         return(<div><div className="query-builder-wrapper">
                     <Row>
                         <Col xs={1} md={1} >
-
                             <div className={this.state.showGroups ? "hide" : "expand-icon"} onTouchTap={this.handleShowGroups}><ExpandMoreIcon /></div>
-                            <div className={this.state.showGroups ? "expand-icon" : "hide"} onTouchTap={this.handleShowGroups}><ExpandLessIcon /></div>
-                         
+                            <div className={this.state.showGroups ? "expand-icon" : "hide"} onTouchTap={this.handleShowGroups}><ExpandLessIcon /></div>                       
                         </Col>
                         <Col xs={11} md={11} >
                             <div className="auto-text-alignment">
                                 <p className="search-text chip-float"> will explore</p>
                                 <div className={this.state.showGroups ? "hide" : "expand-icon"} ><TopicChip className="text-center" style={{display: "inline"}} secondary={true} selectedtopiclist={this.props.selectedtopiclist} handleRemove={this.handleRemove} handleRequestDelete={this.handleRequestDelete}/></div> 
-                            </div>
-                            
+                            </div>                       
                         </Col>
                     </Row>
                 </div>
-
-
-                <div className={this.state.showGroups ? "query-builder-wrapper" : "query-builder-wrapper hide"} >
+              <div className={this.state.showGroups ? "query-builder-wrapper" : "query-builder-wrapper hide"} >
                     <Row>
                         <Col xs={12} md={12} >
                             <AutoCompleteTopicField  topiclist={component.props.topiclist} selectedtopiclist={component.props.selectedtopiclist} handleRemove={this.handleRemove} handleRequestDelete={this.handleRequestDelete}/>
@@ -97,7 +85,6 @@ const mapStateToProps = (store) => {
     return {
         topiclist: store.mainState.topiclist,
         selectedtopiclist: store.mainState.selectedtopiclist,
-        // initialSearchTerms: store.mainState.initialSearchTerms,
     }
 }
 

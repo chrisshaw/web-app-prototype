@@ -12,7 +12,6 @@ import GroupSelection from './GroupSelection';
 import TopicSelection from './TopicSelection';
 import SubjectContentSelection from './SubjectContentSelection';
 import StandardsSelection from './StandardSelection';
-import TimeLineSelection from './TimeLineSelection';
 import Dialog from 'material-ui/Dialog';
 // import configureStore from '../store'
 
@@ -21,43 +20,21 @@ import Dialog from 'material-ui/Dialog';
 class QueryBuilder extends Component{
    constructor(props) {
         super(props);
-        // this.handleRemove = this.handleRemove.bind(this);
         this.handleRequestDelete = this.handleRequestDelete.bind(this);
-        this.handleReset = this.handleReset.bind(this);
-        this.getPaths = this.getPaths.bind(this);
+        this.handleSubmitAll = this.handleSubmitAll.bind(this);
         this.handleShowGroups = this.handleShowGroups.bind(this);
         this.handleClose = this.handleClose.bind(this);
-        this.handleSubmit = this.handleSubmit.bind(this);
         // get initial data and set props
         helper.getGroups(this.props.dispatch);
         var searchObj = {};
         this.state ={
             showGroups: false, 
-            // groupState: "Open" 
-            nogoupselected: false,
-            // nopathreturned: false
+            nogoupselected: false,   
         }
-       
- 
-        // next
-        // helper.getGroupFA(this.props.dispatch);
-
     }
-    // handleRemove() {
-    //     // action triggered when a chip is deleted - must remove from the prop by sending update to the store
-    //     console.log("in handle remove");
-    //     // helper.editGroupsList(groupid, this.props.dispatch)
-    // }
     handleRequestDelete(id) {
-        // console.log("id of group for delete", id);
         // filter grouplist based on id
-        // console.log(this)
-        helper.removeGroup(id, this.props.dispatch);
-       
-    }
-    handleReset() {
-        // console.log("in reset");
-        helper.getGroups(this.props.dispatch); 
+        helper.removeGroup(id, this.props.dispatch);     
     }
     handleShowGroups() {
         // toggle between true and false
@@ -65,86 +42,24 @@ class QueryBuilder extends Component{
         this.state.showGroups ?  this.setState({groupState: "Open"}) : this.setState({groupState: "Close"})
     }
     handleClose = () => {
-
         this.setState({nogoupselected: false});
     };
-    handleSubmit(i) {
-        // console.log("this.props.closeDrawer()")
-       if (this.props.selectedgrouplist.length !== 0) {
+    // new to be tested
+    handleSubmitAll() {
+        console.log("in handleSubmit", this.props.selectedgrouplist);
+        if (this.props.selectedgrouplist.length !== 0) {
             this.props.closeDrawer();
             // clear old paths
             var paths = "";
             helper.newPaths(paths, this.props.dispatch);
             // array to store new paths
             pathArr = [];
-            this.getPaths(i);
+            helper.getPathsAll(this.props.selectedgrouplist, this.props.selectedstandardslist, this.props.selectedtopiclist, this.props.selectedsubjectcontentlist, this.props.dispatch);
        } else {
             // no group selected message
             this.setState({nogoupselected: true})
-        }
-
-
-        
-    }
-    getPaths(i) {
-    
-        // console.log("sending this to server", this.props.selectedgrouplist);
-        // for (var i = 0; i < this.props.selectedgrouplist.length; i++){
-       
-        var component = this;
-        if ((component.props.selectedgrouplist) && (component.props.selectedgrouplist.length !== 0)){
-            //    /  console.log("before get frades", i);
-                // console.log("i", i, "this.props.selectedgrouplist", this.props.selectedgrouplist);
-                // (selectedGroups, selectedStandards, selectedTopics, selectedSubjects, i, dispatch)
-                helper.getFAandGrade(this.props.selectedgrouplist, this.props.selectedstandardslist, this.props.selectedtopiclist, this.props.selectedsubjectcontentlist, i, this.props.dispatch).then((i) => {
-                //initially we have groups, fa and grade - in an array of objects - this.props.searchTerm
-                    // console.log("intial:",this.props.initialSearchTerms);
-                    // let nexti = results[0];
-                    // let 
-                    //    console.log("before get path", i);
-                        helper.getPaths(this.props.initialSearchTerms, i, this.props.dispatch).catch(function (error) {
-                            
-                            }).then(function(pathresults){
-                                let counter =  pathresults[0];
-                                counter++;
-                                // console.log("pathresults", pathresults);
-                                pathArr.push(pathresults[1]); 
-                                // console.log(pathArr);
-                                // pathresults[0]++;
-                                // i++;
-                                // console.log(configureStore.getState(), "paths");
-                                // console.log("this.props.initialSearchTerms", component.props.selectedgrouplist.length);
-                                if (counter < component.props.selectedgrouplist.length){
-                                   
-                                    // console.log("recorsive call", i);
-                                   
-                                    component.getPaths(counter);
-
-
-                                } else {
-                                    // dispatch results to path property
-                                     helper.newPaths(pathArr, component.props.dispatch);
-                                }
-                            
-                            }) 
-                        
-                    
-                   
-                })
-                
-           
-
         } 
-        // if nothing found
-        // if ((i === component.props.selectedgrouplist.length) && (noPaths === component.props.selectedgrouplist.length-1)) {
-        //     component.setState({nopathreturned: true})
-        //     console.log("no paths!", this.props.paths);
-        // }
-        
-    
     }
-
-
     render(){
         const actions = [
             <FlatButton
@@ -199,7 +114,7 @@ class QueryBuilder extends Component{
 
                 <Row>
                     <Col xs={12} md={12} className="text-center" >            
-                        <FlatButton containerElement='label' label="Get Reccommended Paths" onTouchTap={() => this.handleSubmit(0)} />
+                        <FlatButton containerElement='label' label="Get Reccommended Paths" onTouchTap={this.handleSubmitAll} />
                     </Col>
                 </Row>
       

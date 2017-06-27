@@ -14,37 +14,15 @@ import React, { Component } from 'react';
 import uuid from 'uuid';
 import Edit from 'react-edit-inline';
 import helper from '../helper';
-// import action from '../actions';   
-
 
 const styles = {
-//   propContainer: {
-//     width: 200,
-//     overflow: 'hidden',
-//     margin: '20px auto 0',
-//   },
-//   propToggleHeader: {
-//     margin: '20px auto 10px',
-//   },
-
-    textColor: '#000000'
-    
-  
+    textColor: '#000000' 
 };
 
 
 class DataImportTable extends Component {
     constructor(props){
         super(props);
-        // console.log(this);
-        // let boundActionCreators = bindActionCreators(updateCSVDataName, dispatch)
-        
-    //        updateCSV: function(action, id, dispatch){
-    //     console.log(action, id);
-    //     dispatch(updateCSVDataName(action, id))
-
-    // }
-
     }
     state = {
         fixedHeader: true,
@@ -52,10 +30,7 @@ class DataImportTable extends Component {
         stripedRows: false,
         showRowHover: false,
         height: '300px',
-
     };
-
-
 
     handleToggle = (event, toggled) => {
         this.setState({
@@ -68,31 +43,19 @@ class DataImportTable extends Component {
     }
     dataChanged(data) { 
             // the "this"" context is the edit object - use this to grab tabindex
-            // console.log(this.tabIndex);
             if (data.name){
                 helper.updateCSV(data.name, this.tabIndex, "name", this.dispatch ); 
             } 
             if (data.grade){
                 helper.updateCSV(data.grade, this.tabIndex, "grade", this.dispatch ); 
-            } 
-            // if (data.focusArea){
-            //     helper.updateCSV(data.focusArea, this.tabIndex, "focusArea", this.dispatch ); 
-            // } 
-
-          
+            }       
     }
     customValidateText(text) {
         return (text.length > 0 && text.length < 64);
     }
-    // csvUpdate() {
-    //     console.log("etes", index);
-    // }
     render() {
         var component = this;
-          console.log("selectedFocusArea table", this.props.selectedFocusArea)
-  
         if (this.props.csvdata) {
-            console.log("selectedFocusArea table", component.props.selectedFocusArea);
             var resultsComponent = component.props.csvdata.map( function (row, index){
                 if (component.props.selectedFocusArea){
                     var displaySelectedFA = component.props.selectedFocusArea
@@ -148,8 +111,6 @@ class DataImportTable extends Component {
                     </TableRowColumn>
                 </TableRow>)
             })
-            // console.log(resultsComponent);
-
         }
         return (
         <div>
@@ -176,16 +137,6 @@ class DataImportTable extends Component {
         );
     }
 }
-
-
-
-// const mapStateToProps = (store,ownProps) => {
-//     return {
-//         csvdata: store.mainState.csvdata,    
-//         focusArea:  store.mainState.focusArea,
-//         selectedFocusArea: store.mainState.selectedFocusArea,
-//     }
-// }
 
 export default connect()(DataImportTable);
 

@@ -1,9 +1,7 @@
 import React, { Component } from 'react';
 import {connect } from 'react-redux';
-// import Nav from './Navbar';
 import QueryBuilder from './QueryBuilder';
 import {Grid, Row, Col} from 'react-bootstrap';
-// import {newTodo, deleteTodo} from '../actions';
 import MyAppNav from './MyAppNav.js';
 import injectTapEventPlugin from 'react-tap-event-plugin';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
@@ -22,9 +20,7 @@ const navBarTheme = getMuiTheme({
     accent3Color: '#808080',
     alternateTextColor: '#FFFFFF',
     disabledColor: '#E6E6E6',
-    
   },
-
   appBar: {
     top: 0,
     backgroundColor: '#FFFFFF',
@@ -47,56 +43,20 @@ const navBarTheme = getMuiTheme({
   },
   raisedButton : {
     textColor: '#FFFFFF',
-    // color: '#FFFFFF',
     backgroundColor: '#40C83C',
-    // textColor: '#FFFFFF',
-
   },
   flatButton : {
     textColor: '#40C83C',
     backgroundColor: '#FFFFFF',
-
   },
-
   tabs : {
     textColor: '#808080',
-    // alternateTextColor: '#808080',
-    // alternateTextColor: '#808080',
-    // disabledColor: '#808080',
   },
- 
-  // tab : {
-  //   textColor: '#808080'
-  // }
-
-//   button: {
-//       color: '#000000',
-//   }
-// //   dialog: {
-//       zIndex: 3000,
-    //   }
     zIndex: {
-        // menu: 1000,
-        // appBar: 1100,
-        // leftNavOverlay: 1200,
-        // leftNav: 1300,
         dialogOverlay: 1400,
         dialog: 1500,
         drawer: 1300,
-        // layer: 2000,
-        // popover: 5000,
-        // snackbar: 2900,
-        // tooltip: 3000
     },
- 
-
-//   tabs: {
-//     top: 190,
-//   },
-//   tab: {
-//     color: "#2FBB2F",
-//     textColor: '#FFFFFF',
-//   }
 });
 
 class Main extends Component{
@@ -120,16 +80,5 @@ class Main extends Component{
     }
 }
 
-// <div className="wrapper">
-//                     {React.cloneElement(this.props.children, {fadetail: this.props.fadetail, focusarea: this.props.area, noResultsMsg: this.props.noResultsMsg})}
-//                 </div>
-
-// const mapStateToProps = (store) => {
-//     return {
-//         area: store.mainState.area,
-//         // noResultsMsg: store.mainState.noResultsMsg,
-//         // fadetail: store.mainState.fadetail,
-//     }
-// }
 export default Main;
 
