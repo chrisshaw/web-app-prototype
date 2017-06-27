@@ -60,6 +60,7 @@ body {
 .left-nav{
    margin-left: 50px;
    margin-bottom: 30px;
+   margin-top: 40px;
    padding: 0px;
 }
 .right-nav {
@@ -285,6 +286,7 @@ table {
         /*margin-left: 14px;*/
     }
     .left-nav{
+        /*margin-top: 80px;*/
         margin-left: 0px;
     }
     .right-nav {

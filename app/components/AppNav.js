@@ -10,6 +10,7 @@ import {Link} from 'react-router';
 import ExpandMoreIcon from './ExpandMoreIcon';
 import HomeIcon from './HomeIcon';
 import UploadIcon from './UploadIcon';
+import LogoutIcon from './LogoutIcon'; 
 
 const styles = {
   mediumIcon: {
@@ -43,10 +44,12 @@ class AppNav extends Component {
             <AppBar className="sticky-navbar"
             title={<div className="text-center"><span><img src="./public/assets/img/sidekick.png" className="logo" alt="Sidekick" /></span></div>}
             showMenuIconButton={true}
-            iconElementLeft={<div><IconButton iconStyle={styles.mediumIcon} style={styles.medium} className="right-nav" containerElement={<Link to="/csv"/>} label="Upload Data"><UploadIcon/></IconButton><IconButton  iconStyle={styles.mediumIcon} style={styles.medium} className="left-nav" containerElement={<Link to="/"/>} label="Home"><HomeIcon/></IconButton></div>}
-            iconElementRight={<div> {this.props.loggedin ? (
-            <RaisedButton  secondary={true} containerElement='label' onTouchTap={this.props.handleLogout} label="Logout" />
-          ) : "" }</div>}
+            iconElementLeft={<div>  {this.props.loggedin ? 
+              (<div>
+                <IconButton iconStyle={styles.mediumIcon} style={styles.medium} className="right-nav" containerElement={<Link to="/csv"/>} label="Upload Data"><UploadIcon/></IconButton>
+                <IconButton  iconStyle={styles.mediumIcon} style={styles.medium} className="right-nav" containerElement={<Link to="/"/>} label="Home"><HomeIcon/></IconButton>
+                <IconButton  secondary={true} containerElement='label' onTouchTap={this.props.handleLogout} label="Logout"><LogoutIcon/></IconButton></div>) 
+                : "" } </div>}
             />    
         </div>)
     }

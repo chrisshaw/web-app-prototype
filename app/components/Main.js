@@ -81,11 +81,11 @@ class Main extends Component{
                  
                    { this.props.loggedin ?  this.props.children : (<Grid>                   
                     <Row>       
-                    <Col md={4} />
-                    <Col md={4} className="text-center">
+                    <Col xs={3} md={4} />
+                    <Col xs={6} md={4} className="text-center">
                        <Login dispatch={this.props.dispatch}/>
                     </Col>
-                    <Col md={4} />
+                    <Col xs={3} md={4} />
                     </Row>
                 </Grid> )}
               </div>

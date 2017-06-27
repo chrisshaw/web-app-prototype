@@ -45,10 +45,10 @@ class Login extends Component{
                     <input value={this.state.password} onChange={(e)=>this.handleChange(e)} type="password" id="inputPassword" className="form-control  auth-input" placeholder="Password" required="" />
                 </Row>
                 <Row>
-                    <Col xs={12} md={6} className="text-center">
+                    <Col xs={6} md={6} className="text-center">
                         <RaisedButton secondary={true} containerElement='label' onTouchTap={this.handleLogin}  label="Login" />
                     </Col>
-                    <Col xs={12} md={6} className="text-center">
+                    <Col xs={6} md={6} className="text-center">
                         <RaisedButton  secondary={true} containerElement='label' onTouchTap={this.handleRegister} label="Sign Up" />
                     </Col>
                 </Row>
