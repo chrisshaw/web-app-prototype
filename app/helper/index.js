@@ -123,6 +123,40 @@ var helpers = {
     updateSelectedStandards: function(e, addOrRemove, dispatch){
        dispatch(actions.saveSelectedStandards(addOrRemove, e));
     },
+    // Authentication
+    // authAction == "Login" or "Sign Up"
+    loginOrRegister(email, password, authAction){
+        // send to api for auth
+        console.log(email, password, authAction);
+        if (authAction === 'Login'){
+             let userObj = { 
+                "username": email,
+                "password": password
+            }
+            console.log(userObj);
+            return axios.post('http://146.148.55.53:8529/_db/skdb/auth/login', userObj).then(function(response) {
+                    // dispatch(actions.updatePathList(response.data));
+                    console.log(response.data)  // true if successful
+                    // then do something with response
+                    return;
+            })
+
+        } else if (authAction === 'Sign Up'){
+            let userObj = { 
+                "username": email,
+                "password": password
+            }
+            console.log(userObj);
+            return axios.post('http://146.148.55.53:8529/_db/skdb/auth/signup', userObj).then(function(response) {
+                    // dispatch(actions.updatePathList(response.data));
+                    console.log(response.data)  // true if successful
+                    // then do something with response
+                    return;
+            })
+            
+
+        }
+    }
  };
 // We export the helpers function (which contains getGithubInfo)
 module.exports = helpers;

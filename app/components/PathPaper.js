@@ -15,9 +15,11 @@ class PathPaper extends React.Component {
 
   render() {
     return (    
-        <Paper style={style} zDepth={0}>
-            <GroupTabs />
-        </Paper>
+        <div>
+          <Paper style={style} zDepth={0}>
+              <GroupTabs />
+          </Paper>
+        </div>
     )}
 }
 

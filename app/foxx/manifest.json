@@ -1,0 +1,20 @@
+{
+  "name": "foxx-auth-service",
+  "version": "3.0.0-dev",
+  "license": "MIT",
+  "description": "service to handle authentication",
+  "thumbnail": "foxx-icon.png",
+  "keywords": ["demo", "service"],
+  "author": "ArangoDB GmbH",
+  "contributors": [
+    "Fiona Hegarty"
+  ],
+  "main": "index.js",
+  "defaultDocument": "index.html",
+  "engines": {
+    "arangodb": "^3.0.0"
+  },
+  "scripts": {
+    "setup": "scripts/setup.js"
+   }
+}

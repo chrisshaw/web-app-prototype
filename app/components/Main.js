@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import {connect } from 'react-redux';
 import QueryBuilder from './QueryBuilder';
+import Login from './Login';
+// import SignUp from './SignUp';
 import {Grid, Row, Col} from 'react-bootstrap';
 import MyAppNav from './MyAppNav.js';
 import injectTapEventPlugin from 'react-tap-event-plugin';
@@ -73,7 +75,17 @@ class Main extends Component{
                 <MyAppNav/>
                 <div className="wrapper">
                    {this.props.children}
-                </div>
+                <Grid>                   
+                    <Row>       
+                    <Col md={6} className="text-center">
+                        <Login displayname="Login"/>  
+                    </Col>
+                    <Col md={6} className="text-center">
+                        <Login displayname="Sign Up"/>  
+                    </Col>
+                    </Row>
+                </Grid> 
+              </div>
             </div>
             </MuiThemeProvider>
         )
