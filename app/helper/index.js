@@ -125,7 +125,7 @@ var helpers = {
     },
     // Authentication
     // authAction == "Login" or "Sign Up"
-    loginOrRegister(email, password, authAction){
+    loginOrRegister(email, password, authAction, dispatch){
         // send to api for auth
         console.log(email, password, authAction);
         if (authAction === 'Login'){
@@ -136,8 +136,9 @@ var helpers = {
             console.log(userObj);
             return axios.post('http://146.148.55.53:8529/_db/skdb/auth/login', userObj).then(function(response) {
                     // dispatch(actions.updatePathList(response.data));
-                    console.log(response.data)  // true if successful
+                    console.log(response.data.success)  // true if successful
                     // then do something with response
+                    dispatch(actions.userLogin(response.data.success))
                     return;
             })
 
@@ -149,14 +150,24 @@ var helpers = {
             console.log(userObj);
             return axios.post('http://146.148.55.53:8529/_db/skdb/auth/signup', userObj).then(function(response) {
                     // dispatch(actions.updatePathList(response.data));
-                    console.log(response.data)  // true if successful
+                    console.log(response.data.success)  // true if successful
+                    dispatch(actions.userLogin(response.data.success))
                     // then do something with response
                     return;
             })
             
 
         }
-    }
+    },
+
+    logout(dispatch){
+        // send to api for auth
+        console.log("logout");
+        // set logged in to false
+        dispatch(actions.userLogin(false))
+     }
  };
+
+
 // We export the helpers function (which contains getGithubInfo)
 module.exports = helpers;

@@ -337,8 +337,18 @@ const mainReducer = (state={intialstate}, action) => {
     return state;
 }
 
+const authReducer = (state={intialstate}, action) => {
+    switch(action.type){    
+        case 'LOGGED_IN':
+            return Object.assign({},state, {loggedin: action.loggedin}); 
+    };      
+    return state;
+}
+
+
 const reducers = combineReducers({
     mainState : mainReducer,
+    authState : authReducer
 
 })
 

@@ -1,26 +1,32 @@
 const action = {
 
-focusAreaResults: (area)=> {
+// focusAreaResults: (area)=> {
+//   return {
+//       type: 'FOCUS_AREA',
+//       area,
+//     }
+// },
+
+// noResults: (noResultsMsg)=> {
+//   return {
+//       type: 'NO_DATA_MSG',
+//       noResultsMsg,
+//     }
+// },
+
+// viewDetailFocusArea : (fadetail) => {
+//     return {
+//       type: 'VIEW_DETAIL',
+//       fadetail,
+//     }
+// },
+
+userLogin: (loggedin) => {
   return {
-      type: 'FOCUS_AREA',
-      area,
-    }
+    type: 'LOGGED_IN',
+    loggedin
+  }
 },
-
-noResults: (noResultsMsg)=> {
-  return {
-      type: 'NO_DATA_MSG',
-      noResultsMsg,
-    }
-},
-
-viewDetailFocusArea : (fadetail) => {
-    return {
-      type: 'VIEW_DETAIL',
-      fadetail,
-    }
-},
-
 
 viewUploadedCSVData: (csvdata) => {
     return {

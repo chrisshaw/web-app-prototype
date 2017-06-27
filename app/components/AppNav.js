@@ -1,11 +1,11 @@
-import React from 'react';
+import React, {Component} from 'react';
 import AppBar from 'material-ui/AppBar';
 import IconButton from 'material-ui/IconButton';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import NavigationClose from 'material-ui/svg-icons/navigation/close';
 import Tabs, {Tab} from 'material-ui/Tabs';
-import FlatButton from 'material-ui/FlatButton';
+import RaisedButton from 'material-ui/RaisedButton';
 import {Link} from 'react-router';
 import ExpandMoreIcon from './ExpandMoreIcon';
 import HomeIcon from './HomeIcon';
@@ -32,16 +32,25 @@ const styles = {
   }
 };
 
-const MyAppNav = () => (
-        <div >
+class AppNav extends Component {
+    constructor(props){
+        super(props);
+    }
+    render(){
+
+    
+       return (<div >
             <AppBar className="sticky-navbar"
             title={<div className="text-center"><span><img src="./public/assets/img/sidekick.png" className="logo" alt="Sidekick" /></span></div>}
             showMenuIconButton={true}
-            iconElementLeft={<IconButton  iconStyle={styles.mediumIcon} style={styles.medium} className="left-nav" containerElement={<Link to="/"/>} label="Home"><HomeIcon/></IconButton>}
-            iconElementRight={<IconButton iconStyle={styles.mediumIcon} style={styles.medium} className="right-nav" containerElement={<Link to="/csv"/>} label="Upload Data"><UploadIcon/></IconButton>}
+            iconElementLeft={<div><IconButton iconStyle={styles.mediumIcon} style={styles.medium} className="right-nav" containerElement={<Link to="/csv"/>} label="Upload Data"><UploadIcon/></IconButton><IconButton  iconStyle={styles.mediumIcon} style={styles.medium} className="left-nav" containerElement={<Link to="/"/>} label="Home"><HomeIcon/></IconButton></div>}
+            iconElementRight={<div> {this.props.loggedin ? (
+            <RaisedButton  secondary={true} containerElement='label' onTouchTap={this.props.handleLogout} label="Logout" />
+          ) : "" }</div>}
             />    
-        </div>
+        </div>)
+    }
 
-);
+};
  
-export default MyAppNav;
+export default AppNav;

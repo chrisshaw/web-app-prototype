@@ -2,12 +2,13 @@ import React, { Component } from 'react';
 import {connect } from 'react-redux';
 import QueryBuilder from './QueryBuilder';
 import Login from './Login';
-// import SignUp from './SignUp';
+import helper from '../helper';
 import {Grid, Row, Col} from 'react-bootstrap';
-import MyAppNav from './MyAppNav.js';
+import AppNav from './AppNav.js';
 import injectTapEventPlugin from 'react-tap-event-plugin';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
+
 
 const navBarTheme = getMuiTheme({
   palette: {
@@ -64,27 +65,29 @@ const navBarTheme = getMuiTheme({
 class Main extends Component{
     constructor(props){
         super(props);
+        this.handleLogout = this.handleLogout.bind(this);
         injectTapEventPlugin();
-
     }
-    
+    handleLogout(){
+      helper.logout(this.props.dispatch);
+    }
     render(){
+      console.log("loggedin",this.props.loggedin)
         return(
             <MuiThemeProvider muiTheme={navBarTheme}>
             <div>
-                <MyAppNav/>
+                <AppNav handleLogout={this.handleLogout} loggedin={this.props.loggedin}/>
                 <div className="wrapper">
-                   {this.props.children}
-                <Grid>                   
+                 
+                   { this.props.loggedin ?  this.props.children : (<Grid>                   
                     <Row>       
-                    <Col md={6} className="text-center">
-                        <Login displayname="Login"/>  
+                    <Col md={4} />
+                    <Col md={4} className="text-center">
+                       <Login dispatch={this.props.dispatch}/>
                     </Col>
-                    <Col md={6} className="text-center">
-                        <Login displayname="Sign Up"/>  
-                    </Col>
+                    <Col md={4} />
                     </Row>
-                </Grid> 
+                </Grid> )}
               </div>
             </div>
             </MuiThemeProvider>
@@ -92,5 +95,11 @@ class Main extends Component{
     }
 }
 
-export default Main;
+const mapStateToProps = (store) => {
+    return {
+        loggedin: store.authState.loggedin,
+    }
+}
+
+export default connect(mapStateToProps)(Main);
 
