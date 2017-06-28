@@ -1,11 +1,16 @@
 import React, {Component} from 'react';
 import AppBar from 'material-ui/AppBar';
-import IconButton from 'material-ui/IconButton';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
-import NavigationClose from 'material-ui/svg-icons/navigation/close';
 import Tabs, {Tab} from 'material-ui/Tabs';
 import RaisedButton from 'material-ui/RaisedButton';
+import IconButton from 'material-ui/IconButton';
+import IconMenu from 'material-ui/IconMenu';
+import MenuItem from 'material-ui/MenuItem';
+import FlatButton from 'material-ui/FlatButton';
+import Toggle from 'material-ui/Toggle';
+import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
+import NavigationClose from 'material-ui/svg-icons/navigation/close';
 import {Link} from 'react-router';
 import ExpandMoreIcon from './ExpandMoreIcon';
 import HomeIcon from './HomeIcon';
@@ -33,22 +38,31 @@ const styles = {
   }
 };
 
+
 class AppNav extends Component {
     constructor(props){
         super(props);
     }
     render(){
 
-    
+      var component = this;
        return (<div >
             <AppBar className="sticky-navbar"
             title={<div className="text-center"><span><img src="./public/assets/img/sidekick.png" className="logo" alt="Sidekick" /></span></div>}
             showMenuIconButton={true}
-            iconElementLeft={<div>  {this.props.loggedin ? 
-              (<div>
-                <IconButton iconStyle={styles.mediumIcon} style={styles.medium} className="right-nav" containerElement={<Link to="/csv"/>} label="Upload Data"><UploadIcon/></IconButton>
-                <IconButton  iconStyle={styles.mediumIcon} style={styles.medium} className="right-nav" containerElement={<Link to="/"/>} label="Home"><HomeIcon/></IconButton>
-                <IconButton  secondary={true} containerElement='label' onTouchTap={this.props.handleLogout} label="Logout"><LogoutIcon/></IconButton></div>) 
+            iconElementLeft={<div>{this.props.loggedin ? 
+              (<IconMenu
+    iconButtonElement={
+      <IconButton><MoreVertIcon /></IconButton>
+    }
+    targetOrigin={{horizontal: 'right', vertical: 'top'}}
+    anchorOrigin={{horizontal: 'right', vertical: 'top'}}
+  >
+    <MenuItem primaryText="Home" containerElement={<Link to="/"/>} />
+    <MenuItem primaryText="Upload" containerElement={<Link to="/csv"/>}  />
+    <MenuItem primaryText="Path Builder" onTouchTap={this.props.showPathBuilder}/>
+    <MenuItem primaryText="Sign Out" onTouchTap={this.props.handleLogout}/>
+  </IconMenu>) 
                 : "" } </div>}
             />    
         </div>)

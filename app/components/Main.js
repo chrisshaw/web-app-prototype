@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import {connect } from 'react-redux';
 import QueryBuilder from './QueryBuilder';
-import Login from './Login';
+import LoginSignUpTab from './LoginSignUpTab';
 import helper from '../helper';
 import {Grid, Row, Col} from 'react-bootstrap';
 import AppNav from './AppNav.js';
@@ -66,28 +66,27 @@ class Main extends Component{
     constructor(props){
         super(props);
         this.handleLogout = this.handleLogout.bind(this);
+        this.showPathBuilder = this.showPathBuilder.bind(this);
+        // this.state = { showPathBuilder:false }
         injectTapEventPlugin();
     }
     handleLogout(){
       helper.logout(this.props.dispatch);
+    }
+    showPathBuilder(showPathBuilder){
+      helper.toggleDrawer(true, this.props.dispatch)
     }
     render(){
       console.log("loggedin",this.props.loggedin)
         return(
             <MuiThemeProvider muiTheme={navBarTheme}>
             <div>
-                <AppNav handleLogout={this.handleLogout} loggedin={this.props.loggedin}/>
+                <AppNav handleLogout={this.handleLogout} loggedin={this.props.loggedin} showPathBuilder={this.showPathBuilder} />
                 <div className="wrapper">
                  
-                   { this.props.loggedin ?  this.props.children : (<Grid>                   
-                    <Row>       
-                    <Col xs={3} md={4} />
-                    <Col xs={6} md={4} className="text-center">
-                       <Login dispatch={this.props.dispatch}/>
-                    </Col>
-                    <Col xs={3} md={4} />
-                    </Row>
-                </Grid> )}
+                   { this.props.loggedin ?  this.props.children : (                 
+                       <LoginSignUpTab dispatch={this.props.dispatch}/>
+                  )}
               </div>
             </div>
             </MuiThemeProvider>
