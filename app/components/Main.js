@@ -85,7 +85,7 @@ class Main extends Component{
                 <div className="wrapper">
                  
                    { this.props.loggedin ?  this.props.children : (                 
-                       <LoginSignUpTab dispatch={this.props.dispatch}/>
+                       <LoginSignUpTab dispatch={this.props.dispatch} loginerror={this.props.loginerror}/>
                   )}
               </div>
             </div>
@@ -97,6 +97,7 @@ class Main extends Component{
 const mapStateToProps = (store) => {
     return {
         loggedin: store.authState.loggedin,
+        loginerror: store.authState.loginerror,
     }
 }
 

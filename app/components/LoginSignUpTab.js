@@ -4,6 +4,8 @@ import {Tabs, Tab} from 'material-ui/Tabs';
 import SwipeableViews from 'react-swipeable-views';
 import {Grid, Row, Col} from 'react-bootstrap';
 import Login from './Login';
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+import getMuiTheme from 'material-ui/styles/getMuiTheme';
 
 const styles = {
   headline: {
@@ -17,18 +19,37 @@ const styles = {
   },
 };
 
+
+// const muiTheme = getMuiTheme({
+//     palette: {
+//     textColor: '#808080',
+//     // this one is for the tabs bar and appBar 
+//     primary1Color: "#FFFFFF",
+//     primary2Color: "#FFFFFF",
+//     // primary3Color: '#A35FE3',
+//     // this one overrides the underline in tabs
+//     accent1Color: "#40C83C",
+//     accent2Color: '#A35FE3',
+//     accent3Color: '#808080',
+//     alternateTextColor: '#808080',
+//     disabledColor: '#E6E6E6',
+    
+//   }
+
+// });
+
 class LoginSignUpTab extends React.Component {
 
   constructor(props) {
     super(props);
     this.state = {
-      slideIndex: 0,
+      value: 0,
     };
   }
 
   handleChange = (value) => {
     this.setState({
-      slideIndex: value,
+      value: value,
     });
   };
 
@@ -38,24 +59,15 @@ class LoginSignUpTab extends React.Component {
         <Row>
             <Col xs={1} md={3}/>
             <Col xs={10} md={6} className="text-center">
-                <Tabs
-                onChange={this.handleChange}
-                value={this.state.slideIndex}
-                >
-                <Tab label="Login" value={0} />
-                <Tab label="Sign Up" value={1} />
+              <Tabs inkBarStyle={{background: '#A35FE3'}} value={this.state.value} initialSelectedIndex={0} onChange={this.handleChange}
+                    >
+                    <Tab label="Login" value={0} buttonStyle={{color: "#808080"}}>
+                        <Login action="Login" dispatch={this.props.dispatch} loginerror={this.props.loginerror} />  
+                    </Tab>
+                    <Tab label="Sign Up" value={1} buttonStyle={{color: "#808080"}}>           
+                        <Login action="Sign Up" dispatch={this.props.dispatch} loginerror={this.props.loginerror}/>       
+                    </Tab>
                 </Tabs>
-                <SwipeableViews
-                index={this.state.slideIndex}
-                onChangeIndex={this.handleChange}
-                >
-                <div style={styles.slide}>
-                   <Login action="Login" dispatch={this.props.dispatch} />
-                </div>
-                <div style={styles.slide}>
-                    <Login action="Sign Up"  dispatch={this.props.dispatch}/>
-                </div>
-                </SwipeableViews>
             </Col>
             <Col xs={1} md={3}/>
        </Row>

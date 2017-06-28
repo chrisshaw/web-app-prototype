@@ -127,19 +127,21 @@ var helpers = {
     // authAction == "Login" or "Sign Up"
     loginOrRegister(email, password, authAction, dispatch){
         // send to api for auth
-        console.log(email, password, authAction);
+        // console.log(email, password, authAction);
         if (authAction === 'Login'){
              let userObj = { 
                 "username": email,
                 "password": password
             }
-            console.log(userObj);
+            // console.log(userObj);
             return axios.post('http://146.148.55.53:8529/_db/skdb/auth/login', userObj).then(function(response) {
-                    // dispatch(actions.updatePathList(response.data));
-                    console.log(response.data.success)  // true if successful
-                    // then do something with response
-                    dispatch(actions.userLogin(response.data.success))
-                    return;
+                // console.log(response.data.success)  // true if successful
+                dispatch(actions.userLogin(response.data.success))
+                return;
+            }).catch(function(error) {
+                // console.log(error);
+                dispatch(actions.userLoginError(true))
+                return;
             })
 
         } else if (authAction === 'Sign Up'){
@@ -147,13 +149,16 @@ var helpers = {
                 "username": email,
                 "password": password
             }
-            console.log(userObj);
+            // console.log(userObj);
             return axios.post('http://146.148.55.53:8529/_db/skdb/auth/signup', userObj).then(function(response) {
-                    // dispatch(actions.updatePathList(response.data));
-                    console.log(response.data.success)  // true if successful
-                    dispatch(actions.userLogin(response.data.success))
-                    // then do something with response
-                    return;
+                // dispatch(actions.updatePathList(response.data));
+                // console.log(response.data.success)  // true if successful
+                dispatch(actions.userLogin(response.data.success))
+                return;
+            }).catch(function(error) {
+                 dispatch(actions.userLoginError(true))
+                //  console.log(error)
+                 return;
             })
             
 

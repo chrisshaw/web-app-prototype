@@ -28,27 +28,27 @@ const styles = {
     },
 };
 
-const muiTheme = getMuiTheme({
-    palette: {
-    textColor: '#808080',
-    // this one is for the tabs bar and appBar 
-    primary1Color: "#FFFFFF",
-    // primary2Color: "#40C83C",
-    // primary3Color: '#A35FE3',
-    // this one overrides the underline in tabs
-    accent1Color: "#40C83C",
-    accent2Color: '#A35FE3',
-    accent3Color: '#808080',
-    alternateTextColor: '#808080',
-    disabledColor: '#E6E6E6',
+// const muiTheme = getMuiTheme({
+//     palette: {
+//     textColor: '#808080',
+//     // this one is for the tabs bar and appBar 
+//     primary1Color: "#FFFFFF",
+//     // primary2Color: "#40C83C",
+//     // primary3Color: '#A35FE3',
+//     // this one overrides the underline in tabs
+//     accent1Color: "#40C83C",
+//     accent2Color: '#A35FE3',
+//     accent3Color: '#808080',
+//     alternateTextColor: '#808080',
+//     disabledColor: '#E6E6E6',
     
-  },
-    chip: {
-      backgroundColor: '#A35FE3',
-      textColor: '#FFFFFF',
-  },
+//   },
+//     chip: {
+//       backgroundColor: '#A35FE3',
+//       textColor: '#FFFFFF',
+//   },
 
-});
+// });
 
 class GroupTabs extends React.Component {
 
@@ -179,23 +179,21 @@ class GroupTabs extends React.Component {
         }
 
         var resultsComponents = this.props.paths.map(function(result, index) {
-        return <Tab key={index} label={result.group.name} value={index} >
+        return <Tab key={index} label={result.group.name} value={index} buttonStyle={{color: "#808080"}}>
                   {faComponents}
                   </Tab>
         })     
     
       } 
 
- 
 
-    return  <MuiThemeProvider muiTheme={muiTheme}><Tabs inkBarStyle={{background: '#A35FE3'}}
+    return <Tabs inkBarStyle={{background: '#A35FE3'}}
         initialSelectedIndex={0}
         value={this.state.value}
         onChange={this.handleChange}
       >
-       
         {resultsComponents}
-      </Tabs></MuiThemeProvider>
+      </Tabs>
   }
 }
 

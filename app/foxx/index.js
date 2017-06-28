@@ -73,8 +73,9 @@ router.post('/signup', function (req, res) {
   req.sessionStorage.save(req.session);
   res.send({success: true});
 })
+// password must have 1 capital letters and  2 digits
 .body(joi.object({
-  username: joi.string().required(),
-  password: joi.string().required()
+  username: joi.string().email(),
+  password: joi.string().regex(/^(?=.*[A-Z])(?=.*[0-9].*[0-9])[a-zA-Z0-9]{8,16}$/),
 }).required(), 'Credentials')
 .description('Creates a new user and logs them in.');

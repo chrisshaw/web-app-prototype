@@ -27,6 +27,12 @@ userLogin: (loggedin) => {
     loggedin
   }
 },
+userLoginError: (loginerror) => {
+  return {
+    type: 'LOGIN_ERROR',
+    loginerror
+  }
+},
 
 viewUploadedCSVData: (csvdata) => {
     return {

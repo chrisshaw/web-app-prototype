@@ -15,6 +15,10 @@ const intialstate = {
   initialSearchTerms: [],
   paths: [],  
 }
+
+const loginintialstate = {
+  loginerror: false,
+}
 //  The below are required and map to the components dispatcher
 const mainReducer = (state={intialstate}, action) => {
 
@@ -337,10 +341,12 @@ const mainReducer = (state={intialstate}, action) => {
     return state;
 }
 
-const authReducer = (state={intialstate}, action) => {
+const authReducer = (state={loginintialstate}, action) => {
     switch(action.type){    
         case 'LOGGED_IN':
             return Object.assign({},state, {loggedin: action.loggedin}); 
+        case 'LOGIN_ERROR':
+            return Object.assign({loginerror: false},state, {loginerror: action.loginerror}); 
     };      
     return state;
 }
