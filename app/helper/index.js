@@ -1,5 +1,7 @@
 var axios = require("axios");
 import actions from '../actions';
+import loginAPIKeys from '../../config/loginAPIKeys';
+import signUpAPIKeys from '../../config/signUpAPIKeys';
 // Helper Functions
 var helpers = {
    
@@ -133,9 +135,9 @@ var helpers = {
                 "username": email,
                 "password": password
             }
-            // console.log(userObj);
-            return axios.post('https://146.148.55.53:8529/_db/skdb/auth/login', userObj).then(function(response) {
-                // console.log(response.data.success)  // true if successful
+            console.log(loginAPIKeys.url);
+            return axios.post(loginAPIKeys.url, userObj).then(function(response) {
+                console.log(response.data.success)  // true if successful
                 dispatch(actions.userLogin(response.data.success))
                 return;
             }).catch(function(error) {
@@ -149,10 +151,10 @@ var helpers = {
                 "username": email,
                 "password": password
             }
-            // console.log(userObj);
-            return axios.post('https://146.148.55.53:8529/_db/skdb/auth/signup', userObj).then(function(response) {
+            console.log(signUpAPIKeys.url);
+            return axios.post(signUpAPIKeys.url, userObj).then(function(response) {
                 // dispatch(actions.updatePathList(response.data));
-                // console.log(response.data.success)  // true if successful
+                console.log(response.data.success)  // true if successful
                 dispatch(actions.userLogin(response.data.success))
                 return;
             }).catch(function(error) {
