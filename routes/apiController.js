@@ -4,6 +4,8 @@ var config = require('../config/config.js')
 const db = arangojs(config.database.hostPort);
 db.useDatabase(config.database.name);
 db.useBasicAuth(config.database.un, config.database.pw);
+const foxxService = db.route('auth');
+console.log(foxxService);
 // test connection
 db.get()
 .then(err => {
@@ -14,7 +16,37 @@ db.get()
 
 const aql = arangojs.aql;
 
+
+
+
 module.exports = function(app){
+
+    app.post('/login' , function(req, res, next){
+
+        console.log(req.body)
+        foxxService.post('/login', req.body)
+        .then(response => {
+            console.log(response.body)
+            // response.body is the result of 
+            // POST /_db/_system/my-foxx-service/users 
+            // with JSON request body '{"username": "admin", "password": "hunter2"}' 
+            res.json(response.body)
+        });
+    })
+
+
+    app.post('/signup' , function(req, res, next){
+
+
+        foxxService.post('/signup', req.body)
+        .then(response => {
+            console.log(response.body)
+            // response.body is the result of 
+            // POST /_db/_system/my-foxx-service/users 
+            // with JSON request body '{"username": "admin", "password": "hunter2"}' 
+            res.json(response.body)
+        });
+    })
 
      app.post("/csv/data", function(req, res, next){
         var studentObj = req.body;

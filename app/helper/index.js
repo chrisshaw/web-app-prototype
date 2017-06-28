@@ -1,7 +1,7 @@
 var axios = require("axios");
 import actions from '../actions';
-import loginAPIKeys from '../../config/loginAPIKeys';
-import signUpAPIKeys from '../../config/signUpAPIKeys';
+// import loginAPIKeys from '../../config/loginAPIKeys';
+// import signUpAPIKeys from '../../config/signUpAPIKeys';
 // Helper Functions
 var helpers = {
    
@@ -135,8 +135,8 @@ var helpers = {
                 "username": email,
                 "password": password
             }
-            console.log(loginAPIKeys.url);
-            return axios.post(loginAPIKeys.url, userObj).then(function(response) {
+            console.log("in login");
+            return axios.post('/login', userObj).then(function(response) {
                 console.log(response.data.success)  // true if successful
                 dispatch(actions.userLogin(response.data.success))
                 return;
@@ -151,10 +151,10 @@ var helpers = {
                 "username": email,
                 "password": password
             }
-            console.log(signUpAPIKeys.url);
-            return axios.post(signUpAPIKeys.url, userObj).then(function(response) {
+              console.log("in signup");
+            return axios.post('/signup', userObj).then(function(response) {
                 // dispatch(actions.updatePathList(response.data));
-                console.log(response.data.success)  // true if successful
+                console.log(response)  // true if successful
                 dispatch(actions.userLogin(response.data.success))
                 return;
             }).catch(function(error) {
