@@ -91,7 +91,7 @@ class Login extends Component{
                 <Row>
                     <Col xs={2} md={2}/>
                         <Col xs={8} md={8} className="text-center">
-                        <label htmlFor="inputPassword" className="sr-only">Password *</label>
+                        <label htmlFor="inputPassword" className="sr-only">Password</label>
                         <input value={this.state.password} onChange={(e)=>this.handleChange(e)} id="password" type="password" className="form-control auth-input" placeholder="Password" minLength="8"
        maxLength="16" size="16" required />
                         <p className="note-text"><em>* length 8 characters with one capital letter and at least 2 numbers.</em></p>
@@ -101,7 +101,7 @@ class Login extends Component{
                 { (this.props.action === "Sign Up") ? (<Row>
                     <Col xs={2} md={2}/>
                         <Col xs={8} md={8} className="text-center">
-                        <label htmlFor="inputPassword" className="sr-only">Password</label>
+                        <label htmlFor="inputPassword" className="sr-only">Verify Password</label>
                         <input value={this.state.verify} onChange={(e)=>this.handleChange(e)}  id="verifypassword" type="password" className="form-control auth-input" placeholder="Verify Password" minLength="8"
        maxLength="16" size="16" required />
                     </Col>

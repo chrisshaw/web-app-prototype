@@ -134,7 +134,7 @@ var helpers = {
                 "password": password
             }
             // console.log(userObj);
-            return axios.post('http://146.148.55.53:8529/_db/skdb/auth/login', userObj).then(function(response) {
+            return axios.post('https://146.148.55.53:8529/_db/skdb/auth/login', userObj).then(function(response) {
                 // console.log(response.data.success)  // true if successful
                 dispatch(actions.userLogin(response.data.success))
                 return;
@@ -150,7 +150,7 @@ var helpers = {
                 "password": password
             }
             // console.log(userObj);
-            return axios.post('http://146.148.55.53:8529/_db/skdb/auth/signup', userObj).then(function(response) {
+            return axios.post('https://146.148.55.53:8529/_db/skdb/auth/signup', userObj).then(function(response) {
                 // dispatch(actions.updatePathList(response.data));
                 // console.log(response.data.success)  // true if successful
                 dispatch(actions.userLogin(response.data.success))
