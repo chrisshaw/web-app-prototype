@@ -52,6 +52,10 @@ class Login extends Component{
                 // if all ok then submit to server
                 helper.loginOrRegister(this.state.email, this.state.password, this.props.action , this.props.dispatch);
                 console.log("login error:", this.props.loginerror);
+                if (this.props.loginerror){
+                    let msg = "Unable to " + this.props.action + " please review username and password before retrying."
+                    this.setState({error: true, errorMsg: msg})
+                }
         }
     }
 
@@ -87,9 +91,10 @@ class Login extends Component{
                 <Row>
                     <Col xs={2} md={2}/>
                         <Col xs={8} md={8} className="text-center">
-                        <label htmlFor="inputPassword" className="sr-only">Password</label>
+                        <label htmlFor="inputPassword" className="sr-only">Password *</label>
                         <input value={this.state.password} onChange={(e)=>this.handleChange(e)} id="password" type="password" className="form-control auth-input" placeholder="Password" minLength="8"
        maxLength="16" size="16" required />
+                        <p className="note-text"><em>* length 8 characters with one capital letter and at least 2 numbers.</em></p>
                     </Col>
                     <Col xs={2} md={2}/>  
                 </Row>

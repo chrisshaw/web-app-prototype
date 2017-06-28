@@ -64,10 +64,14 @@ body {
    padding: 0px;
 }
 .right-nav {
-   margin-right: 50px;
-   margin-bottom: 30px;
-     padding: 0px;
-     float: left;
+    margin-right: 50px;
+    margin-bottom: 30px;
+    padding: 0px;
+    float: left;
+}
+.note-text {
+    color: '#808080';
+    font-size: 12px;
 }
 /*  to here */
 .login-items {
