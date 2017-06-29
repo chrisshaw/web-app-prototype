@@ -15,12 +15,16 @@ body {
 /*button {
     color: '#000000'
 }*/
+.title {
+    width: 400px;
+    float: left;
+}
 .logo {
-    width: 600px;
-    /*margin-top: 2%;*/
-    margin-left: 20%;
-    margin-right: 20%;
-    /*margin-bottom: 20%;*/  
+    max-width: 350px;
+    /* margin-top: 2%; */
+    /* margin-left: 10%; */
+    margin-right: 10%;
+    /* margin-bottom: 20%; */
 }
 .sticky-navbar  {
     position: fixed !important;
@@ -74,9 +78,7 @@ body {
     font-size: 12px;
 }
 /*  to here */
-.login-items {
-    /*color: white;*/
-}
+
 .row-padding {
     margin-left: 10px;
     margin-right: 10px;
@@ -108,15 +110,11 @@ table {
 .query-builder {
     min-height: 40px;
 }
-.custom-nav-right {
-    margin-left: auto;
-    margin-right: auto;
-    align-content: right;
-    /*margin-top: 3%;*/
+.navbar-default {
+    min-height: 100px;
 }
-.custom-nav-left {
-    margin: 0 auto;
-}
+
+/*/*}*/
 .data-import-paper {
   height: '180px';
   width: '200px';
@@ -260,6 +258,13 @@ table {
     margin-bottom: 10px;
 }
 
+.icon-right {
+    margin-top: 50px;
+    margin-left: 100px;
+    margin-right: 100px;
+    display: 'flex';
+}
+
 @media (max-width: 988px){
     .reset-button {
         margin-top: 0px;
@@ -267,7 +272,7 @@ table {
         margin-left: 60px;
     }
     .logo {
-        width: 60%;
+        /*width: 40%;*/
         margin: 0;
     }
 
@@ -279,7 +284,7 @@ table {
         margin-top: 150px;
     }
     .logo {
-        width: 100%;
+        width: 300px;
         margin: 0;
         padding: 0px;
     }
@@ -302,6 +307,37 @@ table {
          /*min-height: 5vh;*/
          overflow: hidden;
     }
+    .nav-items {
+        /*display: flex;*/
+    }
+    .app-bar {
+        /*height: 200px;*/
+    }
+
+}
+
+@media (max-width: 480px){
+
+    .logo {
+        width: 200px;
+        margin: 0;
+        padding: 0px;
+    }
+    .icon-right {
+        margin-top: 0px;
+        margin-left: 0px;
+        margin-right: 100px;
+        display: 'flex';
+    }
+    .nav-items {
+        /*display: flex;*/
+        margin: 0px;
+    }
+    .app-bar {
+        /*height: 200px;*/
+    }
+
+   
 
 }
 
