@@ -77,7 +77,6 @@ class Main extends Component{
       helper.toggleDrawer(true, this.props.dispatch)
     }
     render(){
-      console.log("loggedin",this.props.loggedin)
         return(
             <MuiThemeProvider muiTheme={navBarTheme}>
             <div>
@@ -85,7 +84,7 @@ class Main extends Component{
                 <div className="wrapper">
                  
                    { this.props.loggedin ?  this.props.children : (                 
-                       <LoginSignUpTab dispatch={this.props.dispatch} loginerror={this.props.loginerror}/>
+                       <LoginSignUpTab />
                   )}
               </div>
             </div>
@@ -97,7 +96,6 @@ class Main extends Component{
 const mapStateToProps = (store) => {
     return {
         loggedin: store.authState.loggedin,
-        loginerror: store.authState.loginerror,
     }
 }
 

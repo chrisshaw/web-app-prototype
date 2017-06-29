@@ -27,10 +27,12 @@ userLogin: (loggedin) => {
     loggedin
   }
 },
-userLoginError: (loginerror) => {
+userLoginError: (loginerror, errormsg) => {
+  console.log("in here too")
   return {
     type: 'LOGIN_ERROR',
-    loginerror
+    loginerror,
+    errormsg
   }
 },
 

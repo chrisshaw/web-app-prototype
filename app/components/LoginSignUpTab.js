@@ -62,10 +62,10 @@ class LoginSignUpTab extends React.Component {
               <Tabs inkBarStyle={{background: '#A35FE3'}} value={this.state.value} initialSelectedIndex={0} onChange={this.handleChange}
                     >
                     <Tab label="Login" value={0} buttonStyle={{color: "#808080"}}>
-                        <Login action="Login" dispatch={this.props.dispatch} loginerror={this.props.loginerror} />  
+                        <Login action="Login"  />  
                     </Tab>
                     <Tab label="Sign Up" value={1} buttonStyle={{color: "#808080"}}>           
-                        <Login action="Sign Up" dispatch={this.props.dispatch} loginerror={this.props.loginerror}/>       
+                        <Login action="Sign Up"  />       
                     </Tab>
                 </Tabs>
             </Col>

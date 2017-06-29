@@ -22,7 +22,7 @@ app.use(bodyParser.text({ type: 'text/html' }));
 // api routing handled here
 require("./routes/apiController.js")(app);
 // // routing handled here
-require("./routes/routesController.js")(app);
+// require("./routes/routesController.js")(app);
 // 
 
 app.listen(PORT);

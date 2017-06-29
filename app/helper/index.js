@@ -127,49 +127,42 @@ var helpers = {
     },
     // Authentication
     // authAction == "Login" or "Sign Up"
-    loginOrRegister(email, password, authAction, dispatch){
-        // send to api for auth
-        // console.log(email, password, authAction);
+    loginOrRegister(email, password, authAction, dispatch){      
+        // capture data in object
         if (authAction === 'Login'){
              let userObj = { 
                 "username": email,
                 "password": password
             }
-            console.log("in login");
+            // send request to server
             return axios.post('/login', userObj).then(function(response) {
-                console.log(response.data.success)  // true if successful
-                dispatch(actions.userLogin(response.data.success))
-                return;
-            }).catch(function(error) {
-                // console.log(error);
-                dispatch(actions.userLoginError(true))
+                let msg = "Invalid username or password - please try again";
+                dispatch(actions.userLogin(response.data.success));
+                dispatch(actions.userLoginError(!response.data.success, msg))
                 return;
             })
-
         } else if (authAction === 'Sign Up'){
+            // capture data in object
             let userObj = { 
                 "username": email,
                 "password": password
             }
-              console.log("in signup");
-            return axios.post('/signup', userObj).then(function(response) {
-                // dispatch(actions.updatePathList(response.data));
-                console.log(response)  // true if successful
-                dispatch(actions.userLogin(response.data.success))
+            // send request to server
+            return axios.post('/signup', userObj).then(function(response) {  
+                let msg = "Invalid username or user already exists or password - please try again";      
+                dispatch(actions.userLogin(response.data.success));
+                dispatch(actions.userLoginError(!response.data.success, msg));
                 return;
-            }).catch(function(error) {
-                 dispatch(actions.userLoginError(true))
-                //  console.log(error)
-                 return;
             })
-            
-
         }
+    },
+    
+    loginError(value, msg, dispatch){
+         dispatch(actions.userLoginError(value, msg))
     },
 
     logout(dispatch){
         // send to api for auth
-        console.log("logout");
         // set logged in to false
         dispatch(actions.userLogin(false))
      }

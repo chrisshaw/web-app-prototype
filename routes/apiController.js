@@ -1,51 +1,47 @@
 var arangojs = require('arangojs');
 var Database = arangojs.Database;
+var path = require('path');
 var config = require('../config/config.js')
 const db = arangojs(config.database.hostPort);
 db.useDatabase(config.database.name);
 db.useBasicAuth(config.database.un, config.database.pw);
 const foxxService = db.route('auth');
-console.log(foxxService);
 // test connection
 db.get()
-.then(err => {
+.then(response => {
     // the database exists
-     console.log("db", info);
-     console.log(err);
+    console.log(Date.now() + " Information: Database is Up");
+}).catch(err => {
+    console.log(Date.now() + " Error: Database is Down.");
 });
-
 const aql = arangojs.aql;
-
-
-
-
 module.exports = function(app){
 
     app.post('/login' , function(req, res, next){
-
-        console.log(req.body)
+        // console.log(req.body)
         foxxService.post('/login', req.body)
         .then(response => {
-            console.log(response.body)
-            // response.body is the result of 
-            // POST /_db/_system/my-foxx-service/users 
-            // with JSON request body '{"username": "admin", "password": "hunter2"}' 
-            res.json(response.body)
-        });
+            res.json(response.body);
+        }).catch(error => {
+            // can send error to logs?
+            console.log(Date.now() + " Error (Login):", error.response.body.errorMessage);
+            // send basic success: false
+            // send error to client for handling
+            res.json({success:false});
+        })
     })
-
-
     app.post('/signup' , function(req, res, next){
-
-
+         console.log(req.body);
         foxxService.post('/signup', req.body)
         .then(response => {
-            console.log(response.body)
-            // response.body is the result of 
-            // POST /_db/_system/my-foxx-service/users 
-            // with JSON request body '{"username": "admin", "password": "hunter2"}' 
-            res.json(response.body)
-        });
+            res.json(response.body);
+        }).catch(error => { 
+            // can send error to logs?
+            console.log(Date.now() + " Error (SignUp):", error.response.body.errorMessage);
+            // send basic success: false
+            // send error to client for handling
+            res.json({success:false});
+        })
     })
 
      app.post("/csv/data", function(req, res, next){
@@ -175,6 +171,44 @@ module.exports = function(app){
             // cursor is a cursor for the query result
             res.json(cursor._result);          
         });    
+    })
+
+        app.post("/csv/file", function(req, res, next){
+        // main entry point
+        // need to verify csv file and save contents somewhere...
+        var fileContentsFromBuffer = req.body.buffer.toString('utf-8');
+        // split on the carriage return or newline
+        var csvToArr = fileContentsFromBuffer.split(/\r|\n/);
+        //  need to do for loop over array, split on comma and save
+        var studentsArr = [];
+        for (var i = 0; i < csvToArr.length; i++) {
+            // regex to allow for commas inside ""
+            let re = /[ ,]*"([^"]+)"|([^,]+)/g;
+            let match;
+            let dataArr = [];
+            while (match = re.exec(csvToArr[i])) {
+                let data = match[1] || match[2];
+                dataArr.push(data);
+            }
+            let studentObj = {
+                "id": i,
+                "name": dataArr[0],
+                "grade": dataArr[1],
+                "focusArea": dataArr[2],
+            }
+            // create array of objects to be saved to database
+            studentsArr.push(studentObj);
+            if (i >= csvToArr.length-1 ){
+                res.json(studentsArr);
+            }
+
+        }
+ 
+    })
+
+    app.use(function(req, res){
+        // main entry point
+        res.sendFile(path.join(__dirname, '/../public/index.html'));
     })
   
 }
