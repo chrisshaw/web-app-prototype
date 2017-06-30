@@ -101,6 +101,10 @@ var helpers = {
                     return;
         })
     },
+    pathsRendered(pathsrendered, dispatch){
+        console.log("in helper",pathsrendered )
+        dispatch(actions.pathsRendered(pathsrendered))
+    },
     removeGroup: function(id, dispatch) {
         dispatch(actions.updateGroupList(true, id))
     },

@@ -42,6 +42,9 @@ body {
 .logout-button {
     margin-left: 20px;
 }
+.paths-returned {
+   color: #808080 !important
+}
 /*.sticky-navbar-tabs  {
     position: fixed !important;
     top: 130px;

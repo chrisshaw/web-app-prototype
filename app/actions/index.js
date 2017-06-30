@@ -113,6 +113,13 @@ updatePathList: (paths) => {
     }
 
 },
+pathsRendered: (pathsrendered) => {
+       console.log("in action",pathsrendered )
+  return {
+      type: 'RENDER_PATHS',
+      pathsrendered
+    }
+},
 initialQueryData: (initialSearchTerms, newSearch) => {
   // console.log("in action", initialSearchTerms)
   // newSearch is a boolean - true of false.

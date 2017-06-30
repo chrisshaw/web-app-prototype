@@ -35,7 +35,8 @@ class PathBuilder extends Component{
          helper.toggleDrawer(true, this.props.dispatch);
     }
     handleToggle() {
-        helper.toggleDrawer(!this.props.toggledrawer, this.props.dispatch)
+        helper.toggleDrawer(!this.props.toggledrawer, this.props.dispatch);
+        helper.pathsRendered(false, this.props.dispatch);      
     }
     handleClose(){
         helper.toggleDrawer(false, this.props.dispatch);

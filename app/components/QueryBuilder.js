@@ -46,9 +46,11 @@ class QueryBuilder extends Component{
     };
     // new to be tested
     handleSubmitAll() {
-        console.log("in handleSubmit", this.props.selectedgrouplist);
+        // clear message
+
+        helper.pathsRendered(false, this.props.dispatch);
         if (this.props.selectedgrouplist.length !== 0) {
-            this.props.closeDrawer();
+            // this.props.closeDrawer();
             // clear old paths
             var paths = "";
             helper.newPaths(paths, this.props.dispatch);
@@ -83,7 +85,7 @@ class QueryBuilder extends Component{
         if ( this.props.selectedgrouplist){
              var arrLength = this.props.selectedgrouplist.length;
         }
-       
+console.log("in render", this.props.pathsrendered);
         return(<div className="query-builder-wrapper">
                 <Row>
                     <Col xs={12} md={12} >
@@ -111,12 +113,18 @@ class QueryBuilder extends Component{
                 <TopicSelection />
                 <SubjectContentSelection />
                 <StandardsSelection />
-
                 <Row>
                     <Col xs={12} md={12} className="text-center" >            
                         <FlatButton containerElement='label' label="Get Reccommended Paths" onTouchTap={this.handleSubmitAll} />
                     </Col>
                 </Row>
+                {this.props.pathsrendered ? (<Row>
+                    <Col xs={12} md={12} >
+                        <div className="query-builder-wrapper">
+                        <p className="text-center paths-returned"><em > Path Results Returned </em></p> 
+                        </div>
+                    </Col>
+                </Row>) : "" }
       
             </div>
         )
@@ -132,6 +140,7 @@ const mapStateToProps = (store) => {
         initialSearchTerms: store.mainState.initialSearchTerms,
         selectedstandardslist: store.mainState.selectedstandardslist, 
         selectedsubjectcontentlist: store.mainState.selectedsubjectcontentlist,
+        pathsrendered: store.mainState.pathsrendered
     }
 }
 

@@ -13,6 +13,7 @@ const intialstate = {
   selectedgrouplist: [],
   selectedtopiclist: [],
   initialSearchTerms: [],
+  pathsrendered: false,
   paths: [],  
 }
 
@@ -66,6 +67,9 @@ const mainReducer = (state={intialstate}, action) => {
             return Object.assign({},state, {toggledrawer: action.toggledrawer});    
         case 'UPDATE_PATHS':
             return Object.assign({},state, {paths: action.paths});
+        case 'RENDER_PATHS':
+               console.log("in redux",action.pathsrendered )
+            return Object.assign({},state, {pathsrendered: action.pathsrendered});
         case 'UPDATE_SEARCH_TERMS':
            // clear out old state if a new search
            if (!action.newSearch) {

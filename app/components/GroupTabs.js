@@ -8,6 +8,7 @@ import {Grid, Row, Col} from 'react-bootstrap';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import {connect} from 'react-redux';
+import helper from '../helper';
 
 const styles = {
   headline: {
@@ -69,6 +70,14 @@ class GroupTabs extends React.Component {
     this.setState({
       value: 0,
     });
+    
+  }
+   componentWillReceiveProps(nextProps) {
+     console.log((nextProps.paths !== "") || (nextProps.paths !== this.props.paths))
+     if ((nextProps.paths !== "") || (nextProps.paths !== this.props.paths))  {
+       // updates message to say results found
+       helper.pathsRendered(true, this.props.dispatch);
+    }
   }
 
   render() {
@@ -137,7 +146,7 @@ class GroupTabs extends React.Component {
             // actual mapping of new reduced standards array
             var faStandards = newStandardsArr.map(function(standard, index){
 
-                return   <Col key={index } className="chip-float"><div className="chip">
+                return   <Col key={index} className="chip-float"><div className="chip">
                             {standard}
                           </div>
                           </Col>
@@ -145,7 +154,7 @@ class GroupTabs extends React.Component {
         
 
             /// this return is to facomponent - it displays all the data for one fa within a path
-            return (  <div  key={fa.focusArea._id} className="fa-wrapper"><Row className="fa-tab-view-rows"><Col md={12}><div style={styles.slide}>
+            return (  <div  key={index} className="fa-wrapper"><Row className="fa-tab-view-rows"><Col md={12}><div style={styles.slide}>
                         <Row >
                           <Col  md={3} xs={12}>
                             <h3   className='fa-headings'>Focus Area:  </h3>
@@ -201,6 +210,7 @@ class GroupTabs extends React.Component {
 const mapStateToProps = (store,ownProps) => {
     return {
         paths: store.mainState.paths,
+        // pathsrendered: store.mainState.pathsrendered,
 
     }
 }
