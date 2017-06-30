@@ -40,10 +40,13 @@ const styles = {
     height: 50,
     margin: 0,
     lineHeight: 0,
-    flexGrow: 0,
+    flexGrow: 1,
     flexShrink: 1,
     flexBasis: 'auto',
     order: 3,
+    // borderBottom: 'solid 1px #e7e7e7',
+    // borderLeft: 'solid 1px #808080',
+    // borderRight: 'solid 1px #808080',
     // alignSelf: 'flex-start',
   }
 };
@@ -60,13 +63,14 @@ class AppNav extends Component {
             <AppBar className={this.props.loggedin ? "sticky-navbar sticky-navbar-loggedin" : "sticky-navbar"}
             title={<div><span><img src="./public/assets/img/sidekick.png" className="logo" alt="Sidekick" /></span></div>}
             titleStyle={styles.title}
-            iconStyleLeft={{order: 2, marginTop: 0, display: "flex", flex: 0, justifyContent: 'center', alignSelf: 'center', alignItems: 'center'}}
+            iconStyleLeft={{border: 2, marginTop: 0, display: "flex", flex: 0, justifyContent: 'center', alignSelf: 'center', alignItems: 'center'}}
             iconStyleRight={{order: 4, marginTop: 0, marginLeft: 0, display: "flex"}}
-            iconElementLeft={ <div className="icon-left">{this.props.loggedin ? 
-              (<div><IconButton onTouchTap={this.props.handleLogout} style={{minWidth: 100, height: 80, flex: 'center', alignSelf: 'center'}}><LogoutIcon /></IconButton></div>)  : (<div className="placeholder"></div>) } </div>}
+            iconElementLeft={ <div>{this.props.loggedin ? 
+              (<div><IconButton onTouchTap={this.props.handleLogout} style={{minWidth: 100, height: 50, flex: 'center', alignSelf: 'center'}}><LogoutIcon /></IconButton></div>)  : (<div className="placeholder"></div>) } </div>}
             iconElementRight={<div>{this.props.loggedin ? 
-              (<div className="icon-right"><FlatButton labelStyle={{lineHeight: 5.5}} style={{minWidth: 100, height: 80, flex: 'center'}}  containerElement={<Link to="/"/>} label="Home" /><FlatButton labelStyle={{lineHeight: 5.5}} style={{minWidth: 100, height: 80, flex: 'center'}}  containerElement={<Link to="/pathbuilder"/>} label="Build Paths" />
-              <FlatButton labelStyle={{lineHeight: 5.5}}  style={{ minWidth: 100, height: 80, flex: 'center'}} containerElement='label' label="Manage Students"  containerElement={<Link to="/csv"/>} /></div>)  : (<div className="placeholder"></div>) } </div>}
+              (<div><FlatButton labelStyle={{lineHeight: 4}} style={{borderTop: 'solid 1px #e7e7e7',borderLeft: 'solid 1px #e7e7e7',borderRight: 'solid 1px #e7e7e7', minWidth: 130, height: 50, flex: 'center'}}  containerElement={<Link to="/"/>} label="Home" />
+              <FlatButton labelStyle={{lineHeight: 4}} style={{ borderTop: 'solid 1px #e7e7e7',borderLeft: 'solid 1px #e7e7e7', borderRight: 'solid 1px #e7e7e7',minWidth: 130, height: 50, flex: 'center'}}  containerElement={<Link to="/pathbuilder"/>} label="Build Paths" />
+              <FlatButton labelStyle={{lineHeight: 4}}  style={{borderTop: 'solid 1px #e7e7e7',borderLeft: 'solid 1px #e7e7e7', borderRight: 'solid 1px #e7e7e7',minWidth: 130, height: 50, flex: 'center'}} containerElement='label' label="Manage Students"  containerElement={<Link to="/csv"/>} /></div>)  : (<div className="placeholder"></div>) } </div>}
             />    
         </div>
        

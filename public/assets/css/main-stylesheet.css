@@ -30,11 +30,11 @@ body {
     top: 0;
     z-index: 1000;
     display: flex;
-    height: 80px;
+    min-height: 50px;
     line-height: 0px;
     flex-direction: row;
     flex-wrap: wrap;
-    justify-content: space-around;
+    justify-content: space-between;
     align-items: center;
     /*align-content: center;*/
     flex: 1 1 auto !important;
@@ -302,9 +302,11 @@ table {
         /*width: 60%;*/
         margin: 0;
     }
-    /*.sticky-navbar  { 
+    .sticky-navbar  { 
+        
         justify-content: space-around !important
-    }*/
+        
+    }
 
  }
 
@@ -340,7 +342,7 @@ table {
     .sticky-navbar  { 
         
         justify-content: space-around !important
-       
+        
     }
     /*.icon-left{
         order: 4;
@@ -348,9 +350,9 @@ table {
     .icon-left{
         order: 5;
     }*/
-    .stick-navbar-loggedin {
+    /*.stick-navbar-loggedin {
         min-height: 500px;
-    }
+    }*/
 
 }
 
