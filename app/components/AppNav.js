@@ -35,6 +35,14 @@ const styles = {
     width: 120,
     height: 120,
     padding: 30,
+  },
+  title : {
+    height: 50,
+    margin: 0,
+    lineHeight: 0,
+    flexGrow: 1,
+    flexShrink: 1,
+    flexBasis: "auto"
   }
 };
 
@@ -47,27 +55,38 @@ class AppNav extends Component {
 
       var component = this;
        return (<div >
-            <AppBar className="sticky-navbar"
-            title={<div className="text-center"><span><img src="./public/assets/img/sidekick.png" className="logo" alt="Sidekick" /></span></div>}
-            showMenuIconButton={true}
-            iconElementLeft={<div>{this.props.loggedin ? 
-              (<IconMenu
-    iconButtonElement={
-      <IconButton><MoreVertIcon /></IconButton>
-    }
-    targetOrigin={{horizontal: 'right', vertical: 'top'}}
-    anchorOrigin={{horizontal: 'right', vertical: 'top'}}
-  >
-    <MenuItem primaryText="Home" containerElement={<Link to="/"/>} />
-    <MenuItem primaryText="Upload" containerElement={<Link to="/csv"/>}  />
-    <MenuItem primaryText="Path Builder" onTouchTap={this.props.showPathBuilder}/>
-    <MenuItem primaryText="Sign Out" onTouchTap={this.props.handleLogout}/>
-  </IconMenu>) 
-                : "" } </div>}
+            <AppBar className={this.props.loggedin ? "sticky-navbar sticky-navbar-loggedin" : "sticky-navbar"}
+            title={<div><span><img src="./public/assets/img/sidekick.png" className="logo" alt="Sidekick" /></span></div>}
+            titleStyle={styles.title}
+            iconStyleLeft={{marginTop: 0, display: "flex", flex: 1}}
+            iconStyleRight={{marginTop: 0,  display: "flex", flex: 1}}
+            iconElementLeft={ <div>{this.props.loggedin ? 
+              (<div><FlatButton style={{minWidth: 100, height: 80}} containerElement='label' label="Logou Xt" onTouchTap={this.handleSubmitAll} />
+</div>)  : (<div className="placeholder"></div>) } </div>}
+            iconElementRight={<div>{this.props.loggedin ? 
+              (<div><FlatButton style={{minWidth: 100, height: 80}} containerElement='label' label="Logout Y" onTouchTap={this.handleSubmitAll} />
+<FlatButton style={{minWidth: 100, height: 80}} containerElement='label' label="Logout Y" onTouchTap={this.handleSubmitAll} /></div>)  : (<div className="placeholder"></div>) } </div>}
             />    
-        </div>)
+        </div>
+       
+        )
     }
 
 };
  
 export default AppNav;
+
+// <div>{this.props.loggedin ? 
+//               (<IconMenu
+//     iconButtonElement={
+//       <IconButton><MoreVertIcon /></IconButton>
+//     }
+//     targetOrigin={{horizontal: 'right', vertical: 'top'}}
+//     anchorOrigin={{horizontal: 'right', vertical: 'top'}}
+//   >
+//     <MenuItem primaryText="Home" containerElement={<Link to="/"/>} />
+//     <MenuItem primaryText="Upload" containerElement={<Link to="/csv"/>}  />
+//     <MenuItem primaryText="Path Builder" onTouchTap={this.props.showPathBuilder}/>
+//     <MenuItem primaryText="Sign Out" onTouchTap={this.props.handleLogout}/>
+//   </IconMenu>) 
+//                 : "" } </div>
