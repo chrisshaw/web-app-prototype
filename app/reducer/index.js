@@ -346,7 +346,6 @@ const authReducer = (state={loginintialstate}, action) => {
         case 'LOGGED_IN':
             return Object.assign({},state, {loggedin: action.loggedin}); 
         case 'LOGIN_ERROR':
-        console.log("in here too three")
             return Object.assign({loginerror: false},state, {loginerror: action.loginerror, errormsg: action.errormsg }); 
     };      
     return state;
