@@ -15,7 +15,6 @@ body {
 /*button {
     color: '#000000'
 }*/
-<<<<<<< HEAD
 .logo {
     width: 250px;
     /*margin-top: 2%;*/
@@ -25,24 +24,11 @@ body {
 }
 .placeholder {
     min-width: 100px;
-=======
-.title {
-    width: 400px;
-    float: left;
-}
-.logo {
-    max-width: 350px;
-    /* margin-top: 2%; */
-    /* margin-left: 10%; */
-    margin-right: 10%;
-    /* margin-bottom: 20%; */
->>>>>>> parent of afebf43... Merge pull request #1 from chrisshaw/navbar-branch
 }
 .sticky-navbar  {
     position: fixed !important;
     top: 0;
     z-index: 1000;
-<<<<<<< HEAD
     display: flex;
     min-height: 50px;
     line-height: 0px;
@@ -57,27 +43,18 @@ body {
     margin-left: 20px;
 }
 /*.sticky-navbar-tabs  {
-=======
-}
-.sticky-navbar-tabs  {
->>>>>>> parent of afebf43... Merge pull request #1 from chrisshaw/navbar-branch
     position: fixed !important;
     top: 130px;
     z-index: 1000;
     width: 100%;
     
-<<<<<<< HEAD
 }*/
-=======
-}
->>>>>>> parent of afebf43... Merge pull request #1 from chrisshaw/navbar-branch
 .drawer-wrapper {
     position: fixed !important;
     top: 200px !important;
     /*margin-left: 0px;
     margin-right: 0px;*/
     width: 100%;
-<<<<<<< HEAD
 }
 
 
@@ -97,12 +74,7 @@ body {
     /*justify-content: 'center';
     align-self:  'center';
     align-items: 'center';*/
-}*/
-=======
 
-
-}
->>>>>>> parent of afebf43... Merge pull request #1 from chrisshaw/navbar-branch
 .row {
     margin-right: 10px;
     margin-left: 10px;
@@ -134,13 +106,9 @@ body {
     font-size: 12px;
 }
 /*  to here */
-<<<<<<< HEAD
 .login-items {
     /*color: white;*/
 }
-=======
-
->>>>>>> parent of afebf43... Merge pull request #1 from chrisshaw/navbar-branch
 .row-padding {
     margin-left: 10px;
     margin-right: 10px;
@@ -172,7 +140,6 @@ table {
 .query-builder {
     min-height: 40px;
 }
-<<<<<<< HEAD
 .custom-nav-right {
     margin-left: auto;
     margin-right: auto;
@@ -182,13 +149,6 @@ table {
 .custom-nav-left {
     margin: 0 auto;
 }
-=======
-.navbar-default {
-    min-height: 100px;
-}
-
-/*/*}*/
->>>>>>> parent of afebf43... Merge pull request #1 from chrisshaw/navbar-branch
 .data-import-paper {
   height: '180px';
   width: '200px';
@@ -332,16 +292,6 @@ table {
     margin-bottom: 10px;
 }
 
-<<<<<<< HEAD
-=======
-.icon-right {
-    margin-top: 50px;
-    margin-left: 100px;
-    margin-right: 100px;
-    display: 'flex';
-}
-
->>>>>>> parent of afebf43... Merge pull request #1 from chrisshaw/navbar-branch
 @media (max-width: 988px){
     .reset-button {
         margin-top: 0px;
@@ -349,7 +299,6 @@ table {
         margin-left: 60px;
     }
     .logo {
-<<<<<<< HEAD
         /*width: 60%;*/
         margin: 0;
     }
@@ -358,11 +307,6 @@ table {
         justify-content: space-around !important
         
     }
-=======
-        /*width: 40%;*/
-        margin: 0;
-    }
->>>>>>> parent of afebf43... Merge pull request #1 from chrisshaw/navbar-branch
 
  }
 
@@ -372,11 +316,7 @@ table {
         margin-top: 150px;
     }
     .logo {
-<<<<<<< HEAD
         /*width: 100%;*/
-=======
-        width: 300px;
->>>>>>> parent of afebf43... Merge pull request #1 from chrisshaw/navbar-branch
         margin: 0;
         padding: 0px;
     }
@@ -399,7 +339,6 @@ table {
          /*min-height: 5vh;*/
          overflow: hidden;
     }
-<<<<<<< HEAD
     .sticky-navbar  { 
         
         justify-content: space-around !important
@@ -414,39 +353,6 @@ table {
     /*.stick-navbar-loggedin {
         min-height: 500px;
     }*/
-=======
-    .nav-items {
-        /*display: flex;*/
-    }
-    .app-bar {
-        /*height: 200px;*/
-    }
-
-}
-
-@media (max-width: 480px){
-
-    .logo {
-        width: 200px;
-        margin: 0;
-        padding: 0px;
-    }
-    .icon-right {
-        margin-top: 0px;
-        margin-left: 0px;
-        margin-right: 100px;
-        display: 'flex';
-    }
-    .nav-items {
-        /*display: flex;*/
-        margin: 0px;
-    }
-    .app-bar {
-        /*height: 200px;*/
-    }
-
-   
->>>>>>> parent of afebf43... Merge pull request #1 from chrisshaw/navbar-branch
 
 }
 

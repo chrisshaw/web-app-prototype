@@ -84,7 +84,7 @@ class QueryBuilder extends Component{
              var arrLength = this.props.selectedgrouplist.length;
         }
        
-        return(<div>
+        return(<div className="query-builder-wrapper">
                 <Row>
                     <Col xs={12} md={12} >
                         <div className="query-builder-wrapper">

@@ -28,7 +28,6 @@ userLogin: (loggedin) => {
   }
 },
 userLoginError: (loginerror, errormsg) => {
-  console.log("in here too")
   return {
     type: 'LOGIN_ERROR',
     loginerror,
