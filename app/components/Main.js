@@ -82,6 +82,7 @@ class Main extends Component{
             <div>
                 <AppNav handleLogout={this.handleLogout} loggedin={this.props.loggedin} showPathBuilder={this.showPathBuilder} />
                 <div className="wrapper">
+                 
                    { this.props.loggedin ?  this.props.children : (                 
                        <LoginSignUpTab />
                   )}

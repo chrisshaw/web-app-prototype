@@ -48,7 +48,7 @@ class QueryBuilder extends Component{
     handleSubmitAll() {
         console.log("in handleSubmit", this.props.selectedgrouplist);
         if (this.props.selectedgrouplist.length !== 0) {
-            // this.props.closeDrawer();
+            this.props.closeDrawer();
             // clear old paths
             var paths = "";
             helper.newPaths(paths, this.props.dispatch);
@@ -84,7 +84,7 @@ class QueryBuilder extends Component{
              var arrLength = this.props.selectedgrouplist.length;
         }
        
-        return(<div className="query-builder-wrapper">
+        return(<div>
                 <Row>
                     <Col xs={12} md={12} >
                         <div className="query-builder-wrapper">

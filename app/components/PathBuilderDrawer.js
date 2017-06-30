@@ -42,7 +42,7 @@ class PathBuilderDrawer extends Component{
                             <Col md={2} />
                         </Row>
                         <Row>
-                            <QueryBuilder />
+                            <QueryBuilder closeDrawer={this.props.handleClose} />
                         </Row>                  
                     </Drawer>
                 </div>
