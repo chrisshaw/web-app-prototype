@@ -40,9 +40,11 @@ const styles = {
     height: 50,
     margin: 0,
     lineHeight: 0,
-    flexGrow: 1,
+    flexGrow: 0,
     flexShrink: 1,
-    flexBasis: "auto"
+    flexBasis: 'auto',
+    order: 3,
+    // alignSelf: 'flex-start',
   }
 };
 
@@ -58,14 +60,13 @@ class AppNav extends Component {
             <AppBar className={this.props.loggedin ? "sticky-navbar sticky-navbar-loggedin" : "sticky-navbar"}
             title={<div><span><img src="./public/assets/img/sidekick.png" className="logo" alt="Sidekick" /></span></div>}
             titleStyle={styles.title}
-            iconStyleLeft={{marginTop: 0, display: "flex", flex: 1}}
-            iconStyleRight={{marginTop: 0,  display: "flex", flex: 1}}
-            iconElementLeft={ <div>{this.props.loggedin ? 
-              (<div><FlatButton style={{minWidth: 100, height: 80}} containerElement='label' label="Logou Xt" onTouchTap={this.handleSubmitAll} />
-</div>)  : (<div className="placeholder"></div>) } </div>}
+            iconStyleLeft={{order: 2, marginTop: 0, display: "flex", flex: 0, justifyContent: 'center', alignSelf: 'center', alignItems: 'center'}}
+            iconStyleRight={{order: 4, marginTop: 0, marginLeft: 0, display: "flex"}}
+            iconElementLeft={ <div className="icon-left">{this.props.loggedin ? 
+              (<div><IconButton onTouchTap={this.props.handleLogout} style={{minWidth: 100, height: 80, flex: 'center', alignSelf: 'center'}}><LogoutIcon /></IconButton></div>)  : (<div className="placeholder"></div>) } </div>}
             iconElementRight={<div>{this.props.loggedin ? 
-              (<div><FlatButton style={{minWidth: 100, height: 80}} containerElement='label' label="Logout Y" onTouchTap={this.handleSubmitAll} />
-<FlatButton style={{minWidth: 100, height: 80}} containerElement='label' label="Logout Y" onTouchTap={this.handleSubmitAll} /></div>)  : (<div className="placeholder"></div>) } </div>}
+              (<div className="icon-right"><FlatButton labelStyle={{lineHeight: 5.5}} style={{minWidth: 100, height: 80, flex: 'center'}}  containerElement={<Link to="/"/>} label="Home" /><FlatButton labelStyle={{lineHeight: 5.5}} style={{minWidth: 100, height: 80, flex: 'center'}}  containerElement={<Link to="/pathbuilder"/>} label="Build Paths" />
+              <FlatButton labelStyle={{lineHeight: 5.5}}  style={{ minWidth: 100, height: 80, flex: 'center'}} containerElement='label' label="Manage Students"  containerElement={<Link to="/csv"/>} /></div>)  : (<div className="placeholder"></div>) } </div>}
             />    
         </div>
        

@@ -32,7 +32,8 @@ class PathBuilder extends Component{
         this.handleClose = this.handleClose.bind(this);
     }
     componentWillMount(){
-         helper.toggleDrawer(false, this.props.dispatch);
+        // console.log("begin called")
+         helper.toggleDrawer(true, this.props.dispatch);
     }
     handleToggle() {
         helper.toggleDrawer(!this.props.toggledrawer, this.props.dispatch)
