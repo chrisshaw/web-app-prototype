@@ -34,7 +34,11 @@ userLoginError: (loginerror, errormsg) => {
     errormsg
   }
 },
-
+userLogout: () => {
+  return {
+      type: 'USER_LOGOUT',
+    }
+  },
 viewUploadedCSVData: (csvdata) => {
     return {
       type: 'VIEW_CSV_DATA',

@@ -20,6 +20,8 @@ const intialstate = {
 const loginintialstate = {
   loginerror: false,
 }
+
+
 //  The below are required and map to the components dispatcher
 const mainReducer = (state={intialstate}, action) => {
 
@@ -341,7 +343,8 @@ const mainReducer = (state={intialstate}, action) => {
                     }
                }
             }          
-    };      
+    };    
+    console.log("not found")  
     return state;
 }
 
@@ -355,12 +358,22 @@ const authReducer = (state={loginintialstate}, action) => {
     return state;
 }
 
-
-const reducers = combineReducers({
+const appReducer = combineReducers({
     mainState : mainReducer,
-    authState : authReducer
-
+    authState : authReducer,
 })
+// to handle clearing store on logout
+const reducers = (state, action) => {
+    console.log("lgouout being called")
+  if (action.type === 'USER_LOGOUT') {
+    state = undefined
+  }
+  console.log("staee", state);
+
+  return appReducer(state, action)
+}
+
+
 
 export default reducers;
 

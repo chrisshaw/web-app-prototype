@@ -167,8 +167,11 @@ var helpers = {
 
     logout(dispatch){
         // send to api for auth
+        console.log("logout helper");
         // set logged in to false
-        dispatch(actions.userLogin(false))
+        dispatch(actions.userLogin(false));
+        // clear redux store and reset
+        dispatch(actions.userLogout());
      }
  };
 
