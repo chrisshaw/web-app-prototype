@@ -29,8 +29,6 @@ const navBarTheme = getMuiTheme({
     backgroundColor: '#FFFFFF',
     height: 130, 
   },
-  paper: {
-  },
   table: {
     border: '1px #E6E6E6 solid',
     color: '#808080',
@@ -55,11 +53,11 @@ const navBarTheme = getMuiTheme({
   tabs : {
     textColor: '#808080',
   },
-    zIndex: {
-        dialogOverlay: 1400,
-        dialog: 1500,
-        drawer: 1300,
-    },
+  zIndex: {
+      dialogOverlay: 1400,
+      dialog: 1500,
+      drawer: 1300,
+  },
 });
 
 class Main extends Component{

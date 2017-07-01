@@ -68,8 +68,8 @@ class AppNav extends Component {
             iconElementRight={<div>{this.props.loggedin ? 
               (<div>
               <FlatButton labelStyle={{lineHeight: 4}} style={{ borderTop: 'solid 1px #E6E6E6',borderLeft: 'solid 1px #E6E6E6', borderRight: 'solid 1px #E6E6E6',minWidth: 130, height: 50, flex: 'center'}}  containerElement={<Link to="/"/>} label="Build Paths" />
-              <FlatButton labelStyle={{lineHeight: 4}}  style={{borderTop: 'solid 1px #E6E6E6',borderLeft: 'solid 1px #E6E6E6', borderRight: 'solid 1px #E6E6E6',minWidth: 130, height: 50, flex: 'center'}} containerElement='label' label="Manage Students"  containerElement={<Link to="/csv"/>} />
-              <IconButton onTouchTap={this.props.handleLogout} style={{minWidth: 100, height: 50, flex: 'center', alignSelf: 'center'}}><LogoutIcon /></IconButton>
+              <FlatButton labelStyle={{lineHeight: 4}} style={{borderTop: 'solid 1px #E6E6E6',borderLeft: 'solid 1px #E6E6E6', borderRight: 'solid 1px #E6E6E6',minWidth: 130, height: 50, flex: 'center'}} containerElement='label' label="Manage Students"  containerElement={<Link to="/csv"/>} />
+              <IconButton  onTouchTap={this.props.handleLogout} style={{minWidth: 130, height: 0, alignSelf: 'center'}} ><LogoutIcon /></IconButton>
               </div>)  : (<div className="placeholder"></div>) } </div>}
             />    
         </div>

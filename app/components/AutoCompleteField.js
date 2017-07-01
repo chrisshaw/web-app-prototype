@@ -95,9 +95,11 @@ import ChipInput from 'material-ui-chip-input';
         <ChipInput
             fullWidth={true}
             value={dataSource2}
+            style={{fontSize: 13}}
             onRequestAdd={(chip) => this._handleTextFieldChange(chip, dataSource1)}
             onRequestDelete={(chip, index) => this.handleDeleteChip(chip, index)}
-            textFieldStyle={{fontSize: 14}}
+            textFieldStyle={{fontSize: 13}}
+            textareaStyle={{fontSize: 13}}
             hintText="Type and select from list"
             searchText={this.state.searchText}
             floatingLabelStyle={{color: '#A35FE3'}}
@@ -107,7 +109,7 @@ import ChipInput from 'material-ui-chip-input';
             onNewRequest={this.handleSelect}
             underlineDisabledStyle={{ borderColor: '#E6E6E6'}}
             underlineFocusStyle={{borderColor: '#A35FE3'}}
-            listStyle={{textColor: '#A35FE3'}}
+            listStyle={{textColor: '#A35FE3', fontSize: 12}}
 />
 
       

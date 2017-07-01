@@ -98,11 +98,11 @@ var helpers = {
         }
         return axios.post('/api/path/all', queryObj).then(function(response) {
                     dispatch(actions.updatePathList(response.data));
+                    console.log(response.data);
                     return;
         })
     },
     pathsRendered(pathsrendered, dispatch){
-        console.log("in helper",pathsrendered )
         dispatch(actions.pathsRendered(pathsrendered))
     },
     removeGroup: function(id, dispatch) {
@@ -167,7 +167,6 @@ var helpers = {
 
     logout(dispatch){
         // send to api for auth
-        console.log("logout helper");
         // set logged in to false
         dispatch(actions.userLogin(false));
         // clear redux store and reset

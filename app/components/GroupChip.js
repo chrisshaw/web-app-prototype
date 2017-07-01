@@ -14,6 +14,7 @@ import uuid from 'uuid';
   }
 
   onDelete(id) {
+    console.log("id", id)
     this.props.handleRequestDelete(id);
   }
 

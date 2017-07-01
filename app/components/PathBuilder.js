@@ -28,16 +28,16 @@ const style = {
 class PathBuilder extends Component{
    constructor(props) {
         super(props);
-        this.handleToggle = this.handleToggle.bind(this);
+        // this.handleToggle = this.handleToggle.bind(this);
         this.handleClose = this.handleClose.bind(this);
     }
-    componentWillMount(){
-         helper.toggleDrawer(true, this.props.dispatch);
-    }
-    handleToggle() {
-        helper.toggleDrawer(!this.props.toggledrawer, this.props.dispatch);
-        helper.pathsRendered(false, this.props.dispatch);      
-    }
+    // componentWillMount(){
+    //      helper.toggleDrawer(true, this.props.dispatch);
+    // }
+    // handleToggle() {
+    //     helper.toggleDrawer(!this.props.toggledrawer, this.props.dispatch);
+    //     helper.pathsRendered(false, this.props.dispatch);      
+    // }
     handleClose(){
         helper.toggleDrawer(false, this.props.dispatch);
     }
@@ -45,21 +45,13 @@ class PathBuilder extends Component{
 
         return(
             <div>
-                <PathBuilderDrawer handleToggle={this.handleToggle} handleClose={this.handleClose} toggledrawer={this.props.toggledrawer}/>
-                <Grid>                   
-                    <Row>       
-                    <Col md={12} >
-                        <RaisedButton
-                            label="Show Path Builder"
-                            onTouchTap={this.handleToggle}
-                            style={style.button} 
-                            containerElement='label' 
-                            secondary={true}
-                            />         
-                     <PathPaper />             
+                <PathBuilderDrawer handleClose={this.handleClose} />
+                <Row>   
+                    <Col md={5} />       
+                    <Col md={7} >      
+                    <PathPaper />             
                     </Col>
-                    </Row>
-                </Grid>
+                </Row>
             </div>
         )
     }
@@ -67,11 +59,11 @@ class PathBuilder extends Component{
 
 // export default PathBuilder;
 
-const mapStateToProps = (store) => {
-    return {
-        toggledrawer: store.mainState.toggledrawer,
-    }
-}
+// const mapStateToProps = (store) => {
+//     return {
+//         toggledrawer: store.mainState.toggledrawer,
+//     }
+// }
 
-export default connect(mapStateToProps)(PathBuilder);
+export default PathBuilder;
 

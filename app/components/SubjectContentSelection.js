@@ -48,36 +48,20 @@ class SubjectContentSelection extends Component{
         if ( this.props.selectedsubjectcontentlist){
              var arrLength = this.props.selectedsubjectcontentlist.length;
         }    
-        return(<div><div className="query-builder-wrapper">
+        return(<div>
                     <Row>
-                        <Col xs={1} md={1} >
-                            <div className={this.state.showGroups ? "hide" : "expand-icon"} onTouchTap={this.handleShowGroups}><ExpandMoreIcon /></div>
-                            <div className={this.state.showGroups ? "expand-icon" : "hide"} onTouchTap={this.handleShowGroups}><ExpandLessIcon /></div>                       
+                        <Col xs={10} md={10} >
+                            <p className="search-text chip-float">to learn content in</p>
                         </Col>
-                        <Col xs={11} md={11} >
-                            <div className="auto-text-alignment">
-                                <p className="search-text chip-float">to learn content in </p>
-                                <div className={this.state.showGroups ? "hide" : "expand-icon"} ><SubjectContentChip className="text-center" style={{display: "inline"}} secondary={true} selectedsubjectcontentlist={this.props.selectedsubjectcontentlist} handleRemove={this.handleRemove} handleRequestDelete={this.handleRequestDelete}/></div>
-                            </div>
-                            
-                        </Col>
+                        <Col xs={2} md={2} >
+                            <div className="reset-button text-center" onTouchTap={this.handleReset} ><ResetIcon className="reset-icon" /> Reset</div>        
+                        </Col>                    
                     </Row>
-                </div>
-                <div className={this.state.showGroups ? "query-builder-wrapper" : "query-builder-wrapper hide"} >
                     <Row>
                         <Col xs={12} md={12} >
-                            <AutoCompleteSubjectField  subjectcontentlist={component.props.subjectcontentlist} selectedsubjectcontentlist={component.props.selectedsubjectcontentlist}  handleRemove={this.handleRemove} handleRequestDelete={this.handleRequestDelete}/>
-                        </Col>                     
-                    </Row>
-                    <Row>
-                        <Col xs={8} md={8} >  
-                            <p><em>** select 'x' to remove individual subjects from selected subjects list.</em></p> 
+                            <AutoCompleteSubjectField subjectcontentlist={this.props.subjectcontentlist} selectedsubjectcontentlist={this.props.selectedsubjectcontentlist} handleRequestDelete={this.handleRequestDelete}/>
                         </Col>
-                        <Col xs={4} md={4} >  
-                         <div className="reset-button text-center" onTouchTap={this.handleReset} ><ResetIcon className="reset-icon" /> Reset</div>
-                        </Col> 
                     </Row>
-                </div>
                 </div>
         )
     }

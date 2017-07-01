@@ -47,39 +47,27 @@ class TopicSelection extends Component{
              var arrLength = this.props.selectedtopiclist.length;
         }
        
-        return(<div><div className="query-builder-wrapper">
+
+        return(<div>
                     <Row>
-                        <Col xs={1} md={1} >
-                            <div className={this.state.showGroups ? "hide" : "expand-icon"} onTouchTap={this.handleShowGroups}><ExpandMoreIcon /></div>
-                            <div className={this.state.showGroups ? "expand-icon" : "hide"} onTouchTap={this.handleShowGroups}><ExpandLessIcon /></div>                       
+                        <Col xs={10} md={10} >
+                            <p className="search-text chip-float">will explore</p>
                         </Col>
-                        <Col xs={11} md={11} >
-                            <div className="auto-text-alignment">
-                                <p className="search-text chip-float"> will explore</p>
-                                <div className={this.state.showGroups ? "hide" : "expand-icon"} ><TopicChip className="text-center" style={{display: "inline"}} secondary={true} selectedtopiclist={this.props.selectedtopiclist} handleRemove={this.handleRemove} handleRequestDelete={this.handleRequestDelete}/></div> 
-                            </div>                       
-                        </Col>
+                        <Col xs={2} md={2} >
+                            <div className="reset-button text-center" onTouchTap={this.handleReset} ><ResetIcon className="reset-icon" /> Reset</div>        
+                        </Col>                    
                     </Row>
-                </div>
-              <div className={this.state.showGroups ? "query-builder-wrapper" : "query-builder-wrapper hide"} >
                     <Row>
                         <Col xs={12} md={12} >
-                            <AutoCompleteTopicField  topiclist={component.props.topiclist} selectedtopiclist={component.props.selectedtopiclist} handleRemove={this.handleRemove} handleRequestDelete={this.handleRequestDelete}/>
-                        </Col>              
-                    </Row>
-                    <Row>
-                       <Col xs={8} md={8} >  
-                            <p><em>** select 'x' to remove individual topics from selected topics list.</em></p> 
+                            <AutoCompleteTopicField topiclist={this.props.topiclist} selectedtopiclist={this.props.selectedtopiclist} handleRequestDelete={this.handleRequestDelete}/>
                         </Col>
-                        <Col xs={4} md={4} >  
-                         <div className="reset-button text-center" onTouchTap={this.handleReset} ><ResetIcon className="reset-icon" /> Reset</div>
-                        </Col> 
                     </Row>
-                </div>
                 </div>
         )
     }
 }
+
+
 
 const mapStateToProps = (store) => {
     return {

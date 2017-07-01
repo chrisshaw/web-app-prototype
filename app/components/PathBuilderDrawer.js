@@ -28,21 +28,12 @@ class PathBuilderDrawer extends Component{
         return (
                 <div>              
                     <Drawer
-                        docked={false}
-                        width={650}
-                        open={this.props.toggledrawer}
-                        onRequestChange={this.props.handleToggle}
+                        docked={true}
+                        width={530}
                         style={style.drawer}               
-                    >             
-                        <Row className="text-center">
-                            <Col md={2} />
-                            <Col xs={12} md={8}>
-                                <RaisedButton secondary={true} containerElement='label' style={style.button} label="Hide Path Builder" onTouchTap={this.props.handleClose} />
-                            </Col>
-                            <Col md={2} />
-                        </Row>
+                    >        
                         <Row>
-                            <QueryBuilder closeDrawer={this.props.handleClose} />
+                            <QueryBuilder />
                         </Row>                  
                     </Drawer>
                 </div>

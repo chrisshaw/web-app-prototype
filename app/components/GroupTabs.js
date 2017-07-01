@@ -210,8 +210,6 @@ class GroupTabs extends React.Component {
 const mapStateToProps = (store,ownProps) => {
     return {
         paths: store.mainState.paths,
-        // pathsrendered: store.mainState.pathsrendered,
-
     }
 }
 

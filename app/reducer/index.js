@@ -83,12 +83,15 @@ const mainReducer = (state={intialstate}, action) => {
         case 'UPDATE_GROUPS':
             //pulls for display in autopopulate dropdown to selected list for query
             // delete portion not currently in use - old code
-            let newObj = {};
+            let newObj = -1;
             if (action.delete) {
+                console.log("reducer id");
                 // use filter here to remove deleted group
                 // remove from selectedgrouplist and add back to grouplist
-                var newGroups = state.selectedgrouplist.filter((group) => {        
+                var newGroups = state.selectedgrouplist.filter((group) => { 
+                     
                     if (group._id === action.id){
+                        console.log("matched in reducer id", group._id);      
                         newObj = group;
                         return false;
                     }
@@ -97,11 +100,13 @@ const mainReducer = (state={intialstate}, action) => {
                 });
                 
                 // in case of corrupt data 
-                if (newObj !== {}){
+                if (newObj !== -1){
+                    console.log(" in newobj != -1")
                     // update
                     return Object.assign({},state, {selectedgrouplist: newGroups, grouplist: [...state.grouplist, newObj] }); 
                 } else {
                     // no change
+                     console.log(" in else part")
                     return Object.assign({},state, {selectedgrouplist: state.selectedgrouplist, grouplist: state.grouplist }); 
                 }
             } 
@@ -363,16 +368,10 @@ const appReducer = combineReducers({
 })
 // to handle clearing store on logout
 const reducers = (state, action) => {
-
   if (action.type === 'USER_LOGOUT') {
     state = undefined
   }
-  console.log("staee", state);
-
   return appReducer(state, action)
 }
-
-
-
 export default reducers;
 

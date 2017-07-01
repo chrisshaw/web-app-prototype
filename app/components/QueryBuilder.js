@@ -85,7 +85,7 @@ class QueryBuilder extends Component{
         if ( this.props.selectedgrouplist){
              var arrLength = this.props.selectedgrouplist.length;
         }
-console.log("in render", this.props.pathsrendered);
+
         return(<div className="query-builder-wrapper">
                 <Row>
                     <Col xs={12} md={12} >
@@ -113,6 +113,7 @@ console.log("in render", this.props.pathsrendered);
                 <TopicSelection />
                 <SubjectContentSelection />
                 <StandardsSelection />
+                
                 <Row>
                     <Col xs={12} md={12} className="text-center" >            
                         <FlatButton containerElement='label' label="Get Reccommended Paths" onTouchTap={this.handleSubmitAll} />
@@ -121,7 +122,7 @@ console.log("in render", this.props.pathsrendered);
                 {this.props.pathsrendered ? (<Row>
                     <Col xs={12} md={12} >
                         <div className="query-builder-wrapper">
-                        <p className="text-center paths-returned"><em > Path Results Returned </em></p> 
+                        <p className="text-center"><em className="paths-returned"> Path Results Returned </em></p> 
                         </div>
                     </Col>
                 </Row>) : "" }
