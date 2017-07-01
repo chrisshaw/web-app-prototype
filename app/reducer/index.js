@@ -344,7 +344,6 @@ const mainReducer = (state={intialstate}, action) => {
                }
             }          
     };    
-    console.log("not found")  
     return state;
 }
 
@@ -364,7 +363,7 @@ const appReducer = combineReducers({
 })
 // to handle clearing store on logout
 const reducers = (state, action) => {
-    console.log("lgouout being called")
+
   if (action.type === 'USER_LOGOUT') {
     state = undefined
   }

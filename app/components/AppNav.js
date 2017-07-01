@@ -64,12 +64,13 @@ class AppNav extends Component {
             titleStyle={styles.title}
             iconStyleLeft={{border: 2, marginTop: 0, display: "flex", flex: 0, justifyContent: 'center', alignSelf: 'center', alignItems: 'center'}}
             iconStyleRight={{order: 4, marginTop: 0, marginLeft: 0, display: "flex"}}
-            iconElementLeft={ <div>{this.props.loggedin ? 
-              (<div><IconButton onTouchTap={this.props.handleLogout} style={{minWidth: 100, height: 50, flex: 'center', alignSelf: 'center'}}><LogoutIcon /></IconButton></div>)  : (<div className="placeholder"></div>) } </div>}
+            iconElementLeft={<div className="placeholder"></div>}
             iconElementRight={<div>{this.props.loggedin ? 
-              (<div><FlatButton labelStyle={{lineHeight: 4}} style={{borderTop: 'solid 1px #E6E6E6',borderLeft: 'solid 1px #E6E6E6',borderRight: 'solid 1px #E6E6E6', minWidth: 130, height: 50, flex: 'center'}}  containerElement={<Link to="/"/>} label="Home" />
-              <FlatButton labelStyle={{lineHeight: 4}} style={{ borderTop: 'solid 1px #E6E6E6',borderLeft: 'solid 1px #E6E6E6', borderRight: 'solid 1px #E6E6E6',minWidth: 130, height: 50, flex: 'center'}}  containerElement={<Link to="/pathbuilder"/>} label="Build Paths" />
-              <FlatButton labelStyle={{lineHeight: 4}}  style={{borderTop: 'solid 1px #E6E6E6',borderLeft: 'solid 1px #E6E6E6', borderRight: 'solid 1px #E6E6E6',minWidth: 130, height: 50, flex: 'center'}} containerElement='label' label="Manage Students"  containerElement={<Link to="/csv"/>} /></div>)  : (<div className="placeholder"></div>) } </div>}
+              (<div>
+              <FlatButton labelStyle={{lineHeight: 4}} style={{ borderTop: 'solid 1px #E6E6E6',borderLeft: 'solid 1px #E6E6E6', borderRight: 'solid 1px #E6E6E6',minWidth: 130, height: 50, flex: 'center'}}  containerElement={<Link to="/"/>} label="Build Paths" />
+              <FlatButton labelStyle={{lineHeight: 4}}  style={{borderTop: 'solid 1px #E6E6E6',borderLeft: 'solid 1px #E6E6E6', borderRight: 'solid 1px #E6E6E6',minWidth: 130, height: 50, flex: 'center'}} containerElement='label' label="Manage Students"  containerElement={<Link to="/csv"/>} />
+              <IconButton onTouchTap={this.props.handleLogout} style={{minWidth: 100, height: 50, flex: 'center', alignSelf: 'center'}}><LogoutIcon /></IconButton>
+              </div>)  : (<div className="placeholder"></div>) } </div>}
             />    
         </div>
        
