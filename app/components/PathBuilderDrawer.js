@@ -7,7 +7,6 @@ import {Grid, Row, Col} from 'react-bootstrap';
 import QueryBuilder from './QueryBuilder';
 
 class PathBuilderDrawer extends Component{
-
    constructor(props) {
         super(props);
     }

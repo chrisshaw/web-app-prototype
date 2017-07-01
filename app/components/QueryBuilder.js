@@ -6,14 +6,12 @@ import FlatButton from 'material-ui/FlatButton';
 import IconButton from 'material-ui/IconButton';
 import helper from '../helper';
 import {connect} from 'react-redux';
-import GroupChip from './GroupChip';
 import AutoCompleteField from './AutoCompleteField';
 import GroupSelection from './GroupSelection';
 import TopicSelection from './TopicSelection';
 import SubjectContentSelection from './SubjectContentSelection';
 import StandardsSelection from './StandardSelection';
 import Dialog from 'material-ui/Dialog';
-// import configureStore from '../store'
 
  var pathArr = [];
 
@@ -47,7 +45,6 @@ class QueryBuilder extends Component{
     // new to be tested
     handleSubmitAll() {
         // clear message
-
         helper.pathsRendered(false, this.props.dispatch);
         if (this.props.selectedgrouplist.length !== 0) {
             // this.props.closeDrawer();
@@ -70,7 +67,6 @@ class QueryBuilder extends Component{
             />
             ];
 
-
         var styles = {
             dialog : {
                 width: '50vw',
@@ -79,8 +75,7 @@ class QueryBuilder extends Component{
                 zIndex: 1500,
             }
         }
-
-       
+    
         var component = this;
         if ( this.props.selectedgrouplist){
              var arrLength = this.props.selectedgrouplist.length;
@@ -97,23 +92,22 @@ class QueryBuilder extends Component{
                 </Row>
                 <Row>
                 <Dialog
-              
-                title="No Group Selected"
-                actions={actions}
-                style={{zIndex: 2000}}
-                modal={false}
-                open={this.state.nogoupselected}
-                onRequestClose={this.handleClose}
+                    bodyStyle={{fontSize: 12}}
+                    titleStyle={{fontSize: 13, fontWeight: 'bold'}}
+                    title="No Group Selected"
+                    actions={actions}
+                    style={{zIndex: 2000,fontSize: 12, height: 100, width: 150}}
+                    modal={false}
+                    open={this.state.nogoupselected}
+                    onRequestClose={this.handleClose}
                 >
-                   Please select at least one Group option.
+                   <p>Please select at least one Group option.</p>
                     </Dialog>
-
                 </Row>
                 <GroupSelection />
                 <TopicSelection />
                 <SubjectContentSelection />
-                <StandardsSelection />
-                
+                <StandardsSelection />              
                 <Row>
                     <Col xs={12} md={12} className="text-center" >            
                         <FlatButton containerElement='label' label="Get Reccommended Paths" onTouchTap={this.handleSubmitAll} />
@@ -125,14 +119,11 @@ class QueryBuilder extends Component{
                         <p className="text-center"><em className="paths-returned"> Path Results Returned </em></p> 
                         </div>
                     </Col>
-                </Row>) : "" }
-      
+                </Row>) : "" } 
             </div>
         )
     }
 }
-
-
 
 const mapStateToProps = (store) => {
     return {

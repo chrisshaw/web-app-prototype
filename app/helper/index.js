@@ -117,18 +117,32 @@ var helpers = {
     removeStandards: function(id, dispatch) {
         dispatch(actions.updateStandardsList(true, id))
     },
-    updateSelectedGroup: function(e, addOrRemove, dispatch){
-       dispatch(actions.saveSelectedGroup(addOrRemove, e));
+    // use to update all query items
+    updateSelected: function(e, addOrRemove, queryitem, dispatch){
+        console.log(queryitem)
+        if (queryitem === "Groups"){
+            dispatch(actions.saveSelectedGroup(addOrRemove, e));
+        } else if  (queryitem === "Topics") {
+            dispatch(actions.saveSelectedTopics(addOrRemove, e));
+        }  else if  (queryitem === "Standards") {
+            dispatch(actions.saveSelectedStandards(addOrRemove, e));
+        }  else if  (queryitem === "Subjects") {
+            dispatch(actions.saveSelectedSubjects(addOrRemove, e));
+        }
     },
-    updateSelectedTopic: function(e, addOrRemove, dispatch){
-       dispatch(actions.saveSelectedTopics(addOrRemove, e));
-    },
-    updateSelectedSubject: function(e, addOrRemove, dispatch){
-       dispatch(actions.saveSelectedSubjects(addOrRemove, e));
-    },
-    updateSelectedStandards: function(e, addOrRemove, dispatch){
-       dispatch(actions.saveSelectedStandards(addOrRemove, e));
-    },
+// dlete these later
+    // updateSelectedGroup: function(e, addOrRemove, dispatch){
+    //    dispatch(actions.saveSelectedGroup(addOrRemove, e));
+    // },
+    // updateSelectedTopic: function(e, addOrRemove, dispatch){
+    //    dispatch(actions.saveSelectedTopics(addOrRemove, e));
+    // },
+    // updateSelectedSubject: function(e, addOrRemove, dispatch){
+    //    dispatch(actions.saveSelectedSubjects(addOrRemove, e));
+    // },
+    // updateSelectedStandards: function(e, addOrRemove, dispatch){
+    //    dispatch(actions.saveSelectedStandards(addOrRemove, e));
+    // },
     // Authentication
     // authAction == "Login" or "Sign Up"
     loginOrRegister(email, password, authAction, dispatch){      

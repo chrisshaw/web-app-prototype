@@ -18,9 +18,9 @@ const styles = {
     fontWeight: 400,
   },
   slide: {
-    padding: 10,
+    // padding: 10,
     textAlign: 'left',
-    height: '200px',
+    // height: '200px',
     overflowX: 'none',
   },
     wrapper: {
@@ -90,6 +90,7 @@ class GroupTabs extends React.Component {
       if (this.props.paths)  {
         // there will be one results component returned for each pathway / group.
         var tabindex = this.state.value;
+       
         if (this.props.paths[tabindex].results.length > 0) {
           var component = this; 
           var groupname = this.props.paths[tabindex].groupname;
@@ -157,10 +158,10 @@ class GroupTabs extends React.Component {
             return (  <div  key={index} className="fa-wrapper"><Row className="fa-tab-view-rows"><Col md={12}><div style={styles.slide}>
                         <Row >
                           <Col  md={3} xs={12}>
-                            <h3   className='fa-headings'>Focus Area:  </h3>
+                            <h3   className='fa-headings'>Focus Area</h3>
                           </Col>
                           <Col  md={9} xs={12}>
-                            <h3  className='fa-headings'><span className='fa-headings-span'>{fa.focusArea["Focus Area"].toString()}</span></h3>
+                            <p  className='fa-headings-span'>{fa.focusArea["Focus Area"].toString()}</p>
                           </Col>
                         </Row>
                           <hr />
@@ -173,7 +174,7 @@ class GroupTabs extends React.Component {
                           {faStandards}
                         </Row>
                           <Row>
-                          <div className="chip-float-text">Connected To: </div>
+                          <div className="chip-float-text">Connected To</div>
                             {nextFA}
                             {nextStandards}
                         </Row>

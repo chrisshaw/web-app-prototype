@@ -6,10 +6,7 @@ import FlatButton from 'material-ui/FlatButton';
 import IconButton from 'material-ui/IconButton';
 import helper from '../helper';
 import {connect} from 'react-redux';
-import TopicChip from './TopicChip';
-import AutoCompleteTopicField from './AutoCompleteTopicField';
-import ExpandMoreIcon from "./ExpandMoreIcon";
-import ExpandLessIcon from "./ExpandLessIcon";
+import AutoCompleteField from './AutoCompleteField';
 import ResetIcon from "./ResetIcon";
 
 class TopicSelection extends Component{
@@ -59,7 +56,7 @@ class TopicSelection extends Component{
                     </Row>
                     <Row>
                         <Col xs={12} md={12} >
-                            <AutoCompleteTopicField topiclist={this.props.topiclist} selectedtopiclist={this.props.selectedtopiclist} handleRequestDelete={this.handleRequestDelete}/>
+                            <AutoCompleteField queryitem="Topics" list={this.props.topiclist} selectedlist={this.props.selectedtopiclist} handleRequestDelete={this.handleRequestDelete}/>
                         </Col>
                     </Row>
                 </div>

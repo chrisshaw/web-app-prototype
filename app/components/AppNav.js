@@ -7,13 +7,7 @@ import RaisedButton from 'material-ui/RaisedButton';
 import IconButton from 'material-ui/IconButton';
 import IconMenu from 'material-ui/IconMenu';
 import FlatButton from 'material-ui/FlatButton';
-import Toggle from 'material-ui/Toggle';
-import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
-import NavigationClose from 'material-ui/svg-icons/navigation/close';
 import {Link} from 'react-router';
-import ExpandMoreIcon from './ExpandMoreIcon';
-import HomeIcon from './HomeIcon';
-import UploadIcon from './UploadIcon';
 import LogoutIcon from './LogoutIcon'; 
 
 const styles = {

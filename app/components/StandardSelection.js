@@ -6,10 +6,7 @@ import FlatButton from 'material-ui/FlatButton';
 import IconButton from 'material-ui/IconButton';
 import helper from '../helper';
 import {connect} from 'react-redux';
-import StandardsChip from './StandardsChip';
-import AutoCompleteStandardsField from './AutoCompleteStandardsField';
-import ExpandMoreIcon from "./ExpandMoreIcon";
-import ExpandLessIcon from "./ExpandLessIcon";
+import AutoCompleteField from './AutoCompleteField';
 import ResetIcon from "./ResetIcon";
 // import Github from 'material-ui/lib/svg-icons/custom/github';
 
@@ -63,7 +60,7 @@ class StandardsSelection extends Component{
                     </Row>
                     <Row>
                         <Col xs={12} md={12} >
-                            <AutoCompleteStandardsField standardslist={this.props.standardslist} selectedstandardslist={this.props.selectedstandardslist} handleRequestDelete={this.handleRequestDelete}/>
+                            <AutoCompleteField queryitem="Standards" list={this.props.standardslist} selectedlist={this.props.selectedstandardslist} handleRequestDelete={this.handleRequestDelete}/>
                         </Col>
                     </Row>
                 </div>

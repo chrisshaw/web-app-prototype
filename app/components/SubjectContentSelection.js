@@ -6,10 +6,7 @@ import FlatButton from 'material-ui/FlatButton';
 import IconButton from 'material-ui/IconButton';
 import helper from '../helper';
 import {connect} from 'react-redux';
-import SubjectContentChip from './SubjectContentChip';
-import AutoCompleteSubjectField from './AutoCompleteSubjectField';
-import ExpandMoreIcon from "./ExpandMoreIcon";
-import ExpandLessIcon from "./ExpandLessIcon";
+import AutoCompleteField from './AutoCompleteField';
 import ResetIcon from "./ResetIcon";
 
 class SubjectContentSelection extends Component{
@@ -59,7 +56,7 @@ class SubjectContentSelection extends Component{
                     </Row>
                     <Row>
                         <Col xs={12} md={12} >
-                            <AutoCompleteSubjectField subjectcontentlist={this.props.subjectcontentlist} selectedsubjectcontentlist={this.props.selectedsubjectcontentlist} handleRequestDelete={this.handleRequestDelete}/>
+                            <AutoCompleteField queryitem="Subjects" list={this.props.subjectcontentlist} selectedlist={this.props.selectedsubjectcontentlist} handleRequestDelete={this.handleRequestDelete}/>
                         </Col>
                     </Row>
                 </div>

@@ -4,7 +4,9 @@ import PathBuilderDrawer from './PathBuilderDrawer.js';
 import RaisedButton from 'material-ui/RaisedButton';
 import helper from '../helper';
 import {connect } from 'react-redux';
-import PathPaper from './PathPaper';
+import Paper from 'material-ui/Paper';
+import GroupTabs from './GroupTabs';
+
 
 const style = {
     drawer: {
@@ -22,48 +24,37 @@ const style = {
         fontColor: '#FFFFFF',
         mariginLeft: '10px'
 
-    }
+    },
+    paper: {
+        width: '100%',
+        textAlign: 'center',
+        }
 }
 
 class PathBuilder extends Component{
    constructor(props) {
         super(props);
-        // this.handleToggle = this.handleToggle.bind(this);
         this.handleClose = this.handleClose.bind(this);
     }
-    // componentWillMount(){
-    //      helper.toggleDrawer(true, this.props.dispatch);
-    // }
-    // handleToggle() {
-    //     helper.toggleDrawer(!this.props.toggledrawer, this.props.dispatch);
-    //     helper.pathsRendered(false, this.props.dispatch);      
-    // }
     handleClose(){
         helper.toggleDrawer(false, this.props.dispatch);
     }
     render(){
-
         return(
             <div>
                 <PathBuilderDrawer handleClose={this.handleClose} />
                 <Row>   
-                    <Col md={5} />       
-                    <Col md={7} >      
-                    <PathPaper />             
+                    <Col md={5} xs={7}/>       
+                    <Col md={7} xs={5} >      
+                       <Paper style={style.paper} zDepth={0}>
+                            <GroupTabs />
+                        </Paper>        
                     </Col>
                 </Row>
             </div>
         )
     }
 }
-
-// export default PathBuilder;
-
-// const mapStateToProps = (store) => {
-//     return {
-//         toggledrawer: store.mainState.toggledrawer,
-//     }
-// }
 
 export default PathBuilder;
 

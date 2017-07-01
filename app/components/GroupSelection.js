@@ -6,19 +6,14 @@ import FlatButton from 'material-ui/FlatButton';
 import IconButton from 'material-ui/IconButton';
 import helper from '../helper';
 import {connect} from 'react-redux';
-import GroupChip from './GroupChip';
 import AutoCompleteField from './AutoCompleteField';
-import ExpandMoreIcon from "./ExpandMoreIcon";
-import ExpandLessIcon from "./ExpandLessIcon";
 import ResetIcon from "./ResetIcon";
 
 class GroupSelection extends Component{
    constructor(props) {
         super(props);
-        // this.handleRemove = this.handleRemove.bind(this);
         this.handleRequestDelete = this.handleRequestDelete.bind(this);
         this.handleReset = this.handleReset.bind(this);
-        // this.getPaths = this.getPaths.bind(this);
         this.handleShowGroups = this.handleShowGroups.bind(this);
         // get initial data and set props
         helper.getGroups(this.props.dispatch);
@@ -26,8 +21,6 @@ class GroupSelection extends Component{
         this.state ={
             showGroups: false, 
         }
-
-
     }
     handleRequestDelete(id) {
         helper.removeGroup(id, this.props.dispatch);
@@ -41,11 +34,9 @@ class GroupSelection extends Component{
         this.setState({showGroups: !this.state.showGroups})
     }
     render(){
-
         if ( this.props.selectedgrouplist){
              var arrLength = this.props.selectedgrouplist.length;
         }
-       
         return(<div>
                     <Row>
                         <Col xs={10} md={10} >
@@ -57,7 +48,7 @@ class GroupSelection extends Component{
                     </Row>
                     <Row>
                         <Col xs={12} md={12} >
-                            <AutoCompleteField grouplist={this.props.grouplist} selectedgrouplist={this.props.selectedgrouplist} handleRequestDelete={this.handleRequestDelete}/>
+                            <AutoCompleteField queryitem="Groups" list={this.props.grouplist} selectedlist={this.props.selectedgrouplist} handleRequestDelete={this.handleRequestDelete}/>
                         </Col>
                     </Row>
                 </div>
