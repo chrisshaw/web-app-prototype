@@ -95,7 +95,7 @@ body {
 .reset-button {
     margin-top: 7px;
     float: left;
-    padding-left: 100px;
+    /*padding-left: 100px;*/
 }
 .left-nav{
    margin-left: 50px;
