@@ -93,7 +93,8 @@ class GroupTabs extends React.Component {
         var tabindex = this.state.value;
       //    console.log("paths in grouptabs", this.props.paths[tabindex])
       //  console.log("lengt of results", this.props.paths[tabindex].results)
-        if (this.props.paths[tabindex].results.length > 0) {
+        let pathResults = this.props.paths[tabindex].results.length;
+        if ((pathResults) && (this.props.paths[tabindex].results.length > 0)) {
           var component = this; 
           var groupname = this.props.paths[tabindex].groupname;
           var j = 0;
