@@ -97,9 +97,11 @@ var helpers = {
             subjects: subjects
         }
         return axios.post('/api/path/all', queryObj).then(function(response) {
-                    dispatch(actions.updatePathList(response.data));
-                    console.log(response.data);
-                    return;
+            // if (response.data.results) {
+                dispatch(actions.updatePathList(response.data));
+                console.log(response.data);
+                return;
+            // }
         })
     },
     pathsRendered(pathsrendered, dispatch){
@@ -130,6 +132,7 @@ var helpers = {
     },
     // use to update all query items
     updateSelected: function(e, addOrRemove, queryitem, dispatch){
+        console.log("is this being called: ", queryitem)
         if (queryitem === "Groups"){
             dispatch(actions.saveSelectedGroup(addOrRemove, e));
         } else if  (queryitem === "Topics") {

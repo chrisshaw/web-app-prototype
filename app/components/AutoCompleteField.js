@@ -62,6 +62,8 @@ import ChipInput from 'material-ui-chip-input';
   render() {
     var dataSource1 = [];
     var dataSource2 = [];
+    console.log("this.props.selectedlist", this.props.selectedlist);
+    console.log("this.props.list", this.props.list);
     // if it exists or is not empty array
     if ((this.props.list) && (this.props.list[0] !== null)){
         dataSource1 = this.props.list.map(function(group, index) {

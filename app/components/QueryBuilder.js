@@ -49,8 +49,15 @@ class QueryBuilder extends Component{
         if (this.props.selectedgrouplist.length !== 0) {
             // this.props.closeDrawer();
             // clear old paths
-            var paths = "";
-            helper.newPaths(paths, this.props.dispatch);
+            var pathsArr = [{group: {},
+                    grades: [],
+                    topics: [],
+                    standards: [],
+                    subjects: [],
+                    results: [] 
+            }]
+            // console.log("clear path results length", pathsArr[0].results.length)
+            helper.newPaths(pathsArr, this.props.dispatch);
             // array to store new paths
             pathArr = [];
             helper.getPathsAll(this.props.selectedgrouplist, this.props.selectedstandardslist, this.props.selectedtopiclist, this.props.selectedsubjectcontentlist, this.props.dispatch);
@@ -81,6 +88,10 @@ class QueryBuilder extends Component{
              var arrLength = this.props.selectedgrouplist.length;
         }
 
+        console.log("groups", this.props.selectedgrouplist)
+        console.log("topics", this.props.selectedtopiclist)
+        console.log("standards", this.props.selectedstandardslist)
+        console.log("content", this.props.selectedsubjectcontentlist)
         return(<div className="query-builder-wrapper">
                 <Row>
                     <Col xs={12} md={12} >
@@ -129,7 +140,7 @@ const mapStateToProps = (store) => {
     return {
         selectedgrouplist: store.mainState.selectedgrouplist,
         selectedtopiclist: store.mainState.selectedtopiclist,
-        initialSearchTerms: store.mainState.initialSearchTerms,
+        // initialSearchTerms: store.mainState.initialSearchTerms,
         selectedstandardslist: store.mainState.selectedstandardslist, 
         selectedsubjectcontentlist: store.mainState.selectedsubjectcontentlist,
         pathsrendered: store.mainState.pathsrendered

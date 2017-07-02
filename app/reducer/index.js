@@ -74,7 +74,6 @@ const mainReducer = (state={intialstate}, action) => {
         case 'UPDATE_PATHS':
             return Object.assign({},state, {paths: action.paths});
         case 'RENDER_PATHS':
-               console.log("in redux",action.pathsrendered )
             return Object.assign({},state, {pathsrendered: action.pathsrendered});
         case 'UPDATE_SEARCH_TERMS':
            // clear out old state if a new search

@@ -87,10 +87,12 @@ class GroupTabs extends React.Component {
       // each array item is an object with a group, grade, faid, and an array of paths in "results" field in order
       // this array of paths is what will be displayed in each group tab
       // they just need to be matched  s
+     
       if (this.props.paths)  {
         // there will be one results component returned for each pathway / group.
         var tabindex = this.state.value;
-       
+      //    console.log("paths in grouptabs", this.props.paths[tabindex])
+      //  console.log("lengt of results", this.props.paths[tabindex].results)
         if (this.props.paths[tabindex].results.length > 0) {
           var component = this; 
           var groupname = this.props.paths[tabindex].groupname;
