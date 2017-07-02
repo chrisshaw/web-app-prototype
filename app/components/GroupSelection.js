@@ -59,7 +59,7 @@ class GroupSelection extends Component{
 const mapStateToProps = (store) => {
     return {
         grouplist: store.mainState.grouplist,
-        selectedgrouplist: store.mainState.selectedgrouplist,
+        // selectedgrouplist: store.mainState.selectedgrouplist,
     }
 }
 

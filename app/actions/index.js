@@ -1,26 +1,5 @@
 const action = {
 
-// focusAreaResults: (area)=> {
-//   return {
-//       type: 'FOCUS_AREA',
-//       area,
-//     }
-// },
-
-// noResults: (noResultsMsg)=> {
-//   return {
-//       type: 'NO_DATA_MSG',
-//       noResultsMsg,
-//     }
-// },
-
-// viewDetailFocusArea : (fadetail) => {
-//     return {
-//       type: 'VIEW_DETAIL',
-//       fadetail,
-//     }
-// },
-
 userLogin: (loggedin) => {
   return {
     type: 'LOGGED_IN',
@@ -39,47 +18,46 @@ userLogout: () => {
       type: 'USER_LOGOUT',
     }
   },
+setPage: (pathbuilderview) => {
+   console.log("set page in action:", pathbuilderview)
+  return {
+    type: 'BUILD_VIEW',
+    pathbuilderview
+  }
+},
 viewUploadedCSVData: (csvdata) => {
     return {
       type: 'VIEW_CSV_DATA',
       csvdata,
     }
 },
-
 updateCSVDataName: (name, id) => {
-  // console.log("action id, name", id, name);
     return {
       type: 'UPDATE_CSV_NAME',
       id: id,
       name,
     }
 },
-
 updateCSVDataGrade: (grade, id) => {
-  // console.log("action id, name", id, grade);
     return {
       type: 'UPDATE_CSV_GRADE',
       id: id,
       grade,
     }
 },
-
 updateCSVDataFA: (focusArea) => {
-  // console.log("action id, name", id, focusArea);
     return {
       type: 'UPDATE_CSV_FA',
       focusArea,
     }
 },
 getFAList: (focusArea) => {
-    // console.log("action id, name", id, focusArea);
     return {
       type: 'GET_FA',
       focusArea,
     }
 },
 saveSelectedFA: (selectedFocusArea) => {
-    // console.log("action id, name", id, focusArea);
     return {
       type: 'SELECTED_FA',
       selectedFocusArea,
@@ -118,14 +96,12 @@ updatePathList: (paths) => {
 
 },
 pathsRendered: (pathsrendered) => {
-       console.log("in action",pathsrendered )
   return {
       type: 'RENDER_PATHS',
       pathsrendered
     }
 },
 initialQueryData: (initialSearchTerms, newSearch) => {
-  // console.log("in action", initialSearchTerms)
   // newSearch is a boolean - true of false.
   // will be true for every new search
   return {
@@ -171,7 +147,6 @@ saveSelectedSubjects: (addOrRemove, item) => {
 },
 updateStandardsList: (deleteGroup, id, standardslist) => {
    //pulls for display in autopopulate dropdown to selected list for query
-   console.log("in action", deleteGroup, id, standardslist)
     return {
       type: 'UPDATE_STANDARDS',
       delete: deleteGroup,
@@ -187,33 +162,9 @@ saveSelectedStandards: (addOrRemove, item) => {
       item
     }
 },
-// noPathList: (groupid, groupname) => {
-//   //saves to selected list for query and in chips
-//     return {
-//       type: 'NO_DATA_FOR_GROUP',
-//       groupid,
-//       groupname
-//     }
-// }
 }
 
 
 module.exports = action;
 
 
-// exports.updateCSVData = (csvdata[i].name) => {
-//     return { 
-//           [action.id]: {
-//             name: {$set: action.payload}
-//           }
-// }
-
-
-// case 'SOME_ACTION':
-//   return update(state, { 
-//     contents: { 
-//       [action.id]: {
-//         text: {$set: action.payload}
-//       }
-//     }
-//   });

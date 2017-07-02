@@ -73,7 +73,7 @@ class StandardsSelection extends Component{
 const mapStateToProps = (store) => {
     return {
         standardslist: store.mainState.standardslist,
-        selectedstandardslist: store.mainState.selectedstandardslist,
+        // selectedstandardslist: store.mainState.selectedstandardslist,
     }
 }
 

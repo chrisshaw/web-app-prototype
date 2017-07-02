@@ -75,10 +75,11 @@ class Main extends Component{
       helper.toggleDrawer(true, this.props.dispatch)
     }
     render(){
+      // console.log("main location", this.props.location.pathname);
         return(
             <MuiThemeProvider muiTheme={navBarTheme}>
             <div>
-                <AppNav handleLogout={this.handleLogout} loggedin={this.props.loggedin} showPathBuilder={this.showPathBuilder} />
+                <AppNav pathname={this.props.location.pathname} handleLogout={this.handleLogout} loggedin={this.props.loggedin} showPathBuilder={this.showPathBuilder} />
                 <div className="wrapper">          
                    { this.props.loggedin ?  this.props.children : (                 
                        <LoginSignUpTab />
@@ -89,6 +90,7 @@ class Main extends Component{
         )
     }
 }
+// {React.cloneElement(this.props.children, {fadetail: this.props.fadetail, focusarea: this.props.area, noResultsMsg: this.props.noResultsMsg})}
 
 const mapStateToProps = (store) => {
     return {

@@ -118,7 +118,6 @@ var helpers = {
     //     dispatch(actions.updateStandardsList(true, id))
     // },
     removeChip: function(id, queryitem, dispatch){
-        console.log(queryitem, id)
         if (queryitem === "Groups"){
             dispatch(actions.updateGroupList(true, id));
         } else if  (queryitem === "Topics") {
@@ -131,7 +130,6 @@ var helpers = {
     },
     // use to update all query items
     updateSelected: function(e, addOrRemove, queryitem, dispatch){
-        console.log(queryitem)
         if (queryitem === "Groups"){
             dispatch(actions.saveSelectedGroup(addOrRemove, e));
         } else if  (queryitem === "Topics") {
@@ -142,21 +140,10 @@ var helpers = {
             dispatch(actions.saveSelectedSubjects(addOrRemove, e));
         }
     },
-// dlete these later
-    // updateSelectedGroup: function(e, addOrRemove, dispatch){
-    //    dispatch(actions.saveSelectedGroup(addOrRemove, e));
-    // },
-    // updateSelectedTopic: function(e, addOrRemove, dispatch){
-    //    dispatch(actions.saveSelectedTopics(addOrRemove, e));
-    // },
-    // updateSelectedSubject: function(e, addOrRemove, dispatch){
-    //    dispatch(actions.saveSelectedSubjects(addOrRemove, e));
-    // },
-    // updateSelectedStandards: function(e, addOrRemove, dispatch){
-    //    dispatch(actions.saveSelectedStandards(addOrRemove, e));
-    // },
-    // Authentication
-    // authAction == "Login" or "Sign Up"
+    showView: function(action, dispatch){
+        console.log("set page in heoler:", action)
+        dispatch(actions.setPage(action));
+    },
     loginOrRegister(email, password, authAction, dispatch){      
         // capture data in object
         if (authAction === 'Login'){

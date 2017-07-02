@@ -52,7 +52,6 @@ import ChipInput from 'material-ui-chip-input';
 
     }
     handleDeleteChip(chip, index){
-        console.log("delete");
        for (var i=0; i<this.props.selectedlist.length; i++){
            if(this.props.selectedlist[i].name === chip){
              this.handleRequestDelete(this.props.selectedlist[i]._id);
@@ -76,7 +75,6 @@ import ChipInput from 'material-ui-chip-input';
                 return group.name
         })
     }
-console.log(dataSource2)
     if (this.props.selectedlist) {
     var component = this;
     var resultComponents = this.props.selectedlist.map(function(result) {

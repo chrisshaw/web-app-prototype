@@ -40,6 +40,11 @@ class PathBuilder extends Component{
     handleClose(){
         helper.toggleDrawer(false, this.props.dispatch);
     }
+    // componentWillMount(){
+    //     // set this.props.build === true so that title is not displayed and appbar is more responsive for
+    //     // this page on smalle screens
+    //     // helper.showView(true, this.props.dispatch);
+    // }
     render(){
         return(
             <div>
@@ -57,5 +62,6 @@ class PathBuilder extends Component{
     }
 }
 
-export default PathBuilder;
+export default connect()(PathBuilder);
+
 

@@ -67,7 +67,7 @@ class SubjectContentSelection extends Component{
 const mapStateToProps = (store) => {
     return {
         subjectcontentlist: store.mainState.subjectcontentlist,
-        selectedsubjectcontentlist: store.mainState.selectedsubjectcontentlist,
+        // selectedsubjectcontentlist: store.mainState.selectedsubjectcontentlist,
     }
 }
 

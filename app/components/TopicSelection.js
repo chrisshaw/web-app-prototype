@@ -43,7 +43,6 @@ class TopicSelection extends Component{
         if ( this.props.selectedtopiclist){
              var arrLength = this.props.selectedtopiclist.length;
         }
-       
 
         return(<div>
                     <Row>
@@ -69,7 +68,7 @@ class TopicSelection extends Component{
 const mapStateToProps = (store) => {
     return {
         topiclist: store.mainState.topiclist,
-        selectedtopiclist: store.mainState.selectedtopiclist,
+        // selectedtopiclist: store.mainState.selectedtopiclist,
     }
 }
 

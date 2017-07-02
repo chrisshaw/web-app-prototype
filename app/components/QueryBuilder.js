@@ -104,10 +104,10 @@ class QueryBuilder extends Component{
                    <p>Please select at least one Group option.</p>
                     </Dialog>
                 </Row>
-                <GroupSelection />
-                <TopicSelection />
-                <SubjectContentSelection />
-                <StandardsSelection />              
+                <GroupSelection selectedgrouplist={this.props.selectedgrouplist}/>
+                <TopicSelection selectedtopiclist={this.props.selectedtopiclist}/>
+                <SubjectContentSelection selectedsubjectcontentlist={this.props.selectedsubjectcontentlist}/>
+                <StandardsSelection  selectedstandardslist={this.props.selectedstandardslist}/>              
                 <Row>
                     <Col xs={12} md={12} className="text-center" >            
                         <FlatButton containerElement='label' label="Get Reccommended Paths" onTouchTap={this.handleSubmitAll} />

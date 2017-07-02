@@ -14,6 +14,7 @@ const intialstate = {
   selectedtopiclist: [],
   initialSearchTerms: [],
   pathsrendered: false,
+  pathbuilderview: false,
   paths: [],  
 }
 
@@ -32,6 +33,9 @@ const mainReducer = (state={intialstate}, action) => {
             return Object.assign({},state, {focusArea: action.focusArea});
         case 'SELECTED_FA':
             return Object.assign({},state, {selectedFocusArea: action.selectedFocusArea});
+        case 'BUILD_VIEW':
+         console.log("set page in redux:", action.pathbuilderview)
+            return Object.assign({},state, {pathbuilderview: action.pathbuilderview});
         case 'UPDATE_CSV_NAME':
             return Object.assign({},state, {
                 csvdata: state.csvdata.map(data => data.id === action.id ?

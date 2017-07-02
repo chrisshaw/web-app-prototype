@@ -38,7 +38,9 @@ class DataImportCSV extends Component{
     componentWillMount(){
         // get the focus areas
         helper.getFocusArea(this.props.dispatch);
-
+        // set this.props.pagebuilderview === true so that title is not displayed and appbar is more responsive for
+        // this page on smalle screens
+        // helper.showView(false, this.props.dispatch);
     }
     handleUploadFile(e){
         // send to server
