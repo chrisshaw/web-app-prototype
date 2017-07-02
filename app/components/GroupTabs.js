@@ -57,7 +57,7 @@ class GroupTabs extends React.Component {
     super(props);
     this.handleChange = this.handleChange.bind(this);
     this.state = {
-      value: '0',
+      value: 0,
     };
   }
 
@@ -73,10 +73,13 @@ class GroupTabs extends React.Component {
     
   }
    componentWillReceiveProps(nextProps) {
-     console.log((nextProps.paths !== "") || (nextProps.paths !== this.props.paths))
+    //  console.log((nextProps.paths !== "") || (nextProps.paths !== this.props.paths))
      if ((nextProps.paths !== "") || (nextProps.paths !== this.props.paths))  {
        // updates message to say results found
        helper.pathsRendered(true, this.props.dispatch);
+       this.setState({
+          value: 0,
+        });
     }
   }
 
@@ -87,12 +90,13 @@ class GroupTabs extends React.Component {
       // each array item is an object with a group, grade, faid, and an array of paths in "results" field in order
       // this array of paths is what will be displayed in each group tab
       // they just need to be matched  s
-     
+     console.log(this.state.value, "this.state.value;")
       if (this.props.paths)  {
         // there will be one results component returned for each pathway / group.
         var tabindex = this.state.value;
       //    console.log("paths in grouptabs", this.props.paths[tabindex])
-      //  console.log("lengt of results", this.props.paths[tabindex].results)
+        console.log("paths", this.props.paths)
+        console.log("tabindex", tabindex)
         let pathResults = this.props.paths[tabindex].results.length;
         if ((pathResults) && (this.props.paths[tabindex].results.length > 0)) {
           var component = this; 
@@ -106,6 +110,7 @@ class GroupTabs extends React.Component {
             // that is what this piece of code does
             // ****start of next standard part of code  -- maybe make a function and pass
             // in j, i, result.results (should have access to this.props.path so no need to pass)
+
             j++;
             if (j < component.props.paths[tabindex].results.length){
                 var nextFA = <Col  className="chip-float"><div className="chip">
@@ -136,7 +141,7 @@ class GroupTabs extends React.Component {
                 })
                 
             }  // ****end of next standard part of code
-              
+
             // this is where the standards for a FA are mapped for display
             // the duplicates are removed as this makes it look better
             var newStandardsArr = [];
@@ -155,7 +160,6 @@ class GroupTabs extends React.Component {
                           </div>
                           </Col>
             })
-        
 
             /// this return is to facomponent - it displays all the data for one fa within a path
             return (  <div  key={index} className="fa-wrapper"><Row className="fa-tab-view-rows"><Col md={12}><div style={styles.slide}>
@@ -190,7 +194,10 @@ class GroupTabs extends React.Component {
         } else {
           var faComponents = <p className="no-paths-message"> No paths for {this.props.paths[tabindex].group.name}. Please change search filters and try again.</p>
         }
-
+        // console.log("tabindex 2", tabindex)
+        // // increase the index
+        // tabindex++;
+        
         var resultsComponents = this.props.paths.map(function(result, index) {
         return <Tab key={index} label={result.group.name} value={index} buttonStyle={{color: "#808080"}}>
                   {faComponents}
