@@ -65,12 +65,16 @@ class Login extends Component{
                 onTouchTap={this.handleClose}
             />
             ];
+
+
         return( 
             <div className="form-signin">
                { (this.props.loginerror || this.state.error ) ?  <Dialog
+                bodyStyle={{fontSize: 13}}
+                titleStyle={{fontSize: 14, fontWeight: 'bold'}}
                 title="Sign Up / Login Error"
                 actions={actions}
-                style={{zIndex: 2000}}
+                style={{zIndex: 2000,fontSize: 12, height: 300, width: 350, left: 350}}
                 modal={false}
                 open= {true}
                 onRequestClose={this.handleClose}

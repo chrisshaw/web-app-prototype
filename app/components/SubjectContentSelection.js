@@ -12,7 +12,7 @@ import ResetIcon from "./ResetIcon";
 class SubjectContentSelection extends Component{
    constructor(props) {
         super(props);
-        this.handleRequestDelete = this.handleRequestDelete.bind(this);
+        // this.handleRequestDelete = this.handleRequestDelete.bind(this);
         this.handleReset = this.handleReset.bind(this);
         this.handleShowGroups = this.handleShowGroups.bind(this);
         // get initial data and set props
@@ -23,10 +23,10 @@ class SubjectContentSelection extends Component{
         }
 
    }
-    handleRequestDelete(id) {
-        console.log("remove subject from selected list", id)
-        helper.removeSubject(id, this.props.dispatch);
-    }
+    // handleRequestDelete(id) {
+    //     console.log("remove subject from selected list", id)
+    //     helper.removeSubject(id, this.props.dispatch);
+    // }
     handleReset() {
         helper.getSubjectContents(this.props.dispatch); 
     }

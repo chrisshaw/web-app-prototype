@@ -12,7 +12,7 @@ import ResetIcon from "./ResetIcon";
 class GroupSelection extends Component{
    constructor(props) {
         super(props);
-        this.handleRequestDelete = this.handleRequestDelete.bind(this);
+        // this.handleRequestDelete = this.handleRequestDelete.bind(this);
         this.handleReset = this.handleReset.bind(this);
         this.handleShowGroups = this.handleShowGroups.bind(this);
         // get initial data and set props
@@ -22,9 +22,9 @@ class GroupSelection extends Component{
             showGroups: false, 
         }
     }
-    handleRequestDelete(id) {
-        helper.removeGroup(id, this.props.dispatch);
-    }
+    // handleRequestDelete(id) {
+    //     helper.removeGroup(id, this.props.dispatch);
+    // }
     handleReset() {
         // reset chips and grouplist
         helper.getGroups(this.props.dispatch); 

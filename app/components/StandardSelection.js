@@ -13,7 +13,7 @@ import ResetIcon from "./ResetIcon";
 class StandardsSelection extends Component{
    constructor(props) {
         super(props);
-        this.handleRequestDelete = this.handleRequestDelete.bind(this);
+        // this.handleRequestDelete = this.handleRequestDelete.bind(this);
         this.handleReset = this.handleReset.bind(this);
         this.handleShowGroups = this.handleShowGroups.bind(this);
         // get initial data and set props
@@ -26,10 +26,10 @@ class StandardsSelection extends Component{
     componentWillMount(){
         helper.getStandards(this.props.dispatch);     
     }
-    handleRequestDelete(id) {
-        // filter standardslist based on id
-        helper.removeStandards(id, this.props.dispatch);
-    }
+    // handleRequestDelete(id) {
+    //     // filter standardslist based on id
+    //     helper.removeStandards(id, this.props.dispatch);
+    // }
     handleReset() {
         helper.getStandards(this.props.dispatch); 
     }

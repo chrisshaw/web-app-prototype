@@ -28,7 +28,8 @@ const style = {
     paper: {
         width: '100%',
         textAlign: 'center',
-        }
+        overflow: 'auto'
+    }
 }
 
 class PathBuilder extends Component{
@@ -44,8 +45,8 @@ class PathBuilder extends Component{
             <div>
                 <PathBuilderDrawer handleClose={this.handleClose} />
                 <Row>   
-                    <Col md={5} xs={7}/>       
-                    <Col md={7} xs={5} >      
+                    <Col lg={5} md={5} sm={5} xs={5}/>       
+                    <Col lg={7} md={7} sm={7} xs={7} >      
                        <Paper style={style.paper} zDepth={0}>
                             <GroupTabs />
                         </Paper>        

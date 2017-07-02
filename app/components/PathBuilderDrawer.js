@@ -27,8 +27,10 @@ class PathBuilderDrawer extends Component{
         return (
                 <div>              
                     <Drawer
+                        containerClassName="drawer-container-small-screen"
+                         containerClassName="drawer-small-screen"
                         docked={true}
-                        width={530}
+                        width={500}
                         style={style.drawer}               
                     >        
                         <Row>

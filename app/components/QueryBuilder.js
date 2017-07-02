@@ -91,12 +91,12 @@ class QueryBuilder extends Component{
                     </Col>
                 </Row>
                 <Row>
-                <Dialog
-                    bodyStyle={{fontSize: 12}}
-                    titleStyle={{fontSize: 13, fontWeight: 'bold'}}
+                <Dialog className={this.state.nogoupselected ? "" : "hide"}
+                    bodyStyle={{fontSize: 13}}
+                    titleStyle={{fontSize: 14, fontWeight: 'bold'}}
                     title="No Group Selected"
                     actions={actions}
-                    style={{zIndex: 2000,fontSize: 12, height: 100, width: 150}}
+                    style={{zIndex: 2000,fontSize: 12, height: 300, width: 350, left: 60}}
                     modal={false}
                     open={this.state.nogoupselected}
                     onRequestClose={this.handleClose}

@@ -17,7 +17,7 @@ import ChipInput from 'material-ui-chip-input';
         flexWrap: 'wrap',
       },
       auto: {
-          fontSize: 14
+          fontSize: 14,
       }
     };
 
@@ -35,7 +35,7 @@ import ChipInput from 'material-ui-chip-input';
   }
     handleRequestDelete(id) {
         // filter list based on id
-        helper.removeGroup(id, this.props.dispatch);
+        helper.removeChip(id, this.props.queryitem, this.props.dispatch);
     }
     handleSelect(){
         this.setState({searchText: ''})
@@ -52,9 +52,10 @@ import ChipInput from 'material-ui-chip-input';
 
     }
     handleDeleteChip(chip, index){
+        console.log("delete");
        for (var i=0; i<this.props.selectedlist.length; i++){
            if(this.props.selectedlist[i].name === chip){
-             this.props.handleRequestDelete(this.props.selectedlist[i]._id);
+             this.handleRequestDelete(this.props.selectedlist[i]._id);
              return;
            }
        }
@@ -109,7 +110,7 @@ console.log(dataSource2)
                 onNewRequest={this.handleSelect}
                 underlineDisabledStyle={{ borderColor: '#E6E6E6'}}
                 underlineFocusStyle={{borderColor: '#A35FE3'}}
-                listStyle={{textColor: '#A35FE3', fontSize: 12}}
+                listStyle={{textColor: '#A35FE3', fontSize: 12, whiteSpace: 'normal'}}
     />
         </div>
 

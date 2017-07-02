@@ -105,17 +105,29 @@ var helpers = {
     pathsRendered(pathsrendered, dispatch){
         dispatch(actions.pathsRendered(pathsrendered))
     },
-    removeGroup: function(id, dispatch) {
-        dispatch(actions.updateGroupList(true, id))
-    },
-    removeTopic: function(id, dispatch) {
-        dispatch(actions.updateTopicList(true, id))
-    },
-    removeSubject: function(id, dispatch) {
-        dispatch(actions.updateSubjectContentList(true, id))
-    },
-    removeStandards: function(id, dispatch) {
-        dispatch(actions.updateStandardsList(true, id))
+    // removeGroup: function(id, dispatch) {
+    //     dispatch(actions.updateGroupList(true, id))
+    // },
+    // removeTopic: function(id, dispatch) {
+    //     dispatch(actions.updateTopicList(true, id))
+    // },
+    // removeSubject: function(id, dispatch) {
+    //     dispatch(actions.updateSubjectContentList(true, id))
+    // },
+    // removeStandards: function(id, dispatch) {
+    //     dispatch(actions.updateStandardsList(true, id))
+    // },
+    removeChip: function(id, queryitem, dispatch){
+        console.log(queryitem, id)
+        if (queryitem === "Groups"){
+            dispatch(actions.updateGroupList(true, id));
+        } else if  (queryitem === "Topics") {
+            dispatch(actions.updateTopicList(true, id));
+        }  else if  (queryitem === "Standards") {
+            dispatch(actions.updateStandardsList(true, id));
+        }  else if  (queryitem === "Subjects") {
+            dispatch(actions.updateSubjectContentList(true, id))
+        }
     },
     // use to update all query items
     updateSelected: function(e, addOrRemove, queryitem, dispatch){
