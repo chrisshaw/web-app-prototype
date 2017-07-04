@@ -3,7 +3,7 @@ var Database = arangojs.Database;
 var path = require('path');
 var dbHostPort = process.env.DB_HOST_PORT || 'http://localhost:8529/';
 var dbUser = process.env.DB_USER || 'root';
-var dbPwd = process.env.DB_USER || 'sidekick';
+var dbPwd = process.env.DB_PWD || 'sidekick';
 var dbName = process.env.DB_NAME || 'skdb';
 const db = arangojs(dbHostPort);
 db.useDatabase(dbName);
