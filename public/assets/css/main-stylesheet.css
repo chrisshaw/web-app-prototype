@@ -170,7 +170,7 @@ table {
 .data-import-paper {
   height: '180px';
   width: '200px';
-  margin: 20;
+  padding: '10px';
   display: 'flex';
   flex: 1;
   align-items: 'center';

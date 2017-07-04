@@ -55,8 +55,8 @@ class DataImportStudentCSV extends Component{
     render(){
         // add a save button and a clear button
 
-        return(
-            <Grid>       
+        return( 
+            <div>
                 <Row>
                     <Col xs={12} md={12}>
                       {this.props.csvdata ? (<Paper className="data-import-paper" style={style.paper} zDepth={3} >
@@ -93,7 +93,7 @@ class DataImportStudentCSV extends Component{
                     </Col>
                     <Col xs={2} md={4} />
             </Row>
-            </Grid>
+            </div>
             
         )
     }

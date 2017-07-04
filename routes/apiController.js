@@ -1,11 +1,16 @@
 var arangojs = require('arangojs');
 var Database = arangojs.Database;
 var path = require('path');
-var config = require('../config/config_dev.js')
-const db = arangojs(config.database.hostPort);
-db.useDatabase(config.database.name);
-db.useBasicAuth(config.database.un, config.database.pw);
+var dbHostPort = process.env.DB_HOST_PORT || 'http://localhost:8529/';
+var dbUser = process.env.DB_USER || 'root';
+var dbPwd = process.env.DB_USER || 'sidekick';
+var dbName = process.env.DB_NAME || 'skdb';
+const db = arangojs(dbHostPort);
+db.useDatabase(dbName);
+db.useBasicAuth(dbUser, dbPwd);
 const foxxService = db.route('auth');
+
+
 console.log(db);
 // test connection
 db.get()
@@ -173,8 +178,10 @@ module.exports = function(app){
         // main entry point
         // need to verify csv file and save contents somewhere...
         var fileContentsFromBuffer = req.body.buffer.toString('utf-8');
+        // fileContentsFromBuffer.replace('\n')
+       ;
         // split on the carriage return or newline
-        var csvToArr = fileContentsFromBuffer.split(/\r/);
+        var csvToArr =  fileContentsFromBuffer.replace(/\n/g, '').split(/\r/);
          console.log("csvToArr", csvToArr)        
         //  need to do for loop over array, split on comma and save
         var studentsArr = [];

@@ -25,7 +25,7 @@ const styles = {
 class DataImportStudentTable extends Component {
     constructor(props){
         super(props);
-        this.state = {showModal: false, 
+        this.state = { 
             fixedHeader: true,
             fixedFooter: true,
             stripedRows: true,
@@ -34,12 +34,12 @@ class DataImportStudentTable extends Component {
             multiSelectable: false,
             enableSelectAll: false,
             deselectOnClickaway: true,
-            showCheckboxes: true,
+            showCheckboxes: false,
             height: '90%',
             width: '100%'}
-        this.handleCancel=this.handleCancel.bind(this);
-        this.handleSubmit=this.handleSubmit.bind(this);
-        this.onRowSelection=this.onRowSelection.bind(this);
+        // this.handleCancel=this.handleCancel.bind(this);
+        // this.handleSubmit=this.handleSubmit.bind(this);
+        // this.onRowSelection=this.onRowSelection.bind(this);
         // var component = this;
     }
 
@@ -49,43 +49,16 @@ class DataImportStudentTable extends Component {
 //   };
 
 
-    handleToggle = (event, toggled) => {
-        this.setState({
-        [event.target.name]: toggled,
-        });
-    }
+    // handleToggle = (event, toggled) => {
+    //     this.setState({
+    //     [event.target.name]: toggled,
+    //     });
+    // }
 
-    handleChange = (event) => {
-        this.setState({height: event.target.value});
-    }
-    dataChanged(data) { 
-            // the "this"" context is the edit object - use this to grab tabindex
-            if (data.name){
-                helper.updateCSV(data.name, this.tabIndex, "name", this.dispatch ); 
-            } 
-            // if (data.grade){
-            //     helper.updateCSV(data.grade, this.tabIndex, "grade", this.dispatch ); 
-            // }       
-    }
-    customValidateText(text) {
-        return (text.length > 0 && text.length < 64);
-    }
-    onRowSelection(rows){
-       
-        var rowid = rows[0];
-         console.log("reows", this.props.csvdata[rowid].firstName)
-        this.setState({showModal: true})
-        this.setState({selectedRow: this.props.csvdata[rowid]})
-    }
-    handleCancel(){
-         console.log("cancel")
-         this.setState({showModal: false})
-    } 
-    handleSubmit(){
-         console.log("submit")
-         this.setState({showModal: false})
-         //do wsomethign with date
-    }
+    // handleChange = (event) => {
+    //     this.setState({height: event.target.value});
+    // }
+
     render() {
         var component = this;
         // console.log("selectedRow", this.state.selectedRow)
@@ -132,7 +105,6 @@ class DataImportStudentTable extends Component {
         }
         return (
         <div>
-         <UpdateStudentModal selectedRow={this.state.selectedRow} open={this.state.showModal} handleCancel={this.handleCancel} handleSubmit={this.handleSubmit} className={this.state.showModal ? 'show-student-modal': 'hide-student-modal'}/>
         <Table
           height={this.state.height}
           width={this.state.width}
