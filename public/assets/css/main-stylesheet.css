@@ -79,7 +79,12 @@ body {
     /*justify-content: 'center';
     align-self:  'center';
     align-items: 'center';*/
-
+.show-student-modal {
+    display: none;
+}
+.hide-student-modal {
+    display: block;
+}
 .row {
     margin-right: 5px;
     margin-left: 5px;
@@ -388,17 +393,16 @@ margin-top: 7px;
    .reset-button {
         margin-top: 0px;
     }
-    .drawer-button-wrapper {
+    /*.drawer-button-wrapper {
         margin: auto;
         /*margin-left: 14px;*/
-    }
-    .left-nav{
-        /*margin-top: 80px;*/
+    /*}*/
+    /*.left-nav{
         margin-left: 0px;
     }
     .right-nav {
         margin-right: 0px;
-    }
+    }*/
     .chip {
          overflow: hidden;
          white-space: normal;
@@ -407,20 +411,13 @@ margin-top: 7px;
         display:flex;
         overflow: hidden;
     }
-    .sticky-navbar  { 
-        
-        justify-content: flex-end !important
-        
+    .sticky-navbar  {        
+        justify-content: flex-end !important       
     }
     .drawer-small-screen {
         width: 40% !important
     }
-    /*.large-appbar  {
-        /*flex: 0 0 auto;*/
-        /*display: none !important*/
-    /*}*/
     .small-appbar  {
-        /*flex: 0 0 auto;*/
         display: flex !important
     }
 }

@@ -5,6 +5,26 @@ import actions from '../actions';
 // Helper Functions
 var helpers = {
    
+    // submitCSVFile: function(e, dispatch){
+    //     var files = e.target.files || e.dataTransfer.files 
+    //     if (files) {
+    //         //send only the first one
+    //         var file = files[0];
+    //         //read the file content and prepare to send it
+    //         var reader = new FileReader();
+    //         reader.onload = function(e) {
+    //             var buffer = e.target.result;
+    //             var postObj = {
+    //                 name: file.name,
+    //                 buffer: buffer
+    //             };    
+    //             return axios.post('/csv/file', postObj).then(function(response){
+    //                     dispatch(actions.viewUploadedCSVData(response.data))
+    //             })
+    //         }
+    //         reader.readAsBinaryString(file);
+    //     }
+    // },
     submitCSVFile: function(e, dispatch){
         var files = e.target.files || e.dataTransfer.files 
         if (files) {
@@ -19,7 +39,11 @@ var helpers = {
                     buffer: buffer
                 };    
                 return axios.post('/csv/file', postObj).then(function(response){
-                        dispatch(actions.viewUploadedCSVData(response.data))
+                    console.log("response", response.data);
+                    if (response.data.success) {
+                        dispatch(actions.viewUploadedCSVData(response.data.results))
+                    }
+                      
                 })
             }
             reader.readAsBinaryString(file);

@@ -48,8 +48,6 @@ class DataImportCSV extends Component{
         // reset input value
         var node = ReactDOM.findDOMNode(this.inputEntry);
         node.value="";
-        
-
     }
     handleSaveFile(){
         helper.saveCSVData(this.props.csvdata, this.props.dispatch);
@@ -59,18 +57,12 @@ class DataImportCSV extends Component{
 
         return(
             <Grid>  
-                
-                        {(this.props.csvdata) && (this.props.csvdata.length > 0) ? (
+                {(this.props.csvdata) && (this.props.csvdata.length > 0) ? (
                 <Row>
                     <Col xs={12} md={3} className="text-center" ><p className="focus-area-change">Update Focus Area to: </p></Col>
-            
-                    <Col xs={12} md={6}><div><AutoCompleteCSVFAField focusArea={this.props.focusArea} selectedFocusArea={this.props.selectedFocusArea}/></div>
-
-        </Col>
+                    <Col xs={12} md={6}><div><AutoCompleteCSVFAField focusArea={this.props.focusArea} selectedFocusArea={this.props.selectedFocusArea}/></div></Col>
                     <Col xs={12} md={3} />
-                </Row>) : ""}
-                            
-                
+                </Row>) : ""}           
                 <Row>
                     <Col xs={12} md={12}>
                         <Paper className="data-import-paper" style={style} zDepth={3} >

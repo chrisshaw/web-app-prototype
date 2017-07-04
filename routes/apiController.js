@@ -1,11 +1,12 @@
 var arangojs = require('arangojs');
 var Database = arangojs.Database;
 var path = require('path');
-var config = require('../config/config.js')
+var config = require('../config/config_dev.js')
 const db = arangojs(config.database.hostPort);
 db.useDatabase(config.database.name);
 db.useBasicAuth(config.database.un, config.database.pw);
 const foxxService = db.route('auth');
+console.log(db);
 // test connection
 db.get()
 .then(response => {
@@ -97,16 +98,8 @@ module.exports = function(app){
                              }
                              res.json();
                         });
-
-                    
-  
-                   
-
                 })
-
             })
-
-
      })
     // route to get all paths
     // using post as passing object - probably not ideal
@@ -176,37 +169,80 @@ module.exports = function(app){
             res.json(cursor._result);          
         });    
     })
-
-        app.post("/csv/file", function(req, res, next){
+    app.post("/csv/file", function(req, res, next){
         // main entry point
         // need to verify csv file and save contents somewhere...
         var fileContentsFromBuffer = req.body.buffer.toString('utf-8');
         // split on the carriage return or newline
-        var csvToArr = fileContentsFromBuffer.split(/\r|\n/);
+        var csvToArr = fileContentsFromBuffer.split(/\r/);
+         console.log("csvToArr", csvToArr)        
         //  need to do for loop over array, split on comma and save
         var studentsArr = [];
-        for (var i = 0; i < csvToArr.length; i++) {
-            // regex to allow for commas inside ""
-            let re = /[ ,]*"([^"]+)"|([^,]+)/g;
-            let match;
-            let dataArr = [];
-            while (match = re.exec(csvToArr[i])) {
-                let data = match[1] || match[2];
-                dataArr.push(data);
-            }
-            let studentObj = {
-                "id": i,
-                "name": dataArr[0],
-                "grade": dataArr[1],
-                "focusArea": dataArr[2],
-            }
-            // create array of objects to be saved to database
-            studentsArr.push(studentObj);
-            if (i >= csvToArr.length-1 ){
-                res.json(studentsArr);
+        // do some basic verification
+        // we are expecting 10 fields and we know the first row is headings 
+        // process the file
+        // start at row 1 cos first row is headings
+        if (csvToArr.length < 2) {
+            // file contains no data only headers
+            // console.log("error length < 2");
+            res.json({success: false, error: "File contains no data"}); 
+        } else {     
+            for (var i = 0; i < csvToArr.length; i++) {          
+                // regex to allow for commas inside ""
+                let re = /[ ,]*"([^"]+)"|([^,]+)/g;
+                let match;
+                let dataArr = [];
+                while (match = re.exec(csvToArr[i])) {
+                    let data = match[1] || match[2];
+                    dataArr.push(data);
+                }
+                // create object to send to client
+                let studentObj = {
+                        id: i-1,
+                        studentId: dataArr[0],
+                        firstName: dataArr[1],
+                        lastName: dataArr[2],
+                        email: dataArr[3],
+                        section: dataArr[4],
+                        course: dataArr[5],
+                        mentor: dataArr[6],
+                        faName: dataArr[7],
+                        faType: dataArr[8],
+                        mastered: dataArr[9]
+                }      
+                if ((i === 0) && ( dataArr.length < 10)) {
+                    console.log("success: false, error: Bad File Format")
+                    res.json({success: false, error: "not enough headers"});
+                    break; 
+                } 
+                else if ((i === 0) && ( dataArr.length === 10)) {
+                    // verify the headers are correct so we don't save junk
+                    if ((dataArr[0] !== "Student ID") 
+                    || (dataArr[1] !== "Student First")
+                    || (dataArr[2] !== "Student Last")
+                    || (dataArr[3] !== "Student Email")
+                    || (dataArr[4] !== "Section Name")
+                    || (dataArr[5] !== "Course Name")
+                    || (dataArr[6] !== "Mentor Name")
+                    || (dataArr[7] !== "Focus Area Name")
+                    || (dataArr[8] !== "Focus Area Type")
+                    || (dataArr[9] !== "Mastered?")) {
+                        console.log({success: false, error: "bad headers"});
+                        res.json({success: false});
+                        break; 
+                    } 
+                } 
+                // create array of objects to be saved to database
+                studentsArr.push(studentObj);
+                if (i >= csvToArr.length-1 ){
+                    // console.log(studentsArr);
+                    var resultsObj = {success: true, results: studentsArr }
+                    res.json(resultsObj);
+                }
             }
 
         }
+
  
     })
 

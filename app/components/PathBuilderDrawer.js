@@ -15,20 +15,13 @@ class PathBuilderDrawer extends Component{
             drawer: {
                 zIndex: 2000,
                 position: 'fixed',
-                top: '300px'
-            },
-            span: {  
-            },
-            button: {
-                marginTop: 12,
-                marginBottom: 12,
-            },
+                height: '100vh'
+            }
         }
         return (
                 <div>              
                     <Drawer
-                        containerClassName="drawer-container-small-screen"
-                         containerClassName="drawer-small-screen"
+                        containerClassName="drawer-small-screen"
                         docked={true}
                         width={500}
                         style={style.drawer}               

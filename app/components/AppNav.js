@@ -15,24 +15,6 @@ import {connect } from 'react-redux';
 
 
 const styles = {
-  mediumIcon: {
-    width: 48,
-    height: 48,
-  },
-  largeIcon: {
-    width: 60,
-    height: 60,
-  },
-  medium: {
-    width: 96,
-    height: 96,
-    padding: 24,
-  },
-  large: {
-    width: 120,
-    height: 120,
-    padding: 30,
-  },
   title : {
     height: 50,
     margin: 0,
@@ -50,7 +32,6 @@ class AppNav extends Component {
         super(props);
     }
     render(){
-        //  console.log(this.props.location)
        return (<div>
                   <AppBar className={this.props.loggedin ? "sticky-navbar sticky-navbar-loggedin" : "sticky-navbar"}
                     title={((this.props.pathname === '/')&&(this.props.loggedin)) ? "" : (<div><span><img src="./public/assets/img/sidekick.png" className="logo" alt="Sidekick" /></span></div>)}
@@ -61,7 +42,7 @@ class AppNav extends Component {
                       (<div>
                       <FlatButton  labelStyle={{lineHeight: 4}} style={{ borderTop: 'solid 1px #E6E6E6',borderLeft: 'solid 1px #E6E6E6', borderRight: 'solid 1px #E6E6E6',maxWidth: 170, fontSize: 12, height: 50, flex: 'center'}}  containerElement={<Link to="/"/>} label="Build Paths" />
                       <FlatButton  labelStyle={{lineHeight: 4}} style={{borderTop: 'solid 1px #E6E6E6',borderLeft: 'solid 1px #E6E6E6', borderRight: 'solid 1px #E6E6E6', maxWidth: 170, fontSize: 12, height: 50, flex: 'center'}} containerElement='label' label="Manage Students"  containerElement={<Link to="/csv"/>} />
-                      <IconButton  onTouchTap={this.props.handleLogout} style={{maxWidth: 100, height: 0, alignSelf: 'center'}} ><LogoutIcon /></IconButton>
+                      <IconButton  onTouchTap={this.props.handleLogout}  iconStyle={{height: 48}} style={{maxWidth: 100, alignSelf: 'center'}} ><LogoutIcon /></IconButton>
                       </div>)  : (<div className="placeholder"></div>) } </div>}
                     />            
                 </div>)

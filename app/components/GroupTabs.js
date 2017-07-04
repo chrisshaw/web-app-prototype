@@ -70,13 +70,13 @@ class GroupTabs extends React.Component {
     this.setState({
       value: 0,
     });
-    
   }
    componentWillReceiveProps(nextProps) {
     //  console.log((nextProps.paths !== "") || (nextProps.paths !== this.props.paths))
      if ((nextProps.paths !== "") || (nextProps.paths !== this.props.paths))  {
        // updates message to say results found
        helper.pathsRendered(true, this.props.dispatch);
+       // reset state
        this.setState({
           value: 0,
         });
@@ -199,7 +199,7 @@ class GroupTabs extends React.Component {
         // tabindex++;
         
         var resultsComponents = this.props.paths.map(function(result, index) {
-        return <Tab key={index} label={result.group.name} value={index} buttonStyle={{color: "#808080"}}>
+        return <Tab key={index} label={result.group.name} value={index}  buttonStyle={{color: "#808080"}}>
                   {faComponents}
                   </Tab>
         })     
@@ -209,6 +209,7 @@ class GroupTabs extends React.Component {
 
     return <Tabs inkBarStyle={{background: '#A35FE3'}}
         initialSelectedIndex={0}
+        tabItemContainerStyle={{whiteSpace: 'wrap'}}
         value={this.state.value}
         onChange={this.handleChange}
       >
