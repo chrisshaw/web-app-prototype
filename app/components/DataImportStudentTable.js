@@ -64,6 +64,7 @@ class DataImportStudentTable extends Component {
         // console.log("selectedRow", this.state.selectedRow)
         // var i = 0;
         // let resultsComponent = [];
+        console.log("this.props.csvdata", this.props.csvdata)
         if (this.props.csvdata) {
             var headerComponent =         
             (<TableHeader key={1000}

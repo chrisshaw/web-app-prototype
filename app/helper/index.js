@@ -3,6 +3,7 @@ import actions from '../actions';
 // import loginAPIKeys from '../../config/loginAPIKeys';
 // import signUpAPIKeys from '../../config/signUpAPIKeys';
 // Helper Functions
+
 var helpers = {
    
     // submitCSVFile: function(e, dispatch){
@@ -25,6 +26,27 @@ var helpers = {
     //         reader.readAsBinaryString(file);
     //     }
     // },
+    // $.ajaxSetup({
+    //     beforeSend: function(xhr) {
+    //       xhr.setRequestHeader("Accept", "application/vvv.website+json;version=1");
+    //       xhr.setRequestHeader("Authorization", "Bearer " + getCookie('auth_token'));
+    //     }
+    // });
+
+    getCookie: function(c_name) {
+        if (document.cookie.length > 0) {
+            let c_start = document.cookie.indexOf(c_name + "=");
+            if (c_start != -1) {
+                    c_start = c_start + c_name.length + 1;
+                    let c_end = document.cookie.indexOf(";", c_start);
+                        if (c_end == -1) {
+                        c_end = document.cookie.length;
+                    }
+                return unescape(document.cookie.substring(c_start, c_end));
+            }
+        }
+        return "";
+    },
     submitCSVFile: function(e, dispatch){
         var files = e.target.files || e.dataTransfer.files 
         if (files) {
@@ -49,24 +71,54 @@ var helpers = {
             reader.readAsBinaryString(file);
         }
     },
-    updateCSV: function(action, id, type, dispatch){
-        if (type === 'name'){
-            dispatch(actions.updateCSVDataName(action, id ))
-        }
-        if (type === 'grade'){
-            dispatch(actions.updateCSVDataGrade(action, id ))
-        }
-        if (type === 'focusArea'){
-            dispatch(actions.updateCSVDataFA(action, id ))
-        }
-    },
-    saveCSVData: function(data, dispatch){      
+    // updateCSV: function(action, id, type, dispatch){
+    //     if (type === 'name'){
+    //         dispatch(actions.updateCSVDataName(action, id ))
+    //     }
+    //     if (type === 'grade'){
+    //         dispatch(actions.updateCSVDataGrade(action, id ))
+    //     }
+    //     if (type === 'focusArea'){
+    //         dispatch(actions.updateCSVDataFA(action, id ))
+    //     }
+    // },
+    // saveCSVData: function(data, dispatch){      
+    //     if (data){
+    //         return axios.post('/csv/data', data).then(function(response){
+    //             dispatch(actions.viewUploadedCSVData([]));
+    //             return;               
+    //         })
+    //     }
+    // }
+    saveCSVStudentData(data, dispatch){
+        let component = this;
+        // need to pass the auth header in the cookie to server
+        let USER_TOKEN = helpers.getCookie("sid");
+        console.log("USER_TOKEN", USER_TOKEN);
+        // const AuthStr = 'USER_TOKEN); 
+        // axios.get(URL, { headers: { Authorization: AuthStr } })
+        // console.log("cookie", cookie)
         if (data){
-            return axios.post('/csv/data', data).then(function(response){
-                dispatch(actions.viewUploadedCSVData([]));
+            return axios({
+                method: 'post',
+                url: '/csv/students/courses/data', 
+                data: data,
+                headers: {'Authorization': USER_TOKEN}
+            })
+            .then(function(response) {           
+                // this will clear the data from the upload Page after saving....
+                // by settting csvdata to ""
+                dispatch(actions.viewUploadedCSVData(""));
+                // success or failure - return mesage to client this.props.dataupload = boolean
+                console.log("csv upload", response.data.success )
+                component.dataUploadStatus(response.data.success, dispatch);
                 return;               
             })
         }
+    },
+    dataUploadStatus(response, dispatch){
+        console.log("being called...");
+        dispatch(actions.returnUploadedStatus(response));
     },
     toggleDrawer: function(action, dispatch){
         dispatch(actions.closePathBuilderDrawer(action))

@@ -25,51 +25,58 @@ setPage: (pathbuilderview) => {
     pathbuilderview
   }
 },
+// this action is called to display uploaded csv data - saves into this.props.csvdata
 viewUploadedCSVData: (csvdata) => {
     return {
       type: 'VIEW_CSV_DATA',
       csvdata,
     }
 },
-updateCSVDataName: (name, id) => {
+returnUploadedStatus: (datasaved) => {
     return {
-      type: 'UPDATE_CSV_NAME',
-      id: id,
-      name,
+      type: 'CSV_SAVED',
+      datasaved,
     }
 },
-updateCSVDataGrade: (grade, id) => {
-    return {
-      type: 'UPDATE_CSV_GRADE',
-      id: id,
-      grade,
-    }
-},
-updateCSVDataFA: (focusArea) => {
-    return {
-      type: 'UPDATE_CSV_FA',
-      focusArea,
-    }
-},
-getFAList: (focusArea) => {
-    return {
-      type: 'GET_FA',
-      focusArea,
-    }
-},
-saveSelectedFA: (selectedFocusArea) => {
-    return {
-      type: 'SELECTED_FA',
-      selectedFocusArea,
-    }
-},
-closePathBuilderDrawer: (toggledrawer) => {
-    // action for main pathbuilder drawer - hide and show = false or true
-    return {
-      type: 'TOGGLE_DRAWER',
-      toggledrawer,
-    }
-},
+// updateCSVDataName: (name, id) => {
+//     return {
+//       type: 'UPDATE_CSV_NAME',
+//       id: id,
+//       name,
+//     }
+// },
+// updateCSVDataGrade: (grade, id) => {
+//     return {
+//       type: 'UPDATE_CSV_GRADE',
+//       id: id,
+//       grade,
+//     }
+// },
+// updateCSVDataFA: (focusArea) => {
+//     return {
+//       type: 'UPDATE_CSV_FA',
+//       focusArea,
+//     }
+// },
+// getFAList: (focusArea) => {
+//     return {
+//       type: 'GET_FA',
+//       focusArea,
+//     }
+// },
+// saveSelectedFA: (selectedFocusArea) => {
+//     return {
+//       type: 'SELECTED_FA',
+//       selectedFocusArea,
+//     }
+// },
+// closePathBuilderDrawer: (toggledrawer) => {
+//     // action for main pathbuilder drawer - hide and show = false or true
+//     return {
+//       type: 'TOGGLE_DRAWER',
+//       toggledrawer,
+//     }
+// },
 
 updateGroupList: (deleteGroup, id, grouplist) => {
     return {
@@ -95,22 +102,24 @@ updatePathList: (paths) => {
     }
 
 },
+// used to indicate if a path has been rendered in the Tabs
 pathsRendered: (pathsrendered) => {
   return {
       type: 'RENDER_PATHS',
       pathsrendered
     }
 },
-initialQueryData: (initialSearchTerms, newSearch) => {
-  // newSearch is a boolean - true of false.
-  // will be true for every new search
-  return {
-      type: 'UPDATE_SEARCH_TERMS',
-      initialSearchTerms,
-      newSearch
-    }
 
-},
+// initialQueryData: (initialSearchTerms, newSearch) => {
+//   // newSearch is a boolean - true of false.
+//   // will be true for every new search
+//   return {
+//       type: 'UPDATE_SEARCH_TERMS',
+//       initialSearchTerms,
+//       newSearch
+//     }
+
+// },
 updateTopicList: (deleteGroup, id, topiclist) => {
    //pulls for display in autopopulate dropdown to selected list for query
   return {

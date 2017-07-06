@@ -15,6 +15,7 @@ module.context.use(sessions);
 module.context.use(router);
 
 router.get('/user', function (req, res) {
+  console.log("req", req)
   try {
     const user = users.document(req.session.uid);
     res.send({username: user.username});

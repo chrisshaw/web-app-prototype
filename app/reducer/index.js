@@ -22,13 +22,15 @@ const loginintialstate = {
   loginerror: false,
 }
 
+const datainitialstate = {
+    dataupload: "",
+}
+
 
 //  The below are required and map to the components dispatcher
 const mainReducer = (state={intialstate}, action) => {
 
     switch(action.type){    
-        case 'VIEW_CSV_DATA':
-            return Object.assign({},state, {csvdata: action.csvdata}); 
         case 'GET_FA':
             return Object.assign({},state, {focusArea: action.focusArea});
         case 'SELECTED_FA':
@@ -365,9 +367,20 @@ const authReducer = (state={loginintialstate}, action) => {
     return state;
 }
 
+const uploadReducer = (state={datainitialstate}, action) => {
+    switch(action.type){  
+        case 'VIEW_CSV_DATA':
+            return Object.assign({},state, {csvdata: action.csvdata}); 
+        case 'CSV_SAVED':
+             return Object.assign({},state, {datasaved: action.datasaved}); 
+    };      
+    return state;
+}
+
 const appReducer = combineReducers({
     mainState : mainReducer,
     authState : authReducer,
+    uploadState: uploadReducer,
 })
 // to handle clearing store on logout
 const reducers = (state, action) => {

@@ -36,25 +36,24 @@ class DataImportStudentCSV extends Component{
         this.handleSaveFile = this.handleSaveFile.bind(this);  
     }
     componentWillMount(){
-        // get the focus areas
-        helper.getFocusArea(this.props.dispatch);
-        // set this.props.pagebuilderview === true so that title is not displayed and appbar is more responsive for
-        // this page on smalle screens
-        // helper.showView(false, this.props.dispatch);
+        // reset datasaved value to hide the messages 
+        helper.dataUploadStatus("", this.props.dispatch);
     }
     handleUploadFile(e){
         // send to server
         helper.submitCSVFile(e, this.props.dispatch);
+        // reset datasaved value to hide the messages 
+        helper.dataUploadStatus("", this.props.dispatch);
         // reset input value
         var node = ReactDOM.findDOMNode(this.inputEntry);
         node.value="";
     }
     handleSaveFile(){
-        helper.saveCSVData(this.props.csvdata, this.props.dispatch);
+        // save the displayed data to the server
+        helper.saveCSVStudentData(this.props.csvdata, this.props.dispatch);
     }
     render(){
         // add a save button and a clear button
-
         return( 
             <div>
                 <Row>
@@ -64,7 +63,13 @@ class DataImportStudentCSV extends Component{
                         </Paper>) : ""}
                     </Col>
                 </Row>
-               {this.props.csvdata ? ( <Row>
+                <Row>
+                    <Col xs={12} md={12}>
+                        <p className={(this.props.datasaved === true) ? "text-center" : "text-center hidden-class "}>Data uploaded Successfully!</p>
+                        <p className={(this.props.datasaved === false) ? "text-center" : "text-center hidden-class "}>Error! Problem saving data, please try again or contact support if the problem persists. </p>
+                    </Col>
+                </Row>
+                {this.props.csvdata ? ( <Row>
                     <Col xs={2} md={4} />
                     <Col xs={8} md={4} >
                         <FlatButton
@@ -72,7 +77,7 @@ class DataImportStudentCSV extends Component{
                         secondary={true}
                         style={style.button}
                         type="submit"
-                        containerElement='label' // <-- Just add me!
+                        containerElement='label'
                         onTouchTap={this.handleSaveFile}
                         />
                     </Col>
@@ -86,7 +91,7 @@ class DataImportStudentCSV extends Component{
                         secondary={true}
                         style={style.button}
                         type="submit"
-                        containerElement='label' // <-- Just add me!
+                        containerElement='label' 
                         icon={<FontIcon className="muidocs-icon-navigation-expand-more" />}>
                         <input type="file" style={{ display: 'none' }} ref={el => this.inputEntry = el}  onChange={e => this.handleUploadFile(e)}/>
                         </RaisedButton>
@@ -99,12 +104,10 @@ class DataImportStudentCSV extends Component{
     }
 }
 
-
-
 const mapStateToProps = (store,ownProps) => {
     return {
-        csvdata: store.mainState.csvdata,
-        
+        csvdata: store.uploadState.csvdata,
+        datasaved: store.uploadState.datasaved,
     }
 }
 
