@@ -88,7 +88,24 @@ updateGroupList: (deleteGroup, id, grouplist) => {
       grouplist,
     }
 },
-
+updateGradeList: (deleteGroup, id, gradelist) => {
+  console.log("gradelist: " , gradelist)
+    return {
+      type: 'UPDATE_GRADES',
+      delete: deleteGroup,
+      id,
+      gradelist,
+    }
+},
+updateCourseList: (deleteGroup, id, courselist) => {
+   console.log("courselist", courselist)
+    return {
+      type: 'UPDATE_COURSES',
+      delete: deleteGroup,
+      id,
+      courselist,
+    }
+},
 saveSelectedGroup : (addOrRemove, item) => {
     return {
       type: 'UPDATE_SELECTED_GROUPS',
@@ -96,13 +113,25 @@ saveSelectedGroup : (addOrRemove, item) => {
       item
     }
 },
-
+saveSelectedGrade : (addOrRemove, item) => {
+    return {
+      type: 'UPDATE_SELECTED_GRADES',
+      delete: addOrRemove,
+      item
+    }
+},
+saveSelectedCourse : (addOrRemove, item) => {
+    return {
+      type: 'UPDATE_SELECTED_COURSES',
+      delete: addOrRemove,
+      item
+    }
+},
 updatePathList: (paths) => {
   return {
       type: 'UPDATE_PATHS',
       paths
     }
-
 },
 // used to indicate if a path has been rendered in the Tabs
 pathsRendered: (pathsrendered) => {

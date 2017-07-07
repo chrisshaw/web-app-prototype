@@ -7,7 +7,8 @@ import IconButton from 'material-ui/IconButton';
 import helper from '../helper';
 import {connect} from 'react-redux';
 import AutoCompleteField from './AutoCompleteField';
-import GroupSelection from './GroupSelection';
+import CourseSelection from './CourseSelection';
+import GradeSelection from './GradeSelection';
 import TopicSelection from './TopicSelection';
 import SubjectContentSelection from './SubjectContentSelection';
 import StandardsSelection from './StandardSelection';
@@ -23,7 +24,7 @@ class QueryBuilder extends Component{
         this.handleShowGroups = this.handleShowGroups.bind(this);
         this.handleClose = this.handleClose.bind(this);
         // get initial data and set props
-        helper.getGroups(this.props.dispatch);
+        // helper.getGroups(this.props.dispatch);
         var searchObj = {};
         this.state ={
             showGroups: false, 
@@ -46,10 +47,10 @@ class QueryBuilder extends Component{
     handleSubmitAll() {
         // clear message
         helper.pathsRendered(false, this.props.dispatch);
-        if (this.props.selectedgrouplist.length !== 0) {
+        if ((this.props.selectedgradelist.length !== 0) && (this.props.selectedcourselist.length !== 0)){
             // this.props.closeDrawer();
             // clear old paths
-            var pathsArr = [{group: {},
+            var pathsArr = [{courses: {},
                     grades: [],
                     topics: [],
                     standards: [],
@@ -60,7 +61,8 @@ class QueryBuilder extends Component{
             helper.newPaths(pathsArr, this.props.dispatch);
             // array to store new paths
             pathArr = [];
-            helper.getPathsAll(this.props.selectedgrouplist, this.props.selectedstandardslist, this.props.selectedtopiclist, this.props.selectedsubjectcontentlist, this.props.dispatch);
+            console.log("in Submit");
+            helper.getPathsAll(this.props.selectedcourselist,this.props.selectedgradelist, this.props.selectedstandardslist, this.props.selectedtopiclist, this.props.selectedsubjectcontentlist, this.props.dispatch);
        } else {
             // no group selected message
             this.setState({nogoupselected: true})
@@ -84,14 +86,6 @@ class QueryBuilder extends Component{
         }
     
         var component = this;
-        if ( this.props.selectedgrouplist){
-             var arrLength = this.props.selectedgrouplist.length;
-        }
-
-        console.log("groups", this.props.selectedgrouplist)
-        console.log("topics", this.props.selectedtopiclist)
-        console.log("standards", this.props.selectedstandardslist)
-        console.log("content", this.props.selectedsubjectcontentlist)
         return(<div className="query-builder-wrapper">
                 <Row>
                     <Col xs={12} md={12} >
@@ -115,7 +109,8 @@ class QueryBuilder extends Component{
                    <p>Please select at least one Group option.</p>
                     </Dialog>
                 </Row>
-                <GroupSelection selectedgrouplist={this.props.selectedgrouplist}/>
+                <CourseSelection selectedcourselist={this.props.selectedcourselist}/>
+                <GradeSelection selectedgradelist={this.props.selectedgradelist}/>
                 <TopicSelection selectedtopiclist={this.props.selectedtopiclist}/>
                 <SubjectContentSelection selectedsubjectcontentlist={this.props.selectedsubjectcontentlist}/>
                 <StandardsSelection  selectedstandardslist={this.props.selectedstandardslist}/>              
@@ -139,8 +134,9 @@ class QueryBuilder extends Component{
 const mapStateToProps = (store) => {
     return {
         selectedgrouplist: store.mainState.selectedgrouplist,
+        selectedgradelist: store.mainState.selectedgradelist,
+        selectedcourselist: store.mainState.selectedcourselist,
         selectedtopiclist: store.mainState.selectedtopiclist,
-        // initialSearchTerms: store.mainState.initialSearchTerms,
         selectedstandardslist: store.mainState.selectedstandardslist, 
         selectedsubjectcontentlist: store.mainState.selectedsubjectcontentlist,
         pathsrendered: store.mainState.pathsrendered

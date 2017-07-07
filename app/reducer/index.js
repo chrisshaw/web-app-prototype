@@ -7,10 +7,14 @@ const intialstate = {
   standardslist: [],
   subjectcontentlist: [],
   topiclist: [],
+  courselist: [],
+  gradelist: [],
   grouptabs: [],
   selectedsubjectcontentlist: [],
   selectedstandardslist: [],
   selectedgrouplist: [],
+  selectedcourselist: [],
+  selectedgradelist: [],
   selectedtopiclist: [],
   initialSearchTerms: [],
   pathsrendered: false,
@@ -36,55 +40,114 @@ const mainReducer = (state={intialstate}, action) => {
         case 'SELECTED_FA':
             return Object.assign({},state, {selectedFocusArea: action.selectedFocusArea});
         case 'BUILD_VIEW':
-         console.log("set page in redux:", action.pathbuilderview)
             return Object.assign({},state, {pathbuilderview: action.pathbuilderview});
-        case 'UPDATE_CSV_NAME':
-            return Object.assign({},state, {
-                csvdata: state.csvdata.map(data => data.id === action.id ?
-                    // transform the one with a matching id
-                    { ...data, name: action.name } : 
-                    // otherwise return original data
-                    data
-                ) 
-            })   
-        case 'UPDATE_CSV_GRADE':
-            return Object.assign({},state, {
-                csvdata: state.csvdata.map(data => data.id === action.id ?
-                    // transform the one with a matching id
-                    { ...data, grade: action.grade } : 
-                    // otherwise return original data
-                    data
-                ) 
-            })    
-        case 'UPDATE_CSV_FA':
-           if (state.csvdata){
-                return Object.assign({},state, {        
-                csvdata: state.csvdata.map(data => data.focusArea !== action.focusArea ?
-                    // map all to new FA
-                    { ...data, focusArea: action.focusArea } : 
-                    // otherwise return original data
-                    data
-                ) 
-            })   
+        // case 'UPDATE_CSV_NAME':
+        //     return Object.assign({},state, {
+        //         csvdata: state.csvdata.map(data => data.id === action.id ?
+        //             // transform the one with a matching id
+        //             { ...data, name: action.name } : 
+        //             // otherwise return original data
+        //             data
+        //         ) 
+        //     })   
+        // case 'UPDATE_CSV_GRADE':
+        //     return Object.assign({},state, {
+        //         csvdata: state.csvdata.map(data => data.id === action.id ?
+        //             // transform the one with a matching id
+        //             { ...data, grade: action.grade } : 
+        //             // otherwise return original data
+        //             data
+        //         ) 
+        //     })    
+        // case 'UPDATE_CSV_FA':
+        //    if (state.csvdata){
+        //         return Object.assign({},state, {        
+        //         csvdata: state.csvdata.map(data => data.focusArea !== action.focusArea ?
+        //             // map all to new FA
+        //             { ...data, focusArea: action.focusArea } : 
+        //             // otherwise return original data
+        //             data
+        //         ) 
+        //     })   
 
-           } else {
-               return Object.assign({},state, {...state.csvdata})
-           }
+        //    } else {
+        //        return Object.assign({},state, {...state.csvdata})
+        //    }
             
-        case 'TOGGLE_DRAWER':
-            return Object.assign({},state, {toggledrawer: action.toggledrawer});    
+        // case 'TOGGLE_DRAWER':
+        //     return Object.assign({},state, {toggledrawer: action.toggledrawer});    
         case 'UPDATE_PATHS':
             return Object.assign({},state, {paths: action.paths});
         case 'RENDER_PATHS':
             return Object.assign({},state, {pathsrendered: action.pathsrendered});
-        case 'UPDATE_SEARCH_TERMS':
-           // clear out old state if a new search
-           if (!action.newSearch) {
-                return Object.assign({},state, {initialSearchTerms: [...state.initialSearchTerms, action.initialSearchTerms]});
-           } else if (action.newSearch) {
-               // append serach items to state in a current search
-                return Object.assign({},state, {initialSearchTerms: [action.initialSearchTerms]});
-           }
+        // case 'UPDATE_SEARCH_TERMS':
+        //    // clear out old state if a new search
+        //    if (!action.newSearch) {
+        //         return Object.assign({},state, {initialSearchTerms: [...state.initialSearchTerms, action.initialSearchTerms]});
+        //    } else if (action.newSearch) {
+        //        // append serach items to state in a current search
+        //         return Object.assign({},state, {initialSearchTerms: [action.initialSearchTerms]});
+        //    }
+        case 'UPDATE_GRADES':
+        console.log("in reducer", action)
+            //pulls for display in autopopulate dropdown to selected list for query
+            // delete portion not currently in use - old code
+            let gradeObj = -1;
+            if (action.delete) {
+                // use filter here to remove deleted group
+                // remove from selectedgrouplist and add back to grouplist
+                var newGroups = state.selectedgradelist.filter((group) => { 
+                     
+                    if (group._id === action.id){      
+                        gradeObj = group;
+                        return false;
+                    }
+                    return true;
+
+                });
+                
+                // in case of corrupt data 
+                if (gradeObj !== -1){
+                    // update
+                    return Object.assign({},state, {selectedgradelist: newGroups, gradelist: [...state.gradelist, gradeObj] }); 
+                } else {
+                    // no change
+                    return Object.assign({},state, {selectedgradelist: state.selectedgradelist, gradelist: state.gradelist }); 
+                }
+            } 
+            else {
+                return Object.assign({},state, {gradelist: action.gradelist, selectedgradelist: []});    
+            }
+            case 'UPDATE_COURSES':  
+                console.log("in reducer", action)
+                //pulls for display in autopopulate dropdown to selected list for query
+                // delete portion not currently in use - old code
+                let courseObj = -1;
+                if (action.delete) {
+                    // use filter here to remove deleted group
+                    // remove from selectedgrouplist and add back to grouplist
+                    var newGroups = state.selectedcourselist.filter((group) => { 
+                        
+                        if (group._id === action.id){      
+                            courseObj = group;
+                            return false;
+                        }
+                        return true;
+
+                    });
+                    
+                    // in case of corrupt data 
+                    if (courseObj !== -1){
+                        // update
+                        return Object.assign({},state, {selectedcourselist: newGroups, courselist: [...state.courselist, courseObj] }); 
+                    } else {
+                        // no change
+                        return Object.assign({},state, {selectedcourselist: state.selectedcourselist, courselist: state.courselist }); 
+                    }
+                } 
+                else {
+                    return Object.assign({},state, {courselist: action.courselist, selectedcourselist: []});    
+                }
         case 'UPDATE_GROUPS':
             //pulls for display in autopopulate dropdown to selected list for query
             // delete portion not currently in use - old code
@@ -118,6 +181,7 @@ const mainReducer = (state={intialstate}, action) => {
             else {
                 return Object.assign({},state, {grouplist: action.grouplist, selectedgrouplist: []});    
             }
+        
          case 'UPDATE_TOPICS':
             //pulls for display in autopopulate dropdown to selected list for query
             // delete portion not currently in use - old code
@@ -200,6 +264,80 @@ const mainReducer = (state={intialstate}, action) => {
             else {
                 return Object.assign({},state, {standardslist: action.standardslist, selectedstandardslist: []});    
             }
+        case 'UPDATE_SELECTED_GRADES':
+            // saves to selected list for query and in chips
+            // see what action is being performed - delete or add to selected list
+            if (action.delete) {
+                // use filter here to remove deleted group name from selected list
+                let newGroups = state.selectedgradelist.filter((group) => {
+                    // add it back to the grouplist...
+                    if (group.name === action.item){
+                        return false;
+                    }
+                    return true;
+
+                });
+                return Object.assign({},state, {selectedgradelist: newGroups}); 
+            
+            } 
+            else {
+                // decrease groups list and increase selected
+                let newObj = {};
+                let newGroups = state.gradelist.filter((group) => {                  
+                    if (group.name === action.item){
+                        newObj = group;
+                        return false;
+                        }
+                        return true;
+                    });
+               if (newObj !== {}){
+                   // if new Obj is not empty make changes
+                    if (!state.selectedgradelist) {
+                        // initially when array is empty do this
+                        return Object.assign({selectedgradelist: []},state, {selectedgradelist:  [newObj],  gradelist: newGroups});    
+                    } else {     
+                        // after there is at least one item do this
+                        return Object.assign({selectedgradelist: []},state, {selectedgradelist:  [...state.selectedgradelist, newObj], gradelist: newGroups});    
+                    }
+               }           
+            } 
+        case 'UPDATE_SELECTED_COURSES':
+            // saves to selected list for query and in chips
+            // see what action is being performed - delete or add to selected list
+            if (action.delete) {
+                // use filter here to remove deleted group name from selected list
+                let newGroups = state.selectedcourselist.filter((group) => {
+                    // add it back to the grouplist...
+                    if (group.name === action.item){
+                        return false;
+                    }
+                    return true;
+
+                });
+                return Object.assign({},state, {selectedcourselist: newGroups}); 
+            
+            } 
+            else {
+                // decrease groups list and increase selected
+                let newObj = {};
+                let newGroups = state.courselist.filter((group) => {                  
+                    if (group.name === action.item){
+                        newObj = group;
+                        return false;
+                        }
+                        return true;
+                    });
+               if (newObj !== {}){
+                   // if new Obj is not empty make changes
+                    if (!state.selectedcourselist) {
+                        // initially when array is empty do this
+                        return Object.assign({selectedcourselist: []},state, {selectedcourselist:  [newObj],  courselist: newGroups});    
+                    } else {     
+                        // after there is at least one item do this
+                        return Object.assign({selectedcourselist: []},state, {selectedcourselist:  [...state.selectedcourselist, newObj], courselist: newGroups});    
+                    }
+               }           
+            } 
         case 'UPDATE_SELECTED_GROUPS':
             // saves to selected list for query and in chips
             // see what action is being performed - delete or add to selected list

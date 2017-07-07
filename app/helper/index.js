@@ -131,6 +131,24 @@ var helpers = {
             return response.data;
         })
     },
+    getGrades: function(dispatch){
+       var gradeArr = [{_id: 0, name: "7"}, {_id: 1, name: "7"},{_id: 2, name: "8"}, {_id: 3, name: "9"}]
+       dispatch(actions.updateGradeList(false, 0, gradeArr));
+        // return axios.get('/api/teacher/group').then(function(response) {
+        //     // send results to redux store for use by Results component
+        //     dispatch(actions.updateGroupList(false, 0, response.data));
+        //     return response.data;
+        // })
+    },
+    getCourses: function(dispatch){
+       var courseArr = [{_id: 0, name: "Biology"}, {_id: 1, name: "Course 1"}]
+       dispatch(actions.updateCourseList(false, 0, courseArr));
+        // return axios.get('/api/teacher/group').then(function(response) {
+        //     // send results to redux store for use by Results component
+        //     dispatch(actions.updateGroupList(false, 0, response.data));
+        //     return response.data;
+        // })
+    },
     saveSelectedFA(e, dispatch){
         // need name and id
        dispatch(actions.saveSelectedFA(e));
@@ -162,17 +180,19 @@ var helpers = {
         // clear old path data
         dispatch(actions.updatePathList(paths));
     },
-    getPathsAll(groups, standards, topics, subjects, dispatch){
+    getPathsAll(courses, grades, standards, topics, subjects, dispatch){
          var queryObj = {
-            groups: groups,
+            courses: courses,
+            grades: grades,
             standards: standards,
             topics: topics,
             subjects: subjects
         }
+         console.log("in heloer paths");
         return axios.post('/api/path/all', queryObj).then(function(response) {
             // if (response.data.results) {
                 dispatch(actions.updatePathList(response.data));
-                console.log(response.data);
+                console.log("response: ", response.data);
                 return;
             // }
         })
@@ -201,11 +221,14 @@ var helpers = {
             dispatch(actions.updateStandardsList(true, id));
         }  else if  (queryitem === "Subjects") {
             dispatch(actions.updateSubjectContentList(true, id))
+        }  else if  (queryitem === "Grades") {
+            dispatch(actions.updateGradeList(addOrRemove, e));
+        }   else if  (queryitem === "Courses") {
+            dispatch(actions.updateCourseList(addOrRemove, e));
         }
     },
     // use to update all query items
     updateSelected: function(e, addOrRemove, queryitem, dispatch){
-        console.log("is this being called: ", queryitem)
         if (queryitem === "Groups"){
             dispatch(actions.saveSelectedGroup(addOrRemove, e));
         } else if  (queryitem === "Topics") {
@@ -214,10 +237,13 @@ var helpers = {
             dispatch(actions.saveSelectedStandards(addOrRemove, e));
         }  else if  (queryitem === "Subjects") {
             dispatch(actions.saveSelectedSubjects(addOrRemove, e));
+        }   else if  (queryitem === "Grades") {
+            dispatch(actions.saveSelectedGrade(addOrRemove, e));
+        }   else if  (queryitem === "Courses") {
+            dispatch(actions.saveSelectedCourse(addOrRemove, e));
         }
     },
     showView: function(action, dispatch){
-        console.log("set page in heoler:", action)
         dispatch(actions.setPage(action));
     },
     loginOrRegister(email, password, authAction, dispatch){      

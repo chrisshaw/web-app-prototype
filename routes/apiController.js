@@ -319,14 +319,34 @@ module.exports = function(app){
         }) 
      })
 
-
+    app.get('api/topics/all', function(req, res){
+        
+    })
 
     // using post as passing object - probably not ideal
     app.post('/api/path/all', function (req, res){
-        var groups = [];
+
+        let queryCourses = [];
+        let queryGrades = [];
         let queryStandards = []; 
         let querySubjects = [];
         let queryTopics = []; 
+
+      
+        if (req.body.courses){
+            if (req.body.courses.length > 0){
+                for (var i = 0; i < req.body.courses.length; i++){
+                    queryCourses.push(req.body.courses[i].name);
+                }
+            }
+        }
+        if (req.body.grades){
+            if (req.body.grades.length > 0){
+                for (var i = 0; i < req.body.grades.length; i++){
+                    queryGrades.push(req.body.grades[i].name);
+                }
+            }
+        }
         // some pre-processing to put values names into arrays
         if (req.body.subjects){
             if (req.body.subjects.length > 0){
@@ -350,18 +370,67 @@ module.exports = function(app){
                 }
             } 
         } 
-        let newArr = [];
-        groups = req.body.groups;
-        console.log(req.body);
+        // let newArr = [];
+        // groups = req.body.groups;
+        // console.log(req.body);
     
-        var query = aql`for group_id in ${groups} let queryFa = (for v, edge, path in 0..3 outbound group_id groupToStudents, studentToCurrentFA let fa = (for vv in OUTBOUND v studentToCurrentFA  return vv) FILTER LENGTH(fa) != 0 RETURN {_id: fa[0]._id}) let queryGrades = (for v, edge, path in 0..3 outbound group_id groupToStudents FILTER v.grade != null RETURN DISTINCT v.grade) let mainQuery = (for fa, edge, path in 0..999 outbound queryFa[0] thenFocusOn filter length(${querySubjects}) > 0 ? fa.subject in ${querySubjects} : true filter length(queryGrades) > 0 ? TO_ARRAY(fa.grade) any in queryGrades : true filter length(${queryTopics}) > 0 ? fa.topics[* return UPPER(CURRENT)] any in ${queryTopics}[* return UPPER(CURRENT)] : true filter length(${queryStandards}) > 0 ? fa.standardConnections[* return UPPER(CURRENT)] any in ${queryStandards}[* return UPPER(CURRENT)] : true return {focusArea: fa}) RETURN {group: group_id, grades: queryGrades, topics: ${queryTopics}, standards: ${queryStandards}, subjects: ${querySubjects},  results: mainQuery}`; // return grade and groupname too
-        console.log(query)
+        // var query = aql`for group_id in ${groups} let queryFa = (for v, edge, path in 0..3 outbound group_id groupToStudents, studentToCurrentFA let fa = (for vv in OUTBOUND v studentToCurrentFA  return vv) FILTER LENGTH(fa) != 0 RETURN {_id: fa[0]._id}) let queryGrades = (for v, edge, path in 0..3 outbound group_id groupToStudents FILTER v.grade != null RETURN DISTINCT v.grade) let mainQuery = (for fa, edge, path in 0..999 outbound queryFa[0] thenFocusOn filter length(${querySubjects}) > 0 ? fa.subject in ${querySubjects} : true filter length(queryGrades) > 0 ? TO_ARRAY(fa.grade) any in queryGrades : true filter length(${queryTopics}) > 0 ? fa.topics[* return UPPER(CURRENT)] any in ${queryTopics}[* return UPPER(CURRENT)] : true filter length(${queryStandards}) > 0 ? fa.standardConnections[* return UPPER(CURRENT)] any in ${queryStandards}[* return UPPER(CURRENT)] : true return {focusArea: fa}) RETURN {group: group_id, grades: queryGrades, topics: ${queryTopics}, standards: ${queryStandards}, subjects: ${querySubjects},  results: mainQuery}`; // return grade and groupname too
+        // console.log(query)
+        // db.query(query).then(cursor => {
+        //     // cursor is a cursor for the query result
+        //     console.log(cursor._result);
+        //     res.json(cursor._result);          
+        // });
+console.log(req.body);
+        // grab topics from projects, find connected fas
+        var query = aql`let topicalFas = LENGTH(${queryTopics}) == 0 ? [] : (
+            return UNIQUE(FLATTEN(
+                for p in projects
+                filter p.topics[* return UPPER(CURRENT)] any in ${queryTopics}[* return UPPER(CURRENT)]                
+                    for fa in
+                    2 outbound p
+                    alignsTo, addressedBy
+                    return fa._key
+                ))
+        )
+        let courseFas = LENGTH(${queryCourses}) == 0 ? [] : (
+            return UNIQUE(FLATTEN(
+                for c in courses
+                filter c.name in ${queryCourses}
+                    for fa in
+                    outbound c
+                    covers
+                    return fa._key
+                ))
+        )
+        let starters = (
+            for fa in focusAreas
+            let priors = (
+                for v
+                in inbound fa
+                thenFocusOn
+                return v
+            )
+            filter LENGTH(priors) == 0
+            return fa._id
+        )
+        // the path we want to send to the front
+        for start in starters
+            for fa in
+            0..999 outbound start
+            thenFocusOn
+            filter length(${querySubjects}) > 0 ? fa.subject in ${querySubjects} : true
+            filter length(${queryGrades}) > 0 ? TO_ARRAY(fa.grade) in ${queryGrades} : true
+            filter length(courseFas) > 0 ? fa._key in courseFas : true
+            filter length(topicalFas) > 0 ? fa._key in topicalFas : true
+            filter length(${queryStandards}) > 0 ? fa.standardConnections[* return UPPER(CURRENT)] any in ${queryStandards}[* return UPPER(CURRENT)] : true
+            return {course: ${queryCourses}, grades: ${queryGrades}, topics: ${queryTopics}, standards: ${queryStandards}, subjects: ${querySubjects},  results: fa}`; // return grade and groupname too`
+        console.log(query);
         db.query(query).then(cursor => {
             // cursor is a cursor for the query result
             console.log(cursor._result);
             res.json(cursor._result);          
         });
-
     })
 
     app.get('/api/focusarea', function(req, res){
