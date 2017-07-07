@@ -148,12 +148,12 @@ module.exports = function(app){
     //      return new Promise((resolve, reject) => {
     //             console.log("fa", response[0][1]['focusArea']);
     //             // let firstUpdateEdges =aql`for s in  ${response[0]}
-    //             // for c in studentToCourses
+    //             // for c in takings
     //             //     FILTER c._to == s.course_id[0]._id && c._from == s.student_id[0] && c.active == true
-    //             //     UPDATE c with {active: false, dateUpdate:  DATE_NOW()}IN studentToCourses
+    //             //     UPDATE c with {active: false, dateUpdate:  DATE_NOW()}IN takings
     //             // `;
     //             let firstUpdateEdges =aql`for s in  ${response[0]}
-    //             for c in studentToCourses
+    //             for c in takings
     //                 UPSERT {c._to: s.course_id[0]._id, c._from: s.student_id[0], c.active: true} INSERT {} REPLACE {c._to: s.course_id[0]._id, c._from: s.student_id[0], c.active: false, dateUpdated: DATE_NOW()}
     //             `;
 
@@ -163,13 +163,13 @@ module.exports = function(app){
     //                 // UPDATE
     //                 // let secondUpdateEdges = aql`for s in ${response[0]}
     //                 // for fa in s.focusArea 
-    //                 //     for f in studentToFA
+    //                 //     for f in hasMastered
     //                 //         FILTER f._to == fa.fa_id && f._from == s.student_id[0] && f.active == true
     //                 //         UPDATE f with {active: false, dateUpdate:  DATE_NOW()}IN studentToCourses`;
     //                 // // console.log(secondUpsert)
     //                 let secondUpdateEdges = aql`for s in ${response[0]}
     //                 for fa in s.focusArea 
-    //                     for f in studentToFA
+    //                     for f in hasMastered
     //                         UPSERT {f._to == fa.fa_id, f._from == s.student_id[0], f.active: true} INSERT {} REPLACE  {f._to == fa.fa_id, f._from == s.student_id[0], f.active: false, dateUpdated: DATE_NOW()}`
     //                 db.query(secondUpdateEdges)
     //                 .then(cursor => {  
@@ -281,13 +281,13 @@ module.exports = function(app){
             // updateEdgesInactive(response).then((response) =>{ 
                 // ****** add user id as a field saved by to record who made the change
                 let firstUpsert = aql`for s in ${response[0]}
-                UPSERT { _from: s.student_id[0] , _to: s.course_id[0]._id} INSERT  { _from: s.student_id[0] , _to: s.course_id[0]._id, section: s.course_id[0].section, dateCreated: DATE_NOW() } UPDATE { section: s.course_id[0].section, dateCreated: DATE_NOW()} IN studentToCourses RETURN { doc: NEW, type: OLD ? 'update' : 'insert' } `
+                UPSERT { _from: s.student_id[0] , _to: s.course_id[0]._id} INSERT  { _from: s.student_id[0] , _to: s.course_id[0]._id, section: s.course_id[0].section, dateCreated: DATE_NOW() } UPDATE { section: s.course_id[0].section, dateCreated: DATE_NOW()} IN taking RETURN { doc: NEW, type: OLD ? 'update' : 'insert' } `
                 db.query(firstUpsert)
                 .then(cursor => {  
                     // INSERT
                     let secondUpsert = aql`for s in  ${response[0]}
                     for fa in s.focusArea 
-                    UPSERT { _from: s.student_id[0], _to: fa.fa_id} INSERT { _from: s.student_id[0], _to: fa.fa_id, type: fa.focusAreaDetails.faType, mastered: fa.focusAreaDetails.mastered,  dateCreated: DATE_NOW()  } UPDATE { type: fa.focusAreaDetails.faType, mastered: fa.focusAreaDetails.mastered,  dateCreated: DATE_NOW()  } IN studentToFA RETURN { doc: NEW, type: OLD ? 'update' : 'insert' }`;
+                    UPSERT { _from: s.student_id[0], _to: fa.fa_id} INSERT { _from: s.student_id[0], _to: fa.fa_id, type: fa.focusAreaDetails.faType, mastered: fa.focusAreaDetails.mastered,  dateCreated: DATE_NOW()  } UPDATE { type: fa.focusAreaDetails.faType, mastered: fa.focusAreaDetails.mastered,  dateCreated: DATE_NOW()  } IN hasMastered RETURN { doc: NEW, type: OLD ? 'update' : 'insert' }`;
                     console.log(secondUpsert)
                     db.query(secondUpsert)
                     .then(cursor => {  
