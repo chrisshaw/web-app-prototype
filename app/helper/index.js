@@ -110,15 +110,18 @@ var helpers = {
                 // by settting csvdata to ""
                 dispatch(actions.viewUploadedCSVData(""));
                 // success or failure - return mesage to client this.props.dataupload = boolean
-                console.log("csv upload", response.data.success )
-                component.dataUploadStatus(response.data.success, dispatch);
+                console.log("csv upload", response.data.error )
+                if (response.data.error) {
+                    
+                }
+                component.dataUploadStatus(response.data.success, response.data.error, dispatch);
                 return;               
             })
         }
     },
-    dataUploadStatus(response, dispatch){
+    dataUploadStatus(response, error, dispatch){
         console.log("being called...");
-        dispatch(actions.returnUploadedStatus(response));
+        dispatch(actions.returnUploadedStatus(response, error));
     },
     toggleDrawer: function(action, dispatch){
         dispatch(actions.closePathBuilderDrawer(action))

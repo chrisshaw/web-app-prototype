@@ -32,10 +32,11 @@ viewUploadedCSVData: (csvdata) => {
       csvdata,
     }
 },
-returnUploadedStatus: (datasaved) => {
+returnUploadedStatus: (datasaved, error) => {
     return {
       type: 'CSV_SAVED',
       datasaved,
+      error
     }
 },
 // updateCSVDataName: (name, id) => {

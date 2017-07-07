@@ -144,7 +144,6 @@ function saveStudentGetIds(studentArr, i){
     }); 
 }
 
-
     app.post("/csv/students/courses/data", function(req, res, next){
         // verify user logged in and capture for save...
         let data = req.body;
@@ -179,7 +178,6 @@ function saveStudentGetIds(studentArr, i){
                       if (j === data.length-1){
                             // push final object to array and start again
                             studentArr.push(StudentObj);
-                            // console.log(studentArr)
                       }
                      console.log( StudentObj.focusAreas)
                  } else { 
@@ -201,146 +199,72 @@ function saveStudentGetIds(studentArr, i){
                         }]
                     }
                     // console.log("studentObj", studentObj);
-                 }
-               
+                 }           
             }
-            
-            // console.log(studentArr);
         }
         
         // process the data to consolidate it then save to database
         saveStudentGetIds(studentArr).then((response) => {
-            console.log("response", response)
-            console.log("responseFA", response[1].focusArea)
-
-            // pre-process: remove fa_id = null and send to client
-            //  update edge mappings
-            // write: ["studentToCourses", "studentToFA", "courseToFAs"],
-
+            // filter out rows with null and put these aside for error reporting
+            // pre-process: sort out fa_id = null and send to client
+            var errorArr = [];
+            // save on the object
+            for (var i = 0; i < response.length; i++){
+                let newFAs = [];
+                let nullFAs = [];
+                // console.log("response", response[i])
+                newFAs =response[i].focusArea.filter((fa) => {          
+                    if (fa.fa_id === null){
+                        // remove and add to nullFA's array
+                        nullFAs.push(fa.focusAreaDetails.faName);
+                        return false;
+                    }
+                    return true;
+                })
+                response[i].focusArea = newFAs;
+                if (nullFAs.length > 0) errorArr.push(nullFAs);
+            }
+            // write error array to logs
+            console.log("Error: Bad FA Names could not be saved", errorArr);
+            // update edge mappings
+            // not allowed to do remove and insert in same aql and edges cant use upsert - must remove and then insert
+            // verify it this is vulnerable to injection
+            // ****** add user id as a field saved by to record who made the change
+            let firstUpsert = aql`for s in ${response}
+            UPSERT { _from: s.course_id[0], _to: s.student_id[0]} INSERT  { _from: s.course_id[0], _to: s.student_id[0], dateCreated: DATE_NOW() } UPDATE { dateCreated: DATE_NOW()} IN studentToCourses RETURN { doc: NEW, type: OLD ? 'update' : 'insert' } `
+            db.query(firstUpsert)
+            .then(cursor => {  
+                console.log("inserted 1:", cursor._result);
+                // INSERT
+                let secondUpsert = aql`for s in  ${response}
+                for fa in s.focusArea 
+                    UPSERT { _from: s.student_id[0], _to: fa.fa_id} INSERT { _from: s.student_id[0], _to: fa.fa_id, type: fa.focusAreaDetails.faType, mastered: fa.focusAreaDetails.mastered,  dateCreated: DATE_NOW()  } UPDATE { type: fa.focusAreaDetails.faType, mastered: fa.focusAreaDetails.mastered,  dateCreated: DATE_NOW()  } IN studentToFA RETURN { doc: NEW, type: OLD ? 'update' : 'insert' }`;
+                console.log(secondUpsert)
+                db.query(secondUpsert)
+                .then(cursor => {  
+                    console.log("inserted 2:", cursor._result);
+                    if (errorArr.length > 0 ) {
+                        // some FA names were not found in the database
+                         res.json({success: false, error: errorArr})
+                    } else {
+                         // all fields saved
+                         res.json({success: true})
+                    }
+                }).catch(error => {
+                     res.json({success: false})
+                    console.log(Date.now() + " Error (Update 1 Database):", error);
+                })  
+            }).catch(error => {
+                 res.json({success: false})
+                 console.log(Date.now() + " Error (Update 2 Database):", error);
+            })  
         }).catch((error) => {
-            console.log("error", error)
+             console.log(Date.now() + " Error (Getting IDs from Database):", error);
+              res.json({success: false})
         })
 
-        
-        // verify if student exists
-        // if yes - get id
-        // if no - create and get it
-        // does course exist
-        // if yes - it should log error if not
-        // get course id and save 
-        // db._executeTransaction({
-        // collections: { 
-        //     write: [ "students", "studentToCourses", "studentToFA", "courseToFAs"],
-        //     read: [ "students", "courses", "focusAreas" ]
-        // },
-        // action: function (params) {
-        //         var query = aql`UPSERT{ studentId: ${studentArr[i].studentId} } INSERT { studentId: ${studentArr[i].studentId},firstName: ${studentArr[i].firstName},  lastName: ${data[i].lastName}, email: ${studentArr[i].email}, mentor:  ${studentArr[i].mentor}, dateCreated: DATE_NOW() } UPDATE { email: ${studentArr[i].email}, mentor: ${studentArr[i].mentor} } IN students RETURN { doc: NEW, type: OLD ? 'update' : 'insert' }`
-        //         // console.log(query);
-        //         db.query(query)
-        //         .then(cursor => {  
-        //             // save mappings....
-        //             let studentFrom = cursor._result[0].doc._id;
-        //             // we need to courseID 
-        //             let subquery = aql`
-        //             let courseid = (for v in courses
-        //                 Filter v.course in [${studentArr[i].course}]
-        //                 return v._id
-        //             `
-        //             //  console.log(subquery);
-        //             db.query(subquery)
-        //             .then(cursor => { 
-        //                 console.log("result", cursor._result);
-        //                 let courseFrom = cursor._result[0].doc._id;
-        //             })
-        //             .catch(error =>{
-        //                 console.log("Error Saving Data", cursor._result);
-        //             })
-
-        //         }).catch(error => {
-        //             console.log("Error Saving Data", cursor._result);
-        //         })
-        //     },
-        //     params: { 
-        //         studentArr: studentArr, 
-        //     }
-        // });
-
-        // var studentObj = req.body;
-        // // save students to database
-        // var students =  db.collection('students');
-        // var groups =  db.collection('groups');
-        // var teacherToGroups = db.edgeCollection('teacherToGroups');
-        // var groupToStudents = db.edgeCollection('groupToStudents');
-        // var studentToCurrentFA = db.edgeCollection('studentToCurrentFA');
-        // students.save(studentObj).then(function(student){
-        //         var students =  student;   // has student id
-        //          // all dummy ....
-        //         // create a group and get it - use key to make it unique
-               
-        //         var newgroupObj = {name: studentObj[0].focusArea + '_' + students[0]._key}
-        //         groups.save(newgroupObj).then(function(groups){
-        //             // map group to teacher 1 - teachers/1271022
-        //             teacherToGroups.save({
-        //                 _from: 'teachers/2479769',
-        //                 _to: groups._id
-        //             }).then(
-        //                 () => console.log("edge created"),
-        //                 err => console.log('Failed to create edge :', err)
-        //             )
-        //             // take the first FA
-        //             let faQuery = studentObj[0].focusArea;
-        //             // get FA id then do final edge mappings
-        //             var query = aql`FOR fa in focusAreas FILTER fa["Focus Area"] == ${faQuery} RETURN fa._id`;
-        //                 db.query(query)
-        //                 .then(cursor => {                           
-        //                     // cursor is a cursor for the query result
-        //                         if (cursor._result.length > 0){
-        //                             var focusArea = cursor._result[0];
-        //                             for (var i = 0 ; i  < students.length; i++){
-        //                             groupToStudents.save({
-        //                                 _from: groups._id,
-        //                                 _to: students[i]._id
-        //                             }).then(
-        //                                 () => console.log("edge created"),
-        //                                 err => console.log('Failed to create edge :', err)
-        //                             )
-        //                             // students to fa
-        //                             studentToCurrentFA.save({
-        //                                 _from: students[i]._id,
-        //                                 _to: focusArea
-        //                             }).then(
-        //                                 () => console.log("edge created"),
-        //                                 err => console.log('Failed to create edge :', err)
-        //                             )
-                                    
-        //                         }                                    
-        //                      }
-        //                      res.json();
-        //                 });
-        //         })
-        //     })
+   
      })
-    // route to get all paths
-//path/course/grade
-    // let queryGrades = ['10']
-    // let queryCourse = (FOR v IN courses 
-    //     LET contained = (
-    //             FOR grade IN queryGrades  
-    //             FILTER grade IN v.grade[*] 
-    //             RETURN grade
-    //         )
-    //     FILTER LENGTH(contained) > 0
-    //     FILTER v.course in ['Course 1', 'Course 2']
-    //     RETURN v._id)
-    // let querySubjects = []
-    // let queryTopics = []
-    // let queryStandards = []
-    // for course in queryCourse
-    //     let queryFa = (for fa  in 0..3 outbound course courseToFAs
-    //     filter length(querySubjects) > 0 ? fa.subject in querySubjects : true  filter length(queryTopics) > 0 ? fa.topics[* return UPPER(CURRENT)] any in queryTopics[* return UPPER(CURRENT)] : true filter length(queryStandards) > 0 ? fa.standardConnections[* return UPPER(CURRENT)] any in queryStandards[* return UPPER(CURRENT)] : true      
-    //         return {focusArea: fa}) 
-    // RETURN queryFa
-    
 
 
     // using post as passing object - probably not ideal

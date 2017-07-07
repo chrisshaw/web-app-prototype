@@ -37,34 +37,9 @@ class DataImportStudentTable extends Component {
             showCheckboxes: false,
             height: '90%',
             width: '100%'}
-        // this.handleCancel=this.handleCancel.bind(this);
-        // this.handleSubmit=this.handleSubmit.bind(this);
-        // this.onRowSelection=this.onRowSelection.bind(this);
-        // var component = this;
     }
-
-
-//     state = {
-    
-//   };
-
-
-    // handleToggle = (event, toggled) => {
-    //     this.setState({
-    //     [event.target.name]: toggled,
-    //     });
-    // }
-
-    // handleChange = (event) => {
-    //     this.setState({height: event.target.value});
-    // }
-
     render() {
         var component = this;
-        // console.log("selectedRow", this.state.selectedRow)
-        // var i = 0;
-        // let resultsComponent = [];
-        console.log("this.props.csvdata", this.props.csvdata)
         if (this.props.csvdata) {
             var headerComponent =         
             (<TableHeader key={1000}

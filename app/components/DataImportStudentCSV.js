@@ -37,13 +37,13 @@ class DataImportStudentCSV extends Component{
     }
     componentWillMount(){
         // reset datasaved value to hide the messages 
-        helper.dataUploadStatus("", this.props.dispatch);
+        helper.dataUploadStatus("", "", this.props.dispatch);
     }
     handleUploadFile(e){
         // send to server
         helper.submitCSVFile(e, this.props.dispatch);
         // reset datasaved value to hide the messages 
-        helper.dataUploadStatus("", this.props.dispatch);
+        helper.dataUploadStatus("", "", this.props.dispatch);
         // reset input value
         var node = ReactDOM.findDOMNode(this.inputEntry);
         node.value="";
@@ -54,6 +54,18 @@ class DataImportStudentCSV extends Component{
     }
     render(){
         // add a save button and a clear button
+        var previousProblemFA = [];
+        console.log(this.props.error)
+        if (this.props.error){
+            var problemFA = this.props.error.map( function (row, index){
+                console.log("previousProblemFA", previousProblemFA, "rwo", row);
+                if (previousProblemFA !== row){
+                     return <p key={index} className="text-center">{row}</p>
+                }
+                previousProblemFA = [...row];
+            }) 
+
+        }
         return( 
             <div>
                 <Row>
@@ -65,8 +77,12 @@ class DataImportStudentCSV extends Component{
                 </Row>
                 <Row>
                     <Col xs={12} md={12}>
-                        <p className={(this.props.datasaved === true) ? "text-center" : "text-center hidden-class "}>Data uploaded Successfully!</p>
-                        <p className={(this.props.datasaved === false) ? "text-center" : "text-center hidden-class "}>Error! Problem saving data, please try again or contact support if the problem persists. </p>
+                        <p className={(this.props.datasaved === true) ? "text-center" : "text-center hidden-class "}><strong>Data uploaded Successfully!</strong></p>
+                        <p className={(this.props.datasaved === false) ? "text-center" : "text-center hidden-class "}><strong>Error! Problem saving data, please try again or contact support if the problem persists.</strong> </p>
+                        <div className={(this.props.error) ? "text-center" : "text-center hidden-class "}>
+                        The following Focus Area names do not exist in the database.
+                        {problemFA} 
+                        </div>
                     </Col>
                 </Row>
                 {this.props.csvdata ? ( <Row>
@@ -108,6 +124,7 @@ const mapStateToProps = (store,ownProps) => {
     return {
         csvdata: store.uploadState.csvdata,
         datasaved: store.uploadState.datasaved,
+        error: store.uploadState.error,
     }
 }
 

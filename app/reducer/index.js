@@ -372,7 +372,11 @@ const uploadReducer = (state={datainitialstate}, action) => {
         case 'VIEW_CSV_DATA':
             return Object.assign({},state, {csvdata: action.csvdata}); 
         case 'CSV_SAVED':
-             return Object.assign({},state, {datasaved: action.datasaved}); 
+            if (action.error) {
+                return Object.assign({},state, {datasaved: action.datasaved, error: action.error}); 
+            } else {
+                return Object.assign({},state, {datasaved: action.datasaved, error: ""}); 
+            }
     };      
     return state;
 }
