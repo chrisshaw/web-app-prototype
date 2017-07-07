@@ -135,7 +135,7 @@ hr {
     margin-bottom: 0px;
 }
 td {
-    word-wrap: break-word;
+    word-wrap: break-word !important;
 }
 /*.auto-complete-text:active{
     color: purple
@@ -143,7 +143,7 @@ td {
 table { 
   width: 100%; 
   border-collapse: collapse; 
-  table-layout: fixed;
+  /*table-layout: fixed !important;*/
 }
 .format-table-content {
     padding-left: 20px;

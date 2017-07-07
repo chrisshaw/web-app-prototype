@@ -370,12 +370,16 @@ const authReducer = (state={loginintialstate}, action) => {
 const uploadReducer = (state={datainitialstate}, action) => {
     switch(action.type){  
         case 'VIEW_CSV_DATA':
-            return Object.assign({},state, {csvdata: action.csvdata}); 
-        case 'CSV_SAVED':
-            if (action.error) {
-                return Object.assign({},state, {datasaved: action.datasaved, error: action.error}); 
+            if (action.uploaderror) {
+                return Object.assign({},state, {csvdata: action.csvdata, uploaderror: action.uploaderror}); 
             } else {
-                return Object.assign({},state, {datasaved: action.datasaved, error: ""}); 
+                return Object.assign({},state, {csvdata: action.csvdata, uploaderror: ""}); 
+            }
+        case 'CSV_SAVED':
+            if (action.saveerror) {
+                return Object.assign({},state, {datasaved: action.datasaved, saveerror: action.saveerror}); 
+            } else {
+                return Object.assign({},state, {datasaved: action.datasaved, saveerror: ""}); 
             }
     };      
     return state;

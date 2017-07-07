@@ -26,17 +26,18 @@ setPage: (pathbuilderview) => {
   }
 },
 // this action is called to display uploaded csv data - saves into this.props.csvdata
-viewUploadedCSVData: (csvdata) => {
+viewUploadedCSVData: (csvdata, uploaderror) => {
     return {
       type: 'VIEW_CSV_DATA',
       csvdata,
+      uploaderror
     }
 },
-returnUploadedStatus: (datasaved, error) => {
+returnUploadedStatus: (datasaved, saveerror) => {
     return {
       type: 'CSV_SAVED',
       datasaved,
-      error
+      saveerror
     }
 },
 // updateCSVDataName: (name, id) => {

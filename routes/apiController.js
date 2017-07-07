@@ -120,30 +120,70 @@ module.exports = function(app){
      })
 
 
-function saveStudentGetIds(studentArr, i){
-    return new Promise((resolve, reject) => {
-        // run db query here
-        // resve ids and then do update
-        // iterative call on this function
-        let query =aql`for s in ${studentArr}
-        let student_id = (UPSERT{ studentId: s.studentId } INSERT { studentId: s.studentId,firstName: s.firstName,  lastName: s.lastName, email: s.email, mentor:  s.mentor, dateCreated: DATE_NOW() } UPDATE {email: s.email, mentor:  s.mentor } IN students RETURN NEW._id )
-        let course_id = (for v in courses Filter v.course == s.course return v._id)
-        let fas = (for fa in s.focusAreas
-            let focusArea = (for f in focusAreas filter f["Focus Area"] == fa.faName return f._id)
-            return {fa_id: focusArea[0], focusAreaDetails: fa})
-        return {student_id: student_id, course_id: course_id,focusArea: fas }`
-        // GET DATA --> UPDATE DATA
-        console.log(query)
-        db.query(query)
-        .then(cursor => {  
-            console.log(cursor._result);
-            resolve(cursor._result)
-        }).catch(error => {
-            reject(error)
-        })
-    }); 
-}
+    function saveStudentGetIds(studentArr, i){
+        return new Promise((resolve, reject) => {
+            // console.log("studentArr", studentArr);
+            // run db query here
+            // resve ids and then do update
+            // iterative call on this function
+            let query =aql`for s in ${studentArr}
+            let student_id = (UPSERT{ studentId: s.studentId } INSERT { studentId: s.studentId,firstName: s.firstName,  lastName: s.lastName, email: s.email, mentor:  s.mentor, dateCreated: DATE_NOW() } UPDATE {email: s.email, mentor:  s.mentor } IN students RETURN NEW._id )
+            let course_id = (for v in courses Filter v.course == s.course return {_id:v._id, section: s.section})
+            let fas = (for fa in s.focusAreas
+                let focusArea = (for f in focusAreas filter f["Focus Area"] == fa.faName return f._id)
+                return {fa_id: focusArea[0], focusAreaDetails: fa})
+            return {student_id: student_id, course_id: course_id,focusArea: fas }`
+            // GET DATA --> UPDATE DATA
+            // console.log(query)
+            db.query(query)
+            .then(cursor => {  
+                // return the data that contains ids for the next steps
+                resolve(cursor._result);
+            }).catch(error => {
+                reject(error)
+            })
+        }); 
+    }
+    // function updateEdgesInactive(response) {
+    //      return new Promise((resolve, reject) => {
+    //             console.log("fa", response[0][1]['focusArea']);
+    //             // let firstUpdateEdges =aql`for s in  ${response[0]}
+    //             // for c in studentToCourses
+    //             //     FILTER c._to == s.course_id[0]._id && c._from == s.student_id[0] && c.active == true
+    //             //     UPDATE c with {active: false, dateUpdate:  DATE_NOW()}IN studentToCourses
+    //             // `;
+    //             let firstUpdateEdges =aql`for s in  ${response[0]}
+    //             for c in studentToCourses
+    //                 UPSERT {c._to: s.course_id[0]._id, c._from: s.student_id[0], c.active: true} INSERT {} REPLACE {c._to: s.course_id[0]._id, c._from: s.student_id[0], c.active: false, dateUpdated: DATE_NOW()}
+    //             `;
 
+    //             console.log(firstUpdateEdges);
+    //             db.query(firstUpdateEdges)
+    //             .then(cursor => {      
+    //                 // UPDATE
+    //                 // let secondUpdateEdges = aql`for s in ${response[0]}
+    //                 // for fa in s.focusArea 
+    //                 //     for f in studentToFA
+    //                 //         FILTER f._to == fa.fa_id && f._from == s.student_id[0] && f.active == true
+    //                 //         UPDATE f with {active: false, dateUpdate:  DATE_NOW()}IN studentToCourses`;
+    //                 // // console.log(secondUpsert)
+    //                 let secondUpdateEdges = aql`for s in ${response[0]}
+    //                 for fa in s.focusArea 
+    //                     for f in studentToFA
+    //                         UPSERT {f._to == fa.fa_id, f._from == s.student_id[0], f.active: true} INSERT {} REPLACE  {f._to == fa.fa_id, f._from == s.student_id[0], f.active: false, dateUpdated: DATE_NOW()}`
+    //                 db.query(secondUpdateEdges)
+    //                 .then(cursor => {  
+    //                     resolve([response[0], response[1]]);
+    //                 }).catch(error => {
+    //                     reject({success: false})
+    //                     console.log(Date.now() + " Error (Update Database 2):", error);
+    //                 }) 
+    //             }).catch(error => {
+    //                 reject({success: false})
+    //                 console.log(Date.now() + " Error (Update Database 1):", error);
+    //             })
+    //      })
+    // }
     app.post("/csv/students/courses/data", function(req, res, next){
         // verify user logged in and capture for save...
         let data = req.body;
@@ -168,18 +208,18 @@ function saveStudentGetIds(studentArr, i){
                 }
             } else {
                  if(data[j].studentId === data[j-1].studentId){
-                      StudentObj.focusAreas.push(
-                          {
-                              faName: data[j].faName,
-                              faType: data[j].faType,
-                              mastered: data[j].mastered, 
-                          }
-                      )
-                      if (j === data.length-1){
+                        StudentObj.focusAreas.push(
+                            {
+                                faName: data[j].faName,
+                                faType: data[j].faType,
+                                mastered: data[j].mastered, 
+                            }
+                        )
+                        if (j === data.length-1){
                             // push final object to array and start again
                             studentArr.push(StudentObj);
-                      }
-                     console.log( StudentObj.focusAreas)
+                        }
+                    //  console.log( StudentObj.focusAreas)
                  } else { 
                      // push existing object to array and start again
                      studentArr.push(StudentObj);
@@ -198,6 +238,10 @@ function saveStudentGetIds(studentArr, i){
                             mastered: data[j].mastered,
                         }]
                     }
+                    if (j === data.length-1){
+                        // push final object to array and start again
+                        studentArr.push(StudentObj);
+                    }
                     // console.log("studentObj", studentObj);
                  }           
             }
@@ -205,6 +249,7 @@ function saveStudentGetIds(studentArr, i){
         
         // process the data to consolidate it then save to database
         saveStudentGetIds(studentArr).then((response) => {
+            console.log(studentArr);
             // filter out rows with null and put these aside for error reporting
             // pre-process: sort out fa_id = null and send to client
             var errorArr = [];
@@ -224,47 +269,56 @@ function saveStudentGetIds(studentArr, i){
                 response[i].focusArea = newFAs;
                 if (nullFAs.length > 0) errorArr.push(nullFAs);
             }
-            // write error array to logs
-            console.log("Error: Bad FA Names could not be saved", errorArr);
-            // update edge mappings
-            // not allowed to do remove and insert in same aql and edges cant use upsert - must remove and then insert
-            // verify it this is vulnerable to injection
-            // ****** add user id as a field saved by to record who made the change
-            let firstUpsert = aql`for s in ${response}
-            UPSERT { _from: s.course_id[0], _to: s.student_id[0]} INSERT  { _from: s.course_id[0], _to: s.student_id[0], dateCreated: DATE_NOW() } UPDATE { dateCreated: DATE_NOW()} IN studentToCourses RETURN { doc: NEW, type: OLD ? 'update' : 'insert' } `
-            db.query(firstUpsert)
-            .then(cursor => {  
-                console.log("inserted 1:", cursor._result);
-                // INSERT
-                let secondUpsert = aql`for s in  ${response}
-                for fa in s.focusArea 
-                    UPSERT { _from: s.student_id[0], _to: fa.fa_id} INSERT { _from: s.student_id[0], _to: fa.fa_id, type: fa.focusAreaDetails.faType, mastered: fa.focusAreaDetails.mastered,  dateCreated: DATE_NOW()  } UPDATE { type: fa.focusAreaDetails.faType, mastered: fa.focusAreaDetails.mastered,  dateCreated: DATE_NOW()  } IN studentToFA RETURN { doc: NEW, type: OLD ? 'update' : 'insert' }`;
-                console.log(secondUpsert)
-                db.query(secondUpsert)
+            
+            return [response, errorArr]
+        }).then((response) => { 
+            console.log(response[0])
+            // update later to:
+            // studentToFA == hasMastered
+            // studentToCourse == taking
+            // courseToFA == covers
+            // inactive old edges
+            // updateEdgesInactive(response).then((response) =>{ 
+                // ****** add user id as a field saved by to record who made the change
+                let firstUpsert = aql`for s in ${response[0]}
+                UPSERT { _from: s.student_id[0] , _to: s.course_id[0]._id} INSERT  { _from: s.student_id[0] , _to: s.course_id[0]._id, section: s.course_id[0].section, dateCreated: DATE_NOW() } UPDATE { section: s.course_id[0].section, dateCreated: DATE_NOW()} IN studentToCourses RETURN { doc: NEW, type: OLD ? 'update' : 'insert' } `
+                db.query(firstUpsert)
                 .then(cursor => {  
-                    console.log("inserted 2:", cursor._result);
-                    if (errorArr.length > 0 ) {
-                        // some FA names were not found in the database
-                         res.json({success: false, error: errorArr})
-                    } else {
-                         // all fields saved
-                         res.json({success: true})
-                    }
-                }).catch(error => {
-                     res.json({success: false})
-                    console.log(Date.now() + " Error (Update 1 Database):", error);
-                })  
-            }).catch(error => {
-                 res.json({success: false})
-                 console.log(Date.now() + " Error (Update 2 Database):", error);
-            })  
+                    // INSERT
+                    let secondUpsert = aql`for s in  ${response[0]}
+                    for fa in s.focusArea 
+                    UPSERT { _from: s.student_id[0], _to: fa.fa_id} INSERT { _from: s.student_id[0], _to: fa.fa_id, type: fa.focusAreaDetails.faType, mastered: fa.focusAreaDetails.mastered,  dateCreated: DATE_NOW()  } UPDATE { type: fa.focusAreaDetails.faType, mastered: fa.focusAreaDetails.mastered,  dateCreated: DATE_NOW()  } IN studentToFA RETURN { doc: NEW, type: OLD ? 'update' : 'insert' }`;
+                    console.log(secondUpsert)
+                    db.query(secondUpsert)
+                    .then(cursor => {  
+                        // console.log("inserted 2:", cursor._result);
+                        if (response[1].length > 0 ) {
+                            // some FA names were not found in the database
+                            res.json({success: false, error: response[1]})
+                        } else {
+                            // all fields saved
+                            res.json({success: true})
+                        }
+                    }).catch(error => {
+                        res.json({success: false})
+                        console.log(Date.now() + " Error (Update 2 Database):", error);
+                    })  
+                // }).catch(error => {
+                //     res.json({success: false})
+                //     console.log(Date.now() + " Error (Update 1 Database):", error);
+                // })  
+                    
+            }).catch((error)=>{
+                console.log(Date.now() + " Error (Getting IDs from Database):", error);
+                res.json({success: false})
+            })
+           
         }).catch((error) => {
-             console.log(Date.now() + " Error (Getting IDs from Database):", error);
-              res.json({success: false})
-        })
-
-   
+            console.log(Date.now() + " Error (Getting IDs from Database):", error);
+            res.json({success: false})
+        }) 
      })
+
 
 
     // using post as passing object - probably not ideal
@@ -334,6 +388,7 @@ function saveStudentGetIds(studentArr, i){
             res.json(cursor._result);          
         });    
     })
+
     app.post("/csv/file", function(req, res, next){
         // main entry point
         // need to verify csv file and save contents somewhere...
@@ -349,7 +404,7 @@ function saveStudentGetIds(studentArr, i){
         if (csvToArr.length < 2) {
             // file contains no data only headers
             // console.log("error length < 2");
-            res.json({success: false, error: "File contains no data"}); 
+            res.json({success: false, error: ["File contains no data."]}); 
         } else {     
             for (var i = 0; i < csvToArr.length; i++) {          
                 // regex to allow for commas inside ""
@@ -376,7 +431,7 @@ function saveStudentGetIds(studentArr, i){
                 }      
                 if ((i === 0) && ( dataArr.length < 10)) {
                     console.log("success: false, error: Bad File Format")
-                    res.json({success: false, error: "not enough headers"});
+                    res.json({success: false, error: ["Insufficient headers"]});
                     break; 
                 } 
                 else if ((i === 0) && ( dataArr.length === 10)) {
@@ -391,8 +446,8 @@ function saveStudentGetIds(studentArr, i){
                     || (dataArr[7] !== "Focus Area Name")
                     || (dataArr[8] !== "Focus Area Type")
                     || (dataArr[9] !== "Mastered?")) {
-                        console.log({success: false, error: "bad headers"});
-                        res.json({success: false});
+                        console.log({success: false, });
+                        res.json({success: false, error: ["Header names are incorrect"]});
                         break; 
                     } 
                 } 

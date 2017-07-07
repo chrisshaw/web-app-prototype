@@ -48,33 +48,33 @@ class DataImportStudentTable extends Component {
                 enableSelectAll={this.state.enableSelectAll}
             >
                  <TableRow>
-                        <TableHeaderColumn style={{width: '5%', textAlign: 'center', fontSize: 12}} >Row #</TableHeaderColumn>
-                        <TableHeaderColumn style={{width: '10%', textAlign: 'center' ,fontSize: 12}} tooltip="Student ID">{this.props.csvdata[0].studentId}</TableHeaderColumn>
-                        <TableHeaderColumn style={{width: '10%', textAlign: 'center', fontSize: 12}} tooltip="First Name">{this.props.csvdata[0].firstName}</TableHeaderColumn>
-                        <TableHeaderColumn style={{width: '10%', textAlign: 'center', fontSize: 12}} tooltip="Last Name">{this.props.csvdata[0].lastName}</TableHeaderColumn>
-                        <TableHeaderColumn style={{width: '10%', textAlign: 'center', fontSize: 12}} tooltip="Email">{this.props.csvdata[0].email}</TableHeaderColumn>
-                        <TableHeaderColumn style={{width: '10%', textAlign: 'center',fontSize: 12}} tooltip="Section Name">{this.props.csvdata[0].section}</TableHeaderColumn>
-                        <TableHeaderColumn style={{width: '10%', textAlign: 'center', fontSize: 12}} tooltip="Course Name">{this.props.csvdata[0].course}</TableHeaderColumn>
-                        <TableHeaderColumn style={{width: '10%', textAlign: 'center', fontSize: 12}} tooltip="Mentor Name">{this.props.csvdata[0].mentor}</TableHeaderColumn>
-                        <TableHeaderColumn style={{width: '10%', textAlign: 'center',fontSize: 12}} tooltip="Focus Area Name">{this.props.csvdata[0].faName}</TableHeaderColumn>
-                        <TableHeaderColumn style={{width: '10%', textAlign: 'center', fontSize: 12}} tooltip="Focus Area Type">{this.props.csvdata[0].faType}</TableHeaderColumn>
-                        <TableHeaderColumn style={{width: '5%', textAlign: 'center', fontSize: 12}} tooltip="Mastered?">{this.props.csvdata[0].mastered}</TableHeaderColumn>
+                        <TableHeaderColumn style={{width: '4%', textAlign: 'center', fontSize: 12, whiteSpace: 'wrap', paddingLeft: 2, paddingRight: 2}} >Row #</TableHeaderColumn>
+                        <TableHeaderColumn style={{width: '10%', textAlign: 'center' ,fontSize: 12, whiteSpace: 'wrap', paddingLeft: 2, paddingRight: 2}} tooltip="Student ID">{this.props.csvdata[0].studentId}</TableHeaderColumn>
+                        <TableHeaderColumn style={{width: '10%', textAlign: 'center', fontSize: 12, whiteSpace: 'wrap', paddingLeft: 0, paddingRight: 0}} tooltip="First Name">{this.props.csvdata[0].firstName}</TableHeaderColumn>
+                        <TableHeaderColumn style={{width: '10%', textAlign: 'center', fontSize: 12, whiteSpace: 'wrap', paddingLeft: 0, paddingRight: 0}} tooltip="Last Name">{this.props.csvdata[0].lastName}</TableHeaderColumn>
+                        <TableHeaderColumn style={{width: '15%', textAlign: 'center', fontSize: 12, whiteSpace: 'wrap', paddingLeft: 0, paddingRight: 0}} tooltip="Email">{this.props.csvdata[0].email}</TableHeaderColumn>
+                        <TableHeaderColumn style={{width: '10%', textAlign: 'center',fontSize: 12, whiteSpace: 'wrap', paddingLeft: 0, paddingRight: 0}} tooltip="Section Name">{this.props.csvdata[0].section}</TableHeaderColumn>
+                        <TableHeaderColumn style={{width: '8%', textAlign: 'center', fontSize: 12, whiteSpace: 'wrap', paddingLeft: 0, paddingRight: 0}} tooltip="Course Name">{this.props.csvdata[0].course}</TableHeaderColumn>
+                        <TableHeaderColumn style={{width: '8%', textAlign: 'center', fontSize: 12, whiteSpace: 'wrap', paddingLeft: 0, paddingRight: 0}} tooltip="Mentor Name">{this.props.csvdata[0].mentor}</TableHeaderColumn>
+                        <TableHeaderColumn style={{width: '15%', textAlign: 'center',fontSize: 12, whiteSpace: 'wrap', paddingLeft: 0, paddingRight: 0}} tooltip="Focus Area Name">{this.props.csvdata[0].faName}</TableHeaderColumn>
+                        <TableHeaderColumn style={{width: '5%', textAlign: 'center', fontSize: 12, whiteSpace: 'wrap', paddingLeft: 2, paddingRight: 2}} tooltip="Focus Area Type">{this.props.csvdata[0].faType}</TableHeaderColumn>
+                        <TableHeaderColumn style={{width: '5%', textAlign: 'center', fontSize: 12, whiteSpace: 'wrap', paddingLeft: 2, paddingRight: 2}} tooltip="Mastered?">{this.props.csvdata[0].mastered}</TableHeaderColumn>
                  </TableRow>
                 </TableHeader>)
         var  resultsComponent = component.props.csvdata.map( function (row, index){
                 if (index > 0){
                     return (<TableRow key={index}>
-                        <TableRowColumn style={{width: '5%', textAlign: 'center', fontSize: 10}}>{row.id}</TableRowColumn>
-                        <TableRowColumn style={{width: '10%', textAlign: 'center',  fontSize: 10}}>{row.studentId}</TableRowColumn>
-                        <TableRowColumn style={{width: '10%', textAlign: 'center',  fontSize: 10}}>{row.firstName}</TableRowColumn>
-                        <TableRowColumn style={{width: '10%', textAlign: 'center',  fontSize: 10}}>{row.lastName}</TableRowColumn>
-                        <TableRowColumn style={{width: '10%', textAlign: 'center',  fontSize: 10}}>{row.email}</TableRowColumn>
-                        <TableRowColumn style={{width: '10%', textAlign: 'center',  fontSize: 10}}>{row.section}</TableRowColumn>
-                        <TableRowColumn style={{width: '10%', textAlign: 'center',  fontSize: 10}}>{row.course}</TableRowColumn>
-                        <TableRowColumn style={{width: '10%', textAlign: 'center',  fontSize: 10}}>{row.mentor}</TableRowColumn>
-                        <TableRowColumn style={{width: '10%', textAlign: 'center', fontSize: 10}}>{row.faName}</TableRowColumn>
-                        <TableRowColumn style={{width: '10%', textAlign: 'center',  fontSize: 10}}>{row.faType}</TableRowColumn>
-                        <TableRowColumn style={{width: '5%', textAlign: 'center',  fontSize: 10}}>{row.mastered}</TableRowColumn>
+                        <TableRowColumn style={{width: '4%', textAlign: 'center', fontSize: 10, whiteSpace: 'wrap', paddingLeft: 0, paddingRight: 0}}>{row.id}</TableRowColumn>
+                        <TableRowColumn style={{width: '10%', textAlign: 'center',  fontSize: 10, whiteSpace: 'wrap', paddingLeft: 0, paddingRight: 0}}>{row.studentId}</TableRowColumn>
+                        <TableRowColumn style={{width: '10%', textAlign: 'center',  fontSize: 10, whiteSpace: 'wrap', paddingLeft: 0, paddingRight: 0}}>{row.firstName}</TableRowColumn>
+                        <TableRowColumn style={{width: '10%', textAlign: 'center',  fontSize: 10, whiteSpace: 'wrap', paddingLeft: 0, paddingRight: 0}}>{row.lastName}</TableRowColumn>
+                        <TableRowColumn style={{width: '15%', textAlign: 'center',  fontSize: 10, whiteSpace: 'wrap', paddingLeft: 0, paddingRight: 0}}>{row.email}</TableRowColumn>
+                        <TableRowColumn style={{width: '10%', textAlign: 'center',  fontSize: 10, whiteSpace: 'wrap', paddingLeft: 0, paddingRight: 0}}>{row.section}</TableRowColumn>
+                        <TableRowColumn style={{width: '8%', textAlign: 'center',  fontSize: 10, whiteSpace: 'wrap', paddingLeft: 0, paddingRight: 0}}>{row.course}</TableRowColumn>
+                        <TableRowColumn style={{width: '8%', textAlign: 'center',  fontSize: 10, whiteSpace: 'wrap', paddingLeft: 0, paddingRight: 0}}>{row.mentor}</TableRowColumn>
+                        <TableRowColumn style={{width: '15%', textAlign: 'center', fontSize: 10, whiteSpace: 'wrap', paddingLeft: 0, paddingRight: 0}}>{row.faName}</TableRowColumn>
+                        <TableRowColumn style={{width: '5%', textAlign: 'center',  fontSize: 10, whiteSpace: 'wrap', paddingLeft: 0, paddingRight: 0}}>{row.faType}</TableRowColumn>
+                        <TableRowColumn style={{width: '5%', textAlign: 'center',  fontSize: 10,whiteSpace: 'wrap', paddingLeft: 0, paddingRight: 0}}>{row.mastered}</TableRowColumn>
                 </TableRow>)     
                 }        
             })

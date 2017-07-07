@@ -15,7 +15,7 @@ const style = {
     paper : {
         height: '80%',
         width: '100%',
-        margin: 20,
+        marginBottom: 20,
         textAlign: 'center',
         display: 'flex',
         flex: 1,
@@ -55,14 +55,14 @@ class DataImportStudentCSV extends Component{
     render(){
         // add a save button and a clear button
         var previousProblemFA = [];
-        console.log(this.props.error)
-        if (this.props.error){
-            var problemFA = this.props.error.map( function (row, index){
-                console.log("previousProblemFA", previousProblemFA, "rwo", row);
+        // console.log(this.props.error)
+        if (this.props.saveerror){
+            var problemFA = this.props.saveerror.map( function (row, index){
+                console.log("previousProblemFA", previousProblemFA, "rwo", row[index]);
                 if (previousProblemFA !== row){
-                     return <p key={index} className="text-center">{row}</p>
+                     return <p key={index} className="text-center">{row[index]}</p>
                 }
-                previousProblemFA = [...row];
+                previousProblemFA = row[index];
             }) 
 
         }
@@ -77,11 +77,15 @@ class DataImportStudentCSV extends Component{
                 </Row>
                 <Row>
                     <Col xs={12} md={12}>
-                        <p className={(this.props.datasaved === true) ? "text-center" : "text-center hidden-class "}><strong>Data uploaded Successfully!</strong></p>
+                        <p className={(this.props.datasaved === true) ? "text-center" : "text-center hidden-class "}><strong>Data Uploaded Successfully!</strong></p>
                         <p className={(this.props.datasaved === false) ? "text-center" : "text-center hidden-class "}><strong>Error! Problem saving data, please try again or contact support if the problem persists.</strong> </p>
-                        <div className={(this.props.error) ? "text-center" : "text-center hidden-class "}>
-                        The following Focus Area names do not exist in the database.
+                        <div className={(this.props.saveerror) ? "text-center" : "text-center hidden-class "}>
+                        <p>The data has been saved with the exception of the entries with following Focus Area names, these do not exist in the database.</p>
                         {problemFA} 
+                        <p><strong>Please contact support to fix this issue.</strong></p>
+                        </div>
+                        <div className={(this.props.uploaderror) ? "text-center" : "text-center hidden-class "}><p><strong>Error Details</strong></p>
+                        {this.props.uploaderror} 
                         </div>
                     </Col>
                 </Row>
@@ -124,7 +128,8 @@ const mapStateToProps = (store,ownProps) => {
     return {
         csvdata: store.uploadState.csvdata,
         datasaved: store.uploadState.datasaved,
-        error: store.uploadState.error,
+        uploaderror: store.uploadState.uploaderror,
+        saveerror: store.uploadState.saveerror,
     }
 }
 

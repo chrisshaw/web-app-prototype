@@ -62,10 +62,7 @@ var helpers = {
                 };    
                 return axios.post('/csv/file', postObj).then(function(response){
                     console.log("response", response.data);
-                    if (response.data.success) {
-                        dispatch(actions.viewUploadedCSVData(response.data.results))
-                    }
-                      
+                    dispatch(actions.viewUploadedCSVData(response.data.results, response.data.error))          
                 })
             }
             reader.readAsBinaryString(file);
@@ -111,9 +108,6 @@ var helpers = {
                 dispatch(actions.viewUploadedCSVData(""));
                 // success or failure - return mesage to client this.props.dataupload = boolean
                 console.log("csv upload", response.data.error )
-                if (response.data.error) {
-                    
-                }
                 component.dataUploadStatus(response.data.success, response.data.error, dispatch);
                 return;               
             })
