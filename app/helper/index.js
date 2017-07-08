@@ -132,7 +132,7 @@ var helpers = {
         })
     },
     getGrades: function(dispatch){
-       var gradeArr = [{_id: 0, name: "7"}, {_id: 1, name: "7"},{_id: 2, name: "8"}, {_id: 3, name: "9"}]
+       var gradeArr = [{_id: 0, name: "6"}, {_id: 1, name: "7"},{_id: 2, name: "8"}, {_id: 3, name: "9"},{_id: 4, name: "10"}, {_id: 5, name: "11"}]
        dispatch(actions.updateGradeList(false, 0, gradeArr));
         // return axios.get('/api/teacher/group').then(function(response) {
         //     // send results to redux store for use by Results component
@@ -141,13 +141,12 @@ var helpers = {
         // })
     },
     getCourses: function(dispatch){
-       var courseArr = [{_id: 0, name: "Biology"}, {_id: 1, name: "Course 1"}]
-       dispatch(actions.updateCourseList(false, 0, courseArr));
-        // return axios.get('/api/teacher/group').then(function(response) {
-        //     // send results to redux store for use by Results component
-        //     dispatch(actions.updateGroupList(false, 0, response.data));
-        //     return response.data;
-        // })
+    //    var courseArr = [{_id: 0, name: "Biology"}, {_id: 1, name: "Course 1"}]
+        return axios.get('/api/courses/all').then(function(response) {
+            // send results to redux store for use by Results component
+            dispatch(actions.updateCourseList(false, 0, response.data[0]));
+            return;
+        })
     },
     saveSelectedFA(e, dispatch){
         // need name and id
@@ -164,8 +163,17 @@ var helpers = {
     },
     getTopics: function(dispatch){
         // for now these are hard coded!!!!!
-        var topicArr = [{_id: 0, name: "Immigration"}, {_id: 1, name: "Identity"}]
-        dispatch(actions.updateTopicList(false, 0, topicArr))   
+        // var topicArr = [{_id: 0, name: "Immigration"}, {_id: 1, name: "Identity"}]
+        return axios.get('/api/topics/all').then(function(response) {
+            // send results to redux store for use by Results component
+            /// need to put in an object with an id
+            var topicArr = [];
+            for (var i = 0; i < response.data[0].length; i++){
+                topicArr.push({ _id: i, name: response.data[0][i].toLowerCase()})
+            }
+            dispatch(actions.updateTopicList(false, 0, topicArr))  
+            return;
+        }) 
     },
     getStandards: function(dispatch){
         var standardsArr = [{_id: 0, name: "AP-ENG-LANG.R.3"}, {_id: 1, name: "CCSS.ELA-LITERACY.RL.9-10.3"}]
@@ -173,7 +181,7 @@ var helpers = {
 
     },
     getSubjectContents: function(dispatch){
-        var subjectArr = [{_id: 0, name: "english"}, {_id: 1, name: "math"}]
+        var subjectArr = [{_id: 0, name: "english"}, {_id: 1, name: "math"}, {_id: 2, name: "science"}, {_id: 3, name: "social studies"}]
         dispatch(actions.updateSubjectContentList(false, 0, subjectArr))
     },
     newPaths: function(paths, dispatch) {
@@ -188,10 +196,7 @@ var helpers = {
             topics: topics,
             subjects: subjects
         }
-         console.log("in heloer paths");
         return axios.post('/api/path/all', queryObj).then(function(response) {
-           console.log(response.data)
-           
             dispatch(actions.updatePathList(response.data));
             // console.log("response: ", pathArr);
             return;

@@ -1,14 +1,14 @@
 var arangojs = require('arangojs');
 var Database = arangojs.Database;
 var path = require('path');
-// var dbHostPort = process.env.DB_HOST_PORT;
-// var dbUser = process.env.DB_USER;
-// var dbPwd = process.env.DB_PWD;
-// var dbName = process.env.DB_NAME;
-var dbHostPort = 'http://localhost:8529'
-var dbUser = 'root';
-var dbPwd = 'sidekick';
-var dbName = 'skdb';
+var dbHostPort = process.env.DB_HOST_PORT;
+var dbUser = process.env.DB_USER;
+var dbPwd = process.env.DB_PWD;
+var dbName = process.env.DB_NAME;
+// var dbHostPort = 'http://localhost:8529'
+// var dbUser = 'root';
+// var dbPwd = 'sidekick';
+// var dbName = 'skdb';
 const db = arangojs(dbHostPort);
 db.useDatabase(dbName);
 db.useBasicAuth(dbUser, dbPwd);
@@ -122,10 +122,6 @@ module.exports = function(app){
 
     function saveStudentGetIds(studentArr, i){
         return new Promise((resolve, reject) => {
-            // console.log("studentArr", studentArr);
-            // run db query here
-            // resve ids and then do update
-            // iterative call on this function
             let query =aql`for s in ${studentArr}
             let student_id = (UPSERT{ studentId: s.studentId } INSERT { studentId: s.studentId,firstName: s.firstName,  lastName: s.lastName, email: s.email, mentor:  s.mentor, dateCreated: DATE_NOW() } UPDATE {email: s.email, mentor:  s.mentor } IN students RETURN NEW._id )
             let course_id = (for v in courses Filter v.name == s.course return {_id:v._id, section: s.section})
@@ -144,46 +140,7 @@ module.exports = function(app){
             })
         }); 
     }
-    // function updateEdgesInactive(response) {
-    //      return new Promise((resolve, reject) => {
-    //             console.log("fa", response[0][1]['focusArea']);
-    //             // let firstUpdateEdges =aql`for s in  ${response[0]}
-    //             // for c in takings
-    //             //     FILTER c._to == s.course_id[0]._id && c._from == s.student_id[0] && c.active == true
-    //             //     UPDATE c with {active: false, dateUpdate:  DATE_NOW()}IN takings
-    //             // `;
-    //             let firstUpdateEdges =aql`for s in  ${response[0]}
-    //             for c in takings
-    //                 UPSERT {c._to: s.course_id[0]._id, c._from: s.student_id[0], c.active: true} INSERT {} REPLACE {c._to: s.course_id[0]._id, c._from: s.student_id[0], c.active: false, dateUpdated: DATE_NOW()}
-    //             `;
-
-    //             console.log(firstUpdateEdges);
-    //             db.query(firstUpdateEdges)
-    //             .then(cursor => {      
-    //                 // UPDATE
-    //                 // let secondUpdateEdges = aql`for s in ${response[0]}
-    //                 // for fa in s.focusArea 
-    //                 //     for f in hasMastered
-    //                 //         FILTER f._to == fa.fa_id && f._from == s.student_id[0] && f.active == true
-    //                 //         UPDATE f with {active: false, dateUpdate:  DATE_NOW()}IN studentToCourses`;
-    //                 // // console.log(secondUpsert)
-    //                 let secondUpdateEdges = aql`for s in ${response[0]}
-    //                 for fa in s.focusArea 
-    //                     for f in hasMastered
-    //                         UPSERT {f._to == fa.fa_id, f._from == s.student_id[0], f.active: true} INSERT {} REPLACE  {f._to == fa.fa_id, f._from == s.student_id[0], f.active: false, dateUpdated: DATE_NOW()}`
-    //                 db.query(secondUpdateEdges)
-    //                 .then(cursor => {  
-    //                     resolve([response[0], response[1]]);
-    //                 }).catch(error => {
-    //                     reject({success: false})
-    //                     console.log(Date.now() + " Error (Update Database 2):", error);
-    //                 }) 
-    //             }).catch(error => {
-    //                 reject({success: false})
-    //                 console.log(Date.now() + " Error (Update Database 1):", error);
-    //             })
-    //      })
-    // }
+  
     app.post("/csv/students/courses/data", function(req, res, next){
         // verify user logged in and capture for save...
         let data = req.body;
@@ -245,8 +202,7 @@ module.exports = function(app){
                     // console.log("studentObj", studentObj);
                  }           
             }
-        }
-        
+        }      
         // process the data to consolidate it then save to database
         saveStudentGetIds(studentArr).then((response) => {
             console.log(studentArr);
@@ -269,7 +225,6 @@ module.exports = function(app){
                 response[i].focusArea = newFAs;
                 if (nullFAs.length > 0) errorArr.push(nullFAs);
             }
-            
             return [response, errorArr]
         }).then((response) => { 
             console.log(response[0])
@@ -277,51 +232,72 @@ module.exports = function(app){
             // studentToFA == hasMastered
             // studentToCourse == taking
             // courseToFA == covers
-            // inactive old edges
-            // updateEdgesInactive(response).then((response) =>{ 
-                // ****** add user id as a field saved by to record who made the change
-                let firstUpsert = aql`for s in ${response[0]}
-                UPSERT { _from: s.student_id[0] , _to: s.course_id[0]._id} INSERT  { _from: s.student_id[0] , _to: s.course_id[0]._id, section: s.course_id[0].section, dateCreated: DATE_NOW() } UPDATE { section: s.course_id[0].section, dateCreated: DATE_NOW()} IN taking RETURN { doc: NEW, type: OLD ? 'update' : 'insert' } `
-                db.query(firstUpsert)
+            let firstUpsert = aql`for s in ${response[0]}
+            UPSERT { _from: s.student_id[0] , _to: s.course_id[0]._id} INSERT  { _from: s.student_id[0] , _to: s.course_id[0]._id, section: s.course_id[0].section, dateCreated: DATE_NOW() } UPDATE { section: s.course_id[0].section, dateCreated: DATE_NOW()} IN taking RETURN { doc: NEW, type: OLD ? 'update' : 'insert' } `
+            db.query(firstUpsert)
+            .then(cursor => {  
+                // INSERT
+                let secondUpsert = aql`for s in  ${response[0]}
+                for fa in s.focusArea 
+                UPSERT { _from: s.student_id[0], _to: fa.fa_id} INSERT { _from: s.student_id[0], _to: fa.fa_id, type: fa.focusAreaDetails.faType, mastered: fa.focusAreaDetails.mastered,  dateCreated: DATE_NOW()  } UPDATE { type: fa.focusAreaDetails.faType, mastered: fa.focusAreaDetails.mastered,  dateCreated: DATE_NOW()  } IN hasMastered RETURN { doc: NEW, type: OLD ? 'update' : 'insert' }`;
+                console.log(secondUpsert)
+                db.query(secondUpsert)
                 .then(cursor => {  
-                    // INSERT
-                    let secondUpsert = aql`for s in  ${response[0]}
-                    for fa in s.focusArea 
-                    UPSERT { _from: s.student_id[0], _to: fa.fa_id} INSERT { _from: s.student_id[0], _to: fa.fa_id, type: fa.focusAreaDetails.faType, mastered: fa.focusAreaDetails.mastered,  dateCreated: DATE_NOW()  } UPDATE { type: fa.focusAreaDetails.faType, mastered: fa.focusAreaDetails.mastered,  dateCreated: DATE_NOW()  } IN hasMastered RETURN { doc: NEW, type: OLD ? 'update' : 'insert' }`;
-                    console.log(secondUpsert)
-                    db.query(secondUpsert)
-                    .then(cursor => {  
-                        // console.log("inserted 2:", cursor._result);
-                        if (response[1].length > 0 ) {
-                            // some FA names were not found in the database
-                            res.json({success: false, error: response[1]})
-                        } else {
-                            // all fields saved
-                            res.json({success: true})
-                        }
-                    }).catch(error => {
-                        res.json({success: false})
-                        console.log(Date.now() + " Error (Update 2 Database):", error);
-                    })  
-                // }).catch(error => {
-                //     res.json({success: false})
-                //     console.log(Date.now() + " Error (Update 1 Database):", error);
-                // })  
-                    
+                    // console.log("inserted 2:", cursor._result);
+                    if (response[1].length > 0 ) {
+                        // some FA names were not found in the database
+                        res.json({success: false, error: response[1]})
+                    } else {
+                        // all fields saved
+                        res.json({success: true})
+                    }
+                }).catch(error => {
+                    res.json({success: false})
+                    console.log(Date.now() + " Error (Update 2 Database):", error);
+                })             
             }).catch((error)=>{
                 console.log(Date.now() + " Error (Getting IDs from Database):", error);
                 res.json({success: false})
-            })
-           
+            })      
         }).catch((error) => {
             console.log(Date.now() + " Error (Getting IDs from Database):", error);
             res.json({success: false})
         }) 
      })
 
-    app.get('api/topics/all', function(req, res){
+    app.get('/api/topics/all', function(req, res){
+
+        let query = aql`return UNIQUE(FLATTEN(
+             for p in projects
+             SORT p.topics asc
+             return p.topics
+             ))`;
+        console.log(query)
+        db.query(query)
+        .then(cursor => {  
+            console.log(cursor._result);
+            res.json(cursor._result);
+        }).catch(error => {
+            console.log(Date.now() + " Error (Get Topics from Database):", error);
+            res.json();
+        })         
         
     })
+    app.get('/api/courses/all', function(req, res){
+         let query = aql`return UNIQUE(FLATTEN(
+            for c in courses
+            SORT c.name asc
+            return {_id: c._id, name: c.name}))`;
+        console.log(query)
+        db.query(query)
+        .then(cursor => {  
+            res.json(cursor._result);
+        }).catch(error => {
+            console.log(Date.now() + " Error (Get Courses from Database):", error);
+            res.json();
+        })            
+    })
+
 
     // using post as passing object - probably not ideal
     app.post('/api/path/all', function (req, res){
@@ -335,7 +311,7 @@ module.exports = function(app){
         if (req.body.courses){
             if (req.body.courses.length > 0){
                 for (var i = 0; i < req.body.courses.length; i++){
-                    queryCourses.push(req.body.courses[i].name);
+                    queryCourses.push(req.body.courses[i].name.toUpperCase());
                 }
             }
         }
@@ -350,7 +326,7 @@ module.exports = function(app){
         if (req.body.subjects){
             if (req.body.subjects.length > 0){
                 for (var i = 0; i < req.body.subjects.length; i++){
-                    querySubjects.push(req.body.subjects[i].name);
+                    querySubjects.push(req.body.subjects[i].name.toUpperCase());
                 }
             }
         }
@@ -364,23 +340,11 @@ module.exports = function(app){
         if (req.body.topics){
             if (req.body.topics.length > 0){
                 for (var i = 0; i < req.body.topics.length; i++){
-                    // console.log("queryTopics ????", queryTopics, req.body.filter.topics[0].name)
-                    queryTopics.push(req.body.topics[0].name.toLowerCase())
+                    queryTopics.push(req.body.topics[0].name.toUpperCase()) // changed from toLowerCAse
                 }
             } 
         } 
-        // let newArr = [];
-        // groups = req.body.groups;
-        // console.log(req.body);
-    
-        // var query = aql`for group_id in ${groups} let queryFa = (for v, edge, path in 0..3 outbound group_id groupToStudents, studentToCurrentFA let fa = (for vv in OUTBOUND v studentToCurrentFA  return vv) FILTER LENGTH(fa) != 0 RETURN {_id: fa[0]._id}) let queryGrades = (for v, edge, path in 0..3 outbound group_id groupToStudents FILTER v.grade != null RETURN DISTINCT v.grade) let mainQuery = (for fa, edge, path in 0..999 outbound queryFa[0] thenFocusOn filter length(${querySubjects}) > 0 ? fa.subject in ${querySubjects} : true filter length(queryGrades) > 0 ? TO_ARRAY(fa.grade) any in queryGrades : true filter length(${queryTopics}) > 0 ? fa.topics[* return UPPER(CURRENT)] any in ${queryTopics}[* return UPPER(CURRENT)] : true filter length(${queryStandards}) > 0 ? fa.standardConnections[* return UPPER(CURRENT)] any in ${queryStandards}[* return UPPER(CURRENT)] : true return {focusArea: fa}) RETURN {group: group_id, grades: queryGrades, topics: ${queryTopics}, standards: ${queryStandards}, subjects: ${querySubjects},  results: mainQuery}`; // return grade and groupname too
-        // console.log(query)
-        // db.query(query).then(cursor => {
-        //     // cursor is a cursor for the query result
-        //     console.log(cursor._result);
-        //     res.json(cursor._result);          
-        // });
-console.log(req.body);
+
         // grab topics from projects, find connected fas
         var query = aql`let topicalFas = LENGTH(${queryTopics}) == 0 ? [] : (
             return UNIQUE(FLATTEN(
@@ -395,7 +359,7 @@ console.log(req.body);
         let courseFas = LENGTH(${queryCourses}) == 0 ? [] : (
             return UNIQUE(FLATTEN(
                 for c in courses
-                filter c.name in ${queryCourses}
+                filter UPPER(c.name) in ${queryCourses}
                     for fa in
                     outbound c
                     covers
@@ -418,10 +382,10 @@ console.log(req.body);
             for fa in
             0..999 outbound start
             thenFocusOn
-            filter length(${querySubjects}) > 0 ? fa.subject in ${querySubjects} : true
+            filter length(${querySubjects}) > 0 ? UPPER(fa.subject) in ${querySubjects} : true
             filter length(${queryGrades}) > 0 ? TO_ARRAY(fa.grade) any in ${queryGrades} : true
-            filter length(courseFas) > 0 ? fa._key in courseFas : true
-            filter length(topicalFas) > 0 ? fa._key in topicalFas : true
+            filter length(courseFas) > 0 ? fa._key in courseFas[0] : true
+            filter length(topicalFas) > 0 ? fa._key in topicalFas[0]: true
             filter length(${queryStandards}) > 0 ? fa.standardConnections[* return UPPER(CURRENT)] any in ${queryStandards}[* return UPPER(CURRENT)] : true
             return fa`; // return grade and groupname too`
         
@@ -455,8 +419,7 @@ console.log(req.body);
                     }
                     else if ((k > 0 ) && (pathArr[i].standardConnections[k-1] !== pathArr[i].standardConnections[k] )){
                         pathArr[i].nextStd.push(pathArr[i].standardConnections[k]);
-                    }  
-                    
+                    }                 
                 }
             }
             
@@ -467,30 +430,30 @@ console.log(req.body);
         }))
     })
 
-    app.get('/api/focusarea', function(req, res){
-        var query = aql`FOR fa in focusAreas SORT fa["Focus Area"] RETURN {name: fa["Focus Area"], id: fa._id}`;
-        db.query(query)
-        .then(cursor => {
-            // cursor is a cursor for the query result
-            res.json(cursor._result);          
-        });
-    })
-    app.get('/api/teacher/group', function(req, res){
-        //should pass in teacher id as param but for now it is hardcoded to 'Teacher 1'
-        let name = "Teacher 1";
-        var query = aql`for v, edge, path in 1..2 outbound (FOR teacher IN teachers FILTER teacher.name == ${name} RETURN teacher._id)[0] teacherToGroups
-            SORT v.name
-            RETURN { 
-            name: v.name,
-            _id: v._id
-            }`;
+    // app.get('/api/focusarea', function(req, res){
+    //     var query = aql`FOR fa in focusAreas SORT fa["Focus Area"] RETURN {name: fa["Focus Area"], id: fa._id}`;
+    //     db.query(query)
+    //     .then(cursor => {
+    //         // cursor is a cursor for the query result
+    //         res.json(cursor._result);          
+    //     });
+    // })
+    // app.get('/api/teacher/group', function(req, res){
+    //     //should pass in teacher id as param but for now it is hardcoded to 'Teacher 1'
+    //     let name = "Teacher 1";
+    //     var query = aql`for v, edge, path in 1..2 outbound (FOR teacher IN teachers FILTER teacher.name == ${name} RETURN teacher._id)[0] teacherToGroups
+    //         SORT v.name
+    //         RETURN { 
+    //         name: v.name,
+    //         _id: v._id
+    //         }`;
                         
-        db.query(query)
-        .then(cursor => {
-            // cursor is a cursor for the query result
-            res.json(cursor._result);          
-        });    
-    })
+    //     db.query(query)
+    //     .then(cursor => {
+    //         // cursor is a cursor for the query result
+    //         res.json(cursor._result);          
+    //     });    
+    // })
 
     app.post("/csv/file", function(req, res, next){
         // main entry point

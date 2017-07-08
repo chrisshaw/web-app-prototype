@@ -89,7 +89,6 @@ updateGroupList: (deleteGroup, id, grouplist) => {
     }
 },
 updateGradeList: (deleteGroup, id, gradelist) => {
-  console.log("gradelist: " , gradelist)
     return {
       type: 'UPDATE_GRADES',
       delete: deleteGroup,
@@ -98,7 +97,6 @@ updateGradeList: (deleteGroup, id, gradelist) => {
     }
 },
 updateCourseList: (deleteGroup, id, courselist) => {
-   console.log("courselist", courselist)
     return {
       type: 'UPDATE_COURSES',
       delete: deleteGroup,

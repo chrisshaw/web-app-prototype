@@ -40,56 +40,12 @@ const mainReducer = (state={intialstate}, action) => {
         case 'SELECTED_FA':
             return Object.assign({},state, {selectedFocusArea: action.selectedFocusArea});
         case 'BUILD_VIEW':
-            return Object.assign({},state, {pathbuilderview: action.pathbuilderview});
-        // case 'UPDATE_CSV_NAME':
-        //     return Object.assign({},state, {
-        //         csvdata: state.csvdata.map(data => data.id === action.id ?
-        //             // transform the one with a matching id
-        //             { ...data, name: action.name } : 
-        //             // otherwise return original data
-        //             data
-        //         ) 
-        //     })   
-        // case 'UPDATE_CSV_GRADE':
-        //     return Object.assign({},state, {
-        //         csvdata: state.csvdata.map(data => data.id === action.id ?
-        //             // transform the one with a matching id
-        //             { ...data, grade: action.grade } : 
-        //             // otherwise return original data
-        //             data
-        //         ) 
-        //     })    
-        // case 'UPDATE_CSV_FA':
-        //    if (state.csvdata){
-        //         return Object.assign({},state, {        
-        //         csvdata: state.csvdata.map(data => data.focusArea !== action.focusArea ?
-        //             // map all to new FA
-        //             { ...data, focusArea: action.focusArea } : 
-        //             // otherwise return original data
-        //             data
-        //         ) 
-        //     })   
-
-        //    } else {
-        //        return Object.assign({},state, {...state.csvdata})
-        //    }
-            
-        // case 'TOGGLE_DRAWER':
-        //     return Object.assign({},state, {toggledrawer: action.toggledrawer});    
+            return Object.assign({},state, {pathbuilderview: action.pathbuilderview}); 
         case 'UPDATE_PATHS':
             return Object.assign({},state, {paths: action.paths});
         case 'RENDER_PATHS':
             return Object.assign({},state, {pathsrendered: action.pathsrendered});
-        // case 'UPDATE_SEARCH_TERMS':
-        //    // clear out old state if a new search
-        //    if (!action.newSearch) {
-        //         return Object.assign({},state, {initialSearchTerms: [...state.initialSearchTerms, action.initialSearchTerms]});
-        //    } else if (action.newSearch) {
-        //        // append serach items to state in a current search
-        //         return Object.assign({},state, {initialSearchTerms: [action.initialSearchTerms]});
-        //    }
         case 'UPDATE_GRADES':
-        console.log("in reducer", action)
             //pulls for display in autopopulate dropdown to selected list for query
             // delete portion not currently in use - old code
             let gradeObj = -1;
@@ -104,8 +60,7 @@ const mainReducer = (state={intialstate}, action) => {
                     }
                     return true;
 
-                });
-                
+                });    
                 // in case of corrupt data 
                 if (gradeObj !== -1){
                     // update
@@ -119,7 +74,6 @@ const mainReducer = (state={intialstate}, action) => {
                 return Object.assign({},state, {gradelist: action.gradelist, selectedgradelist: []});    
             }
             case 'UPDATE_COURSES':  
-                console.log("in reducer", action)
                 //pulls for display in autopopulate dropdown to selected list for query
                 // delete portion not currently in use - old code
                 let courseObj = -1;
@@ -135,7 +89,6 @@ const mainReducer = (state={intialstate}, action) => {
                         return true;
 
                     });
-                    
                     // in case of corrupt data 
                     if (courseObj !== -1){
                         // update
@@ -153,28 +106,21 @@ const mainReducer = (state={intialstate}, action) => {
             // delete portion not currently in use - old code
             let newObj = -1;
             if (action.delete) {
-                console.log("reducer id");
                 // use filter here to remove deleted group
                 // remove from selectedgrouplist and add back to grouplist
-                var newGroups = state.selectedgrouplist.filter((group) => { 
-                     
-                    if (group._id === action.id){
-                        console.log("matched in reducer id", group._id);      
+                var newGroups = state.selectedgrouplist.filter((group) => {                   
+                    if (group._id === action.id){     
                         newObj = group;
                         return false;
                     }
                     return true;
-
-                });
-                
+                });           
                 // in case of corrupt data 
                 if (newObj !== -1){
-                    console.log(" in newobj != -1")
                     // update
                     return Object.assign({},state, {selectedgrouplist: newGroups, grouplist: [...state.grouplist, newObj] }); 
                 } else {
                     // no change
-                     console.log(" in else part")
                     return Object.assign({},state, {selectedgrouplist: state.selectedgrouplist, grouplist: state.grouplist }); 
                 }
             } 
@@ -275,10 +221,8 @@ const mainReducer = (state={intialstate}, action) => {
                         return false;
                     }
                     return true;
-
                 });
-                return Object.assign({},state, {selectedgradelist: newGroups}); 
-            
+                return Object.assign({},state, {selectedgradelist: newGroups});       
             } 
             else {
                 // decrease groups list and increase selected

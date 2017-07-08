@@ -12,21 +12,15 @@ import ResetIcon from "./ResetIcon";
 class CourseSelection extends Component{
    constructor(props) {
         super(props);
-        // this.handleRequestDelete = this.handleRequestDelete.bind(this);
         this.handleReset = this.handleReset.bind(this);
         this.handleShowGroups = this.handleShowGroups.bind(this);
         // get initial data and set props
-        // helper.getCourses(this.props.dispatch);
         var searchObj = {};
         this.state ={
             showGroups: false, 
         }
     }
-    // handleRequestDelete(id) {
-    //     helper.removeGroup(id, this.props.dispatch);
-    // }
     componentWillMount(){
-        console.log("is this being called at all will moutn")
         helper.getCourses(this.props.dispatch);     
     }
     handleReset() {
