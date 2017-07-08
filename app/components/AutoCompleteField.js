@@ -62,6 +62,7 @@ import ChipInput from 'material-ui-chip-input';
   render() {
     var dataSource1 = [];
     var dataSource2 = [];
+
     // if it exists or is not empty array
     if ((this.props.list) && (this.props.list[0] !== null)){
         dataSource1 = this.props.list.map(function(group, index) {
@@ -72,7 +73,7 @@ import ChipInput from 'material-ui-chip-input';
     if ((this.props.selectedlist) && (this.props.selectedlist[0] !== null)){
         dataSource2 = this.props.selectedlist.map(function(group, index) {
             // strip out just the name for the autocomplete field
-                return group.name.toLowerCase();
+                return group.name
         })
     }
     if (this.props.selectedlist) {
