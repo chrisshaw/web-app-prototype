@@ -128,7 +128,7 @@ module.exports = function(app){
             // iterative call on this function
             let query =aql`for s in ${studentArr}
             let student_id = (UPSERT{ studentId: s.studentId } INSERT { studentId: s.studentId,firstName: s.firstName,  lastName: s.lastName, email: s.email, mentor:  s.mentor, dateCreated: DATE_NOW() } UPDATE {email: s.email, mentor:  s.mentor } IN students RETURN NEW._id )
-            let course_id = (for v in courses Filter v.course == s.course return {_id:v._id, section: s.section})
+            let course_id = (for v in courses Filter v.name == s.course return {_id:v._id, section: s.section})
             let fas = (for fa in s.focusAreas
                 let focusArea = (for f in focusAreas filter f["Focus Area"] == fa.faName return f._id)
                 return {fa_id: focusArea[0], focusAreaDetails: fa})
@@ -325,14 +325,13 @@ module.exports = function(app){
 
     // using post as passing object - probably not ideal
     app.post('/api/path/all', function (req, res){
-
+        // intialise
         let queryCourses = [];
         let queryGrades = [];
         let queryStandards = []; 
         let querySubjects = [];
         let queryTopics = []; 
-
-      
+        // some pre-processing
         if (req.body.courses){
             if (req.body.courses.length > 0){
                 for (var i = 0; i < req.body.courses.length; i++){
@@ -420,17 +419,52 @@ console.log(req.body);
             0..999 outbound start
             thenFocusOn
             filter length(${querySubjects}) > 0 ? fa.subject in ${querySubjects} : true
-            filter length(${queryGrades}) > 0 ? TO_ARRAY(fa.grade) in ${queryGrades} : true
+            filter length(${queryGrades}) > 0 ? TO_ARRAY(fa.grade) any in ${queryGrades} : true
             filter length(courseFas) > 0 ? fa._key in courseFas : true
             filter length(topicalFas) > 0 ? fa._key in topicalFas : true
             filter length(${queryStandards}) > 0 ? fa.standardConnections[* return UPPER(CURRENT)] any in ${queryStandards}[* return UPPER(CURRENT)] : true
-            return {course: ${queryCourses}, grades: ${queryGrades}, topics: ${queryTopics}, standards: ${queryStandards}, subjects: ${querySubjects},  results: fa}`; // return grade and groupname too`
-        console.log(query);
+            return fa`; // return grade and groupname too`
+        
         db.query(query).then(cursor => {
             // cursor is a cursor for the query result
-            console.log(cursor._result);
-            res.json(cursor._result);          
-        });
+            // res.json(cursor._result);
+            // reformat results for  easy client display
+            // let pathArr = [...cursor._result];
+            // console.log(pathArr[0]);
+            var pathArr = cursor._result;
+            for (var i = 0; i < pathArr.length; i++){
+                if ( i < pathArr.length-1) pathArr[i].nextFA = pathArr[i+1]['Focus Area'];
+                pathArr[i].currentStd = [];
+                pathArr[i].nextStd = [];
+                if (i < pathArr.length-1){  
+                    for (var j = 0; j < pathArr[i+1].standardConnections.length; j++){
+                        // save the first one
+                        if ((j === 0)){
+                            pathArr[i].nextStd.push(pathArr[i+1].standardConnections[j]);
+                        }
+                        // don't save duplicates
+                        else if ((j > 0 ) && (pathArr[i+1].standardConnections[j-1] !== pathArr[i+1].standardConnections[j] )){
+                            pathArr[i].nextStd.push(pathArr[i+1].standardConnections[j]);
+                        }  
+                    }
+                }
+                // de-dup current fa std connections
+                for (var k = 0; k < pathArr[i].standardConnections.length; k++){
+                    if ((k === 0)){
+                        pathArr[i].currentStd.push(pathArr[i].standardConnections[k]);
+                    }
+                    else if ((k > 0 ) && (pathArr[i].standardConnections[k-1] !== pathArr[i].standardConnections[k] )){
+                        pathArr[i].nextStd.push(pathArr[i].standardConnections[k]);
+                    }  
+                    
+                }
+            }
+            
+            res.json(pathArr);          
+        }).catch((error => {
+             console.log(Date.now() + " Error (Getting paths from Database):", error);
+             res.json();
+        }))
     })
 
     app.get('/api/focusarea', function(req, res){

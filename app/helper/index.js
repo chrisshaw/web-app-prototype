@@ -190,10 +190,11 @@ var helpers = {
         }
          console.log("in heloer paths");
         return axios.post('/api/path/all', queryObj).then(function(response) {
-            // if (response.data.results) {
-                dispatch(actions.updatePathList(response.data));
-                console.log("response: ", response.data);
-                return;
+           console.log(response.data)
+           
+            dispatch(actions.updatePathList(response.data));
+            // console.log("response: ", pathArr);
+            return;
             // }
         })
     },
@@ -222,9 +223,9 @@ var helpers = {
         }  else if  (queryitem === "Subjects") {
             dispatch(actions.updateSubjectContentList(true, id))
         }  else if  (queryitem === "Grades") {
-            dispatch(actions.updateGradeList(addOrRemove, e));
+            dispatch(actions.updateGradeList(true, id));
         }   else if  (queryitem === "Courses") {
-            dispatch(actions.updateCourseList(addOrRemove, e));
+            dispatch(actions.updateCourseList(true, id));
         }
     },
     // use to update all query items

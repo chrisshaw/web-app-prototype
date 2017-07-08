@@ -50,18 +50,18 @@ class QueryBuilder extends Component{
         if ((this.props.selectedgradelist.length !== 0) && (this.props.selectedcourselist.length !== 0)){
             // this.props.closeDrawer();
             // clear old paths
-            var pathsArr = [{courses: {},
-                    grades: [],
-                    topics: [],
-                    standards: [],
-                    subjects: [],
-                    results: [] 
-            }]
+            // var pathsArr = [{courses: {},
+            //         grades: [],
+            //         topics: [],
+            //         standards: [],
+            //         subjects: [],
+            //         results: [] 
+            // }]
             // console.log("clear path results length", pathsArr[0].results.length)
-            helper.newPaths(pathsArr, this.props.dispatch);
+            helper.newPaths("", this.props.dispatch);
             // array to store new paths
             pathArr = [];
-            console.log("in Submit");
+            // console.log("in Submit");
             helper.getPathsAll(this.props.selectedcourselist,this.props.selectedgradelist, this.props.selectedstandardslist, this.props.selectedtopiclist, this.props.selectedsubjectcontentlist, this.props.dispatch);
        } else {
             // no group selected message
@@ -106,7 +106,7 @@ class QueryBuilder extends Component{
                     open={this.state.nogoupselected}
                     onRequestClose={this.handleClose}
                 >
-                   <p>Please select at least one Group option.</p>
+                   <p>Please query at least one student group by selecting Course and Grade.</p>
                     </Dialog>
                 </Row>
                 <CourseSelection selectedcourselist={this.props.selectedcourselist}/>
