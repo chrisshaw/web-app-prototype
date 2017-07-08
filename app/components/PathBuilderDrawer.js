@@ -5,6 +5,7 @@ import RaisedButton from 'material-ui/RaisedButton';
 import helper from '../helper';
 import {Grid, Row, Col} from 'react-bootstrap';
 import QueryBuilder from './QueryBuilder';
+import PathAppNav from './PathAppNav';
 
 class PathBuilderDrawer extends Component{
    constructor(props) {
@@ -15,7 +16,7 @@ class PathBuilderDrawer extends Component{
             drawer: {
                 zIndex: 2000,
                 position: 'fixed',
-                height: '100vh'
+                height: '100vh',
             }
         }
         return (
@@ -23,9 +24,10 @@ class PathBuilderDrawer extends Component{
                     <Drawer
                         containerClassName="drawer-small-screen"
                         docked={true}
-                        width={500}
+                        width={'41%'}
                         style={style.drawer}               
-                    >        
+                    >     
+                        <PathAppNav />   
                         <Row>
                             <QueryBuilder />
                         </Row>                  

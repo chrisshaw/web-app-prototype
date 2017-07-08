@@ -34,6 +34,7 @@ class DataImportStudentCSV extends Component{
         super(props);
         this.handleUploadFile = this.handleUploadFile.bind(this);  
         this.handleSaveFile = this.handleSaveFile.bind(this);  
+        // this.state = {file : ""};
     }
     componentWillMount(){
         // reset datasaved value to hide the messages 
@@ -44,7 +45,8 @@ class DataImportStudentCSV extends Component{
         helper.submitCSVFile(e, this.props.dispatch);
         // reset datasaved value to hide the messages 
         helper.dataUploadStatus("", "", this.props.dispatch);
-        // reset input value
+        // reset input value so files with same name can be re-input
+      
         var node = ReactDOM.findDOMNode(this.inputEntry);
         node.value="";
     }
@@ -54,15 +56,22 @@ class DataImportStudentCSV extends Component{
     }
     render(){
         // add a save button and a clear button
-        var previousProblemFA = [];
+        var component = this;
         // console.log(this.props.error)
         if (this.props.saveerror){
-            var problemFA = this.props.saveerror.map( function (row, index){
-                console.log("previousProblemFA", previousProblemFA, "rwo", row[index]);
-                if (previousProblemFA !== row){
-                     return <p key={index} className="text-center">{row[index]}</p>
-                }
-                previousProblemFA = row[index];
+            var problemFA = this.props.saveerror.map( function (row, rowindex){
+               var  faArrItems = row.map(function (val, index){
+                   if ((rowindex > 0) && (component.props.saveerror[rowindex-1][index] !== val)){
+                        return <div key={index}>{val}</div>
+                   } else if (rowindex === 0){
+                        return <div key={index}>{val}</div>
+                   }
+               })
+               
+    
+                     return <div key={rowindex} className="text-center">{faArrItems}</div>
+            
+      
             }) 
 
         }
@@ -113,7 +122,7 @@ class DataImportStudentCSV extends Component{
                         type="submit"
                         containerElement='label' 
                         icon={<FontIcon className="muidocs-icon-navigation-expand-more" />}>
-                        <input type="file" style={{ display: 'none' }} ref={el => this.inputEntry = el}  onChange={e => this.handleUploadFile(e)}/>
+                        <input type="file" style={{ display: 'none' }} ref={el => this.inputEntry = el} onChange={e => this.handleUploadFile(e)}/>
                         </RaisedButton>
                     </Col>
                     <Col xs={2} md={4} />

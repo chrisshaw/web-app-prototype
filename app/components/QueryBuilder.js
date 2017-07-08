@@ -86,7 +86,7 @@ class QueryBuilder extends Component{
         }
     
         var component = this;
-        return(<div className="query-builder-wrapper">
+        return(<div className="drawer-wrapper">
                 <Row>
                     <Col xs={12} md={12} >
                         <div className="query-builder-wrapper">
@@ -116,7 +116,7 @@ class QueryBuilder extends Component{
                 <StandardsSelection  selectedstandardslist={this.props.selectedstandardslist}/>              
                 <Row>
                     <Col xs={12} md={12} className="text-center" >            
-                        <FlatButton containerElement='label' label="Get Reccommended Paths" onTouchTap={this.handleSubmitAll} />
+                        <FlatButton containerElement='label' label="Get Recommended Paths" onTouchTap={this.handleSubmitAll} />
                     </Col>
                 </Row>
                 {this.props.pathsrendered ? (<Row>

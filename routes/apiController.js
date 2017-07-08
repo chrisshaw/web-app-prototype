@@ -1,19 +1,18 @@
 var arangojs = require('arangojs');
 var Database = arangojs.Database;
 var path = require('path');
-var dbHostPort = process.env.DB_HOST_PORT;
-var dbUser = process.env.DB_USER;
-var dbPwd = process.env.DB_PWD;
-var dbName = process.env.DB_NAME;
-// var dbHostPort = 'http://localhost:8529'
-// var dbUser = 'root';
-// var dbPwd = 'sidekick';
-// var dbName = 'skdb';
+// var dbHostPort = process.env.DB_HOST_PORT;
+// var dbUser = process.env.DB_USER;
+// var dbPwd = process.env.DB_PWD;
+// var dbName = process.env.DB_NAME;
+var dbHostPort = 'http://localhost:8529'
+var dbUser = 'root';
+var dbPwd = 'sidekick';
+var dbName = 'skdb';
 const db = arangojs(dbHostPort);
 db.useDatabase(dbName);
 db.useBasicAuth(dbUser, dbPwd);
 const foxxService = db.route('auth');
-
 
 // console.log(db);
 // test connection
@@ -27,14 +26,41 @@ db.get()
 const aql = arangojs.aql;
 module.exports = function(app){
 
+    function saveStudentGetIds(studentArr, i){
+        return new Promise((resolve, reject) => {
+            let query =aql`for s in ${studentArr}
+            let student_id = (UPSERT{ studentId: s.studentId } INSERT { studentId: s.studentId,firstName: s.firstName,  lastName: s.lastName, email: s.email, mentor:  s.mentor, dateCreated: DATE_NOW(),  dateUpdated: DATE_NOW(), updatedBy: "TEST"} UPDATE {email: s.email, mentor:  s.mentor,  dateUpdated: DATE_NOW(),  updatedBy: "TEST" } IN students RETURN NEW._id )
+            let course_id = (for v in courses Filter v.name == s.course return {_id:v._id, section: s.section})
+            let fas = (for fa in s.focusAreas
+                let focusArea = (for f in focusAreas filter f["Focus Area"] == fa.faName return f._id)
+                return {fa_id: focusArea[0], focusAreaDetails: fa})
+            return {student_id: student_id, course_id: course_id,focusArea: fas }`
+            // GET DATA --> UPDATE DATA
+            console.log(query)
+            db.query(query)
+            .then(cursor => {  
+                // return the data that contains ids for the next steps
+                console.log(cursor._result);
+                resolve(cursor._result);
+            }).catch(error => {
+                reject(error)
+            })
+        }); 
+    }
+
+    app.get('/whoami',function(req, res, next){
+       
+    })
+
     app.post('/login' , function(req, res, next){
         // console.log(req.body)
         foxxService.post('/login', req.body)
         .then(response => {
             //  console.log('login session', req.session);
-            // console.log("login: ", response.headers['set-cookie']);
+            console.log("login: ", response.headers['x-session-id']);
             // store session token in a cookie on client
-            res.setHeader("Set-Cookie",  response.headers['set-cookie']);
+            res.setHeader("Set-Cookie",  'x-session-id='+response.headers['x-session-id']);
+            // console.log("login", response);
             res.json(response.body);
         }).catch(error => {
             // can send error to logs?
@@ -51,6 +77,7 @@ module.exports = function(app){
            
             // store session token in a cookie on client
             res.setHeader("Set-Cookie",  response.headers['set-cookie']);
+
             res.json(response.body);
         }).catch(error => { 
             // can send error to logs?
@@ -119,29 +146,24 @@ module.exports = function(app){
             })
      })
 
-
-    function saveStudentGetIds(studentArr, i){
-        return new Promise((resolve, reject) => {
-            let query =aql`for s in ${studentArr}
-            let student_id = (UPSERT{ studentId: s.studentId } INSERT { studentId: s.studentId,firstName: s.firstName,  lastName: s.lastName, email: s.email, mentor:  s.mentor, dateCreated: DATE_NOW() } UPDATE {email: s.email, mentor:  s.mentor } IN students RETURN NEW._id )
-            let course_id = (for v in courses Filter v.name == s.course return {_id:v._id, section: s.section})
-            let fas = (for fa in s.focusAreas
-                let focusArea = (for f in focusAreas filter f["Focus Area"] == fa.faName return f._id)
-                return {fa_id: focusArea[0], focusAreaDetails: fa})
-            return {student_id: student_id, course_id: course_id,focusArea: fas }`
-            // GET DATA --> UPDATE DATA
-            // console.log(query)
-            db.query(query)
-            .then(cursor => {  
-                // return the data that contains ids for the next steps
-                resolve(cursor._result);
-            }).catch(error => {
-                reject(error)
-            })
-        }); 
-    }
-  
     app.post("/csv/students/courses/data", function(req, res, next){
+         //***** Start: *Working on this part....****//
+        // var sid = req.headers.cookie.split('=')[1];
+        //     // res.setHeader({'Header': sid});
+        // res.setHeader("X-Session-Id",  sid);
+            
+        //  foxxService.get('/user', res.header)
+        // .then(response => {
+        
+        //     // var encoded = req.headers.authorization.split(' ')[1];
+        //     // var decoded = new Buffer(encoded, 'base64').toString('utf8');
+        //     // console.log("decoded: ", decoded);
+        //     console.log("response", response);
+        // }).catch(error => {
+        //     console.log("error", error);
+        // })
+       //***** End: Working on this part....****//
+
         // verify user logged in and capture for save...
         let data = req.body;
         var studentObj = {};
@@ -205,10 +227,10 @@ module.exports = function(app){
         }      
         // process the data to consolidate it then save to database
         saveStudentGetIds(studentArr).then((response) => {
-            console.log(studentArr);
+            // console.log(studentArr);
             // filter out rows with null and put these aside for error reporting
             // pre-process: sort out fa_id = null and send to client
-            var errorArr = [];
+            var errorArr = [];      
             // save on the object
             for (var i = 0; i < response.length; i++){
                 let newFAs = [];
@@ -223,23 +245,26 @@ module.exports = function(app){
                     return true;
                 })
                 response[i].focusArea = newFAs;
+                // console.log(response[i].focusArea);
                 if (nullFAs.length > 0) errorArr.push(nullFAs);
+                // get distinct
             }
+
             return [response, errorArr]
         }).then((response) => { 
-            console.log(response[0])
+
             // update later to:
             // studentToFA == hasMastered
             // studentToCourse == taking
             // courseToFA == covers
             let firstUpsert = aql`for s in ${response[0]}
-            UPSERT { _from: s.student_id[0] , _to: s.course_id[0]._id} INSERT  { _from: s.student_id[0] , _to: s.course_id[0]._id, section: s.course_id[0].section, dateCreated: DATE_NOW() } UPDATE { section: s.course_id[0].section, dateCreated: DATE_NOW()} IN taking RETURN { doc: NEW, type: OLD ? 'update' : 'insert' } `
+            UPSERT { _from: s.student_id[0] , _to: s.course_id[0]._id} INSERT  { _from: s.student_id[0] , _to: s.course_id[0]._id, section: s.course_id[0].section, dateCreated: DATE_NOW(), dateUpdated: DATE_NOW(), updatedBy: "TEST" } UPDATE { section: s.course_id[0].section,  dateUpdated: DATE_NOW(), updatedBy: "TEST"} IN taking RETURN { doc: NEW, type: OLD ? 'update' : 'insert' } `
             db.query(firstUpsert)
             .then(cursor => {  
                 // INSERT
                 let secondUpsert = aql`for s in  ${response[0]}
                 for fa in s.focusArea 
-                UPSERT { _from: s.student_id[0], _to: fa.fa_id} INSERT { _from: s.student_id[0], _to: fa.fa_id, type: fa.focusAreaDetails.faType, mastered: fa.focusAreaDetails.mastered,  dateCreated: DATE_NOW()  } UPDATE { type: fa.focusAreaDetails.faType, mastered: fa.focusAreaDetails.mastered,  dateCreated: DATE_NOW()  } IN hasMastered RETURN { doc: NEW, type: OLD ? 'update' : 'insert' }`;
+                UPSERT { _from: s.student_id[0], _to: fa.fa_id} INSERT { _from: s.student_id[0], _to: fa.fa_id, type: fa.focusAreaDetails.faType, mastered: fa.focusAreaDetails.mastered,  dateCreated: DATE_NOW(), dateUpdated: DATE_NOW(), updatedBy: "TEST"  } UPDATE { type: fa.focusAreaDetails.faType, mastered: fa.focusAreaDetails.mastered,  dateUpdated: DATE_NOW(), updatedBy: "TEST"  } IN hasMastered RETURN { doc: NEW, type: OLD ? 'update' : 'insert' }`;
                 console.log(secondUpsert)
                 db.query(secondUpsert)
                 .then(cursor => {  
@@ -266,16 +291,14 @@ module.exports = function(app){
      })
 
     app.get('/api/topics/all', function(req, res){
-
         let query = aql`return UNIQUE(FLATTEN(
              for p in projects
              SORT p.topics asc
              return p.topics
              ))`;
-        console.log(query)
+
         db.query(query)
         .then(cursor => {  
-            console.log(cursor._result);
             res.json(cursor._result);
         }).catch(error => {
             console.log(Date.now() + " Error (Get Topics from Database):", error);
@@ -283,6 +306,21 @@ module.exports = function(app){
         })         
         
     })
+
+    app.get('/api/standards/all', function(req, res){
+
+        let query = aql`return UNIQUE(FLATTEN( for p in projects SORT p.standards asc return p.standards ))`;
+        db.query(query)
+        .then(cursor => {  
+            res.json(cursor._result);
+        }).catch(error => {
+            console.log(Date.now() + " Error (Get Standards from Database):", error);
+            res.json();
+        })         
+        
+    })
+
+    
     app.get('/api/courses/all', function(req, res){
          let query = aql`return UNIQUE(FLATTEN(
             for c in courses
@@ -391,10 +429,7 @@ module.exports = function(app){
         
         db.query(query).then(cursor => {
             // cursor is a cursor for the query result
-            // res.json(cursor._result);
             // reformat results for  easy client display
-            // let pathArr = [...cursor._result];
-            // console.log(pathArr[0]);
             var pathArr = cursor._result;
             for (var i = 0; i < pathArr.length; i++){
                 if ( i < pathArr.length-1) pathArr[i].nextFA = pathArr[i+1]['Focus Area'];
@@ -430,37 +465,13 @@ module.exports = function(app){
         }))
     })
 
-    // app.get('/api/focusarea', function(req, res){
-    //     var query = aql`FOR fa in focusAreas SORT fa["Focus Area"] RETURN {name: fa["Focus Area"], id: fa._id}`;
-    //     db.query(query)
-    //     .then(cursor => {
-    //         // cursor is a cursor for the query result
-    //         res.json(cursor._result);          
-    //     });
-    // })
-    // app.get('/api/teacher/group', function(req, res){
-    //     //should pass in teacher id as param but for now it is hardcoded to 'Teacher 1'
-    //     let name = "Teacher 1";
-    //     var query = aql`for v, edge, path in 1..2 outbound (FOR teacher IN teachers FILTER teacher.name == ${name} RETURN teacher._id)[0] teacherToGroups
-    //         SORT v.name
-    //         RETURN { 
-    //         name: v.name,
-    //         _id: v._id
-    //         }`;
-                        
-    //     db.query(query)
-    //     .then(cursor => {
-    //         // cursor is a cursor for the query result
-    //         res.json(cursor._result);          
-    //     });    
-    // })
-
     app.post("/csv/file", function(req, res, next){
         // main entry point
         // need to verify csv file and save contents somewhere...
         var fileContentsFromBuffer = req.body.buffer.toString('utf-8');
         // remove the newline char then split on the carriage return 
         var csvToArr =  fileContentsFromBuffer.replace(/\n/g, '').split(/\r/);   
+        // console.log(csvToArr);
         //  need to do for loop over array, split on comma and save
         var studentsArr = [];
         // do some basic verification
@@ -496,31 +507,30 @@ module.exports = function(app){
                         mastered: dataArr[9]
                 }      
                 if ((i === 0) && ( dataArr.length < 10)) {
-                    console.log("success: false, error: Bad File Format")
-                    res.json({success: false, error: ["Insufficient headers"]});
+                    console.log(Date.now(), " Error: Bad File Format")
+                    res.json({success: false, error: ["Missing headers or bad file format - must be csv format."]});
                     break; 
                 } 
                 else if ((i === 0) && ( dataArr.length === 10)) {
                     // verify the headers are correct so we don't save junk
-                    if ((dataArr[0] !== "Student ID") 
-                    || (dataArr[1] !== "Student First")
-                    || (dataArr[2] !== "Student Last")
-                    || (dataArr[3] !== "Student Email")
-                    || (dataArr[4] !== "Section Name")
-                    || (dataArr[5] !== "Course Name")
-                    || (dataArr[6] !== "Mentor Name")
-                    || (dataArr[7] !== "Focus Area Name")
-                    || (dataArr[8] !== "Focus Area Type")
-                    || (dataArr[9] !== "Mastered?")) {
-                        console.log({success: false, });
+                    if ((dataArr[0].trim().toUpperCase() !== "STUDENT ID") 
+                    || (dataArr[1].trim().toUpperCase() !== "STUDENT FIRST")
+                    || (dataArr[2].trim().toUpperCase() !== "STUDENT LAST")
+                    || (dataArr[3].trim().toUpperCase() !== "STUDENT EMAIL")
+                    || (dataArr[4].trim().toUpperCase() !== "SECTION NAME")
+                    || (dataArr[5].trim().toUpperCase() !== "COURSE NAME")
+                    || (dataArr[6].trim().toUpperCase() !== "MENTOR NAME")
+                    || (dataArr[7].trim().toUpperCase() !== "FOCUS AREA NAME")
+                    || (dataArr[8].trim().toUpperCase() !== "FOCUS AREA TYPE")
+                    || (dataArr[9].trim().toUpperCase() !== "MASTERED?")) {
+                        console.log(Date.now(), " Error: Header names are incorrect");
                         res.json({success: false, error: ["Header names are incorrect"]});
                         break; 
                     } 
                 } 
-                // create array of objects to be saved to database
+                // pre-format - create array of objects to be saved to database
                 studentsArr.push(studentObj);
                 if (i >= csvToArr.length-1 ){
-                    // console.log(studentsArr);
                     var resultsObj = {success: true, results: studentsArr }
                     res.json(resultsObj);
                 }

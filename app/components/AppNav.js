@@ -37,11 +37,11 @@ class AppNav extends Component {
                     title={((this.props.pathname === '/')&&(this.props.loggedin)) ? "" : (<div><span><img src="./public/assets/img/sidekick.png" className="logo" alt="Sidekick" /></span></div>)}
                     titleStyle={styles.title}
                     iconStyleRight={{order: 4, marginTop: 0, marginLeft: 0, display: "flex"}}
-                    iconElementLeft={<div className="placeholder"></div>}
+                    iconStyleLeft={{display: 'none'}}
                     iconElementRight={<div>{this.props.loggedin ? 
                       (<div>
-                      <FlatButton  labelStyle={{lineHeight: 4}} style={{ borderTop: 'solid 1px #E6E6E6',borderLeft: 'solid 1px #E6E6E6', borderRight: 'solid 1px #E6E6E6',maxWidth: 170, fontSize: 12, height: 50, flex: 'center'}}  containerElement={<Link to="/"/>} label="Build Paths" />
-                      <FlatButton  labelStyle={{lineHeight: 4}} style={{borderTop: 'solid 1px #E6E6E6',borderLeft: 'solid 1px #E6E6E6', borderRight: 'solid 1px #E6E6E6', maxWidth: 170, fontSize: 12, height: 50, flex: 'center'}} containerElement='label' label="Manage Students"  containerElement={<Link to="/csv"/>} />
+                      <FlatButton  labelStyle={{lineHeight: 4}} style={{ borderTop: 'solid 1px #E6E6E6',borderLeft: 'solid 1px #E6E6E6', borderRight: 'solid 1px #E6E6E6',maxWidth: 170, fontSize: 12, height: 50, flex: 'center', borderRadius: 0}} containerElement={<Link to="/"/>} label="Build Paths" />
+                      <FlatButton  labelStyle={{lineHeight: 4}} style={{borderTop: 'solid 1px #E6E6E6',borderLeft: 'solid 1px #E6E6E6', borderRight: 'solid 1px #E6E6E6', maxWidth: 170, fontSize: 12, height: 50, flex: 'center', borderRadius: 0}} containerElement='label' label="Manage Students"  containerElement={<Link to="/csv"/>} />
                       <IconButton  onTouchTap={this.props.handleLogout}  iconStyle={{height: 48}} style={{maxWidth: 100, alignSelf: 'center'}} ><LogoutIcon /></IconButton>
                       </div>)  : (<div className="placeholder"></div>) } </div>}
                     />            

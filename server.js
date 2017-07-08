@@ -4,6 +4,23 @@ var path = require('path');
 // var methodOverride = require('method-override');
 var PORT = process.env.PORT || 8080;
 var app = express();
+// var session = require('express-session');
+
+// // session 
+// var sess = {
+//     secret: 'keyboard cat',
+//     cookie: {},
+//     // proxy: true,
+//     resave: true,
+//     saveUninitialized: true
+// }
+// for production
+// if (app.get('env') === 'production') {
+//   app.set('trust proxy', 1) // trust first proxy
+//   sess.cookie.secure = 'auto' // serve secure cookies if possible
+// }
+
+// app.use(session(sess));
 
 // Serve static content for the app from the "public" directory in the application directory.
 // this goes before any body-parser calls - static files don't need parsing.

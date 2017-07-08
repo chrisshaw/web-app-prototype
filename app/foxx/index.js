@@ -3,19 +3,29 @@ const joi = require('joi');
 const createAuth = require('@arangodb/foxx/auth');
 const createRouter = require('@arangodb/foxx/router');
 const sessionsMiddleware = require('@arangodb/foxx/sessions');
-
 const auth = createAuth();
 const router = createRouter();
 const users = module.context.collection('users');
+// const cookieTransport = require('@arangodb/foxx/sessions/transports/cookie');
+// Pass in a secure secret from the Foxx configuration
+// const secret = module.context.configuration.cookieSecret;
+// const sessions = sessionsMiddleware({
+//   storage: module.context.collection('sessions'),
+//   transport: cookieTransport({
+//     name: 'FOXXSESSID',
+//     ttl: 60 * 60 * 24 * 7, // one week in seconds
+//     algorithm: 'sha256',
+//     secret: secret
+//   })
+// });
 const sessions = sessionsMiddleware({
   storage: module.context.collection('sessions'),
-  transport: 'cookie'
+  transport: 'header'
 });
 module.context.use(sessions);
 module.context.use(router);
 
 router.get('/user', function (req, res) {
-  console.log("req", req)
   try {
     const user = users.document(req.session.uid);
     res.send({username: user.username});

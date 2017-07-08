@@ -90,8 +90,8 @@ var helpers = {
     saveCSVStudentData(data, dispatch){
         let component = this;
         // need to pass the auth header in the cookie to server
-        let USER_TOKEN = helpers.getCookie("sid");
-        console.log("USER_TOKEN", USER_TOKEN);
+        let USER_TOKEN = helpers.getCookie("x-session-id");
+        // console.log("USER_TOKEN", USER_TOKEN);
         // const AuthStr = 'USER_TOKEN); 
         // axios.get(URL, { headers: { Authorization: AuthStr } })
         // console.log("cookie", cookie)
@@ -100,7 +100,7 @@ var helpers = {
                 method: 'post',
                 url: '/csv/students/courses/data', 
                 data: data,
-                headers: {'Authorization': USER_TOKEN}
+                headers: {'X-Session-Id': USER_TOKEN}
             })
             .then(function(response) {           
                 // this will clear the data from the upload Page after saving....
@@ -176,8 +176,17 @@ var helpers = {
         }) 
     },
     getStandards: function(dispatch){
-        var standardsArr = [{_id: 0, name: "AP-ENG-LANG.R.3"}, {_id: 1, name: "CCSS.ELA-LITERACY.RL.9-10.3"}]
-        dispatch(actions.updateStandardsList(false, 0, standardsArr))
+        // var standardsArr = [{_id: 0, name: "AP-ENG-LANG.R.3"}, {_id: 1, name: "CCSS.ELA-LITERACY.RL.9-10.3"}]
+        return axios.get('/api/standards/all').then(function(response) {
+            // send results to redux store for use by Results component
+            /// need to put in an object with an id
+            var standardsArr = [];
+            for (var i = 0; i < response.data[0].length; i++){
+                standardsArr.push({ _id: i, name: response.data[0][i]})
+            }
+            dispatch(actions.updateStandardsList(false, 0, standardsArr))
+            return;
+        }) 
 
     },
     getSubjectContents: function(dispatch){
