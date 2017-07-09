@@ -41,6 +41,8 @@ const navBarTheme = getMuiTheme({
   chip: {
       backgroundColor: '#A35FE3',
       textColor: '#FFFFFF',
+      deleteIconColor: '#FFFFFF',
+      
   },
   raisedButton : {
     textColor: '#FFFFFF',
@@ -58,6 +60,7 @@ const navBarTheme = getMuiTheme({
       dialog: 1500,
       drawer: 1300,
   },
+  
 });
 
 class Main extends Component{

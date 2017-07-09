@@ -20,9 +20,6 @@ class CourseSelection extends Component{
             showGroups: false, 
         }
     }
-    componentWillMount(){
-        helper.getCourses(this.props.dispatch);     
-    }
     handleReset() {
         // reset chips and grouplist
         helper.getCourses(this.props.dispatch); 
@@ -32,13 +29,14 @@ class CourseSelection extends Component{
         this.setState({showGroups: !this.state.showGroups})
     }
     render(){
+        console.log("am i re rendering")
         if ( this.props.selectedcourselist){
              var arrLength = this.props.selectedcourselist.length;
         }
         return(<div>
                     <Row>
                         <Col xs={10} md={10} >
-                            <p className="search-text chip-float">Students in my courses (*)</p>
+                            <p className="search-text chip-float"> in my courses (*)</p>
                         </Col>
                         <Col xs={2} md={2} >
                             <div className="reset-button text-center" onTouchTap={this.handleReset} ><ResetIcon className="reset-icon" /> Reset</div>        
@@ -57,7 +55,7 @@ class CourseSelection extends Component{
 const mapStateToProps = (store) => {
     return {
         courselist: store.mainState.courselist,
-        // selectedgrouplist: store.mainState.selectedgrouplist,
+        // selectedgradelist: store.mainState.selectedgradelist,
     }
 }
 

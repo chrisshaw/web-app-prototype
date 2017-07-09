@@ -17,16 +17,19 @@ class StandardsSelection extends Component{
         this.handleReset = this.handleReset.bind(this);
         this.handleShowGroups = this.handleShowGroups.bind(this);
         // get initial data and set props
-        helper.getStandards(this.props.dispatch);
+        // helper.getStandards(this.props.dispatch);
         var searchObj = {};
         this.state ={
             showGroups: false, 
         }
     }
-    componentWillMount(){
-        helper.getStandards(this.props.dispatch);     
-    }
-    // handleRequestDelete(id) {
+    // componentWillMount(){
+    //     if (this.props.selectedgradelist) {
+    //          helper.getStandards(this.props.selectedgradelist, this.props.dispatch);     
+    //     }
+       
+    // }
+    // // handleRequestDelete(id) {
     //     // filter standardslist based on id
     //     helper.removeStandards(id, this.props.dispatch);
     // }
@@ -73,6 +76,7 @@ class StandardsSelection extends Component{
 const mapStateToProps = (store) => {
     return {
         standardslist: store.mainState.standardslist,
+        // selectedgradelist: store.mainState.selectedgradelist,
         // selectedstandardslist: store.mainState.selectedstandardslist,
     }
 }
