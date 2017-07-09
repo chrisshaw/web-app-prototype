@@ -79,7 +79,12 @@ returnUploadedStatus: (datasaved, saveerror) => {
 //       toggledrawer,
 //     }
 // },
-
+searchPaths: (searching) => {
+  return {
+    type: 'SEARCHING_PATHS',
+    searching,
+  }
+},
 updateGroupList: (deleteGroup, id, grouplist) => {
     return {
       type: 'UPDATE_GROUPS',
