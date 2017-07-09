@@ -291,11 +291,16 @@ module.exports = function(app){
      })
 
     app.get('/api/topics/all', function(req, res){
-        let query = aql`return UNIQUE(FLATTEN(
-             for p in projects
-             SORT p.topics asc
-             return p.topics
-             ))`;
+        let query = aql`
+            let topics = UNIQUE(FLATTEN(
+                for p in projects
+                return p.topics
+            ))
+
+            for t in topics
+            sort t
+            return t
+        `;
 
         db.query(query)
         .then(cursor => {  
@@ -308,8 +313,11 @@ module.exports = function(app){
     })
 
     app.get('/api/standards/all', function(req, res){
-
-        let query = aql`return UNIQUE(FLATTEN( for p in projects SORT p.standards asc return p.standards ))`;
+        let query = aql`
+            for s in standards
+            sort s.standard
+            return s.standard
+        `;
         db.query(query)
         .then(cursor => {  
             res.json(cursor._result);
@@ -322,10 +330,12 @@ module.exports = function(app){
 
     
     app.get('/api/courses/all', function(req, res){
-         let query = aql`return UNIQUE(FLATTEN(
+         let query = aql`
             for c in courses
             SORT c.name asc
-            return {_id: c._id, name: c.name}))`;
+            return {_id: c._id, name: c.name}
+        `;
+        
         console.log(query)
         db.query(query)
         .then(cursor => {  
