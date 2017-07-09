@@ -291,14 +291,21 @@ module.exports = function(app){
      })
 
     app.get('/api/topics/all', function(req, res){
-        let query = aql`return UNIQUE(FLATTEN(
-             for p in projects
-             SORT p.topics asc
-             return p.topics
-             ))`;
+        let query = aql`
+            let topics = UNIQUE(FLATTEN(
+                for p in projects
+                return p.topics
+            ))
+
+           for t in topics
+            sort t
+            return t
+        `;
 
         db.query(query)
         .then(cursor => {  
+            console.log("type of", cursor._result);
+            
             res.json(cursor._result);
         }).catch(error => {
             console.log(Date.now() + " Error (Get Topics from Database):", error);
@@ -307,11 +314,20 @@ module.exports = function(app){
         
     })
 
-    app.get('/api/standards/all', function(req, res){
-
-        let query = aql`return UNIQUE(FLATTEN( for p in projects SORT p.standards asc return p.standards ))`;
+    app.get('/api/standards/:grade', function(req, res){
+        let grades = req.params.grade;
+        let queryGrades = grades.split(',');
+         
+        console.log("standards grade", queryGrades)
+        let query = aql`
+            RETURN TO_ARRAY((for s in standards
+            filter length(${queryGrades}) > 0 ? TO_ARRAY(s.grade) any in ${queryGrades} : true
+            sort s.standard
+            return s.standard))
+        `;
         db.query(query)
         .then(cursor => {  
+            console.log("standards", cursor._result);
             res.json(cursor._result);
         }).catch(error => {
             console.log(Date.now() + " Error (Get Standards from Database):", error);
@@ -321,14 +337,30 @@ module.exports = function(app){
     })
 
     
-    app.get('/api/courses/all', function(req, res){
-         let query = aql`return UNIQUE(FLATTEN(
+    app.get('/api/courses/:grade', function(req, res){
+        console.log("req.params.grade", req.params.grade)
+        let grades = req.params.grade;
+        let queryGrades = grades.split(',');
+       
+    //    if (req.params.grade){
+    //         if (req.params.grade.length > 0){
+    //             for (var i = 0; i < req.params.grade.length; i++){
+    //                   console.log("courses", req.params.grade[i].name)
+    //                 queryGrades.push(req.params.grade[i].name);
+    //             }
+    //         }
+    //     }      
+          console.log("courses grade", queryGrades)
+        let query = aql`
             for c in courses
+            filter length(${queryGrades}) > 0 ? TO_ARRAY(TO_STRING(c.grade)) any in ${queryGrades} : true
             SORT c.name asc
-            return {_id: c._id, name: c.name}))`;
-        console.log(query)
+            return {_id: c._id, name: c.name}
+        `;
+
         db.query(query)
-        .then(cursor => {  
+        .then(cursor => { 
+             console.log("courses", cursor._result);
             res.json(cursor._result);
         }).catch(error => {
             console.log(Date.now() + " Error (Get Courses from Database):", error);

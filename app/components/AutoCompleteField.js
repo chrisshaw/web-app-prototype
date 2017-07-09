@@ -62,7 +62,7 @@ import ChipInput from 'material-ui-chip-input';
   render() {
     var dataSource1 = [];
     var dataSource2 = [];
-
+    console.log("what is this", this.props.queryitem)
     // if it exists or is not empty array
     if ((this.props.list) && (this.props.list[0] !== null)){
         dataSource1 = this.props.list.map(function(group, index) {
@@ -110,6 +110,7 @@ import ChipInput from 'material-ui-chip-input';
                 underlineDisabledStyle={{ borderColor: '#E6E6E6'}}
                 underlineFocusStyle={{borderColor: '#A35FE3'}}
                 listStyle={{textColor: '#A35FE3', fontSize: 12, whiteSpace: 'normal'}}
+                deleteIconStyle={{color:'rgb(255,255,255,.026)'}}
     />
         </div>
 
