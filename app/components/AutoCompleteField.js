@@ -110,7 +110,6 @@ import ChipInput from 'material-ui-chip-input';
                 underlineDisabledStyle={{ borderColor: '#E6E6E6'}}
                 underlineFocusStyle={{borderColor: '#A35FE3'}}
                 listStyle={{textColor: '#A35FE3', fontSize: 12, whiteSpace: 'normal'}}
-                deleteIconStyle={{color:'rgb(255,255,255,.026)'}}
     />
         </div>
 

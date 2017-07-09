@@ -22,7 +22,7 @@ class CourseSelection extends Component{
     }
     handleReset() {
         // reset chips and grouplist
-        helper.getCourses(this.props.dispatch); 
+        helper.getCourses("",this.props.dispatch); 
     }
     handleShowGroups() {
         // toggle between true and false
