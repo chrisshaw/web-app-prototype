@@ -169,6 +169,12 @@ render() {
         value={this.state.value}
         onChange={this.handleChange}
       >
+      {this.props.searching ? (<div>
+     <div className="loader-location">
+     <div>Searching...</div>
+              <br />
+     <div className="text-center loader"></div></div>
+    </div>) : ""}
        {this.props.paths ? (<Tab label="Path" value={this.state.value}  buttonStyle={{color: "#808080"}}>
               {faComponents}
        </Tab>) : ""}
@@ -180,6 +186,7 @@ render() {
 const mapStateToProps = (store,ownProps) => {
     return {
         paths: store.mainState.paths,
+        searching: store.mainState.searching
     }
 }
 

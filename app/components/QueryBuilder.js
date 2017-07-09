@@ -28,7 +28,7 @@ class QueryBuilder extends Component{
         var searchObj = {};
         this.state ={
             showGroups: false, 
-            nogoupselected: false,   
+            // nogoupselected: false,   
         }
     }
    componentDidUpdate(prevProps, prevState){
@@ -57,7 +57,7 @@ class QueryBuilder extends Component{
     handleSubmitAll() {
         // clear message
         helper.pathsRendered(false, this.props.dispatch);
-        if ((this.props.selectedgradelist) && (this.props.selectedcourselist) && (this.props.selectedgradelist.length !== 0) && (this.props.selectedcourselist.length !== 0)){
+        // if ((this.props.selectedgradelist) && (this.props.selectedcourselist) && (this.props.selectedgradelist.length !== 0) && (this.props.selectedcourselist.length !== 0)){
             // this.props.closeDrawer();
             // clear old paths
             // var pathsArr = [{courses: {},
@@ -73,10 +73,10 @@ class QueryBuilder extends Component{
             pathArr = [];
             // console.log("in Submit");
             helper.getPathsAll(this.props.selectedcourselist,this.props.selectedgradelist, this.props.selectedstandardslist, this.props.selectedtopiclist, this.props.selectedsubjectcontentlist, this.props.dispatch);
-       } else {
+    //    } else {
             // no group selected message
-            this.setState({nogoupselected: true})
-        } 
+            // this.setState({nogoupselected: true})
+        // } 
     }
     render(){
         const actions = [
@@ -104,20 +104,6 @@ class QueryBuilder extends Component{
                         <p> Enter groups and other filter criteria below, then submit to get reccommended paths. </p> 
                         </div>
                     </Col>
-                </Row>
-                <Row>
-                <Dialog className={this.state.nogoupselected ? "" : "hide"}
-                    bodyStyle={{fontSize: 13}}
-                    titleStyle={{fontSize: 14, fontWeight: 'bold'}}
-                    title="No Group Selected"
-                    actions={actions}
-                    style={{zIndex: 2000,fontSize: 12, height: 300, width: 350, left: 60}}
-                    modal={false}
-                    open={this.state.nogoupselected}
-                    onRequestClose={this.handleClose}
-                >
-                   <p>Please query at least one student group by selecting Course and Grade.</p>
-                    </Dialog>
                 </Row>
                 <GradeSelection selectedgradelist={this.props.selectedgradelist}/>
                 <CourseSelection selectedcourselist={this.props.selectedcourselist}/>

@@ -23,11 +23,10 @@ class StandardsSelection extends Component{
             showGroups: false, 
         }
     }
-    // componentWillMount(){
-    //     if (this.props.selectedgradelist) {
-    //          helper.getStandards(this.props.selectedgradelist, this.props.dispatch);     
-    //     }
-       
+    componentWillMount() {
+        // reset chips and grouplist
+        helper.getStandards("",this.props.dispatch); 
+    }
     // }
     // // handleRequestDelete(id) {
     //     // filter standardslist based on id

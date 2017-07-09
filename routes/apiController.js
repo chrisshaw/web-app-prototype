@@ -30,7 +30,7 @@ module.exports = function(app){
     function saveStudentGetIds(studentArr, username, i){
         return new Promise((resolve, reject) => {
             let query =aql`for s in ${studentArr}
-            let student_id = (UPSERT{ studentId: s.studentId } INSERT { studentId: s.studentId,firstName: s.firstName,  lastName: s.lastName, email: s.email, mentor:  s.mentor, dateCreated: DATE_NOW(),  dateUpdated: DATE_NOW(), updatedBy: ${username}} UPDATE {email: s.email, mentor:  s.mentor,  dateUpdated: DATE_NOW(),  updatedBy: ${username} } IN students RETURN NEW._id )
+            let student_id = (UPSERT{ studentId: s.studentId } INSERT { studentId: s.studentId,firstName: s.firstName,  lastName: s.lastName, email: s.email, mentor:  s.mentor, dateCreated: DATE_NOW(),  dateUpdated: null, createdBy: ${username}, updatedBy: null} UPDATE {email: s.email, mentor:  s.mentor,  dateUpdated: DATE_NOW(),  updatedBy: ${username} } IN students RETURN NEW._id )
             let course_id = (for v in courses Filter v.name == s.course return {_id:v._id, section: s.section})
             let fas = (for fa in s.focusAreas
                 let focusArea = (for f in focusAreas filter f["Focus Area"] == fa.faName return f._id)
@@ -260,13 +260,13 @@ module.exports = function(app){
                     // studentToCourse == taking
                     // courseToFA == covers
                     let firstUpsert = aql`for s in ${response[0]}
-                    UPSERT { _from: s.student_id[0] , _to: s.course_id[0]._id} INSERT  { _from: s.student_id[0] , _to: s.course_id[0]._id, section: s.course_id[0].section, dateCreated: DATE_NOW(), dateUpdated: DATE_NOW(), updatedBy: ${username} } UPDATE { section: s.course_id[0].section,  dateUpdated: DATE_NOW(), updatedBy: ${username}} IN taking RETURN { doc: NEW, type: OLD ? 'update' : 'insert' } `
+                    UPSERT { _from: s.student_id[0] , _to: s.course_id[0]._id} INSERT  { _from: s.student_id[0] , _to: s.course_id[0]._id, section: s.course_id[0].section, dateCreated: DATE_NOW(), dateUpdated:  null, createdBy: ${username}, updatedBy: null} UPDATE { section: s.course_id[0].section,  dateUpdated: DATE_NOW(), updatedBy: ${username}} IN taking RETURN { doc: NEW, type: OLD ? 'update' : 'insert' } `
                     db.query(firstUpsert)
                     .then(cursor => {  
                         // INSERT
                         let secondUpsert = aql`for s in  ${response[0]}
                         for fa in s.focusArea 
-                        UPSERT { _from: s.student_id[0], _to: fa.fa_id} INSERT { _from: s.student_id[0], _to: fa.fa_id, type: fa.focusAreaDetails.faType, mastered: fa.focusAreaDetails.mastered,  dateCreated: DATE_NOW(), dateUpdated: DATE_NOW(), updatedBy: ${username}  } UPDATE { type: fa.focusAreaDetails.faType, mastered: fa.focusAreaDetails.mastered,  dateUpdated: DATE_NOW(), updatedBy: ${username}  } IN hasMastered RETURN { doc: NEW, type: OLD ? 'update' : 'insert' }`;
+                        UPSERT { _from: s.student_id[0], _to: fa.fa_id} INSERT { _from: s.student_id[0], _to: fa.fa_id, type: fa.focusAreaDetails.faType, mastered: fa.focusAreaDetails.mastered,  dateCreated: null, dateUpdated: DATE_NOW(), createdBy: ${username} , updatedBy: null } UPDATE { type: fa.focusAreaDetails.faType, mastered: fa.focusAreaDetails.mastered,  dateUpdated: DATE_NOW(), updatedBy: ${username}  } IN hasMastered RETURN { doc: NEW, type: OLD ? 'update' : 'insert' }`;
                         // console.log(secondUpsert)
                         db.query(secondUpsert)
                         .then(cursor => {  
