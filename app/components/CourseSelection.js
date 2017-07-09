@@ -24,6 +24,10 @@ class CourseSelection extends Component{
         // reset chips and grouplist
         helper.getCourses("",this.props.dispatch); 
     }
+    componentWillMount() {
+        // reset chips and grouplist
+        helper.getCourses("",this.props.dispatch); 
+    }
     handleShowGroups() {
         // toggle between true and false
         this.setState({showGroups: !this.state.showGroups})
@@ -36,7 +40,7 @@ class CourseSelection extends Component{
         return(<div>
                     <Row>
                         <Col xs={10} md={10} >
-                            <p className="search-text chip-float"> in my courses (*)</p>
+                            <p className="search-text chip-float"> in my courses</p>
                         </Col>
                         <Col xs={2} md={2} >
                             <div className="reset-button text-center" onTouchTap={this.handleReset} ><ResetIcon className="reset-icon" /> Reset</div>        

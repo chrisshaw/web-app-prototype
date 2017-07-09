@@ -19,7 +19,8 @@ const intialstate = {
   initialSearchTerms: [],
   pathsrendered: false,
   pathbuilderview: false,
-  paths: [],  
+  paths: [],
+  searching: false,  
 }
 
 const loginintialstate = {
@@ -45,6 +46,8 @@ const mainReducer = (state={intialstate}, action) => {
             return Object.assign({},state, {paths: action.paths});
         case 'RENDER_PATHS':
             return Object.assign({},state, {pathsrendered: action.pathsrendered});
+        case 'SEARCHING_PATHS':
+            return Object.assign({},state, {searching: action.searching});
         case 'UPDATE_GRADES':
             //pulls for display in autopopulate dropdown to selected list for query
             // delete portion not currently in use - old code
