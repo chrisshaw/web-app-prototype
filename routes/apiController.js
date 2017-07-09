@@ -357,6 +357,7 @@ module.exports = function(app){
         let query = aql`
             for c in courses
             filter length(${queryGrades}) > 0 ? TO_ARRAY(TO_STRING(c.grade)) any in ${queryGrades} : true
+            filter c.ownerIsBaseCurriculum != true
             SORT c.name asc
             return {_id: c._id, name: c.name}
         `;
