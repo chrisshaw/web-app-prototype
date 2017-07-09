@@ -25,6 +25,7 @@ class GradeSelection extends Component{
     // handleRequestDelete(id) {
     //     helper.removeGroup(id, this.props.dispatch);
     // }
+
     componentWillMount(){
         helper.getGrades(this.props.dispatch);     
     }
@@ -43,7 +44,7 @@ class GradeSelection extends Component{
         return(<div>
                     <Row>
                         <Col xs={10} md={10} >
-                            <p className="search-text chip-float"> in my grades (*)</p>
+                            <p className="search-text chip-float"> Students in my grades (*)</p>
                         </Col>
                         <Col xs={2} md={2} >
                             <div className="reset-button text-center" onTouchTap={this.handleReset} ><ResetIcon className="reset-icon" /> Reset</div>        

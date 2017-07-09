@@ -31,6 +31,16 @@ class QueryBuilder extends Component{
             nogoupselected: false,   
         }
     }
+   componentDidUpdate(prevProps, prevState){
+        
+        if ((prevProps.selectedgradelist !== this.props.selectedgradelist) && (prevProps.selectedgradelist) && (this.props.selectedgradelist)){
+            
+            console.log("prevProps.selectedgradelist", prevProps.selectedgradelist)
+        console.log("this.props.selectedgradelist", this.props.selectedgradelist)
+            helper.getCourses(this.props.selectedgradelist, this.props.dispatch); 
+            helper.getStandards(this.props.selectedgradelist, this.props.dispatch);     
+        }    
+    }
     handleRequestDelete(id) {
         // filter grouplist based on id
         helper.removeGroup(id, this.props.dispatch);     
@@ -47,7 +57,7 @@ class QueryBuilder extends Component{
     handleSubmitAll() {
         // clear message
         helper.pathsRendered(false, this.props.dispatch);
-        if ((this.props.selectedgradelist.length !== 0) && (this.props.selectedcourselist.length !== 0)){
+        if ((this.props.selectedgradelist) && (this.props.selectedcourselist) && (this.props.selectedgradelist.length !== 0) && (this.props.selectedcourselist.length !== 0)){
             // this.props.closeDrawer();
             // clear old paths
             // var pathsArr = [{courses: {},
@@ -109,8 +119,8 @@ class QueryBuilder extends Component{
                    <p>Please query at least one student group by selecting Course and Grade.</p>
                     </Dialog>
                 </Row>
-                <CourseSelection selectedcourselist={this.props.selectedcourselist}/>
                 <GradeSelection selectedgradelist={this.props.selectedgradelist}/>
+                <CourseSelection selectedcourselist={this.props.selectedcourselist}/>
                 <TopicSelection selectedtopiclist={this.props.selectedtopiclist}/>
                 <SubjectContentSelection selectedsubjectcontentlist={this.props.selectedsubjectcontentlist}/>
                 <StandardsSelection  selectedstandardslist={this.props.selectedstandardslist}/>              
