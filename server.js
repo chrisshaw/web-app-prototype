@@ -4,16 +4,10 @@ var path = require('path');
 // var methodOverride = require('method-override');
 var PORT = process.env.PORT || 8080;
 var app = express();
-// var session = require('express-session');
+var cookieParser = require('cookie-parser');
 
-// // session 
-// var sess = {
-//     secret: 'keyboard cat',
-//     cookie: {},
-//     // proxy: true,
-//     resave: true,
-//     saveUninitialized: true
-// }
+// middle ware to get and set cookies -- needed for foxxService to set cookies for sid
+app.use(cookieParser());
 // for production
 // if (app.get('env') === 'production') {
 //   app.set('trust proxy', 1) // trust first proxy

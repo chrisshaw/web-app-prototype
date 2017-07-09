@@ -33,6 +33,11 @@ var helpers = {
     //     }
     // });
 
+        headers: {
+      'Content-Length': contentLength,
+      'Content-Type': 'application/x-www-form-urlencoded'
+    },
+
     getCookie: function(c_name) {
         if (document.cookie.length > 0) {
             let c_start = document.cookie.indexOf(c_name + "=");
@@ -100,7 +105,7 @@ var helpers = {
                 method: 'post',
                 url: '/csv/students/courses/data', 
                 data: data,
-                headers: {'X-Session-Id': USER_TOKEN}
+                headers: {'x-session-id': USER_TOKEN}
             })
             .then(function(response) {           
                 // this will clear the data from the upload Page after saving....

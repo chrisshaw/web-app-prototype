@@ -6,22 +6,36 @@ const sessionsMiddleware = require('@arangodb/foxx/sessions');
 const auth = createAuth();
 const router = createRouter();
 const users = module.context.collection('users');
+const headerTransport = require('@arangodb/foxx/sessions/transports/header');
+
+var secret="This is a test test test";
+const sessions = sessionsMiddleware({
+  storage: module.context.collection('sessions'),
+  transport: headerTransport({
+    name: 'X-FOXXSESSID',
+    ttl: 60 * 60 * 24 * 7, // one week in seconds
+    algorithm: 'sha256',
+    secret: secret 
+  })
+});
+
+module.context.use(sessions);
 // const cookieTransport = require('@arangodb/foxx/sessions/transports/cookie');
 // Pass in a secure secret from the Foxx configuration
 // const secret = module.context.configuration.cookieSecret;
 // const sessions = sessionsMiddleware({
 //   storage: module.context.collection('sessions'),
-//   transport: cookieTransport({
-//     name: 'FOXXSESSID',
-//     ttl: 60 * 60 * 24 * 7, // one week in seconds
-//     algorithm: 'sha256',
-//     secret: secret
+  // transport: cookieTransport({
+  //   name: 'FOXXSESSID',
+  //   ttl: 60 * 60 * 24 * 7, // one week in seconds
+  //   algorithm: 'sha256',
+  //   secret: secret
 //   })
 // });
-const sessions = sessionsMiddleware({
-  storage: module.context.collection('sessions'),
-  transport: 'header'
-});
+// const sessions = sessionsMiddleware({
+//   storage: module.context.collection('sessions'),
+//   transport: ['header']
+// });
 module.context.use(sessions);
 module.context.use(router);
 

@@ -12,7 +12,8 @@ var dbName = 'skdb';
 const db = arangojs(dbHostPort);
 db.useDatabase(dbName);
 db.useBasicAuth(dbUser, dbPwd);
-const foxxService = db.route('auth');
+
+
 
 // console.log(db);
 // test connection
@@ -53,14 +54,12 @@ module.exports = function(app){
     })
 
     app.post('/login' , function(req, res, next){
+        const foxxService = db.route('auth');
         // console.log(req.body)
         foxxService.post('/login', req.body)
         .then(response => {
-            //  console.log('login session', req.session);
-            console.log("login: ", response.headers['x-session-id']);
-            // store session token in a cookie on client
-            res.setHeader("Set-Cookie",  'x-session-id='+response.headers['x-session-id']);
-            // console.log("login", response);
+            res.setHeader("Set-Cookie",  'x-foxxsessid='+response.headers['x-foxxsessid']);
+            console.log("response login", response);
             res.json(response.body);
         }).catch(error => {
             // can send error to logs?
@@ -71,12 +70,12 @@ module.exports = function(app){
         })
     })
     app.post('/signup' , function(req, res, next){
+        const foxxService = db.route('auth');
         //  console.log(req.body);
         foxxService.post('/signup', req.body)
         .then(response => {
-           
-            // store session token in a cookie on client
-            res.setHeader("Set-Cookie",  response.headers['set-cookie']);
+           // store session token in a cookie on client
+           res.setHeader("Set-Cookie",  'x-foxxsessid='+response.headers['x-session-id']);
 
             res.json(response.body);
         }).catch(error => { 
@@ -146,24 +145,26 @@ module.exports = function(app){
             })
      })
 
-    app.post("/csv/students/courses/data", function(req, res, next){
-         //***** Start: *Working on this part....****//
-        // var sid = req.headers.cookie.split('=')[1];
-        //     // res.setHeader({'Header': sid});
-        // res.setHeader("X-Session-Id",  sid);
-            
-        //  foxxService.get('/user', res.header)
-        // .then(response => {
+     function getUser(req, res) {
+        // *** make this a promise**
+        var cookie = req.cookies['x-foxxsessid'];;
+        const foxxService = db.route('auth', {"x-foxxsessid" : cookie});
+        foxxService.get('/user')
+        .then(response => {
         
-        //     // var encoded = req.headers.authorization.split(' ')[1];
-        //     // var decoded = new Buffer(encoded, 'base64').toString('utf8');
-        //     // console.log("decoded: ", decoded);
-        //     console.log("response", response);
-        // }).catch(error => {
-        //     console.log("error", error);
-        // })
+            // var encoded = req.headers.authorization.split(' ')[1];
+            // var decoded = new Buffer(encoded, 'base64').toString('utf8');
+            // console.log("decoded: ", decoded);
+            console.log("response", response);
+        }).catch(error => {
+            console.log("error", error);
+        })
        //***** End: Working on this part....****//
+     }
 
+    app.post("/csv/students/courses/data", function(req, res, next){
+
+        getUser(req, res);
         // verify user logged in and capture for save...
         let data = req.body;
         var studentObj = {};
@@ -542,6 +543,7 @@ module.exports = function(app){
     })
 
     app.use(function(req, res){
+        console.log("is this here", req.cookies);
         // main entry point
         res.sendFile(path.join(__dirname, '/../public/index.html'));
     })
