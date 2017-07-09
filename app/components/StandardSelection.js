@@ -34,7 +34,7 @@ class StandardsSelection extends Component{
     //     helper.removeStandards(id, this.props.dispatch);
     // }
     handleReset() {
-        helper.getStandards(this.props.dispatch); 
+        helper.getStandards("",this.props.dispatch); 
     }
     handleShowGroups() {
         // toggle between true and false

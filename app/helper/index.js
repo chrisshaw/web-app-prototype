@@ -33,10 +33,10 @@ var helpers = {
     //     }
     // });
 
-        headers: {
-      'Content-Length': contentLength,
-      'Content-Type': 'application/x-www-form-urlencoded'
-    },
+    //     headers: {
+    //   'Content-Length': contentLength,
+    //   'Content-Type': 'application/x-www-form-urlencoded'
+    // },
 
     getCookie: function(c_name) {
         if (document.cookie.length > 0) {
@@ -147,8 +147,8 @@ var helpers = {
     },
     getCourses: function(grade, dispatch){
         /// parse array to a string for query.
+        let gradeString = "";
         if (grade.length > 0) {
-            let gradeString = "";
             if (grade.length === 1){
                 gradeString = grade[0].name;
             } else {
@@ -158,13 +158,12 @@ var helpers = {
                     gradeString +=  ',' + grade[i].name;
                 }
             }
-            return axios.get('/api/courses/'+gradeString).then(function(response) {
+        }
+        return axios.get('/api/courses/'+gradeString).then(function(response) {
                 // send results to redux store for use by Results component
                 dispatch(actions.updateCourseList(false, 0, response.data));
                 return;
-            })
-
-        }
+        })
        
     },
     saveSelectedFA(e, dispatch){
@@ -195,8 +194,8 @@ var helpers = {
     },
     getStandards: function(grade, dispatch){
         /// parse array to a string for query.
+        let gradeString = "";
         if (grade.length > 0) {
-            let gradeString = "";
             if (grade.length === 1){
                 gradeString = grade[0].name;
             } else {
@@ -208,7 +207,8 @@ var helpers = {
                 }
             }
             // var standardsArr = [{_id: 0, name: "AP-ENG-LANG.R.3"}, {_id: 1, name: "CCSS.ELA-LITERACY.RL.9-10.3"}]
-            return axios.get('/api/standards/'+gradeString).then(function(response) {
+        }
+        return axios.get('/api/standards/'+gradeString).then(function(response) {
                 // send results to redux store for use by Results component
                 /// need to put in an object with an id
                 //  console.log("standards" ,response.data)
@@ -219,7 +219,6 @@ var helpers = {
                 dispatch(actions.updateStandardsList(false, 0, standardsArr))
                 return;
             }) 
-        }
     },
     getSubjectContents: function(dispatch){
         var subjectArr = [{_id: 0, name: "english"}, {_id: 1, name: "math"}, {_id: 2, name: "science"}, {_id: 3, name: "social studies"}]
