@@ -81,65 +81,6 @@ module.exports = function(app){
         })
     })
 
-     app.post("/csv/data", function(req, res, next){
-        
-        var studentObj = req.body;
-        console.log("req.body", studentObj);
-        // save students to database
-        var students =  db.collection('students');
-        var groups =  db.collection('groups');
-        var teacherToGroups = db.edgeCollection('teacherToGroups');
-        var groupToStudents = db.edgeCollection('groupToStudents');
-        var studentToCurrentFA = db.edgeCollection('studentToCurrentFA');
-        students.save(studentObj).then(function(student){
-                var students =  student;   // has student id
-                 // all dummy ....
-                // create a group and get it - use key to make it unique
-               
-                var newgroupObj = {name: studentObj[0].focusArea + '_' + students[0]._key}
-                groups.save(newgroupObj).then(function(groups){
-                    // map group to teacher 1 - teachers/1271022
-                    teacherToGroups.save({
-                        _from: 'teachers/2479769',
-                        _to: groups._id
-                    }).then(
-                        () => console.log("edge created"),
-                        err => console.log('Failed to create edge :', err)
-                    )
-                    // take the first FA
-                    let faQuery = studentObj[0].focusArea;
-                    // get FA id then do final edge mappings
-                    var query = aql`FOR fa in focusAreas FILTER fa["Focus Area"] == ${faQuery} RETURN fa._id`;
-                        db.query(query)
-                        .then(cursor => {                           
-                            // cursor is a cursor for the query result
-                                if (cursor._result.length > 0){
-                                    var focusArea = cursor._result[0];
-                                    for (var i = 0 ; i  < students.length; i++){
-                                    groupToStudents.save({
-                                        _from: groups._id,
-                                        _to: students[i]._id
-                                    }).then(
-                                        () => console.log("edge created"),
-                                        err => console.log('Failed to create edge :', err)
-                                    )
-                                    // students to fa
-                                    studentToCurrentFA.save({
-                                        _from: students[i]._id,
-                                        _to: focusArea
-                                    }).then(
-                                        () => console.log("edge created"),
-                                        err => console.log('Failed to create edge :', err)
-                                    )
-                                    
-                                }                                    
-                             }
-                             res.json();
-                        });
-                })
-            })
-     })
-
      function getUser(req, res) {
         return new Promise( (resolve, reject) => { 
             let cookies = "";
@@ -163,6 +104,7 @@ module.exports = function(app){
             // if username not null ie. reponse.
             if (username){
                 // verify user logged in and capture for save...
+                console.log(req.body);
                 let data = req.body;
                 var studentObj = {};
                 let studentArr = [];
@@ -260,10 +202,12 @@ module.exports = function(app){
                     db.query(firstUpsert)
                     .then(cursor => {  
                          console.log("inserted 1:", cursor._result);
-                        // INSERT
+                        // INSERT 
+                        // remove any fa where hasMastered != "FALEs"
                         let secondUpsert = aql`for s in  ${response[0]}
                         for fa in s.focusArea 
-                        UPSERT { _from: s.student_id[0], _to: fa.fa_id} INSERT { _from: s.student_id[0], _to: fa.fa_id, type: fa.focusAreaDetails.faType, mastered: fa.focusAreaDetails.mastered,  dateCreated: DATE_NOW(), dateUpdated: null, createdBy: ${username} , updatedBy: null } UPDATE { type: fa.focusAreaDetails.faType, mastered: fa.focusAreaDetails.mastered,  dateUpdated: DATE_NOW(), updatedBy: ${username}  } IN hasMastered RETURN { doc: NEW, type: OLD ? 'update' : 'insert' }`;
+                        FILTER UPPER(fa.focusAreaDetails.mastered) == 'TRUE'
+                        UPSERT { _from: s.student_id[0], _to: fa.fa_id} INSERT { _from: s.student_id[0], _to: fa.fa_id, type: fa.focusAreaDetails.faType, mastered: UPPER(fa.focusAreaDetails.mastered),  dateCreated: DATE_NOW(), dateUpdated: null, createdBy: ${username} , updatedBy: null } UPDATE { type: fa.focusAreaDetails.faType, mastered: UPPER(fa.focusAreaDetails.mastered),  dateUpdated: DATE_NOW(), updatedBy: ${username}  } IN hasMastered RETURN { doc: NEW, type: OLD ? 'update' : 'insert' }`;
                         // console.log(secondUpsert)
                         db.query(secondUpsert)
                         .then(cursor => {  
