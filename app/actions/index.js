@@ -137,12 +137,12 @@ updatePathList: (paths) => {
     }
 },
 // used to indicate if a path has been rendered in the Tabs
-pathsRendered: (pathsrendered) => {
-  return {
-      type: 'RENDER_PATHS',
-      pathsrendered
-    }
-},
+// pathsRendered: (pathsrendered) => {
+//   return {
+//       type: 'RENDER_PATHS',
+//       pathsrendered
+//     }
+// },
 
 // initialQueryData: (initialSearchTerms, newSearch) => {
 //   // newSearch is a boolean - true of false.

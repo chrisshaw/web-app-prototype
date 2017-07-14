@@ -70,7 +70,8 @@ var helpers = {
                     dispatch(actions.viewUploadedCSVData(response.data.results, response.data.error))          
                 })
             }
-            reader.readAsBinaryString(file);
+            // reader.readAsBinaryString(file);
+             reader.readAsText(file);
         }
     },
     // updateCSV: function(action, id, type, dispatch){
@@ -160,6 +161,7 @@ var helpers = {
             }
         }
         return axios.get('/api/courses/'+gradeString).then(function(response) {
+            console.log("courses", response)
                 // send results to redux store for use by Results component
                 dispatch(actions.updateCourseList(false, 0, response.data));
                 return;
@@ -246,9 +248,9 @@ var helpers = {
             // }
         })
     },
-    pathsRendered(pathsrendered, dispatch){
-        dispatch(actions.pathsRendered(pathsrendered))
-    },
+    // pathsRendered(pathsrendered, dispatch){
+    //     dispatch(actions.pathsRendered(pathsrendered))
+    // },
     // removeGroup: function(id, dispatch) {
     //     dispatch(actions.updateGroupList(true, id))
     // },

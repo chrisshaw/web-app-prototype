@@ -14,7 +14,7 @@ import React, { Component } from 'react';
 import uuid from 'uuid';
 import Edit from 'react-edit-inline';
 import helper from '../helper';
-import UpdateStudentModal  from './UpdateStudentModal';
+// import UpdateStudentModal  from './UpdateStudentModal';
 
 
 

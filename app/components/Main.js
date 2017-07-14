@@ -41,7 +41,7 @@ const navBarTheme = getMuiTheme({
   chip: {
       backgroundColor: '#A35FE3',
       textColor: '#FFFFFF',
-      deleteIconColor: '#FFFFFF',
+      deleteIconColor: 'rgba(255,255,255,.26)',
       
   },
   raisedButton : {

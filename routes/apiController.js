@@ -13,8 +13,6 @@ const db = arangojs(dbHostPort);
 db.useDatabase(dbName);
 db.useBasicAuth(dbUser, dbPwd);
 
-
-
 // console.log(db);
 // test connection
 db.get()
@@ -37,11 +35,9 @@ module.exports = function(app){
                 return {fa_id: focusArea[0], focusAreaDetails: fa})
             return {student_id: student_id, course_id: course_id,focusArea: fas }`
             // GET DATA --> UPDATE DATA
-            console.log(query)
             db.query(query)
             .then(cursor => {  
                 // return the data that contains ids for the next steps
-                console.log(cursor._result);
                 resolve(cursor._result);
             }).catch(error => {
                 reject(error)
@@ -88,6 +84,7 @@ module.exports = function(app){
      app.post("/csv/data", function(req, res, next){
         
         var studentObj = req.body;
+        console.log("req.body", studentObj);
         // save students to database
         var students =  db.collection('students');
         var groups =  db.collection('groups');
@@ -152,7 +149,6 @@ module.exports = function(app){
             const foxxService = db.route('auth', {"x-foxxsessid" : cookie});
             foxxService.get('/user')
             .then(response => {
-                console.log(response.body.username);
                 resolve(response.body.username);
             }).catch(error => {
                 reject(error)
@@ -263,14 +259,15 @@ module.exports = function(app){
                     UPSERT { _from: s.student_id[0] , _to: s.course_id[0]._id} INSERT  { _from: s.student_id[0] , _to: s.course_id[0]._id, section: s.course_id[0].section, dateCreated: DATE_NOW(), dateUpdated:  null, createdBy: ${username}, updatedBy: null} UPDATE { section: s.course_id[0].section,  dateUpdated: DATE_NOW(), updatedBy: ${username}} IN taking RETURN { doc: NEW, type: OLD ? 'update' : 'insert' } `
                     db.query(firstUpsert)
                     .then(cursor => {  
+                         console.log("inserted 1:", cursor._result);
                         // INSERT
                         let secondUpsert = aql`for s in  ${response[0]}
                         for fa in s.focusArea 
-                        UPSERT { _from: s.student_id[0], _to: fa.fa_id} INSERT { _from: s.student_id[0], _to: fa.fa_id, type: fa.focusAreaDetails.faType, mastered: fa.focusAreaDetails.mastered,  dateCreated: null, dateUpdated: DATE_NOW(), createdBy: ${username} , updatedBy: null } UPDATE { type: fa.focusAreaDetails.faType, mastered: fa.focusAreaDetails.mastered,  dateUpdated: DATE_NOW(), updatedBy: ${username}  } IN hasMastered RETURN { doc: NEW, type: OLD ? 'update' : 'insert' }`;
+                        UPSERT { _from: s.student_id[0], _to: fa.fa_id} INSERT { _from: s.student_id[0], _to: fa.fa_id, type: fa.focusAreaDetails.faType, mastered: fa.focusAreaDetails.mastered,  dateCreated: DATE_NOW(), dateUpdated: null, createdBy: ${username} , updatedBy: null } UPDATE { type: fa.focusAreaDetails.faType, mastered: fa.focusAreaDetails.mastered,  dateUpdated: DATE_NOW(), updatedBy: ${username}  } IN hasMastered RETURN { doc: NEW, type: OLD ? 'update' : 'insert' }`;
                         // console.log(secondUpsert)
                         db.query(secondUpsert)
                         .then(cursor => {  
-                            // console.log("inserted 2:", cursor._result);
+                            console.log("inserted 2:", cursor._result);
                             if (response[1].length > 0 ) {
                                 // some FA names were not found in the database
                                 res.json({success: false, error: response[1]})
@@ -352,8 +349,6 @@ module.exports = function(app){
         let queryGrades = [];
         // console.log(grades)
         if (grades) queryGrades = grades.split(',');
-          
-        // console.log("courses grade", queryGrades)
         let query = aql`
             for c in courses
             filter length(${queryGrades}) > 0 ? TO_ARRAY(TO_STRING(c.grade)) any in ${queryGrades} : true
@@ -363,7 +358,6 @@ module.exports = function(app){
 
         db.query(query)
         .then(cursor => { 
-            //  console.log("courses", cursor._result);
             res.json(cursor._result);
         }).catch(error => {
             console.log(Date.now() + " Error (Get Courses from Database):", error);
@@ -503,10 +497,13 @@ module.exports = function(app){
     app.post("/csv/file", function(req, res, next){
         // main entry point
         // need to verify csv file and save contents somewhere...
-        var fileContentsFromBuffer = req.body.buffer.toString('utf-8');
+        var fileContentsFromBuffer = req.body.buffer;
         // remove the newline char then split on the carriage return 
-        var csvToArr =  fileContentsFromBuffer.replace(/\n/g, '').split(/\r/);   
-        // console.log(csvToArr);
+        // some csv files have /r some have  /r/n
+        // replace any /r with /n - the remove duplicates i.e. /n/n
+        var fileContent1 = fileContentsFromBuffer.replace(/\r/g, "\n");
+        var csvToArr = fileContent1.replace(/\n\n/g, "\n").split(/\n/);
+        // var csvToArr =  fileContent2.split(/\n/);   
         //  need to do for loop over array, split on comma and save
         var studentsArr = [];
         // do some basic verification
@@ -515,69 +512,67 @@ module.exports = function(app){
         // start at row 1 cos first row is headings
         if (csvToArr.length < 2) {
             // file contains no data only headers
-            // console.log("error length < 2");
             res.json({success: false, error: ["File contains no data."]}); 
         } else {     
-            for (var i = 0; i < csvToArr.length; i++) {          
-                // regex to allow for commas inside ""
-                let re = /[ ,]*"([^"]+)"|([^,]+)/g;
-                let match;
-                let dataArr = [];
-                while (match = re.exec(csvToArr[i])) {
-                    let data = match[1] || match[2];
-                    dataArr.push(data);
-                }
-                // create object to send to client
-                let studentObj = {
-                        id: i-1,
-                        studentId: dataArr[0],
-                        firstName: dataArr[1],
-                        lastName: dataArr[2],
-                        email: dataArr[3],
-                        section: dataArr[4],
-                        course: dataArr[5],
-                        mentor: dataArr[6],
-                        faName: dataArr[7],
-                        faType: dataArr[8],
-                        mastered: dataArr[9]
-                }      
-                if ((i === 0) && ( dataArr.length < 10)) {
-                    console.log(Date.now(), " Error: Bad File Format")
-                    res.json({success: false, error: ["Missing headers or bad file format - must be csv format."]});
-                    break; 
-                } 
-                else if ((i === 0) && ( dataArr.length === 10)) {
-                    // verify the headers are correct so we don't save junk
-                    if ((dataArr[0].trim().toUpperCase() !== "STUDENT ID") 
-                    || (dataArr[1].trim().toUpperCase() !== "STUDENT FIRST")
-                    || (dataArr[2].trim().toUpperCase() !== "STUDENT LAST")
-                    || (dataArr[3].trim().toUpperCase() !== "STUDENT EMAIL")
-                    || (dataArr[4].trim().toUpperCase() !== "SECTION NAME")
-                    || (dataArr[5].trim().toUpperCase() !== "COURSE NAME")
-                    || (dataArr[6].trim().toUpperCase() !== "MENTOR NAME")
-                    || (dataArr[7].trim().toUpperCase() !== "FOCUS AREA NAME")
-                    || (dataArr[8].trim().toUpperCase() !== "FOCUS AREA TYPE")
-                    || (dataArr[9].trim().toUpperCase() !== "MASTERED?")) {
-                        console.log(Date.now(), " Error: Header names are incorrect");
-                        res.json({success: false, error: ["Header names are incorrect"]});
+            for (var i = 0; i < csvToArr.length; i++) {    
+                // skip over any trailing empty lines   
+                if (csvToArr[i] !== ''){
+                    // regex to allow for commas inside ""
+                    let re = /[ ,]*"([^"]+)"|([^,]+)/g;
+                    let match;
+                    let dataArr = [];
+                    while (match = re.exec(csvToArr[i])) {
+                        let data = match[1] || match[2];
+                        dataArr.push(data);
+                    }
+                    // create object to send to client
+                    let studentObj = {
+                            id: i-1,
+                            studentId: dataArr[0],
+                            firstName: dataArr[1],
+                            lastName: dataArr[2],
+                            email: dataArr[3],
+                            section: dataArr[4],
+                            course: dataArr[5],
+                            mentor: dataArr[6],
+                            faName: dataArr[7],
+                            faType: dataArr[8],
+                            mastered: dataArr[9]
+                    }      
+                    if ((i === 0) && ( dataArr.length < 10)) {
+                        console.log(Date.now(), " Error: Bad File Format")
+                        res.json({success: false, error: ["Missing headers or bad file format - must be csv format."]});
                         break; 
                     } 
+                    else if ((i === 0) && ( dataArr.length === 10)) {
+                        // verify the headers are correct so we don't save junk
+                        if ((dataArr[0].trim().toUpperCase() !== "STUDENT ID") 
+                        || (dataArr[1].trim().toUpperCase() !== "STUDENT FIRST")
+                        || (dataArr[2].trim().toUpperCase() !== "STUDENT LAST")
+                        || (dataArr[3].trim().toUpperCase() !== "STUDENT EMAIL")
+                        || (dataArr[4].trim().toUpperCase() !== "SECTION NAME")
+                        || (dataArr[5].trim().toUpperCase() !== "COURSE NAME")
+                        || (dataArr[6].trim().toUpperCase() !== "MENTOR NAME")
+                        || (dataArr[7].trim().toUpperCase() !== "FOCUS AREA NAME")
+                        || (dataArr[8].trim().toUpperCase() !== "FOCUS AREA TYPE")
+                        || (dataArr[9].trim().toUpperCase() !== "MASTERED?")) {
+                            console.log(Date.now(), " Error: Header names are incorrect");
+                            res.json({success: false, error: ["Header names are incorrect"]});
+                            break; 
+                        } 
+                    } 
+                    // pre-format - create array of objects to be saved to database
+                    studentsArr.push(studentObj);
                 } 
-                // pre-format - create array of objects to be saved to database
-                studentsArr.push(studentObj);
-                if (i >= csvToArr.length-1 ){
-                    var resultsObj = {success: true, results: studentsArr }
-                    res.json(resultsObj);
-                }
             }
-
+            // send results back to client
+            var resultsObj = {success: true, results: studentsArr }
+            res.json(resultsObj);
+            // }
         }
-
- 
     })
 
     app.use(function(req, res){
-        console.log("is this here", req.cookies);
         // main entry point
         res.sendFile(path.join(__dirname, '/../public/index.html'));
     })
