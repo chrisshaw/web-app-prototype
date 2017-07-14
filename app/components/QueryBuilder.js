@@ -33,10 +33,7 @@ class QueryBuilder extends Component{
     }
    componentDidUpdate(prevProps, prevState){
         
-        if ((prevProps.selectedgradelist !== this.props.selectedgradelist) && (prevProps.selectedgradelist) && (this.props.selectedgradelist)){
-            
-            console.log("prevProps.selectedgradelist", prevProps.selectedgradelist)
-        console.log("this.props.selectedgradelist", this.props.selectedgradelist)
+        if ((prevProps.selectedgradelist !== this.props.selectedgradelist) && (prevProps.selectedgradelist)){
             helper.getCourses(this.props.selectedgradelist, this.props.dispatch); 
             helper.getStandards(this.props.selectedgradelist, this.props.dispatch);     
         }    
@@ -53,30 +50,13 @@ class QueryBuilder extends Component{
     handleClose = () => {
         this.setState({nogoupselected: false});
     };
-    // new to be tested
     handleSubmitAll() {
         // clear message
-        helper.pathsRendered(false, this.props.dispatch);
-        // if ((this.props.selectedgradelist) && (this.props.selectedcourselist) && (this.props.selectedgradelist.length !== 0) && (this.props.selectedcourselist.length !== 0)){
-            // this.props.closeDrawer();
-            // clear old paths
-            // var pathsArr = [{courses: {},
-            //         grades: [],
-            //         topics: [],
-            //         standards: [],
-            //         subjects: [],
-            //         results: [] 
-            // }]
-            // console.log("clear path results length", pathsArr[0].results.length)
-            helper.newPaths("", this.props.dispatch);
-            // array to store new paths
-            pathArr = [];
-            // console.log("in Submit");
-            helper.getPathsAll(this.props.selectedcourselist,this.props.selectedgradelist, this.props.selectedstandardslist, this.props.selectedtopiclist, this.props.selectedsubjectcontentlist, this.props.dispatch);
-    //    } else {
-            // no group selected message
-            // this.setState({nogoupselected: true})
-        // } 
+        // helper.pathsRendered(false, this.props.dispatch);
+        helper.newPaths("", this.props.dispatch);
+        // array to store new paths
+        pathArr = [];
+        helper.getPathsAll(this.props.selectedcourselist,this.props.selectedgradelist, this.props.selectedstandardslist, this.props.selectedtopiclist, this.props.selectedsubjectcontentlist, this.props.dispatch);  
     }
     render(){
         const actions = [
@@ -115,13 +95,6 @@ class QueryBuilder extends Component{
                         <FlatButton containerElement='label' label="Get Recommended Paths" onTouchTap={this.handleSubmitAll} />
                     </Col>
                 </Row>
-                {this.props.pathsrendered ? (<Row>
-                    <Col xs={12} md={12} >
-                        <div className="query-builder-wrapper">
-                        <p className="text-center"><em className="paths-returned"> Path Results Returned </em></p> 
-                        </div>
-                    </Col>
-                </Row>) : "" } 
             </div>
         )
     }
@@ -135,7 +108,7 @@ const mapStateToProps = (store) => {
         selectedtopiclist: store.mainState.selectedtopiclist,
         selectedstandardslist: store.mainState.selectedstandardslist, 
         selectedsubjectcontentlist: store.mainState.selectedsubjectcontentlist,
-        pathsrendered: store.mainState.pathsrendered
+        // pathsrendered: store.mainState.pathsrendered
     }
 }
 

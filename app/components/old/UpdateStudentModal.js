@@ -24,7 +24,7 @@ export default class DialogExampleModal extends React.Component {
     ];
     if (this.props.selectedRow){
          var data = <div>{this.props.selectedRow.firstName}</div>;
-     console.log("selectedRow", this.props.selectedRow)
+    //  console.log("selectedRow", this.props.selectedRow)
 
     }
    

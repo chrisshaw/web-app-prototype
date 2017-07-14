@@ -44,8 +44,8 @@ const mainReducer = (state={intialstate}, action) => {
             return Object.assign({},state, {pathbuilderview: action.pathbuilderview}); 
         case 'UPDATE_PATHS':
             return Object.assign({},state, {paths: action.paths});
-        case 'RENDER_PATHS':
-            return Object.assign({},state, {pathsrendered: action.pathsrendered});
+        // case 'RENDER_PATHS':
+        //     return Object.assign({},state, {pathsrendered: action.pathsrendered});
         case 'SEARCHING_PATHS':
             return Object.assign({},state, {searching: action.searching});
         case 'UPDATE_GRADES':

@@ -71,20 +71,7 @@ class GroupTabs extends React.Component {
       value: 0,
     });
   }
-   componentWillReceiveProps(nextProps) {
-    //  console.log((nextProps.paths !== "") || (nextProps.paths !== this.props.paths))
-     if ((nextProps.paths !== "") || (nextProps.paths !== this.props.paths))  {
-       // updates message to say results found
-       helper.pathsRendered(true, this.props.dispatch);
-       // reset state
-       this.setState({
-          value: 0,
-        });
-    }
-  }
-  
 render() {
-  console.log(this.props.path)
   return <div></div>}
   render() {
       //// GET TABS from results
@@ -106,7 +93,7 @@ render() {
             if (fa.nextStd) {
                 var nextStandards = fa.nextStd.map((standard, index) => {
                 return   <Col key={index} className="chip-float"><div className="chip">
-                            {standard}
+                            {standard.toUpperCase()}
                           </div>
                           </Col>
               });
@@ -115,7 +102,7 @@ render() {
             if (fa.currentStd) {
               var currentStandards = fa.currentStd.map((standard, index) => {
                   return   <Col key={index} className="chip-float"><div className="chip">
-                              {standard}
+                              {standard.toUpperCase()}
                             </div>
                             </Col>
               });
@@ -136,7 +123,7 @@ render() {
                         <Row >
                           <Col className="chip-float">
                             <div className="chip">                    
-                              {fa.subject}      
+                              {fa.subject.toUpperCase()}      
                             </div>
                           </Col>
                           {currentStandards}
@@ -163,22 +150,27 @@ render() {
       } 
 
 
-    return <Tabs inkBarStyle={{background: '#A35FE3'}}
+    return <div>
+        {this.props.searching ? (<div>
+     
+     <div className="loader-location">
+     <div className="loader-text">Searching...</div>
+      <br />
+     <div className="text-center loader"></div></div>
+    </div>) : ""}
+
+    {this.props.paths ?    ( <Tabs inkBarStyle={{background: '#A35FE3'}}
         initialSelectedIndex={0}
         tabItemContainerStyle={{whiteSpace: 'wrap'}}
         value={this.state.value}
         onChange={this.handleChange}
       >
-      {this.props.searching ? (<div>
-     <div className="loader-location">
-     <div>Searching...</div>
-              <br />
-     <div className="text-center loader"></div></div>
-    </div>) : ""}
-       {this.props.paths ? (<Tab label="Path" value={this.state.value}  buttonStyle={{color: "#808080"}}>
-              {faComponents}
-       </Tab>) : ""}
-      </Tabs>
+    <Tab label="Path" value={this.state.value}  buttonStyle={{color: "#808080"}}>
+                  {faComponents}
+          </Tab>  
+      </Tabs>) : ""}
+    </div>
+  
   }
 }
 
