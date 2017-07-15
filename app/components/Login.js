@@ -54,7 +54,7 @@ class Login extends Component{
             this.setState({error: true, errorMsg: msg})
         } else {
             // if all ok then submit to server
-            helper.loginOrRegister(this.state.email, this.state.password, this.props.action , this.props.dispatch);
+            helper.loginOrRegister(this.state.email, this.state.password, this.props.action , this.props.dispatch,  this.props.router);
         }
     }
 

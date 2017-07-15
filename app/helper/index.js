@@ -297,7 +297,7 @@ var helpers = {
     showView: function(action, dispatch){
         dispatch(actions.setPage(action));
     },
-    loginOrRegister(email, password, authAction, dispatch){      
+    loginOrRegister(email, password, authAction, dispatch, router){      
         // capture data in object
         if (authAction === 'Login'){
              let userObj = { 
@@ -308,7 +308,9 @@ var helpers = {
             return axios.post('/login', userObj).then(function(response) {
                 let msg = "Invalid username or password - please try again";
                 dispatch(actions.userLogin(response.data.success));
-                dispatch(actions.userLoginError(!response.data.success, msg))
+                dispatch(actions.userLoginError(!response.data.success, msg));
+                // successful login route to default page
+                router.push('/');
                 return;
             })
         } else if (authAction === 'Sign Up'){
