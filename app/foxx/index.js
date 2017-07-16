@@ -42,7 +42,8 @@ module.context.use(router);
 router.get('/user', function (req, res) {
   try {
     const user = users.document(req.session.uid);
-    res.send({username: user.username});
+    // send back all user data
+    res.send({username: user.username, userid: user._id});
   } catch (e) {
     res.send({username: null});
   }
@@ -63,6 +64,7 @@ router.post('/login', function (req, res) {
   // Log the user in
   req.session.uid = user._key;
   req.sessionStorage.save(req.session);
+  // send back the username in the response
   res.send({success: true});
 })
 .body(joi.object({
@@ -96,11 +98,17 @@ router.post('/signup', function (req, res) {
   // Log the user in
   req.session.uid = user._key;
   req.sessionStorage.save(req.session);
-  res.send({success: true});
+  res.send({success: true, userid: user._id});
 })
 // password must have 1 capital letters and  2 digits
 .body(joi.object({
   username: joi.string().email(),
   password: joi.string().regex(/^(?=.*[A-Z])(?=.*[0-9].*[0-9])[a-zA-Z0-9]{8,16}$/),
+  first: joi.string(),
+  last: joi.string(),
+  company: joi.string(),
+  role: joi.string(),
+  createdBy: joi.string(),
+  dateCreated: joi.date(),
 }).required(), 'Credentials')
 .description('Creates a new user and logs them in.');

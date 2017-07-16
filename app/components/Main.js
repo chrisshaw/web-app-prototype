@@ -1,14 +1,14 @@
 import React, { Component } from 'react';
 import {connect } from 'react-redux';
 import QueryBuilder from './QueryBuilder';
-import LoginSignUpTab from './LoginSignUpTab';
+// import LoginSignUpTab from './LoginSignUpTab';
 import helper from '../helper';
 import {Grid, Row, Col} from 'react-bootstrap';
 import AppNav from './AppNav.js';
 import injectTapEventPlugin from 'react-tap-event-plugin';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
-
+// import { push } from 'react-router-redux';
 
 const navBarTheme = getMuiTheme({
   palette: {
@@ -78,15 +78,12 @@ class Main extends Component{
       helper.toggleDrawer(true, this.props.dispatch)
     }
     render(){
-      // console.log("main location", this.props.location.pathname);
-        return(
+         return(
             <MuiThemeProvider muiTheme={navBarTheme}>
             <div>
                 <AppNav pathname={this.props.location.pathname} handleLogout={this.handleLogout} loggedin={this.props.loggedin} showPathBuilder={this.showPathBuilder} />
                 <div className="wrapper">          
-                   { this.props.loggedin ?  this.props.children : (                 
-                       <LoginSignUpTab />
-                  )}
+                   {this.props.children}
               </div>
             </div>
             </MuiThemeProvider>
