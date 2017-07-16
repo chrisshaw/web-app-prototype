@@ -296,6 +296,10 @@ table {
     left: 15px;
 }
 
+.menu-on-small-screen {
+    display: none !important
+}
+
 @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
@@ -356,6 +360,12 @@ table {
     }
     .small-appbar  {
         display: flex !important
+    }
+    .menu-on-small-screen {
+        display: block !important
+    }
+    .menu-on-normal-screen {
+        display: none !important
     }
 }
 
