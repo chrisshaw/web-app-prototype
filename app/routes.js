@@ -16,23 +16,13 @@ var routes = (
     <Router history={browserHistory}>
         <Route path='/' component={Main} > 
             <IndexRoute component={validatePerms(PathBuilder)}/>
-            <Route path='/signup' component={validatePerms(SignUpTab)} />
-            <Route path='/path' component={validatePerms(PathBuilder)} /> 
-            <Route path='/csv' component={validatePerms(DataImportStudentCSV)} />
+            <Route path='/manageusers' component={validatePerms(SignUpTab)} />
+            <Route path='/buildpath' component={validatePerms(PathBuilder)} /> 
+            <Route path='/managestudents' component={validatePerms(DataImportStudentCSV)} />
             <Route path='/login' component={LoginTab} />
         </Route>
     </Router>
 )
 
-
-// <Route path=”/” component={App}>
-//   <Route path=”cart” component={Cart}/>
-//   <Route path=”login” component={Login}/>
-
-//   <Route component={EnsureLoggedInContainer}>
-//     <Route path=”checkout” component={Checkout}/>
-//     <Route path=”account” component={Account}/>
-//   </Route>
-// </Route>
 export default routes;
 

@@ -2,7 +2,7 @@ import React from 'react';
 import {Tabs, Tab} from 'material-ui/Tabs';
 // import SwipeableViews from 'react-swipeable-views';
 import {Grid, Row, Col} from 'react-bootstrap';
-import Login from './Login';
+import SignUp from './SignUp';
 // import {browserHistory} from "react-router";
 import {connect} from 'react-redux';
 // import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
@@ -51,8 +51,8 @@ class SignUpTab extends React.Component {
             <Col xs={10} md={6} className="text-center">
               <Tabs inkBarStyle={{background: '#A35FE3'}} value={this.state.value} initialSelectedIndex={0} onChange={this.handleChange}
                     >
-                    <Tab label="Login" value={0} buttonStyle={{color: "#808080"}}>
-                        <Login action="Sign Up" router={this.props.router} />  
+                    <Tab label="Sign Up" value={0} buttonStyle={{color: "#808080"}}>
+                        <SignUp router={this.props.router} />  
                     </Tab>
                 </Tabs>
             </Col>

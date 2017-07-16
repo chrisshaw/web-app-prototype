@@ -74,7 +74,7 @@ class LoginTab extends React.Component {
               <Tabs inkBarStyle={{background: '#A35FE3'}} value={this.state.value} initialSelectedIndex={0} onChange={this.handleChange}
                     >
                     <Tab label="Login" value={0} buttonStyle={{color: "#808080"}}>
-                        <Login action="Login" router={this.props.router} />  
+                        <Login router={this.props.router} />  
                     </Tab>
                 </Tabs>
             </Col>

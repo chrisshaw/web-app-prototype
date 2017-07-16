@@ -96,8 +96,8 @@ var helpers = {
     saveCSVStudentData(data, dispatch){
         let component = this;
         // need to pass the auth header in the cookie to server
-        let USER_TOKEN = helpers.getCookie("x-session-id");
-        // console.log("USER_TOKEN", USER_TOKEN);
+        let USER_TOKEN = helpers.getCookie("x-foxxsessid");
+        console.log("USER_TOKEN", USER_TOKEN);
         // const AuthStr = 'USER_TOKEN); 
         // axios.get(URL, { headers: { Authorization: AuthStr } })
         // console.log("cookie", cookie)
@@ -106,7 +106,7 @@ var helpers = {
                 method: 'post',
                 url: '/csv/students/courses/data', 
                 data: data,
-                headers: {'x-session-id': USER_TOKEN}
+                headers: {'x-foxxsessid': USER_TOKEN}
             })
             .then(function(response) {           
                 // this will clear the data from the upload Page after saving....
@@ -297,36 +297,55 @@ var helpers = {
     showView: function(action, dispatch){
         dispatch(actions.setPage(action));
     },
-    loginOrRegister(email, password, authAction, dispatch, router){      
+    getRole: function() {
+        return ['admin', 'teacher', 'user', 'internal']
+    },
+    loginUser(email, password, dispatch, router){      
         // capture data in object
-        if (authAction === 'Login'){
-             let userObj = { 
-                "username": email,
-                "password": password
-            }
-            // send request to server
-            return axios.post('/login', userObj).then(function(response) {
-                let msg = "Invalid username or password - please try again";
-                dispatch(actions.userLogin(response.data.success));
-                dispatch(actions.userLoginError(!response.data.success, msg));
-                // successful login route to default page
-                router.push('/');
-                return;
-            })
-        } else if (authAction === 'Sign Up'){
-            // capture data in object
-            let userObj = { 
-                "username": email,
-                "password": password
-            }
-            // send request to server
-            return axios.post('/signup', userObj).then(function(response) {  
-                let msg = "Invalid username or user already exists or password - please try again";      
-                dispatch(actions.userLogin(response.data.success));
-                dispatch(actions.userLoginError(!response.data.success, msg));
-                return;
-            })
+        let userObj = { 
+            "username": email,
+            "password": password
         }
+        // send request to server
+        return axios.post('/login', userObj).then(function(response) {
+            let msg = "Invalid username or password - please try again";
+            // sets login to true or false as appropriate
+            dispatch(actions.userLogin(response.data.success));
+            // captures error and sends any relevant message to UI
+            dispatch(actions.userLoginError(!response.data.success, msg));
+            // successful login route to default page
+            router.push('/');
+            return;
+        })
+    },
+
+    signUpUsers(email, password, first, last, company, role, dispatch, router){      
+        let userObj = { 
+            "username": email,
+            "password": password,
+            "first": first,
+            "last": last,
+            "company": company,
+            "role": role
+        }
+        // let component = this;
+        // need to pass the auth header in the cookie to server
+        let USER_TOKEN = helpers.getCookie("x-foxxsessid");
+        // send request to server
+        return axios({
+                method: 'post',
+                url: '/signup', 
+                data: userObj,
+                headers: {'x-foxxsessid': USER_TOKEN}
+        }).then(function(response) {  
+            // let msg = "Invalid username or user already exists - please try again";  
+            // should not sign user in just adds to database as this is not an admin task    
+            // dispatch(actions.userLogin(response.data.success));
+            console.log(response);
+            // captures error and sends any relevant message to UI
+            dispatch(actions.userLoginError(!response.data.success, response.data.msg));
+            return;
+        });
     },
     
     loginError(value, msg, dispatch){

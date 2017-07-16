@@ -54,6 +54,7 @@ module.exports = function(app){
         // console.log(req.body)
         foxxService.post('/login', req.body)
         .then(response => {
+            console.log("login response:", response.headers);
             res.setHeader("Set-Cookie",  'x-foxxsessid='+response.headers['x-foxxsessid']);
             res.json(response.body);
         }).catch(error => {
@@ -65,19 +66,42 @@ module.exports = function(app){
         })
     })
     app.post('/signup' , function(req, res, next){
-        const foxxService = db.route('auth');
-        //  console.log(req.body);
-        foxxService.post('/signup', req.body)
-        .then(response => {
-            // store session token in a cookie on client
-            res.setHeader("Set-Cookie",  'x-foxxsessid='+response.headers['x-session-id']);
-            res.json(response.body);
-        }).catch(error => { 
-            // can send error to logs?
-            console.log(Date.now() + " Error (SignUp):", error.response.body.errorMessage);
-            // send basic success: false
-            // send error to client for handling
-            res.json({success:false});
+        // verify user can sign up other users... initially 
+        getUser(req, res).then((response) =>{
+            // get perms and username of person doing the signup
+            let username = response.username;
+            console.log(" in get user response ", username);
+            // let userid = response.userid;
+            const foxxService = db.route('auth');
+            foxxService.post('/signup', req.body)
+            .then(function(response){
+                // create a user to role mapping.....
+                 // get userid of person being the signed up
+              let userid = response.body.userid;
+              let role = req.body.role;
+                console.log("signup response", userid, role, username)
+                // console.log(req.body.role);
+           
+                let query=aql`let userid = ${userid} let role = (for a in auth_roles 
+                                filter UPPER(a.name) == UPPER(${role})
+                                return {_id: a._id})
+                UPSERT { _from: ${userid} , _to: role[0]._id} INSERT { _from:  ${userid} , _to: role[0]._id, dateCreated: DATE_NOW(), dateUpdated: null, createdBy:  ${username} , updatedBy: null } UPDATE {  dateUpdated: DATE_NOW(), updatedBy:  ${username} } IN auth_user_hasRole RETURN { doc: NEW, type: OLD ? 'update' : 'insert' }`     
+                console.log("query", query);
+                db.query(query)
+                .then(cursor => {  
+                    console.log(cursor._result)
+                    res.json({success: true})
+                }).catch(error => {
+                     console.log(error)
+                })
+            })
+            .catch(error => { 
+                // can send error to logs?
+                console.log(Date.now() + " Error (SignUp):", error.response.body.errorMessage);
+                // send basic success: false
+                // send error to client for handling
+                res.json({success:false, msg: error.response.body.errorMessage});
+            })
         })
     })
 
@@ -90,21 +114,23 @@ module.exports = function(app){
             const foxxService = db.route('auth', {"x-foxxsessid" : cookie});
             foxxService.get('/user')
             .then(response => {
-                resolve(response.body.username);
+                resolve(response.body);
             }).catch(error => {
                 reject(error)
-                // console.log("??error", error);
+                console.log("??error", error);
             })
         });      
     }
 
     app.post("/csv/students/courses/data", function(req, res, next){
         // validate user before save and use name in save
-        getUser(req, res).then((username) =>{
+        getUser(req, res).then((response) =>{
+            let username = response.username;
+            console.log(" in get user response ")
             // if username not null ie. reponse.
             if (username){
                 // verify user logged in and capture for save...
-                console.log(req.body);
+                // console.log(req.body);
                 let data = req.body;
                 var studentObj = {};
                 let studentArr = [];
