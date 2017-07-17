@@ -66,33 +66,29 @@ module.exports = function(app){
         })
     })
     app.post('/signup' , function(req, res, next){
-        // verify user can sign up other users... initially 
+        // verify user can sign up other users...... 
         getUser(req, res).then((response) =>{
             // get perms and username of person doing the signup
             let username = response.username;
-            console.log(" in get user response ", username);
-            // let userid = response.userid;
+            // post/save data using foxx service for auth
             const foxxService = db.route('auth');
             foxxService.post('/signup', req.body)
             .then(function(response){
                 // create a user to role mapping.....
-                 // get userid of person being the signed up
-              let userid = response.body.userid;
-              let role = req.body.role;
-                console.log("signup response", userid, role, username)
-                // console.log(req.body.role);
-           
-                let query=aql`let userid = ${userid} let role = (for a in auth_roles 
-                                filter UPPER(a.name) == UPPER(${role})
-                                return {_id: a._id})
-                UPSERT { _from: ${userid} , _to: role[0]._id} INSERT { _from:  ${userid} , _to: role[0]._id, dateCreated: DATE_NOW(), dateUpdated: null, createdBy:  ${username} , updatedBy: null } UPDATE {  dateUpdated: DATE_NOW(), updatedBy:  ${username} } IN auth_user_hasRole RETURN { doc: NEW, type: OLD ? 'update' : 'insert' }`     
-                console.log("query", query);
+                // get userid of person being the signed up
+                let userid = response.body.userid;
+                let role = req.body.role;
+                let query=aql`let userid = ${userid} 
+                                let role = (for a in auth_roles 
+                                    filter UPPER(a.name) == UPPER(${role})
+                                    return {_id: a._id})
+                        UPSERT { _from: ${userid} , _to: role[0]._id} INSERT { _from:  ${userid} , _to: role[0]._id, dateCreated: DATE_NOW(), dateUpdated: null, createdBy:  ${username} , updatedBy: null } UPDATE {  dateUpdated: DATE_NOW(), updatedBy:  ${username} } IN auth_user_hasRole RETURN { doc: NEW, type: OLD ? 'update' : 'insert' }`     
                 db.query(query)
                 .then(cursor => {  
-                    console.log(cursor._result)
                     res.json({success: true})
                 }).catch(error => {
                      console.log(error)
+                    res.json({success: false, msg: error.response.body.errorMessage}})
                 })
             })
             .catch(error => { 
@@ -265,6 +261,25 @@ module.exports = function(app){
              res.json({success: false, loggedin: false})
         })
     })
+
+     app.get('/api/roles/all', function(req, res){
+        // get roles from database
+        let query = aql`
+            for a in auth_roles
+            sort a.name asc
+            return {name: a.name, _id: a._id}`;
+
+        db.query(query)
+        .then(cursor => {  
+            // console.log("type of", cursor._result);
+            res.json(cursor._result);
+        }).catch(error => {
+            console.log(Date.now() + " Error (Get Roles from Database):", error);
+            res.json();
+        }) 
+
+     })
+
 
     app.get('/api/topics/all', function(req, res){
         let query = aql`

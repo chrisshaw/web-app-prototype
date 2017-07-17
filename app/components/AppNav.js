@@ -30,7 +30,6 @@ const styles = {
 var component = this;
 const Small = (props) => (
   <IconMenu className="menu-on-small-screen"
-    {...props}
     iconButtonElement={
       <IconButton><MoreVertIcon /></IconButton>
     }
@@ -47,7 +46,7 @@ const Small = (props) => (
 const Normal = (props) => (<div className="menu-on-normal-screen">
                       <FlatButton  labelStyle={{lineHeight: 4}} style={{ borderTop: 'solid 1px #E6E6E6',borderLeft: 'solid 1px #E6E6E6', borderRight: 'solid 1px #E6E6E6',maxWidth: 170, fontSize: 12, height: 50, flex: 'center', borderRadius: 0}} containerElement={<Link to="/buildpath"/>} label="Build Paths" />
                       <FlatButton  labelStyle={{lineHeight: 4}} style={{borderTop: 'solid 1px #E6E6E6',borderLeft: 'solid 1px #E6E6E6', borderRight: 'solid 1px #E6E6E6', maxWidth: 170, fontSize: 12, height: 50, flex: 'center', borderRadius: 0}} containerElement='label' label="Manage Students"  containerElement={<Link to="/managestudents"/>} />
-                      <FlatButton  labelStyle={{lineHeight: 4}} style={{borderTop: 'solid 1px #E6E6E6',borderLeft: 'solid 1px #E6E6E6', borderRight: 'solid 1px #E6E6E6', maxWidth: 170, fontSize: 12, height: 50, flex: 'center', borderRadius: 0}} containerElement='label' label="Sign Up"  containerElement={<Link to="/manageusers"/>} />
+                      <FlatButton  labelStyle={{lineHeight: 4}} style={{borderTop: 'solid 1px #E6E6E6',borderLeft: 'solid 1px #E6E6E6', borderRight: 'solid 1px #E6E6E6', maxWidth: 170, fontSize: 12, height: 50, flex: 'center', borderRadius: 0}} containerElement='label' label="Manage Users"  containerElement={<Link to="/manageusers"/>} />
                       <IconButton  onTouchTap={props.handleLogout}  iconStyle={{height: 48}} style={{maxWidth: 100, alignSelf: 'center'}} ><LogoutIcon /></IconButton>
                       </div>);
 
@@ -58,7 +57,7 @@ class AppNav extends Component {
     render(){
        return (<div>
                   <AppBar className={this.props.loggedin ? "sticky-navbar sticky-navbar-loggedin" : "sticky-navbar"}
-                    title={((this.props.pathname === '/buildpath')&&(this.props.loggedin)) ? "" : (<div><span><img src="./public/assets/img/sidekick.png" className="logo" alt="Sidekick" /></span></div>)}
+                    title={(((this.props.pathname === '/buildpath') ||(this.props.pathname === '/')) && (this.props.loggedin)) ? "" : (<div><span><img src="./public/assets/img/sidekick.png" className="logo" alt="Sidekick" /></span></div>)}
                     titleStyle={styles.title}
                     iconStyleRight={{order: 4, marginTop: 0, marginLeft: 0, display: "flex"}}
                     iconStyleLeft={{display: 'none'}}
@@ -69,12 +68,7 @@ class AppNav extends Component {
                 </div>)
     }
 };
-const mapStateToProps = (store) => {
-    return {
-        pathbuilderview: store.mainState.pathbuilderview,
-    }
-}
-export default connect(mapStateToProps)(AppNav); 
+export default connect()(AppNav); 
 
 
 

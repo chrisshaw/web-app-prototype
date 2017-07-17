@@ -7,28 +7,22 @@ import FlatButton from 'material-ui/FlatButton';
 import muiThemeable from 'material-ui/styles/muiThemeable';
 import helper from '../helper';
 
-var userRoles = "";
-class Login extends Component{
+class SignUp extends Component{
     constructor(props){
         super(props);
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleClose = this.handleClose.bind(this);
-        userRoles =  helper.getRole();
         this.state = {email: '', 
                     password : '', 
                     first: '',
                     last: '',
                     company: '',
                     verify: '', 
-                    role: userRoles,
-                    selectedrole: '',
+                    selectedrole:  'Please Select a Role',
                     error: false, 
                     errorMsg: ""};
     }
-    // componentWillMount(){
-    //      this.setState({role: helper.getRole()});
-    // }
     handleChange(e) {
         // sets the local state of the changed data
         if (e.target.id === 'email') {
@@ -50,7 +44,7 @@ class Login extends Component{
             this.setState({company: e.target.value})
         }
         if (e.target.id === 'role') {
-            this.setState({selectedrole: e.target.value})
+            this.setState({selectedrole:  e.target.value })
         }
     }
     handleClose(){ 
@@ -60,8 +54,6 @@ class Login extends Component{
         if (this.state.error) this.setState({error: false, errorMsg: ""});
     }
     componentWillReceiveProps(nextProps) {
-        console.log(nextProps.loginerror, this.props.loginerror )
-        console.log("props", nextProps.loginerror === this.props.loginerror )
         // reset state unless there is an error - in that case the current and next props will differ
         if (nextProps.loginerror === this.props.loginerror) {
             this.setState({email: '', 
@@ -70,7 +62,7 @@ class Login extends Component{
                     last: '',
                     company: '',
                     verify: '', 
-                    selectedrole: '',
+                    selectedrole: 'Please Select a Role',
                     error: false, 
                     errorMsg: ""})
         } 
@@ -94,7 +86,7 @@ class Login extends Component{
             // error - school or company name required
             let msg = "Please provide a valid company or school name."
              this.setState({error: true, errorMsg: msg})
-        } else if ((!this.state.selectedrole) || (this.state.selectedrole.length < 2)) {
+        } else if (this.state.selectedrole === 'Please Select a Role') {
             // error - school or company name required
             let msg = "Please provide a valid application access role for this user."
              this.setState({error: true, errorMsg: msg})
@@ -112,10 +104,12 @@ class Login extends Component{
             this.setState({error: true, errorMsg: msg})
         } else {
             // if all ok then submit to server
-            var success = helper.signUpUsers(this.state.email, this.state.password, this.state.first, this.state.last, this.state.company,  this.state.selectedrole, this.props.dispatch,  this.props.router);
+            helper.signUpUsers(this.state.email, this.state.password, this.state.first, this.state.last, this.state.company,  this.state.selectedrole, this.props.dispatch,  this.props.router);
         }
     }
-
+    componentWillMount() {
+        helper.getRoles(this.props.dispatch);
+    }
     render(){
         const actions = [
             <FlatButton
@@ -123,18 +117,13 @@ class Login extends Component{
                 onTouchTap={this.handleClose}
             />
             ];
-        console.log(this.state.selectedrole)
-        if (this.state.role){
-            var roles = this.state.role.map((role, index) => {
-                return  <option key={index} value={role}>{role}</option>
-                      
+            console.log(this.state.selectedrole)
+        if (this.props.roles) {
+            var rolesList = this.props.roles.map((role, index) => {
+                return  <option key={role._id} data-roleid={role._id} value={role.name}>{role.name}</option>     
             });
         }
-
-
         return( 
-
-
             <div className="form-signin">
                { (this.props.loginerror || this.state.error ) ?  <Dialog
                 bodyStyle={{fontSize: 13}}
@@ -148,6 +137,7 @@ class Login extends Component{
                 >
                 { this.props.loginerror ? this.props.errormsg : this.state.errorMsg }
                 </Dialog> : " "}
+                { this.props.signupok ? <div className='text-center format-signup-msg-item'>User successfully saved!</div> : ""}
                 <Row>
                     <Col xs={2} md={2}/>
                     <Col xs={8} md={8} className="text-center">
@@ -189,8 +179,8 @@ class Login extends Component{
                     <Col xs={8} md={8} className="text-center">
                         <label htmlFor="inputRole" className="sr-only">Role</label>
                         <select value={this.state.selectedrole} onChange={(e)=>this.handleChange(e)} id="role"  className="form-control auth-input">
-                            <option defaultValue=''></option>
-                            {roles}
+                            <option defaultValue='Please Select a Role'></option>
+                            {rolesList}
                         </select>
                     </Col>
                     <Col md={2}/>
@@ -231,10 +221,12 @@ class Login extends Component{
 const mapStateToProps = (store) => {
     return {
         loggedin: store.authState.loggedin,
+        roles: store.authState.roles,
         loginerror: store.authState.loginerror,
         errormsg: store.authState.errormsg,
+        signupok:  store.authState.signupok,
     }
 }
-export default connect(mapStateToProps)(Login);
+export default connect(mapStateToProps)(SignUp);
 
 

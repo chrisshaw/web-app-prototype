@@ -13,6 +13,12 @@ userLoginError: (loginerror, errormsg) => {
     errormsg
   }
 },
+userSignUp: (signupok) => {
+  return {
+    type: 'SIGN_UP_STATUS',
+    signupok
+  }
+},  
 userLogout: () => {
   return {
       type: 'USER_LOGOUT',
@@ -79,6 +85,13 @@ returnUploadedStatus: (datasaved, saveerror) => {
 //       toggledrawer,
 //     }
 // },
+// },
+getRoles: (roles) => {
+  return {
+    type: 'GET_ROLES',
+    roles,
+  }
+},
 searchPaths: (searching) => {
   return {
     type: 'SEARCHING_PATHS',

@@ -1,15 +1,13 @@
 import React, { Component } from 'react';
 import {connect } from 'react-redux';
 import QueryBuilder from './QueryBuilder';
-// import LoginSignUpTab from './LoginSignUpTab';
 import helper from '../helper';
 import {Grid, Row, Col} from 'react-bootstrap';
 import AppNav from './AppNav.js';
 import injectTapEventPlugin from 'react-tap-event-plugin';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
-// import { push } from 'react-router-redux';
-
+//
 const navBarTheme = getMuiTheme({
   palette: {
     textColor: '#808080',
@@ -62,20 +60,14 @@ const navBarTheme = getMuiTheme({
   },
   
 });
-
 class Main extends Component{
     constructor(props){
         super(props);
         this.handleLogout = this.handleLogout.bind(this);
-        this.showPathBuilder = this.showPathBuilder.bind(this);
-        // this.state = { showPathBuilder:false }
         injectTapEventPlugin();
     }
     handleLogout(){
       helper.logout(this.props.dispatch);
-    }
-    showPathBuilder(showPathBuilder){
-      helper.toggleDrawer(true, this.props.dispatch)
     }
     render(){
          return(
@@ -91,12 +83,10 @@ class Main extends Component{
     }
 }
 // {React.cloneElement(this.props.children, {fadetail: this.props.fadetail, focusarea: this.props.area, noResultsMsg: this.props.noResultsMsg})}
-
 const mapStateToProps = (store) => {
     return {
         loggedin: store.authState.loggedin,
     }
 }
-
 export default connect(mapStateToProps)(Main);
 

@@ -1,43 +1,7 @@
 var axios = require("axios");
 import actions from '../actions';
-// import loginAPIKeys from '../../config/loginAPIKeys';
-// import signUpAPIKeys from '../../config/signUpAPIKeys';
-// Helper Functions
 
 var helpers = {
-   
-    // submitCSVFile: function(e, dispatch){
-    //     var files = e.target.files || e.dataTransfer.files 
-    //     if (files) {
-    //         //send only the first one
-    //         var file = files[0];
-    //         //read the file content and prepare to send it
-    //         var reader = new FileReader();
-    //         reader.onload = function(e) {
-    //             var buffer = e.target.result;
-    //             var postObj = {
-    //                 name: file.name,
-    //                 buffer: buffer
-    //             };    
-    //             return axios.post('/csv/file', postObj).then(function(response){
-    //                     dispatch(actions.viewUploadedCSVData(response.data))
-    //             })
-    //         }
-    //         reader.readAsBinaryString(file);
-    //     }
-    // },
-    // $.ajaxSetup({
-    //     beforeSend: function(xhr) {
-    //       xhr.setRequestHeader("Accept", "application/vvv.website+json;version=1");
-    //       xhr.setRequestHeader("Authorization", "Bearer " + getCookie('auth_token'));
-    //     }
-    // });
-
-    //     headers: {
-    //   'Content-Length': contentLength,
-    //   'Content-Type': 'application/x-www-form-urlencoded'
-    // },
-
     getCookie: function(c_name) {
         if (document.cookie.length > 0) {
             let c_start = document.cookie.indexOf(c_name + "=");
@@ -74,62 +38,34 @@ var helpers = {
              reader.readAsText(file);
         }
     },
-    // updateCSV: function(action, id, type, dispatch){
-    //     if (type === 'name'){
-    //         dispatch(actions.updateCSVDataName(action, id ))
-    //     }
-    //     if (type === 'grade'){
-    //         dispatch(actions.updateCSVDataGrade(action, id ))
-    //     }
-    //     if (type === 'focusArea'){
-    //         dispatch(actions.updateCSVDataFA(action, id ))
-    //     }
-    // },
-    // saveCSVData: function(data, dispatch){      
-    //     if (data){
-    //         return axios.post('/csv/data', data).then(function(response){
-    //             dispatch(actions.viewUploadedCSVData([]));
-    //             return;               
-    //         })
-    //     }
-    // }
     saveCSVStudentData(data, dispatch){
         let component = this;
         // need to pass the auth header in the cookie to server
-        let USER_TOKEN = helpers.getCookie("x-foxxsessid");
-        console.log("USER_TOKEN", USER_TOKEN);
-        // const AuthStr = 'USER_TOKEN); 
-        // axios.get(URL, { headers: { Authorization: AuthStr } })
-        // console.log("cookie", cookie)
+        // let USER_TOKEN = helpers.getCookie("x-foxxsessid");
+
         if (data){
             return axios({
                 method: 'post',
                 url: '/csv/students/courses/data', 
                 data: data,
-                headers: {'x-foxxsessid': USER_TOKEN}
+                // headers: {'x-foxxsessid': USER_TOKEN}
             })
             .then(function(response) {           
                 // this will clear the data from the upload Page after saving....
                 // by settting csvdata to ""
                 dispatch(actions.viewUploadedCSVData(""));
                 // success or failure - return mesage to client this.props.dataupload = boolean
-                console.log("csv upload", response.data.error )
                 component.dataUploadStatus(response.data.success, response.data.error, dispatch);
                 return;               
             })
         }
     },
     dataUploadStatus(response, error, dispatch){
-        console.log("being called...");
         dispatch(actions.returnUploadedStatus(response, error));
     },
     toggleDrawer: function(action, dispatch){
         dispatch(actions.closePathBuilderDrawer(action))
     },
-    // deletes groups from path builder list when deleted
-    // editGroupsList: function(action, dispatch){
-    //     // dispatch(updateGroupList(action));
-    // },
     getGroups: function(dispatch){
         return axios.get('/api/teacher/group').then(function(response) {
             // send results to redux store for use by Results component
@@ -140,11 +76,6 @@ var helpers = {
     getGrades: function(dispatch){
        var gradeArr = [{_id: 0, name: "6"}, {_id: 1, name: "7"},{_id: 2, name: "8"}, {_id: 3, name: "9"},{_id: 4, name: "10"}, {_id: 5, name: "11"}]
        dispatch(actions.updateGradeList(false, 0, gradeArr));
-        // return axios.get('/api/teacher/group').then(function(response) {
-        //     // send results to redux store for use by Results component
-        //     dispatch(actions.updateGroupList(false, 0, response.data));
-        //     return response.data;
-        // })
     },
     getCourses: function(grade, dispatch){
         /// parse array to a string for query.
@@ -161,7 +92,6 @@ var helpers = {
             }
         }
         return axios.get('/api/courses/'+gradeString).then(function(response) {
-            console.log("courses", response)
                 // send results to redux store for use by Results component
                 dispatch(actions.updateCourseList(false, 0, response.data));
                 return;
@@ -203,12 +133,9 @@ var helpers = {
             } else {
                 gradeString = grade[0].name;
                 for (var i = 1; i < grade.length; i++){
-                    console.log("standards", grade[i].name)
                     gradeString +=  ',' + grade[i].name;
-                    // queryGrades.push(req.params.grade[i].name);
                 }
             }
-            // var standardsArr = [{_id: 0, name: "AP-ENG-LANG.R.3"}, {_id: 1, name: "CCSS.ELA-LITERACY.RL.9-10.3"}]
         }
         return axios.get('/api/standards/'+gradeString).then(function(response) {
                 // send results to redux store for use by Results component
@@ -243,26 +170,10 @@ var helpers = {
             dispatch(actions.updatePathList(response.data));
             // hide the searching message
             dispatch(actions.searchPaths(false));
-            // console.log("response: ", pathArr);
             return;
-            // }
         })
     },
-    // pathsRendered(pathsrendered, dispatch){
-    //     dispatch(actions.pathsRendered(pathsrendered))
-    // },
-    // removeGroup: function(id, dispatch) {
-    //     dispatch(actions.updateGroupList(true, id))
-    // },
-    // removeTopic: function(id, dispatch) {
-    //     dispatch(actions.updateTopicList(true, id))
-    // },
-    // removeSubject: function(id, dispatch) {
-    //     dispatch(actions.updateSubjectContentList(true, id))
-    // },
-    // removeStandards: function(id, dispatch) {
-    //     dispatch(actions.updateStandardsList(true, id))
-    // },
+
     removeChip: function(id, queryitem, dispatch){
         if (queryitem === "Groups"){
             dispatch(actions.updateGroupList(true, id));
@@ -297,8 +208,13 @@ var helpers = {
     showView: function(action, dispatch){
         dispatch(actions.setPage(action));
     },
-    getRole: function() {
-        return ['admin', 'teacher', 'user', 'internal']
+    getRoles: function(dispatch) {
+        // return ['admin', 'teacher', 'user', 'internal']
+        return axios.get('/api/roles/all').then(function(response) {
+            // send results to redux store for use by SignUp component
+            dispatch(actions.getRoles(response.data));
+            return;
+        }) 
     },
     loginUser(email, password, dispatch, router){      
         // capture data in object
@@ -328,26 +244,23 @@ var helpers = {
             "company": company,
             "role": role
         }
+        // reset the signup success message
+        dispatch(actions.userSignUp(false));
         // let component = this;
         // need to pass the auth header in the cookie to server
-        let USER_TOKEN = helpers.getCookie("x-foxxsessid");
+        // let USER_TOKEN = helpers.getCookie("x-foxxsessid");
         // send request to server
         return axios({
                 method: 'post',
                 url: '/signup', 
-                data: userObj,
-                headers: {'x-foxxsessid': USER_TOKEN}
+                data: userObj
         }).then(function(response) {  
-            // let msg = "Invalid username or user already exists - please try again";  
-            // should not sign user in just adds to database as this is not an admin task    
-            // dispatch(actions.userLogin(response.data.success));
-            console.log(response);
             // captures error and sends any relevant message to UI
+            dispatch(actions.userSignUp(response.data.success));
             dispatch(actions.userLoginError(!response.data.success, response.data.msg));
             return;
         });
     },
-    
     loginError(value, msg, dispatch){
          dispatch(actions.userLoginError(value, msg))
     },
