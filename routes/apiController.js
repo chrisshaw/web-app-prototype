@@ -88,7 +88,7 @@ module.exports = function(app){
                     res.json({success: true})
                 }).catch(error => {
                      console.log(error)
-                    res.json({success: false, msg: error.response.body.errorMessage}})
+                    res.json({success: false, msg: error.response.body.errorMessage})
                 })
             })
             .catch(error => { 
