@@ -267,7 +267,7 @@ module.exports = function(app){
         let query = aql`
             for a in auth_roles
             sort a.name asc
-            return {name: a.name, _id: a._id}`;
+            return {name: a.name, _id: a._id, description: a.description}`;
 
         db.query(query)
         .then(cursor => {  

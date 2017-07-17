@@ -20,6 +20,7 @@ class SignUp extends Component{
                     company: '',
                     verify: '', 
                     selectedrole:  'Please Select a Role',
+                    description: '',
                     error: false, 
                     errorMsg: ""};
     }
@@ -45,6 +46,12 @@ class SignUp extends Component{
         }
         if (e.target.id === 'role') {
             this.setState({selectedrole:  e.target.value })
+            this.setState({description : this.props.roles.map((role, index) => {
+                if (role.name === e.target.value){
+                    return role.description
+                }
+            })})
+            
         }
     }
     handleClose(){ 
@@ -63,6 +70,7 @@ class SignUp extends Component{
                     company: '',
                     verify: '', 
                     selectedrole: 'Please Select a Role',
+                    description: '',
                     error: false, 
                     errorMsg: ""})
         } 
@@ -120,7 +128,7 @@ class SignUp extends Component{
             console.log(this.state.selectedrole)
         if (this.props.roles) {
             var rolesList = this.props.roles.map((role, index) => {
-                return  <option key={role._id} data-roleid={role._id} value={role.name}>{role.name}</option>     
+                return  <option key={role._id} value={role.name}>{role.name}</option>     
             });
         }
         return( 
@@ -142,7 +150,7 @@ class SignUp extends Component{
                     <Col xs={2} md={2}/>
                     <Col xs={8} md={8} className="text-center">
                         <label htmlFor="inputEmail" className="sr-only">Email</label>
-                        <input value={this.state.email} onChange={(e)=>this.handleChange(e)} id="email" type="email" className="form-control auth-input" placeholder="Email address"  autoFocus="" minLength="10"
+                        <input value={this.state.email} onChange={(e)=>this.handleChange(e)} id="email" type="email" className="form-control auth-input" placeholder="Email"  autoFocus="" minLength="10"
        maxLength="40" size="40" required />
                     </Col>
                     <Col md={2}/>
@@ -179,9 +187,16 @@ class SignUp extends Component{
                     <Col xs={8} md={8} className="text-center">
                         <label htmlFor="inputRole" className="sr-only">Role</label>
                         <select value={this.state.selectedrole} onChange={(e)=>this.handleChange(e)} id="role"  className="form-control auth-input">
-                            <option defaultValue='Please Select a Role'></option>
+                            <option defaultValue='Please Select a Role'>Please Select a Role</option>
                             {rolesList}
                         </select>
+                    </Col>
+                    <Col md={2}/>
+                </Row>
+                <Row>
+                    <Col xs={2} md={2}/>
+                    <Col xs={8} md={8} className="text-center">
+                        {this.state.description}
                     </Col>
                     <Col md={2}/>
                 </Row>
