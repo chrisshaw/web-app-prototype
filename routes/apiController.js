@@ -45,7 +45,7 @@ module.exports = function(app){
         }); 
     }
 
-    function getUser(req, res, authPerm) {
+    function validateUser(req, res, authPerm) {
         return new Promise( (resolve, reject) => { 
             let cookies = "";
             if (req.cookies) {
@@ -54,41 +54,34 @@ module.exports = function(app){
             const foxxService = db.route('auth', {"x-foxxsessid" : cookie});
             foxxService.get('/user')
             .then(response => {
-                // console.log("in get uere" , response)
                 // if not null
                 if (response.body.username){
                     return response.body;
                 } else {
+                    // if username is null reject
                     reject(response.body.username)
                 }
             }).then(response => {
-                // console.log(response)
+                // get the user permissions and validate against current required permission / action 
+                // e.g. manageusers
                 let userid = response.userid;
                 let username = response.username;
-                // console.log("what is this at loing:", userid);
                 let query = aql`for u in auth_users for ha in auth_user_hasRole filter ha._from == u._id for ac in auth_roles_can filter ac._from == ha._to for p in auth_permissions filter p._id == ac._to filter u._id == ${userid} return  p.name`;
-                        // console.log(query)
-                        db.query(query)
-                        .then(cursor => {  
-                            // console.log("type of", cursor._result);
-                            // send permissions list back to requesting client function
-                            // for updating in redux store
-                            let permissions = cursor._result;
-
-                            if ((authPerm !== '' ) && (permissions.indexOf(authPerm) !== -1)) {
-                                console.log("success", authPerm);
-                                resolve({success:true, userid: userid, username: username});
-                            } else if (authPerm === '' ) {
-                                 console.log("authPerm", authPerm);
-                                resolve({success:true, userid: userid, username: username});
-                            } else {
-                                reject();
-                            }
-                            
-                        }).catch(error => {
-                            console.log(Date.now() + " Error (Get Perms from Database):");
-                            reject();
-                        }) 
+                db.query(query)
+                .then(cursor => {  
+                    // validate whether user has required permssion
+                    let permissions = cursor._result;
+                    if ((authPerm !== '' ) && (permissions.indexOf(authPerm) !== -1)) {
+                        resolve({success:true, userid: userid, username: username});
+                    } else if (authPerm === '' ) {
+                        resolve({success:true, userid: userid, username: username});
+                    } else {
+                        reject();
+                    }          
+                }).catch(error => {
+                    console.log(Date.now() + " Error (Get Perms from Database):");
+                    reject();
+                }) 
             }).catch(error => {
                 console.log(Date.now() + " Error (Get Auth User from Database)");
                 reject();
@@ -96,9 +89,12 @@ module.exports = function(app){
         });      
     }
 
+
     app.post('/password' , function(req, res, next){
         // validate user is logged in
-        getUser(req, res, "").then((response) =>{
+        validateUser(req, res, "").then((response) =>{
+            // user is logged in so we can reset their password
+            // username etc is extracted from the session in the foxx service
             let cookies = "";
             if (req.cookies) {
                  var cookie = req.cookies['x-foxxsessid'];;
@@ -106,13 +102,10 @@ module.exports = function(app){
             const foxxService = db.route('auth', {"x-foxxsessid" : cookie});
             foxxService.post('/password', req.body)
             .then(function(response){
-                // create a user to role mapping.....
-                // get userid of person being the signed up
                 // expect success: true
-                console.log("passowrd response", response);
                 res.json(response.body)
             }).catch(error => { 
-                console.log(error)
+                console.log(Date.now() + " Error (SignUp):", error.response.body.errorMessage);
             })
         })
         .catch(error => { 
@@ -122,35 +115,28 @@ module.exports = function(app){
             // send error to client for handling
             res.json({success:false, auth: false, msg: error.response.body.errorMessage});
         })
-
     })
 
     app.post('/login' , function(req, res, next){
         const foxxService = db.route('auth');
-        console.log("login", req.body)
         foxxService.post('/login', req.body)
         .then(response => {
-            // console.log("login response:", response.headers);
             res.setHeader("Set-Cookie",  'x-foxxsessid='+response.headers['x-foxxsessid']);
             return response.body;
         }).then(response => {
-            console.log("what is this at loing:", response);
             let userid = response.userid;
             let chgPwd = response.chgPwd;
-            // console.log("what is this at loing:", userid);
                 let query = aql`for u in auth_users for ha in auth_user_hasRole filter ha._from == u._id for ac in auth_roles_can filter ac._from == ha._to for p in auth_permissions filter p._id == ac._to filter u._id == ${userid} return  p.name`;
-                        // console.log(query)
-                        db.query(query)
-                        .then(cursor => {  
-                            // console.log("type of", cursor._result);
-                            // send permissions list back to requesting client function
-                            // for updating in redux store
-                            // admin created users must change password on first login
-                            res.json({success:true, perms: cursor._result, chgPwd: chgPwd});
-                        }).catch(error => {
-                            console.log(Date.now() + " Error (Get Perms from Database):", error);
-                            res.json();
-                        }) 
+                db.query(query)
+                .then(cursor => {  
+                    // send permissions list back to requesting client function
+                    // for updating in redux store
+                    // admin created users must change password on first login
+                    res.json({success:true, perms: cursor._result, chgPwd: chgPwd});
+                }).catch(error => {
+                    console.log(Date.now() + " Error (Get Perms from Database):", error);
+                    res.json();
+                }) 
         }).catch(error => {
             // can send error to logs?
             console.log(Date.now() + " Error (Login):", error.response.body.errorMessage);
@@ -161,65 +147,91 @@ module.exports = function(app){
     })
     app.post('/signup' , function(req, res, next){
         // verify user is valid and then that they have the right permissions
-        getUser(req, res, "manageusers").then((response) =>{
+        validateUser(req, res, "manageusers").then((response) =>{
             // double check user perms on server side
             // if user has the required permission manageusers in their permissions array in
             // req.perms
-            // if (response.perms.indexOf("manageusers") !== -1){
-                // console.log(response)
-                // get perms and username of person doing the signup
-                let username = response.username;
-                console.log("signuo", req.body.username)
-                // post/save data using foxx service for auth
-                const foxxService = db.route('auth');
-                foxxService.post('/signup', req.body)
-                .then(function(response){
-                    // create a user to role mapping.....
-                    // get userid of person being the signed up
-                    let userid = response.body.userid;
-                    let role = req.body.role;    
-                    let query=aql`let userid = ${userid} 
-                                    let role = (for a in auth_roles 
-                                        filter UPPER(a.name) == UPPER(${role})
-                                        return {_id: a._id})
-                            UPSERT { _from: ${userid} , _to: role[0]._id} INSERT { _from:  ${userid} , _to: role[0]._id, dateCreated: DATE_NOW(), dateUpdated: null, createdBy:  ${username} , updatedBy: null } UPDATE {  dateUpdated: DATE_NOW(), updatedBy:  ${username} } IN auth_user_hasRole RETURN { doc: NEW, type: OLD ? 'update' : 'insert' }`     
-                    db.query(query)
-                    .then(cursor => {  
-                        res.json({success: true})
-                    }).catch(error => {
-                        res.json({success: false, msg: error.response.body.errorMessage})
-                    })
+            // get perms and username of person doing the signup
+            let username = response.username;
+            // post/save data using foxx service for auth
+            const foxxService = db.route('auth');
+            foxxService.post('/signup', req.body)
+            .then(function(response){
+                // create a user to role mapping.....
+                // get userid of person being the signed up
+                let userid = response.body.userid;
+                let role = req.body.role;    
+                let query=aql`let userid = ${userid} 
+                                let role = (for a in auth_roles 
+                                    filter UPPER(a.name) == UPPER(${role})
+                                    return {_id: a._id})
+                        UPSERT { _from: ${userid} , _to: role[0]._id} INSERT { _from:  ${userid} , _to: role[0]._id, dateCreated: DATE_NOW(), dateUpdated: null, createdBy:  ${username} , updatedBy: null } UPDATE {  dateUpdated: DATE_NOW(), updatedBy:  ${username} } IN auth_user_hasRole RETURN { doc: NEW, type: OLD ? 'update' : 'insert' }`     
+                db.query(query)
+                .then(cursor => {  
+                    res.json({success: true})
+                }).catch(error => {
+                    res.json({success: false, msg: error.response.body.errorMessage})
                 })
-                .catch(error => { 
-                    // can send error to logs?
-                    console.log(Date.now() + " Error (SignUp):", error.response.body.errorMessage);
-                    // send basic success: false
-                    // send error to client for handling
-                    res.json({success:false, auth: false, msg: error.response.body.errorMessage});
-                })
-            // }
+            })
+            .catch(error => { 
+                // can send error to logs?
+                console.log(Date.now() + " Error (SignUp):", error.response.body.errorMessage);
+                // send basic success: false
+                // send error to client for handling
+                res.json({success:false, auth: false, msg: error.response.body.errorMessage});
+            })
         })
     })
     app.post("/csv/students/courses/data", function(req, res, next){
         // validate user before save and use name in save
         // username is null if no valid user
-        getUser(req, res, "managestudents").then((response) =>{
+        validateUser(req, res, "managestudents").then((response) =>{
             // double check user perms on server side
             // if user has the required permission managestudents in their permissions array in
             // req.perms
-            // if (response.perms.indexOf("managestudents") !== -1){
-                let username = response.username;
-                console.log(" in get user response ???? ", response)
-                // if username not null ie. reponse.
-                if (username){
-                    // verify user logged in and capture for save...
-                    // console.log(req.body);
-                    let data = req.body;
-                    var studentObj = {};
-                    let studentArr = [];
-                    // start at array position 1 to skip headers
-                    for (var j = 1; j < data.length; j++){
-                        if (j === 1){     
+            let username = response.username;
+            // if username not null ie. reponse.
+            if (username){
+                // verify user logged in and capture for save...
+                // console.log(req.body);
+                let data = req.body;
+                var studentObj = {};
+                let studentArr = [];
+                // start at array position 1 to skip headers
+                for (var j = 1; j < data.length; j++){
+                    if (j === 1){     
+                        StudentObj = {  
+                            studentId: data[j].studentId,
+                            firstName: data[j].firstName,
+                            lastName: data[j].lastName,
+                            email: data[j].email,
+                            section: data[j].section,  // assumes one section and course per file
+                            course: data[j].course,
+                            mentor:  data[j].mentor,
+                            focusAreas: [{
+                                faName: data[j].faName,
+                                faType: data[j].faType,
+                                mastered: data[j].mastered,
+                            }]
+                        }
+                    } else {
+                        if(data[j].studentId === data[j-1].studentId){
+                                StudentObj.focusAreas.push(
+                                    {
+                                        faName: data[j].faName,
+                                        faType: data[j].faType,
+                                        mastered: data[j].mastered, 
+                                    }
+                                )
+                                if (j === data.length-1){
+                                    // push final object to array and start again
+                                    studentArr.push(StudentObj);
+                                }
+                            //  console.log( StudentObj.focusAreas)
+                        } else { 
+                            // push existing object to array and start again
+                            studentArr.push(StudentObj);
+                            // create a new Student Obj
                             StudentObj = {  
                                 studentId: data[j].studentId,
                                 firstName: data[j].firstName,
@@ -234,116 +246,79 @@ module.exports = function(app){
                                     mastered: data[j].mastered,
                                 }]
                             }
-                        } else {
-                            if(data[j].studentId === data[j-1].studentId){
-                                    StudentObj.focusAreas.push(
-                                        {
-                                            faName: data[j].faName,
-                                            faType: data[j].faType,
-                                            mastered: data[j].mastered, 
-                                        }
-                                    )
-                                    if (j === data.length-1){
-                                        // push final object to array and start again
-                                        studentArr.push(StudentObj);
-                                    }
-                                //  console.log( StudentObj.focusAreas)
-                            } else { 
-                                // push existing object to array and start again
+                            if (j === data.length-1){
+                                // push final object to array and start again
                                 studentArr.push(StudentObj);
-                                // create a new Student Obj
-                                StudentObj = {  
-                                    studentId: data[j].studentId,
-                                    firstName: data[j].firstName,
-                                    lastName: data[j].lastName,
-                                    email: data[j].email,
-                                    section: data[j].section,  // assumes one section and course per file
-                                    course: data[j].course,
-                                    mentor:  data[j].mentor,
-                                    focusAreas: [{
-                                        faName: data[j].faName,
-                                        faType: data[j].faType,
-                                        mastered: data[j].mastered,
-                                    }]
-                                }
-                                if (j === data.length-1){
-                                    // push final object to array and start again
-                                    studentArr.push(StudentObj);
-                                }
-                                // console.log("studentObj", studentObj);
-                            }           
-                        }
-                    }      
-                    // process the data to consolidate it then save to database
-                    saveStudentGetIds(studentArr, username).then((response) => {
-                        // console.log(studentArr);
-                        // filter out rows with null and put these aside for error reporting
-                        // pre-process: sort out fa_id = null and send to client
-                        var errorArr = [];      
-                        // save on the object
-                        for (var i = 0; i < response.length; i++){
-                            let newFAs = [];
-                            let nullFAs = [];
-                            // console.log("response", response[i])
-                            newFAs =response[i].focusArea.filter((fa) => {          
-                                if (fa.fa_id === null){
-                                    // remove and add to nullFA's array
-                                    nullFAs.push(fa.focusAreaDetails.faName);
-                                    return false;
-                                }
-                                return true;
-                            })
-                            response[i].focusArea = newFAs;
-                            // console.log(response[i].focusArea);
-                            if (nullFAs.length > 0) errorArr.push(nullFAs);
-                            // get distinct
-                        }
+                            }
+                            // console.log("studentObj", studentObj);
+                        }           
+                    }
+                }      
+                // process the data to consolidate it then save to database
+                saveStudentGetIds(studentArr, username).then((response) => {
+                    // filter out rows with null and put these aside for error reporting
+                    // pre-process: sort out fa_id = null and send to client
+                    var errorArr = [];      
+                    // save on the object
+                    for (var i = 0; i < response.length; i++){
+                        let newFAs = [];
+                        let nullFAs = [];
+                        newFAs =response[i].focusArea.filter((fa) => {          
+                            if (fa.fa_id === null){
+                                // remove and add to nullFA's array
+                                nullFAs.push(fa.focusAreaDetails.faName);
+                                return false;
+                            }
+                            return true;
+                        })
+                        response[i].focusArea = newFAs;
+                        if (nullFAs.length > 0) errorArr.push(nullFAs);
+                        // get distinct
+                    }
 
-                        return [response, errorArr]
-                    }).then((response) => { 
+                    return [response, errorArr]
+                }).then((response) => { 
 
-                        // update later to:
-                        // studentToFA == hasMastered
-                        // studentToCourse == taking  == inCourse
-                        // courseToFA == covers
-                        let firstUpsert = aql`for s in ${response[0]}
-                        UPSERT { _from: s.student_id[0] , _to: s.course_id[0]._id} INSERT  { _from: s.student_id[0] , _to: s.course_id[0]._id, section: s.course_id[0].section, dateCreated: DATE_NOW(), dateUpdated:  null, createdBy: ${username}, updatedBy: null} UPDATE { section: s.course_id[0].section,  dateUpdated: DATE_NOW(), updatedBy: ${username}} IN inCourse RETURN { doc: NEW, type: OLD ? 'update' : 'insert' } `
-                        db.query(firstUpsert)
+                    // update later to:
+                    // studentToFA == hasMastered
+                    // studentToCourse == taking  == inCourse
+                    // courseToFA == covers
+                    let firstUpsert = aql`for s in ${response[0]}
+                    UPSERT { _from: s.student_id[0] , _to: s.course_id[0]._id} INSERT  { _from: s.student_id[0] , _to: s.course_id[0]._id, section: s.course_id[0].section, dateCreated: DATE_NOW(), dateUpdated:  null, createdBy: ${username}, updatedBy: null} UPDATE { section: s.course_id[0].section,  dateUpdated: DATE_NOW(), updatedBy: ${username}} IN inCourse RETURN { doc: NEW, type: OLD ? 'update' : 'insert' } `
+                    db.query(firstUpsert)
+                    .then(cursor => {  
+                        // console.log("inserted 1:", cursor._result);
+                        // INSERT 
+                        // remove any fa where hasMastered != "FALEs"
+                        let secondUpsert = aql`for s in  ${response[0]}
+                        for fa in s.focusArea 
+                        FILTER UPPER(fa.focusAreaDetails.mastered) == 'TRUE'
+                        UPSERT { _from: s.student_id[0], _to: fa.fa_id} INSERT { _from: s.student_id[0], _to: fa.fa_id, type: fa.focusAreaDetails.faType, mastered: UPPER(fa.focusAreaDetails.mastered),  dateCreated: DATE_NOW(), dateUpdated: null, createdBy: ${username} , updatedBy: null } UPDATE { type: fa.focusAreaDetails.faType, mastered: UPPER(fa.focusAreaDetails.mastered),  dateUpdated: DATE_NOW(), updatedBy: ${username}  } IN hasMastered RETURN { doc: NEW, type: OLD ? 'update' : 'insert' }`;
+                        db.query(secondUpsert)
                         .then(cursor => {  
-                            console.log("inserted 1:", cursor._result);
-                            // INSERT 
-                            // remove any fa where hasMastered != "FALEs"
-                            let secondUpsert = aql`for s in  ${response[0]}
-                            for fa in s.focusArea 
-                            FILTER UPPER(fa.focusAreaDetails.mastered) == 'TRUE'
-                            UPSERT { _from: s.student_id[0], _to: fa.fa_id} INSERT { _from: s.student_id[0], _to: fa.fa_id, type: fa.focusAreaDetails.faType, mastered: UPPER(fa.focusAreaDetails.mastered),  dateCreated: DATE_NOW(), dateUpdated: null, createdBy: ${username} , updatedBy: null } UPDATE { type: fa.focusAreaDetails.faType, mastered: UPPER(fa.focusAreaDetails.mastered),  dateUpdated: DATE_NOW(), updatedBy: ${username}  } IN hasMastered RETURN { doc: NEW, type: OLD ? 'update' : 'insert' }`;
-                            // console.log(secondUpsert)
-                            db.query(secondUpsert)
-                            .then(cursor => {  
-                                console.log("inserted 2:", cursor._result);
-                                if (response[1].length > 0 ) {
-                                    // some FA names were not found in the database
-                                    res.json({success: false, error: response[1]})
-                                } else {
-                                    // all fields saved
-                                    res.json({success: true})
-                                }
-                            }).catch(error => {
-                                res.json({success: false})
-                                console.log(Date.now() + " Error (Update 2 Database):", error);
-                            })             
-                        }).catch((error)=>{
-                            console.log(Date.now() + " Error (Getting IDs from Database):", error);
+                            // console.log("inserted 2:", cursor._result);
+                            if (response[1].length > 0 ) {
+                                // some FA names were not found in the database
+                                res.json({success: false, error: response[1]})
+                            } else {
+                                // all fields saved
+                                res.json({success: true})
+                            }
+                        }).catch(error => {
                             res.json({success: false})
-                        })      
-                    }).catch((error) => {
+                            console.log(Date.now() + " Error (Update 2 Database):", error);
+                        })             
+                    }).catch((error)=>{
                         console.log(Date.now() + " Error (Getting IDs from Database):", error);
                         res.json({success: false})
-                    }) 
-                } else {
+                    })      
+                }).catch((error) => {
+                    console.log(Date.now() + " Error (Getting IDs from Database):", error);
                     res.json({success: false})
-                }
-            // }
+                }) 
+            } else {
+                res.json({success: false})
+            }
         }).catch((error) => {
             console.log(Date.now() + " Authentication Error");
             res.json({success: false, auth: false})
@@ -477,7 +452,7 @@ module.exports = function(app){
         }))
     })
     app.post("/csv/file", function(req, res, next){
-        getUser(req, res, "managestudents").then((response) =>{
+        validateUser(req, res, "managestudents").then((response) =>{
             // main entry point
             // need to verify csv file and save contents somewhere...
             var fileContentsFromBuffer = req.body.buffer;
@@ -567,7 +542,6 @@ module.exports = function(app){
 
         db.query(query)
         .then(cursor => {  
-            // console.log("type of", cursor._result);
             res.json(cursor._result);
         }).catch(error => {
             console.log(Date.now() + " Error (Get Roles from Database):", error);
@@ -614,7 +588,6 @@ module.exports = function(app){
         `;
         db.query(query)
         .then(cursor => {  
-            // console.log("standards", cursor._result);
             res.json(cursor._result);
         }).catch(error => {
             console.log(Date.now() + " Error (Get Standards from Database):", error);
@@ -625,7 +598,6 @@ module.exports = function(app){
     app.get('/api/courses/:grade?', function(req, res){
         let grades = req.params.grade;
         let queryGrades = [];
-        // console.log(grades)
         if (grades) queryGrades = grades.split(',');
         let query = aql`
             for c in courses

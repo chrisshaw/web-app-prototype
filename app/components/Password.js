@@ -84,11 +84,19 @@ class Password extends Component{
                 </Dialog> : " "}
                 <Row>
                     <Col xs={2} md={2}/>
+                    <Col xs={8} md={8} className="text-center">
+                        <h4>Change Password</h4>
+                        <p>Please change your password from the default one provided by the administrator.</p>
+                    </Col>
+                    <Col xs={2} md={2}/>  
+                </Row>
+  
+                <Row>
+                    <Col xs={2} md={2}/>
                         <Col xs={8} md={8} className="text-center">
                         <label htmlFor="inputPassword" className="sr-only">Password</label>
                         <input value={this.state.password} onChange={(e)=>this.handleChange(e)} id="password" type="password" className="form-control auth-input" placeholder="Password" minLength="8"
        maxLength="16" size="16" required />
-                        <p className="note-text"><em>* length 8 characters with one capital letter and at least 2 numbers.</em></p>
                     </Col>
                     <Col xs={2} md={2}/>  
                 </Row>
@@ -98,12 +106,13 @@ class Password extends Component{
                         <label htmlFor="inputPassword" className="sr-only">Verify Password</label>
                         <input value={this.state.verify} onChange={(e)=>this.handleChange(e)}  id="verifypassword" type="password" className="form-control auth-input" placeholder="Verify Password" minLength="8"
        maxLength="16" size="16" required />
+                        <p className="note-text"><em>* length 8 characters with one capital letter and at least 2 numbers.</em></p>
                     </Col>
                     <Col xs={2} md={2}/>
                 </Row>
                 <Row>
                     <Col xs={12} md={12} className="text-center">
-                        <RaisedButton style={{margin: 10}} secondary={true} containerElement='label' onTouchTap={this.handleSubmit}  label="Sign Up" />
+                        <RaisedButton style={{margin: 10}} secondary={true} containerElement='label' onTouchTap={this.handleSubmit}  label="Change Password" />
                     </Col>
                  
                 </Row>
@@ -114,16 +123,6 @@ class Password extends Component{
     }
 }
 
-
-// const mapStateToProps = (store) => {
-//     return {
-//         loggedin: store.authState.loggedin,
-//         roles: store.authState.roles,
-//         loginerror: store.authState.loginerror,
-//         errormsg: store.authState.errormsg,
-//         signupok:  store.authState.signupok,
-//     }
-// }
 export default Password;
 
 
