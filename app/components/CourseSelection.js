@@ -22,17 +22,18 @@ class CourseSelection extends Component{
     }
     handleReset() {
         // reset chips and grouplist
-        helper.getCourses("",this.props.dispatch); 
+        helper.getCourses(true, false,"",this.props.dispatch); 
     }
     componentWillMount() {
         // reset chips and grouplist
-        helper.getCourses("",this.props.dispatch); 
+        helper.getCourses(false,false, "",this.props.dispatch); 
     }
     handleShowGroups() {
         // toggle between true and false
         this.setState({showGroups: !this.state.showGroups})
     }
     render(){
+        console.log("in here course")
         if ( this.props.selectedcourselist){
              var arrLength = this.props.selectedcourselist.length;
         }

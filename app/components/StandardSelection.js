@@ -25,7 +25,7 @@ class StandardsSelection extends Component{
     }
     componentWillMount() {
         // reset chips and grouplist
-        helper.getStandards("",this.props.dispatch); 
+        helper.getStandards(false, false, "",this.props.dispatch); 
     }
     // }
     // // handleRequestDelete(id) {
@@ -33,14 +33,14 @@ class StandardsSelection extends Component{
     //     helper.removeStandards(id, this.props.dispatch);
     // }
     handleReset() {
-        helper.getStandards("",this.props.dispatch); 
+        helper.getStandards(true, false, "",this.props.dispatch); 
     }
     handleShowGroups() {
         // toggle between true and false
         this.setState({showGroups: !this.state.showGroups})
     }
     render(){
-
+console.log("in here")
         var styles = {
             button : {
                 backgroundColor: '#9E9E9E'

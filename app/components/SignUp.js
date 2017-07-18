@@ -6,113 +6,175 @@ import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import muiThemeable from 'material-ui/styles/muiThemeable';
 import helper from '../helper';
+import { signUpFields } from '../actions';
 
+var signUpObj = {};
 class SignUp extends Component{
     constructor(props){
         super(props);
+        this.props.dispatch(signUpFields(signUpObj)); 
+        if (this.props.signupfields) {
+            signUpObj = { email: this.props.signupfields.email, 
+                    password : this.props.signupfields.password, 
+                    first: this.props.signupfields.first,
+                    last: this.props.signupfields.last,
+                    company: this.props.signupfields.company,
+                    verify: this.props.signupfields.verify, 
+                    selectedrole:  this.props.signupfields.selectedrole,
+                    description: this.props.signupfields.description,
+                    error: this.props.signupfields.error,
+                    errorMsg: this.props.signupfields.errorMsg};  
+        }
+       
+        this.state = signUpObj;
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleClose = this.handleClose.bind(this);
-        this.state = {email: '', 
-                    password : '', 
-                    first: '',
-                    last: '',
-                    company: '',
-                    verify: '', 
-                    selectedrole:  'Please Select a Role',
-                    description: '',
-                    error: false, 
-                    errorMsg: ""};
     }
     handleChange(e) {
         // sets the local state of the changed data
         if (e.target.id === 'email') {
-            this.setState({email: e.target.value})
+            signUpObj.email = e.target.value;
+            this.setState({email: e.target.value});
+            this.props.dispatch(signUpFields(signUpObj));
         }
         if (e.target.id === 'password') {
+            signUpObj.password =   e.target.value;
             this.setState({password: e.target.value})
+            this.props.dispatch(signUpFields(signUpObj));
+            // this.setState({password: e.target.value})
         }
         if (e.target.id === 'verifypassword') {
+            signUpObj.verify =   e.target.value;
             this.setState({verify: e.target.value})
+            this.props.dispatch(signUpFields(signUpObj));
+            // this.setState({verify: e.target.value})
         }
         if (e.target.id === 'last') {
+            signUpObj.last =   e.target.value;
             this.setState({last: e.target.value})
+            this.props.dispatch(signUpFields(signUpObj));
+            // this.setState({last: e.target.value})
         }
         if (e.target.id === 'first') {
-            this.setState({first: e.target.value})
+            signUpObj.first =   e.target.value;
+            this.setState({first: e.target.value});
+            this.props.dispatch(signUpFields(signUpObj));
+            // this.setState({first: e.target.value})
         }
         if (e.target.id === 'company') {
-            this.setState({company: e.target.value})
+            signUpObj.company =   e.target.value;
+            this.setState({company: e.target.value});
+            this.props.dispatch(signUpFields(signUpObj));
+            // this.setState({company: e.target.value})
         }
         if (e.target.id === 'role') {
-            this.setState({selectedrole:  e.target.value })
-            this.setState({description : this.props.roles.map((role, index) => {
+            signUpObj.selectedrole =   e.target.value;
+            // this.setState({selectedrole:  e.target.value })
+            signUpObj.description = this.props.roles.map((role, index) => {
                 if (role.name === e.target.value){
                     return role.description
                 }
-            })})
-            
+            })
+            this.setState({selectedrole: e.target.value, description: signUpObj.description});
+            this.props.dispatch(signUpFields(signUpObj));   
         }
     }
     handleClose(){ 
         // clear local and server error messages
         if (this.props.loginerror) helper.loginError(false, "", this.props.dispatch);
         // local validation
-        if (this.state.error) this.setState({error: false, errorMsg: ""});
+        if (this.props.signupfields.error) this.setState({error: false, errorMsg: ""});
     }
     componentWillReceiveProps(nextProps) {
         // reset state unless there is an error - in that case the current and next props will differ
-        if (nextProps.loginerror === this.props.loginerror) {
-            this.setState({email: '', 
-                    password : '', 
-                    first: '',
-                    last: '',
-                    company: '',
-                    verify: '', 
-                    selectedrole: 'Please Select a Role',
-                    description: '',
-                    error: false, 
-                    errorMsg: ""})
+        if (nextProps.signUpFields === this.props.signupfields) {
+            console.log(this.props.signupfields, nextProps.signupfields)
+            // let signUpObj = {email: '', 
+            //             password : '', 
+            //             first: '',
+            //             last: '',
+            //             company: '',
+            //             verify: '', 
+            //             selectedrole: 'Please Select a Role',
+            //             description: '',
+            //             error: false, 
+            //             errorMsg: ""};
+            // this.props.dispatch(signUpFields(signUpObj));
         } 
+    }
+    componentWillMount(){
+         
     }
     handleSubmit(){    
         // handles local and database errors
-        if ((!this.state.email) || (this.state.email.length < 8)){
+        if ((!this.props.signupfields.email) || (this.props.signupfields.email.length < 8)){
             // error - email required
-            let msg = "Please provide a valid email address."
-            this.setState({error: true, errorMsg: msg})
+            signUpObj.errorMsg = "Please provide a valid email address for the new username."
+            this.setState({error: true, errorMsg: signUpObj.errorMsg})
+            signUpObj.error = true;
+            this.props.dispatch(signUpFields(signUpObj));
             // helper.loginError(false, msg, this.props.dispatch);
-       } else if ((!this.state.first) || (this.state.first.length < 2)) {
+       } else if ((!this.props.signupfields.first) || (this.props.signupfields.first.length < 2)) {
             // error - first name required
-            let msg = "Please provide a valid first name."
-            this.setState({error: true, errorMsg: msg})
-        } else if ((!this.state.last) || (this.state.last.length < 2)) {
+            signUpObj.errorMsg = "Please provide a valid first name."
+            this.setState({error: true, errorMsg: signUpObj.errorMsg})
+            signUpObj.error = true;
+            this.props.dispatch(signUpFields(signUpObj));
+        } else if ((!this.props.signupfields.last) || (this.props.signupfields.last.length < 2)) {
             // error - last name required
-            let msg = "Please provide a valid last name."
-             this.setState({error: true, errorMsg: msg})
-        } else if ((!this.state.company) || (this.state.company.length < 2)) {
+            signUpObj.errorMsg = "Please provide a valid last name.";
+            signUpObj.error = true;
+             this.setState({error: true, errorMsg: signUpObj.errorMsg})
+             this.props.dispatch(signUpFields(signUpObj));
+        } else if ((!this.props.signupfields.company) || (this.props.signupfields.company.length < 2)) {
             // error - school or company name required
-            let msg = "Please provide a valid company or school name."
-             this.setState({error: true, errorMsg: msg})
-        } else if (this.state.selectedrole === 'Please Select a Role') {
+            signUpObj.errorMsg = "Please provide a valid company or school name.";
+            signUpObj.error = true;
+             this.setState({error: true, errorMsg: signUpObj.errorMsg})
+            this.props.dispatch(signUpFields(signUpObj));
+        } else if (this.props.signupfields.selectedrole === 'Please Select a Role') {
             // error - school or company name required
-            let msg = "Please provide a valid application access role for this user."
-             this.setState({error: true, errorMsg: msg})
-        } else if ((!this.state.password) || (this.state.password.length < 8)) {
+            signUpObj.errorMsg =  "Please provide a valid application access role for this user."
+            signUpObj.error = true;
+             this.setState({error: true, errorMsg: signUpObj.errorMsg})
+             this.props.dispatch(signUpFields(signUpObj));
+        } else if ((!this.props.signupfields.password) || (this.props.signupfields.password.length < 8)) {
             // error - password required
-            let msg = "Please provide a valid password of length 8 characters with one capital letter and at least 2 numbers."
-             this.setState({error: true, errorMsg: msg})
-        } else if (!this.state.verify){
+            signUpObj.errorMsg =  "Please provide a valid password of length 8 characters with one capital letter and at least 2 numbers."      
+            signUpObj.error = true;
+            this.setState({error: true, errorMsg: signUpObj.errorMsg})
+            this.props.dispatch(signUpFields(signUpObj));
+        } else if (!this.props.signupfields.verify){
             // error - please verify password
-            let msg = "Please verify your password."
-            this.setState({error: true, errorMsg: msg})
-        } else if (this.state.verify !== this.state.password){
+            signUpObj.errorMsg =  "Please verify your password.";
+            signUpObj.error = true;
+            this.setState({error: true, errorMsg: signUpObj.errorMsg})
+            // this.setState({error: true, errorMsg: msg})
+            this.props.dispatch(signUpFields(signUpObj));
+        } else if (this.props.signupfields.verify !== this.props.signupfields.password){
             // error - passwords dont match
-            let msg = "Passwords do not match - please verify."
-            this.setState({error: true, errorMsg: msg})
+            signUpObj.errorMsg =  "Passwords do not match - please verify."
+            signUpObj.error = true;
+            // this.setState({error: true, errorMsg: msg})
+            this.setState({error: true, errorMsg: signUpObj.errorMsg})
+            this.props.dispatch(signUpFields(signUpObj));
         } else {
             // if all ok then submit to server
-            helper.signUpUsers(this.state.email, this.state.password, this.state.first, this.state.last, this.state.company,  this.state.selectedrole, this.props.dispatch,  this.props.router);
+            helper.signUpUsers(this.props.signupfields.email, this.props.signupfields.password, this.props.signupfields.first, this.props.signupfields.last, this.props.signupfields.company,  this.props.signupfields.selectedrole, this.props.dispatch,  this.props.router);
+            // reset fields
+            signUpObj = {email: '', 
+                        password : '', 
+                        first: '',
+                        last: '',
+                        company: '',
+                        verify: '', 
+                        selectedrole: 'Please Select a Role',
+                        description: '',
+                        error: false, 
+                        errorMsg: ""};
+            this.setState(signUpObj);
+            this.props.dispatch(signUpFields(signUpObj));
         }
     }
     componentWillMount() {
@@ -125,20 +187,20 @@ class SignUp extends Component{
                 onTouchTap={this.handleClose}
             />
             ];
-            console.log(this.state.selectedrole)
+            // console.log(this.props.signupfields.selectedrole)
         if (this.props.roles) {
             var rolesList = this.props.roles.map((role, index) => {
                 return  <option key={role._id} value={role.name}>{role.name}</option>     
             });
-        }
-         console.log("singuppl", this.props.signupok);
+        } 
+         console.log("signupfields", this.props.signupfields);
         return( 
-   
-            <div className="form-signin">
-               { (this.props.loginerror || this.state.error ) ?  <Dialog
+          
+           <div> { this.props.signupfields ? (<div className="form-signin">
+               { (this.props.loginerror || (this.state.error ))  ?  <Dialog
                 bodyStyle={{fontSize: 13}}
                 titleStyle={{fontSize: 14, fontWeight: 'bold'}}
-                title="Sign Up / Login Error"
+                title="Sign Up Error"
                 actions={actions}
                 style={{zIndex: 2000,fontSize: 12, height: 300, width: 350, left: 350}}
                 modal={false}
@@ -151,9 +213,10 @@ class SignUp extends Component{
                 <Row>
                     <Col xs={2} md={2}/>
                     <Col xs={8} md={8} className="text-center">
-                        <label htmlFor="inputEmail" className="sr-only">Email</label>
-                        <input value={this.state.email} onChange={(e)=>this.handleChange(e)} id="email" type="email" className="form-control auth-input" placeholder="Email"  autoFocus="" minLength="10"
+                        <label htmlFor="inputEmail" className="sr-only">Username (Email)</label>
+                        <input value={this.state.email} onChange={(e)=>this.handleChange(e)} id="email" type="email" className="form-control auth-input" placeholder="Username (Email)"  autoFocus="" minLength="10"
        maxLength="40" size="40" required />
+       <p className="note-text"><em>* Username must be a valid email address.</em></p>
                     </Col>
                     <Col md={2}/>
                 </Row>
@@ -227,7 +290,7 @@ class SignUp extends Component{
                     </Col>
                  
                 </Row>
-            </div>
+            </div>) : ""} </div>
   
             
         )
@@ -240,8 +303,10 @@ const mapStateToProps = (store) => {
         loggedin: store.authState.loggedin,
         roles: store.authState.roles,
         loginerror: store.authState.loginerror,
+        signupfields: store.authState.signupfields,
         errormsg: store.authState.errormsg,
         signupok:  store.authState.signupok,
+       
     }
 }
 export default connect(mapStateToProps)(SignUp);

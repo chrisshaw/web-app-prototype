@@ -16,7 +16,7 @@ class GradeSelection extends Component{
         this.handleReset = this.handleReset.bind(this);
         this.handleShowGroups = this.handleShowGroups.bind(this);
         // get initial data and set props
-        helper.getGrades(this.props.dispatch);
+        helper.getGrades(false, false, this.props.dispatch);
         var searchObj = {};
         this.state ={
             showGroups: false, 
@@ -26,12 +26,12 @@ class GradeSelection extends Component{
     //     helper.removeGroup(id, this.props.dispatch);
     // }
 
-    componentWillMount(){
-        helper.getGrades(this.props.dispatch);     
-    }
+    // componentWillMount(){
+    //     helper.getGrades(this.props.dispatch);     
+    // }
     handleReset() {
         // reset chips and grouplist
-        helper.getGrades(this.props.dispatch); 
+        helper.getGrades(true, false, this.props.dispatch); 
     }
     handleShowGroups() {
         // toggle between true and false

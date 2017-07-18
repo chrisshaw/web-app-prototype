@@ -16,7 +16,7 @@ class SubjectContentSelection extends Component{
         this.handleReset = this.handleReset.bind(this);
         this.handleShowGroups = this.handleShowGroups.bind(this);
         // get initial data and set props
-        helper.getSubjectContents(this.props.dispatch);     
+        helper.getSubjectContents(false, false, this.props.dispatch);     
         var searchObj = {};
         this.state ={
             showGroups: false, 
@@ -28,7 +28,7 @@ class SubjectContentSelection extends Component{
     //     helper.removeSubject(id, this.props.dispatch);
     // }
     handleReset() {
-        helper.getSubjectContents(this.props.dispatch); 
+        helper.getSubjectContents(true, false, this.props.dispatch); 
     }
     handleShowGroups() {
         // toggle between true and false

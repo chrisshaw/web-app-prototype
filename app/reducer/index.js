@@ -25,6 +25,18 @@ const intialstate = {
 
 const loginintialstate = {
   loginerror: false,
+  signupfields:   {
+        email: '', 
+        password : '', 
+        first: '',
+        last: '',
+        company: '',
+        verify: '', 
+        selectedrole:  'Please Select a Role',
+        description: '',
+        error: false, 
+        errorMsg: ""
+    }
 }
 
 const datainitialstate = {
@@ -50,7 +62,6 @@ const mainReducer = (state={intialstate}, action) => {
             return Object.assign({},state, {searching: action.searching});
         case 'UPDATE_GRADES':
             //pulls for display in autopopulate dropdown to selected list for query
-            // delete portion not currently in use - old code
             let gradeObj = -1;
             if (action.delete) {
                 // use filter here to remove deleted group
@@ -72,64 +83,85 @@ const mainReducer = (state={intialstate}, action) => {
                     // no change
                     return Object.assign({},state, {selectedgradelist: state.selectedgradelist, gradelist: state.gradelist }); 
                 }
+            } else if ((action.reset === true) &&  (action.delete === false)){
+                console.log("in action.reset true", state.gradelist)
+                return Object.assign({},state, {gradelist: action.gradelist, selectedgradelist: []});   
+            } else if ((action.reset === false ) &&  (action.delete === false)) {
+                // if not a reset action and there are no  items in the selected list
+                // send back all grades
+                console.log("state.selectedgradelis", state.selectedgradelist)
+                if (state.selectedgradelist){
+                     console.log("in action.reset false 1", state.gradelist)
+                    return Object.assign({},state, {gradelist: state.gradelist}); 
+                } else {
+                     console.log("in action.reset false 2", action.gradelist)
+                    return Object.assign({},state, {gradelist: action.gradelist}); 
+                }
+                
             } 
-            else {
-                return Object.assign({},state, {gradelist: action.gradelist, selectedgradelist: []});    
-            }
-            case 'UPDATE_COURSES':  
+            // otherwise just return state
+        case 'UPDATE_COURSES':  
                 //pulls for display in autopopulate dropdown to selected list for query
                 // delete portion not currently in use - old code
-                let courseObj = -1;
-                if (action.delete) {
-                    // use filter here to remove deleted group
-                    // remove from selectedgrouplist and add back to grouplist
-                    var newGroups = state.selectedcourselist.filter((group) => { 
-                        
-                        if (group._id === action.id){      
-                            courseObj = group;
-                            return false;
-                        }
-                        return true;
-
-                    });
-                    // in case of corrupt data 
-                    if (courseObj !== -1){
-                        // update
-                        return Object.assign({},state, {selectedcourselist: newGroups, courselist: [...state.courselist, courseObj] }); 
-                    } else {
-                        // no change
-                        return Object.assign({},state, {selectedcourselist: state.selectedcourselist, courselist: state.courselist }); 
-                    }
-                } 
-                else {
-                    return Object.assign({},state, {courselist: action.courselist, selectedcourselist: []});    
-                }
-        case 'UPDATE_GROUPS':
-            //pulls for display in autopopulate dropdown to selected list for query
-            // delete portion not currently in use - old code
-            let newObj = -1;
+            let courseObj = -1;
             if (action.delete) {
                 // use filter here to remove deleted group
                 // remove from selectedgrouplist and add back to grouplist
-                var newGroups = state.selectedgrouplist.filter((group) => {                   
-                    if (group._id === action.id){     
-                        newObj = group;
+                var newGroups = state.selectedcourselist.filter((group) => { 
+                    
+                    if (group._id === action.id){      
+                        courseObj = group;
                         return false;
                     }
                     return true;
-                });           
+
+                });
                 // in case of corrupt data 
-                if (newObj !== -1){
+                if (courseObj !== -1){
                     // update
-                    return Object.assign({},state, {selectedgrouplist: newGroups, grouplist: [...state.grouplist, newObj] }); 
+                    return Object.assign({},state, {selectedcourselist: newGroups, courselist: [...state.courselist, courseObj] }); 
                 } else {
                     // no change
-                    return Object.assign({},state, {selectedgrouplist: state.selectedgrouplist, grouplist: state.grouplist }); 
+                    return Object.assign({},state, {selectedcourselist: state.selectedcourselist, courselist: state.courselist }); 
                 }
+            } else if ((action.reset === true) &&  (action.delete === false)){
+                return Object.assign({},state, {courselist: action.courselist, selectedcourselist: []});   
+            } else if ((action.reset === false ) &&  (action.delete === false)) {
+                // if not a reset action and there are no  items in the selected list
+                // send back all grades
+                if (state.selectedcourselist){
+                    return Object.assign({},state, {courselist: state.courselist}); 
+                } else {
+                    return Object.assign({},state, {courselist: action.courselist}); 
+                }
+                
             } 
-            else {
-                return Object.assign({},state, {grouplist: action.grouplist, selectedgrouplist: []});    
-            }
+        // case 'UPDATE_GROUPS':
+        //     //pulls for display in autopopulate dropdown to selected list for query
+        //     // delete portion not currently in use - old code
+        //     let newObj = -1;
+        //     if (action.delete) {
+        //         // use filter here to remove deleted group
+        //         // remove from selectedgrouplist and add back to grouplist
+        //         var newGroups = state.selectedgrouplist.filter((group) => {                   
+        //             if (group._id === action.id){     
+        //                 newObj = group;
+        //                 return false;
+        //             }
+        //             return true;
+        //         });           
+        //         // in case of corrupt data 
+        //         if (newObj !== -1){
+        //             // update
+        //             return Object.assign({},state, {selectedgrouplist: newGroups, grouplist: [...state.grouplist, newObj] }); 
+        //         } else {
+        //             // no change
+        //             return Object.assign({},state, {selectedgrouplist: state.selectedgrouplist, grouplist: state.grouplist }); 
+        //         }
+        //     } 
+        //     else {
+        //         return Object.assign({},state, {grouplist: action.grouplist, selectedgrouplist: []});    
+        //     }
         
          case 'UPDATE_TOPICS':
             //pulls for display in autopopulate dropdown to selected list for query
@@ -155,10 +187,18 @@ const mainReducer = (state={intialstate}, action) => {
                     // no change
                     return Object.assign({},state, {selectedtopiclist: state.selectedtopiclist, topiclist: state.topiclist }); 
                 }
+             } else if ((action.reset === true) &&  (action.delete === false)){
+                return Object.assign({},state, {topiclist: action.topiclist, selectedtopiclist: []});   
+            } else if ((action.reset === false ) &&  (action.delete === false)) {
+                // if not a reset action and there are no  items in the selected list
+                // send back all grades
+                if (state.selectedtopiclist){
+                    return Object.assign({},state, {topiclist: state.topiclist}); 
+                } else {
+                    return Object.assign({},state, {topiclist: action.topiclist}); 
+                }
+                
             } 
-            else {
-                return Object.assign({},state, {topiclist: action.topiclist, selectedtopiclist: []});    
-            }
         case 'UPDATE_SUBJECTS':
             //pulls for display in autopopulate dropdown to selected list for query
             // delete portion not currently in use - old code
@@ -182,10 +222,17 @@ const mainReducer = (state={intialstate}, action) => {
                     // no change
                     return Object.assign({},state, {selectedsubjectcontentlist: state.selectedsubjectcontentlist, subjectcontentlist: state.subjectcontentlist }); 
                 }
+            } else if ((action.reset === true) &&  (action.delete === false)){
+                return Object.assign({},state, {subjectcontentlist: action.subjectcontentlist, selectedsubjectcontentlist: []});   
+            } else if ((action.reset === false ) &&  (action.delete === false)) {
+                // if not a reset action and there are no  items in the selected list
+                // send back all grades
+                if (state.selectedsubjectcontentlist){
+                    return Object.assign({},state, {subjectcontentlist: state.subjectcontentlist}); 
+                } else {
+                    return Object.assign({},state, {subjectcontentlist: action.subjectcontentlist}); 
+                }           
             } 
-            else {
-                return Object.assign({},state, {subjectcontentlist: action.subjectcontentlist, selectedsubjectcontentlist: []});    
-            }
         case 'UPDATE_STANDARDS':
             //pulls for display in autopopulate dropdown to selected list for query
             // delete portion not currently in use - old code
@@ -209,10 +256,17 @@ const mainReducer = (state={intialstate}, action) => {
                     // no change
                     return Object.assign({},state, {selectedstandardslist: state.selectedstandardslist, standardslist: state.standardslist }); 
                 }
+            } else if ((action.reset === true) &&  (action.delete === false)){
+                return Object.assign({},state, {standardslist: action.standardslist, selectedstandardslist: []});   
+            } else if ((action.reset === false ) &&  (action.delete === false)) {
+                // if not a reset action and there are no  items in the selected list
+                // send back all grades
+                if (state.selectedstandardslist){
+                    return Object.assign({},state, {standardslist: state.standardslist}); 
+                } else {
+                    return Object.assign({},state, {standardslist: action.standardslist}); 
+                }           
             } 
-            else {
-                return Object.assign({},state, {standardslist: action.standardslist, selectedstandardslist: []});    
-            }
         case 'UPDATE_SELECTED_GRADES':
             // saves to selected list for query and in chips
             // see what action is being performed - delete or add to selected list
@@ -443,6 +497,7 @@ const mainReducer = (state={intialstate}, action) => {
 }
 
 const authReducer = (state={loginintialstate}, action) => {
+    // console.log("loginintialstate", loginintialstate);
     switch(action.type){    
         case 'LOGGED_IN':
             return Object.assign({},state, {loggedin: action.loggedin}); 
@@ -452,6 +507,20 @@ const authReducer = (state={loginintialstate}, action) => {
             return Object.assign({},state, {roles: action.roles});
         case 'SIGN_UP_STATUS':
             return Object.assign({signupok: false},state, {signupok: action.signupok, statusmsg: action.statusmsg }); 
+        case 'SIGN_UP_FIELDS':
+            return Object.assign(  {
+                signupfields:  {
+                        email: '', 
+                        password : '', 
+                        first: '',
+                        last: '',
+                        company: '',
+                        verify: '', 
+                        selectedrole:  'Please Select a Role',
+                        description: '',
+                        error: false, 
+                        errorMsg: ""}
+            },state, {signupfields: action.signupfields }); 
         case 'USER_PERMS':
             return Object.assign({perms: []},state, {perms: action.perms});
  };      
@@ -484,6 +553,7 @@ const appReducer = combineReducers({
 // to handle clearing store on logout
 const reducers = (state, action) => {
   if (action.type === 'USER_LOGOUT') {
+      console.log("logout")
     state = undefined
   }
   return appReducer(state, action)

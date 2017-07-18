@@ -42,7 +42,7 @@ class Login extends Component{
             // helper.loginError(false, msg, this.props.dispatch);
         }  else if ((!this.state.password) || (this.state.password.length < 8)) {
             // error - password required
-            let msg = "Please provide a valid password of length 8 characters with one capital letter and at least 2 numbers."
+            let msg = "Please provide a valid password."
              this.setState({error: true, errorMsg: msg})
         } else {
             // if all ok then submit to server
@@ -64,7 +64,7 @@ class Login extends Component{
                { (this.props.loginerror || this.state.error ) ?  <Dialog
                 bodyStyle={{fontSize: 13}}
                 titleStyle={{fontSize: 14, fontWeight: 'bold'}}
-                title="Sign Up / Login Error"
+                title="Login Error"
                 actions={actions}
                 style={{zIndex: 2000,fontSize: 12, height: 300, width: 350, left: 350}}
                 modal={false}

@@ -19,6 +19,13 @@ userSignUp: (signupok) => {
     signupok
   }
 },  
+signUpFields: (signupfields) => {
+  console.log(signupfields);
+   return {
+     type: 'SIGN_UP_FIELDS',
+     signupfields
+   }
+},
 userLogout: () => {
   return {
       type: 'USER_LOGOUT',
@@ -104,30 +111,6 @@ searchPaths: (searching) => {
     searching,
   }
 },
-updateGroupList: (deleteGroup, id, grouplist) => {
-    return {
-      type: 'UPDATE_GROUPS',
-      delete: deleteGroup,
-      id,
-      grouplist,
-    }
-},
-updateGradeList: (deleteGroup, id, gradelist) => {
-    return {
-      type: 'UPDATE_GRADES',
-      delete: deleteGroup,
-      id,
-      gradelist,
-    }
-},
-updateCourseList: (deleteGroup, id, courselist) => {
-    return {
-      type: 'UPDATE_COURSES',
-      delete: deleteGroup,
-      id,
-      courselist,
-    }
-},
 saveSelectedGroup : (addOrRemove, item) => {
     return {
       type: 'UPDATE_SELECTED_GROUPS',
@@ -145,6 +128,30 @@ saveSelectedGrade : (addOrRemove, item) => {
 saveSelectedCourse : (addOrRemove, item) => {
     return {
       type: 'UPDATE_SELECTED_COURSES',
+      delete: addOrRemove,
+      item
+    }
+},
+saveSelectedSubjects: (addOrRemove, item) => {
+  //saves to selected list for query and in chips
+    return {
+      type: 'UPDATE_SELECTED_SUBJECTS',
+      delete: addOrRemove,
+      item
+    }
+},
+saveSelectedTopics: (addOrRemove, item) => {
+  //saves to selected list for query and in chips
+    return {
+      type: 'UPDATE_SELECTED_TOPICS',
+      delete: addOrRemove,
+      item
+    }
+},
+saveSelectedStandards: (addOrRemove, item) => {
+  //saves to selected list for query and in chips
+    return {
+      type: 'UPDATE_SELECTED_STANDARDS',
       delete: addOrRemove,
       item
     }
@@ -173,57 +180,62 @@ updatePathList: (paths) => {
 //     }
 
 // },
-updateTopicList: (deleteGroup, id, topiclist) => {
+updateGroupList: (deleteGroup, id, grouplist) => {
+    return {
+      type: 'UPDATE_GROUPS',
+      delete: deleteGroup,
+      id,
+      grouplist,
+    }
+},
+updateGradeList: (reset, deleteGroup, id, gradelist) => {
+    return {
+      type: 'UPDATE_GRADES',
+      reset,
+      delete: deleteGroup,
+      id,
+      gradelist,
+    }
+},
+updateCourseList: (reset, deleteGroup, id, courselist) => {
+    return {
+      type: 'UPDATE_COURSES',
+      reset,
+      delete: deleteGroup,
+      id,
+      courselist,
+    }
+},
+updateTopicList: (reset, deleteGroup, id, topiclist) => {
    //pulls for display in autopopulate dropdown to selected list for query
   return {
       type: 'UPDATE_TOPICS',
+      reset,
       delete: deleteGroup,
       id,
       topiclist,
     }
 },
-saveSelectedTopics: (addOrRemove, item) => {
-  //saves to selected list for query and in chips
-    return {
-      type: 'UPDATE_SELECTED_TOPICS',
-      delete: addOrRemove,
-      item
-    }
-},
-updateSubjectContentList: (deleteGroup, id, subjectcontentlist) => {
+updateSubjectContentList: (reset, deleteGroup, id, subjectcontentlist) => {
    //pulls for display in autopopulate dropdown to selected list for query
     return {
       type: 'UPDATE_SUBJECTS',
+      reset,
       delete: deleteGroup,
       id,
       subjectcontentlist,
     }
 },
-saveSelectedSubjects: (addOrRemove, item) => {
-  //saves to selected list for query and in chips
-    return {
-      type: 'UPDATE_SELECTED_SUBJECTS',
-      delete: addOrRemove,
-      item
-    }
-},
-updateStandardsList: (deleteGroup, id, standardslist) => {
+updateStandardsList: (reset, deleteGroup, id, standardslist) => {
    //pulls for display in autopopulate dropdown to selected list for query
     return {
       type: 'UPDATE_STANDARDS',
+      reset,
       delete: deleteGroup,
       id,
       standardslist,
     }
-},
-saveSelectedStandards: (addOrRemove, item) => {
-  //saves to selected list for query and in chips
-    return {
-      type: 'UPDATE_SELECTED_STANDARDS',
-      delete: addOrRemove,
-      item
-    }
-},
+}
 }
 
 

@@ -16,7 +16,7 @@ class TopicSelection extends Component{
         this.handleReset = this.handleReset.bind(this);
         this.handleShowGroups = this.handleShowGroups.bind(this);
         // get initial data and set props
-        helper.getTopics(this.props.dispatch);    
+        helper.getTopics(false, false, this.props.dispatch);    
         var searchObj = {};
         // state for hide/show selection and text/icon
         this.state ={
@@ -28,7 +28,7 @@ class TopicSelection extends Component{
     //     helper.removeTopic(id, this.props.dispatch);
     // }
     handleReset() {
-        helper.getTopics(this.props.dispatch); 
+        helper.getTopics(true, false, this.props.dispatch); 
     }
     handleShowGroups() {
         // toggle between true and false and change the displayed message

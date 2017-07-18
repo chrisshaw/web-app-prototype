@@ -34,8 +34,8 @@ class QueryBuilder extends Component{
    componentDidUpdate(prevProps, prevState){
         
         if ((prevProps.selectedgradelist !== this.props.selectedgradelist) && (prevProps.selectedgradelist)){
-            helper.getCourses(this.props.selectedgradelist, this.props.dispatch); 
-            helper.getStandards(this.props.selectedgradelist, this.props.dispatch);     
+            helper.getCourses(false, false, this.props.selectedgradelist, this.props.dispatch); 
+            helper.getStandards(false, false, this.props.selectedgradelist, this.props.dispatch);     
         }    
     }
     handleRequestDelete(id) {

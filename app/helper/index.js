@@ -69,21 +69,22 @@ var helpers = {
     toggleDrawer: function(action, dispatch){
         dispatch(actions.closePathBuilderDrawer(action))
     },
-    getGroups: function(dispatch){
-        return axios.get('/api/teacher/group').then(function(response) {
-            // send results to redux store for use by Results component
-            dispatch(actions.updateGroupList(false, 0, response.data));
-            return response.data;
-        })
-    },
-    getGrades: function(dispatch){
+    // getGroups: function(reset, deletedispatch){
+    //     return axios.get('/api/teacher/group').then(function(response) {
+    //         // send results to redux store for use by Results component
+    //         dispatch(actions.updateGroupList(reset, false, 0, response.data));
+    //         return response.data;
+    //     })
+    // },
+    getGrades: function(reset, deleteGroup, dispatch){
        var gradeArr = [{_id: 0, name: "6"}, {_id: 1, name: "7"},{_id: 2, name: "8"}, {_id: 3, name: "9"},{_id: 4, name: "10"}, {_id: 5, name: "11"}]
-       dispatch(actions.updateGradeList(false, 0, gradeArr));
+       dispatch(actions.updateGradeList(reset, deleteGroup, 0, gradeArr));
     },
-    getCourses: function(grade, dispatch){
+    getCourses: function(reset, deleteGroup, grade, dispatch){
         /// parse array to a string for query.
+        console.log("herloer get crs")
         let gradeString = "";
-        if (grade.length > 0) {
+        if (grade.length !== 0) {
             if (grade.length === 1){
                 gradeString = grade[0].name;
             } else {
@@ -96,38 +97,13 @@ var helpers = {
         }
         return axios.get('/api/courses/'+gradeString).then(function(response) {
                 // send results to redux store for use by Results component
-                dispatch(actions.updateCourseList(false, 0, response.data));
+                dispatch(actions.updateCourseList(reset, deleteGroup, 0, response.data));
                 return;
         })
        
     },
-    saveSelectedFA(e, dispatch){
-        // need name and id
-       dispatch(actions.saveSelectedFA(e));
-
-    },
-    getFocusArea: function(dispatch){
-        // for now these are hard coded!!!!!
-        return axios.get('/api/focusarea').then(function(response) {
-            // send results to redux store for use by Results component
-            dispatch(actions.getFAList(response.data))
-            return;
-        })     
-    },
-    getTopics: function(dispatch){
-        return axios.get('/api/topics/all').then(function(response) {
-            // send results to redux store for use by Results component
-            /// need to put in an object with an id 
-            var topicArr = [];
-            for (var i = 0; i < response.data.length; i++){
-                // console.log("topics i", response.data[i])
-                topicArr.push({ _id: i, name: response.data[i].toLowerCase()})
-            }
-            dispatch(actions.updateTopicList(false, 0, topicArr))  
-            return;
-        }) 
-    },
-    getStandards: function(grade, dispatch){
+    getStandards: function(reset, deleteGroup, grade, dispatch){
+        console.log("herloer get std")
         /// parse array to a string for query.
         let gradeString = "";
         if (grade.length > 0) {
@@ -148,13 +124,41 @@ var helpers = {
                 for (var i = 0; i < response.data[0].length; i++){
                     standardsArr.push({ _id: i, name: response.data[0][i]})
                 }
-                dispatch(actions.updateStandardsList(false, 0, standardsArr))
+                // id is not 0 so we can safely use as placeholder
+                dispatch(actions.updateStandardsList(reset, deleteGroup, 0, standardsArr))
                 return;
             }) 
     },
-    getSubjectContents: function(dispatch){
+    saveSelectedFA(e, dispatch){
+        // need name and id
+       dispatch(actions.saveSelectedFA(e));
+
+    },
+    getFocusArea: function(dispatch){
+        // for now these are hard coded!!!!!
+        return axios.get('/api/focusarea').then(function(response) {
+            // send results to redux store for use by Results component
+            dispatch(actions.getFAList(response.data))
+            return;
+        })     
+    },
+    getTopics: function(reset, deleteGroup, dispatch){
+        return axios.get('/api/topics/all').then(function(response) {
+            // send results to redux store for use by Results component
+            /// need to put in an object with an id 
+            var topicArr = [];
+            for (var i = 0; i < response.data.length; i++){
+                // console.log("topics i", response.data[i])
+                topicArr.push({ _id: i, name: response.data[i].toLowerCase()})
+            }
+            dispatch(actions.updateTopicList(reset, deleteGroup, 0, topicArr))  
+            return;
+        }) 
+    },
+
+    getSubjectContents: function(reset, deleteGroup, dispatch){
         var subjectArr = [{_id: 0, name: "english"}, {_id: 1, name: "math"}, {_id: 2, name: "science"}, {_id: 3, name: "social studies"}]
-        dispatch(actions.updateSubjectContentList(false, 0, subjectArr))
+        dispatch(actions.updateSubjectContentList(reset, deleteGroup, 0, subjectArr))
     },
     newPaths: function(paths, dispatch) {
         // clear old path data
@@ -178,18 +182,16 @@ var helpers = {
     },
 
     removeChip: function(id, queryitem, dispatch){
-        if (queryitem === "Groups"){
-            dispatch(actions.updateGroupList(true, id));
-        } else if  (queryitem === "Topics") {
-            dispatch(actions.updateTopicList(true, id));
+        if  (queryitem === "Topics") {
+            dispatch(actions.updateTopicList(false, true, id));
         }  else if  (queryitem === "Standards") {
-            dispatch(actions.updateStandardsList(true, id));
+            dispatch(actions.updateStandardsList(false, true, id));
         }  else if  (queryitem === "Subjects") {
-            dispatch(actions.updateSubjectContentList(true, id))
+            dispatch(actions.updateSubjectContentList( false, true, id))  
         }  else if  (queryitem === "Grades") {
-            dispatch(actions.updateGradeList(true, id));
+            dispatch(actions.updateGradeList(false, true, id));   // reset, delete,  id
         }   else if  (queryitem === "Courses") {
-            dispatch(actions.updateCourseList(true, id));
+            dispatch(actions.updateCourseList(false, true, id)); // reset, delete,  id
         }
     },
     // use to update all query items
