@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import {connect } from 'react-redux';
+// Higher Order Component
 
-export default function(HOC){
+export default function(WrappedComponent){
 
     class ValidatePerms extends Component {
         constructor(props){
@@ -14,25 +15,36 @@ export default function(HOC){
             if(!this.props.loggedin) { 
                 // send to login screen
                 this.props.router.push('/login')
-            } 
+            } else if (this.props.perms.indexOf(this.props.route.auth) === -1 ){
+                // if not this path is not in your perms list then get forbidden message
+                // console.log('forbidden');
+                this.props.router.push('/forbidden');
+            }
+
         }
         componentWillUpdate(nextProps) {
             if(!nextProps.loggedin) {
                 // send to login screen
                 this.props.router.push('/login')
-            } 
+            }  else if (this.props.perms.indexOf(this.props.route.auth) === -1 ){
+                // if not this path is not in your perms list then get forbidden message
+                console.log('forbidden');
+                this.props.router.push('/forbidden');
+            }
+
         }
         render() {
-                console.log("in HOC render", this.props);
-            return <HOC {...this.props} />
+
+            return <WrappedComponent {...this.props} />
         }
     }
-    // ***** NB <HOC {...this.props} /> injects the route props into the wrapped compoenent
-    // these are needed for routing - if we dont need it can be removed and just return  <HOC />
+    // ***** NB <WrappedComponent {...this.props} /> injects the route props into the wrapped compoenent
+    // these are needed for routing - if we dont need it can be removed and just return  <WrappedComponent />
     // we need as it also injects login state to container components like BuildPath
     function mapStateToProps(store) {
         return {
             loggedin: store.authState.loggedin,
+            perms: store.authState.perms,
         }
     }
 

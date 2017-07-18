@@ -131,7 +131,9 @@ class SignUp extends Component{
                 return  <option key={role._id} value={role.name}>{role.name}</option>     
             });
         }
+         console.log("singuppl", this.props.signupok);
         return( 
+   
             <div className="form-signin">
                { (this.props.loginerror || this.state.error ) ?  <Dialog
                 bodyStyle={{fontSize: 13}}

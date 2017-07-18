@@ -24,6 +24,12 @@ userLogout: () => {
       type: 'USER_LOGOUT',
     }
   },
+userPerms: (perms) => {
+  return {
+    type: 'USER_PERMS',
+    perms
+  }
+},
 setPage: (pathbuilderview) => {
    console.log("set page in action:", pathbuilderview)
   return {

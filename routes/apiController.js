@@ -45,18 +45,112 @@ module.exports = function(app){
         }); 
     }
 
-    app.get('/whoami',function(req, res, next){
-       
+    function getUser(req, res, authPerm) {
+        return new Promise( (resolve, reject) => { 
+            let cookies = "";
+            if (req.cookies) {
+                 var cookie = req.cookies['x-foxxsessid'];;
+            }
+            const foxxService = db.route('auth', {"x-foxxsessid" : cookie});
+            foxxService.get('/user')
+            .then(response => {
+                // console.log("in get uere" , response)
+                // if not null
+                if (response.body.username){
+                    return response.body;
+                } else {
+                    reject(response.body.username)
+                }
+            }).then(response => {
+                // console.log(response)
+                let userid = response.userid;
+                let username = response.username;
+                // console.log("what is this at loing:", userid);
+                let query = aql`for u in auth_users for ha in auth_user_hasRole filter ha._from == u._id for ac in auth_roles_can filter ac._from == ha._to for p in auth_permissions filter p._id == ac._to filter u._id == ${userid} return  p.name`;
+                        // console.log(query)
+                        db.query(query)
+                        .then(cursor => {  
+                            // console.log("type of", cursor._result);
+                            // send permissions list back to requesting client function
+                            // for updating in redux store
+                            let permissions = cursor._result;
+
+                            if ((authPerm !== '' ) && (permissions.indexOf(authPerm) !== -1)) {
+                                console.log("success", authPerm);
+                                resolve({success:true, userid: userid, username: username});
+                            } else if (authPerm === '' ) {
+                                 console.log("authPerm", authPerm);
+                                resolve({success:true, userid: userid, username: username});
+                            } else {
+                                reject();
+                            }
+                            
+                        }).catch(error => {
+                            console.log(Date.now() + " Error (Get Perms from Database):");
+                            reject();
+                        }) 
+            }).catch(error => {
+                console.log(Date.now() + " Error (Get Auth User from Database)");
+                reject();
+            })
+        });      
+    }
+
+    app.post('/password' , function(req, res, next){
+        // validate user is logged in
+        getUser(req, res, "").then((response) =>{
+            let cookies = "";
+            if (req.cookies) {
+                 var cookie = req.cookies['x-foxxsessid'];;
+            }
+            const foxxService = db.route('auth', {"x-foxxsessid" : cookie});
+            foxxService.post('/password', req.body)
+            .then(function(response){
+                // create a user to role mapping.....
+                // get userid of person being the signed up
+                // expect success: true
+                console.log("passowrd response", response);
+                res.json(response.body)
+            }).catch(error => { 
+                console.log(error)
+            })
+        })
+        .catch(error => { 
+            // can send error to logs?
+            console.log(Date.now() + " Error (SignUp):", error.response.body.errorMessage);
+            // send basic success: false
+            // send error to client for handling
+            res.json({success:false, auth: false, msg: error.response.body.errorMessage});
+        })
+
     })
 
     app.post('/login' , function(req, res, next){
         const foxxService = db.route('auth');
-        // console.log(req.body)
+        console.log("login", req.body)
         foxxService.post('/login', req.body)
         .then(response => {
-            console.log("login response:", response.headers);
+            // console.log("login response:", response.headers);
             res.setHeader("Set-Cookie",  'x-foxxsessid='+response.headers['x-foxxsessid']);
-            res.json(response.body);
+            return response.body;
+        }).then(response => {
+            console.log("what is this at loing:", response);
+            let userid = response.userid;
+            let chgPwd = response.chgPwd;
+            // console.log("what is this at loing:", userid);
+                let query = aql`for u in auth_users for ha in auth_user_hasRole filter ha._from == u._id for ac in auth_roles_can filter ac._from == ha._to for p in auth_permissions filter p._id == ac._to filter u._id == ${userid} return  p.name`;
+                        // console.log(query)
+                        db.query(query)
+                        .then(cursor => {  
+                            // console.log("type of", cursor._result);
+                            // send permissions list back to requesting client function
+                            // for updating in redux store
+                            // admin created users must change password on first login
+                            res.json({success:true, perms: cursor._result, chgPwd: chgPwd});
+                        }).catch(error => {
+                            console.log(Date.now() + " Error (Get Perms from Database):", error);
+                            res.json();
+                        }) 
         }).catch(error => {
             // can send error to logs?
             console.log(Date.now() + " Error (Login):", error.response.body.errorMessage);
@@ -66,105 +160,66 @@ module.exports = function(app){
         })
     })
     app.post('/signup' , function(req, res, next){
-        // verify user can sign up other users...... 
-        getUser(req, res).then((response) =>{
-            // get perms and username of person doing the signup
-            let username = response.username;
-            // post/save data using foxx service for auth
-            const foxxService = db.route('auth');
-            foxxService.post('/signup', req.body)
-            .then(function(response){
-                // create a user to role mapping.....
-                // get userid of person being the signed up
-                let userid = response.body.userid;
-                let role = req.body.role;
-                let query=aql`let userid = ${userid} 
-                                let role = (for a in auth_roles 
-                                    filter UPPER(a.name) == UPPER(${role})
-                                    return {_id: a._id})
-                        UPSERT { _from: ${userid} , _to: role[0]._id} INSERT { _from:  ${userid} , _to: role[0]._id, dateCreated: DATE_NOW(), dateUpdated: null, createdBy:  ${username} , updatedBy: null } UPDATE {  dateUpdated: DATE_NOW(), updatedBy:  ${username} } IN auth_user_hasRole RETURN { doc: NEW, type: OLD ? 'update' : 'insert' }`     
-                db.query(query)
-                .then(cursor => {  
-                    res.json({success: true})
-                }).catch(error => {
-                     console.log(error)
-                    res.json({success: false, msg: error.response.body.errorMessage})
+        // verify user is valid and then that they have the right permissions
+        getUser(req, res, "manageusers").then((response) =>{
+            // double check user perms on server side
+            // if user has the required permission manageusers in their permissions array in
+            // req.perms
+            // if (response.perms.indexOf("manageusers") !== -1){
+                // console.log(response)
+                // get perms and username of person doing the signup
+                let username = response.username;
+                console.log("signuo", req.body.username)
+                // post/save data using foxx service for auth
+                const foxxService = db.route('auth');
+                foxxService.post('/signup', req.body)
+                .then(function(response){
+                    // create a user to role mapping.....
+                    // get userid of person being the signed up
+                    let userid = response.body.userid;
+                    let role = req.body.role;    
+                    let query=aql`let userid = ${userid} 
+                                    let role = (for a in auth_roles 
+                                        filter UPPER(a.name) == UPPER(${role})
+                                        return {_id: a._id})
+                            UPSERT { _from: ${userid} , _to: role[0]._id} INSERT { _from:  ${userid} , _to: role[0]._id, dateCreated: DATE_NOW(), dateUpdated: null, createdBy:  ${username} , updatedBy: null } UPDATE {  dateUpdated: DATE_NOW(), updatedBy:  ${username} } IN auth_user_hasRole RETURN { doc: NEW, type: OLD ? 'update' : 'insert' }`     
+                    db.query(query)
+                    .then(cursor => {  
+                        res.json({success: true})
+                    }).catch(error => {
+                        res.json({success: false, msg: error.response.body.errorMessage})
+                    })
                 })
-            })
-            .catch(error => { 
-                // can send error to logs?
-                console.log(Date.now() + " Error (SignUp):", error.response.body.errorMessage);
-                // send basic success: false
-                // send error to client for handling
-                res.json({success:false, msg: error.response.body.errorMessage});
-            })
+                .catch(error => { 
+                    // can send error to logs?
+                    console.log(Date.now() + " Error (SignUp):", error.response.body.errorMessage);
+                    // send basic success: false
+                    // send error to client for handling
+                    res.json({success:false, auth: false, msg: error.response.body.errorMessage});
+                })
+            // }
         })
     })
-
-     function getUser(req, res) {
-        return new Promise( (resolve, reject) => { 
-            let cookies = "";
-            if (req.cookies) {
-                 var cookie = req.cookies['x-foxxsessid'];;
-            }
-            const foxxService = db.route('auth', {"x-foxxsessid" : cookie});
-            foxxService.get('/user')
-            .then(response => {
-                resolve(response.body);
-            }).catch(error => {
-                reject(error)
-                console.log("??error", error);
-            })
-        });      
-    }
-
     app.post("/csv/students/courses/data", function(req, res, next){
         // validate user before save and use name in save
-        getUser(req, res).then((response) =>{
-            let username = response.username;
-            console.log(" in get user response ")
-            // if username not null ie. reponse.
-            if (username){
-                // verify user logged in and capture for save...
-                // console.log(req.body);
-                let data = req.body;
-                var studentObj = {};
-                let studentArr = [];
-                // start at array position 1 to skip headers
-                for (var j = 1; j < data.length; j++){
-                    if (j === 1){     
-                        StudentObj = {  
-                            studentId: data[j].studentId,
-                            firstName: data[j].firstName,
-                            lastName: data[j].lastName,
-                            email: data[j].email,
-                            section: data[j].section,  // assumes one section and course per file
-                            course: data[j].course,
-                            mentor:  data[j].mentor,
-                            focusAreas: [{
-                                faName: data[j].faName,
-                                faType: data[j].faType,
-                                mastered: data[j].mastered,
-                            }]
-                        }
-                    } else {
-                        if(data[j].studentId === data[j-1].studentId){
-                                StudentObj.focusAreas.push(
-                                    {
-                                        faName: data[j].faName,
-                                        faType: data[j].faType,
-                                        mastered: data[j].mastered, 
-                                    }
-                                )
-                                if (j === data.length-1){
-                                    // push final object to array and start again
-                                    studentArr.push(StudentObj);
-                                }
-                            //  console.log( StudentObj.focusAreas)
-                        } else { 
-                            // push existing object to array and start again
-                            studentArr.push(StudentObj);
-                            // create a new Student Obj
+        // username is null if no valid user
+        getUser(req, res, "managestudents").then((response) =>{
+            // double check user perms on server side
+            // if user has the required permission managestudents in their permissions array in
+            // req.perms
+            // if (response.perms.indexOf("managestudents") !== -1){
+                let username = response.username;
+                console.log(" in get user response ???? ", response)
+                // if username not null ie. reponse.
+                if (username){
+                    // verify user logged in and capture for save...
+                    // console.log(req.body);
+                    let data = req.body;
+                    var studentObj = {};
+                    let studentArr = [];
+                    // start at array position 1 to skip headers
+                    for (var j = 1; j < data.length; j++){
+                        if (j === 1){     
                             StudentObj = {  
                                 studentId: data[j].studentId,
                                 firstName: data[j].firstName,
@@ -179,178 +234,121 @@ module.exports = function(app){
                                     mastered: data[j].mastered,
                                 }]
                             }
-                            if (j === data.length-1){
-                                // push final object to array and start again
+                        } else {
+                            if(data[j].studentId === data[j-1].studentId){
+                                    StudentObj.focusAreas.push(
+                                        {
+                                            faName: data[j].faName,
+                                            faType: data[j].faType,
+                                            mastered: data[j].mastered, 
+                                        }
+                                    )
+                                    if (j === data.length-1){
+                                        // push final object to array and start again
+                                        studentArr.push(StudentObj);
+                                    }
+                                //  console.log( StudentObj.focusAreas)
+                            } else { 
+                                // push existing object to array and start again
                                 studentArr.push(StudentObj);
-                            }
-                            // console.log("studentObj", studentObj);
-                        }           
-                    }
-                }      
-                // process the data to consolidate it then save to database
-                saveStudentGetIds(studentArr, username).then((response) => {
-                    // console.log(studentArr);
-                    // filter out rows with null and put these aside for error reporting
-                    // pre-process: sort out fa_id = null and send to client
-                    var errorArr = [];      
-                    // save on the object
-                    for (var i = 0; i < response.length; i++){
-                        let newFAs = [];
-                        let nullFAs = [];
-                        // console.log("response", response[i])
-                        newFAs =response[i].focusArea.filter((fa) => {          
-                            if (fa.fa_id === null){
-                                // remove and add to nullFA's array
-                                nullFAs.push(fa.focusAreaDetails.faName);
-                                return false;
-                            }
-                            return true;
-                        })
-                        response[i].focusArea = newFAs;
-                        // console.log(response[i].focusArea);
-                        if (nullFAs.length > 0) errorArr.push(nullFAs);
-                        // get distinct
-                    }
+                                // create a new Student Obj
+                                StudentObj = {  
+                                    studentId: data[j].studentId,
+                                    firstName: data[j].firstName,
+                                    lastName: data[j].lastName,
+                                    email: data[j].email,
+                                    section: data[j].section,  // assumes one section and course per file
+                                    course: data[j].course,
+                                    mentor:  data[j].mentor,
+                                    focusAreas: [{
+                                        faName: data[j].faName,
+                                        faType: data[j].faType,
+                                        mastered: data[j].mastered,
+                                    }]
+                                }
+                                if (j === data.length-1){
+                                    // push final object to array and start again
+                                    studentArr.push(StudentObj);
+                                }
+                                // console.log("studentObj", studentObj);
+                            }           
+                        }
+                    }      
+                    // process the data to consolidate it then save to database
+                    saveStudentGetIds(studentArr, username).then((response) => {
+                        // console.log(studentArr);
+                        // filter out rows with null and put these aside for error reporting
+                        // pre-process: sort out fa_id = null and send to client
+                        var errorArr = [];      
+                        // save on the object
+                        for (var i = 0; i < response.length; i++){
+                            let newFAs = [];
+                            let nullFAs = [];
+                            // console.log("response", response[i])
+                            newFAs =response[i].focusArea.filter((fa) => {          
+                                if (fa.fa_id === null){
+                                    // remove and add to nullFA's array
+                                    nullFAs.push(fa.focusAreaDetails.faName);
+                                    return false;
+                                }
+                                return true;
+                            })
+                            response[i].focusArea = newFAs;
+                            // console.log(response[i].focusArea);
+                            if (nullFAs.length > 0) errorArr.push(nullFAs);
+                            // get distinct
+                        }
 
-                    return [response, errorArr]
-                }).then((response) => { 
+                        return [response, errorArr]
+                    }).then((response) => { 
 
-                    // update later to:
-                    // studentToFA == hasMastered
-                    // studentToCourse == taking
-                    // courseToFA == covers
-                    let firstUpsert = aql`for s in ${response[0]}
-                    UPSERT { _from: s.student_id[0] , _to: s.course_id[0]._id} INSERT  { _from: s.student_id[0] , _to: s.course_id[0]._id, section: s.course_id[0].section, dateCreated: DATE_NOW(), dateUpdated:  null, createdBy: ${username}, updatedBy: null} UPDATE { section: s.course_id[0].section,  dateUpdated: DATE_NOW(), updatedBy: ${username}} IN taking RETURN { doc: NEW, type: OLD ? 'update' : 'insert' } `
-                    db.query(firstUpsert)
-                    .then(cursor => {  
-                         console.log("inserted 1:", cursor._result);
-                        // INSERT 
-                        // remove any fa where hasMastered != "FALEs"
-                        let secondUpsert = aql`for s in  ${response[0]}
-                        for fa in s.focusArea 
-                        FILTER UPPER(fa.focusAreaDetails.mastered) == 'TRUE'
-                        UPSERT { _from: s.student_id[0], _to: fa.fa_id} INSERT { _from: s.student_id[0], _to: fa.fa_id, type: fa.focusAreaDetails.faType, mastered: UPPER(fa.focusAreaDetails.mastered),  dateCreated: DATE_NOW(), dateUpdated: null, createdBy: ${username} , updatedBy: null } UPDATE { type: fa.focusAreaDetails.faType, mastered: UPPER(fa.focusAreaDetails.mastered),  dateUpdated: DATE_NOW(), updatedBy: ${username}  } IN hasMastered RETURN { doc: NEW, type: OLD ? 'update' : 'insert' }`;
-                        // console.log(secondUpsert)
-                        db.query(secondUpsert)
+                        // update later to:
+                        // studentToFA == hasMastered
+                        // studentToCourse == taking  == inCourse
+                        // courseToFA == covers
+                        let firstUpsert = aql`for s in ${response[0]}
+                        UPSERT { _from: s.student_id[0] , _to: s.course_id[0]._id} INSERT  { _from: s.student_id[0] , _to: s.course_id[0]._id, section: s.course_id[0].section, dateCreated: DATE_NOW(), dateUpdated:  null, createdBy: ${username}, updatedBy: null} UPDATE { section: s.course_id[0].section,  dateUpdated: DATE_NOW(), updatedBy: ${username}} IN inCourse RETURN { doc: NEW, type: OLD ? 'update' : 'insert' } `
+                        db.query(firstUpsert)
                         .then(cursor => {  
-                            console.log("inserted 2:", cursor._result);
-                            if (response[1].length > 0 ) {
-                                // some FA names were not found in the database
-                                res.json({success: false, error: response[1]})
-                            } else {
-                                // all fields saved
-                                res.json({success: true})
-                            }
-                        }).catch(error => {
+                            console.log("inserted 1:", cursor._result);
+                            // INSERT 
+                            // remove any fa where hasMastered != "FALEs"
+                            let secondUpsert = aql`for s in  ${response[0]}
+                            for fa in s.focusArea 
+                            FILTER UPPER(fa.focusAreaDetails.mastered) == 'TRUE'
+                            UPSERT { _from: s.student_id[0], _to: fa.fa_id} INSERT { _from: s.student_id[0], _to: fa.fa_id, type: fa.focusAreaDetails.faType, mastered: UPPER(fa.focusAreaDetails.mastered),  dateCreated: DATE_NOW(), dateUpdated: null, createdBy: ${username} , updatedBy: null } UPDATE { type: fa.focusAreaDetails.faType, mastered: UPPER(fa.focusAreaDetails.mastered),  dateUpdated: DATE_NOW(), updatedBy: ${username}  } IN hasMastered RETURN { doc: NEW, type: OLD ? 'update' : 'insert' }`;
+                            // console.log(secondUpsert)
+                            db.query(secondUpsert)
+                            .then(cursor => {  
+                                console.log("inserted 2:", cursor._result);
+                                if (response[1].length > 0 ) {
+                                    // some FA names were not found in the database
+                                    res.json({success: false, error: response[1]})
+                                } else {
+                                    // all fields saved
+                                    res.json({success: true})
+                                }
+                            }).catch(error => {
+                                res.json({success: false})
+                                console.log(Date.now() + " Error (Update 2 Database):", error);
+                            })             
+                        }).catch((error)=>{
+                            console.log(Date.now() + " Error (Getting IDs from Database):", error);
                             res.json({success: false})
-                            console.log(Date.now() + " Error (Update 2 Database):", error);
-                        })             
-                    }).catch((error)=>{
+                        })      
+                    }).catch((error) => {
                         console.log(Date.now() + " Error (Getting IDs from Database):", error);
                         res.json({success: false})
-                    })      
-                }).catch((error) => {
-                    console.log(Date.now() + " Error (Getting IDs from Database):", error);
+                    }) 
+                } else {
                     res.json({success: false})
-                }) 
-            } else {
-                res.json({success: false, loggedin: false})
-            }
+                }
+            // }
         }).catch((error) => {
-             console.log(Date.now() + " Authentication Error", error);
-             res.json({success: false, loggedin: false})
+            console.log(Date.now() + " Authentication Error");
+            res.json({success: false, auth: false})
         })
     })
-
-     app.get('/api/roles/all', function(req, res){
-        // get roles from database
-        let query = aql`
-            for a in auth_roles
-            sort a.name asc
-            return {name: a.name, _id: a._id, description: a.description}`;
-
-        db.query(query)
-        .then(cursor => {  
-            // console.log("type of", cursor._result);
-            res.json(cursor._result);
-        }).catch(error => {
-            console.log(Date.now() + " Error (Get Roles from Database):", error);
-            res.json();
-        }) 
-
-     })
-
-
-    app.get('/api/topics/all', function(req, res){
-        let query = aql`
-            let topics = UNIQUE(FLATTEN(
-                for p in projects
-                return p.topics
-            ))
-
-           for t in topics
-            sort t
-            return t
-        `;
-
-        db.query(query)
-        .then(cursor => {  
-            // console.log("type of", cursor._result);
-            
-            res.json(cursor._result);
-        }).catch(error => {
-            console.log(Date.now() + " Error (Get Topics from Database):", error);
-            res.json();
-        })         
-        
-    })
-
-    app.get('/api/standards/:grade?', function(req, res){
-        let grades = req.params.grade;
-        let queryGrades = [];
-        if (grades) queryGrades = grades.split(',');
-         
-        // console.log("standards grade", queryGrades)
-        let query = aql`
-            RETURN TO_ARRAY((for s in standards
-            filter length(${queryGrades}) > 0 ? TO_ARRAY(s.grade) any in ${queryGrades} : true
-            sort s.standard
-            return s.standard))
-        `;
-        db.query(query)
-        .then(cursor => {  
-            // console.log("standards", cursor._result);
-            res.json(cursor._result);
-        }).catch(error => {
-            console.log(Date.now() + " Error (Get Standards from Database):", error);
-            res.json();
-        })         
-        
-    })
-
-    
-    app.get('/api/courses/:grade?', function(req, res){
-        let grades = req.params.grade;
-        let queryGrades = [];
-        // console.log(grades)
-        if (grades) queryGrades = grades.split(',');
-        let query = aql`
-            for c in courses
-            filter length(${queryGrades}) > 0 ? TO_ARRAY(TO_STRING(c.grade)) any in ${queryGrades} : true
-            SORT c.name asc
-            return {_id: c._id, name: c.name}
-        `;
-
-        db.query(query)
-        .then(cursor => { 
-            res.json(cursor._result);
-        }).catch(error => {
-            console.log(Date.now() + " Error (Get Courses from Database):", error);
-            res.json();
-        })            
-    })
-
-
     // using post as passing object - probably not ideal
     app.post('/api/path/all', function (req, res){
         // intialise
@@ -478,85 +476,172 @@ module.exports = function(app){
              res.json();
         }))
     })
-
     app.post("/csv/file", function(req, res, next){
-        // main entry point
-        // need to verify csv file and save contents somewhere...
-        var fileContentsFromBuffer = req.body.buffer;
-        // remove the newline char then split on the carriage return 
-        // some csv files have /r some have  /r/n
-        // replace any /r with /n - the remove duplicates i.e. /n/n
-        var fileContent1 = fileContentsFromBuffer.replace(/\r/g, "\n");
-        var csvToArr = fileContent1.replace(/\n\n/g, "\n").split(/\n/);
-        // var csvToArr =  fileContent2.split(/\n/);   
-        //  need to do for loop over array, split on comma and save
-        var studentsArr = [];
-        // do some basic verification
-        // we are expecting 10 fields and we know the first row is headings 
-        // process the file
-        // start at row 1 cos first row is headings
-        if (csvToArr.length < 2) {
-            // file contains no data only headers
-            res.json({success: false, error: ["File contains no data."]}); 
-        } else {     
-            for (var i = 0; i < csvToArr.length; i++) {    
-                // skip over any trailing empty lines   
-                if (csvToArr[i] !== ''){
-                    // regex to allow for commas inside ""
-                    let re = /[ ,]*"([^"]+)"|([^,]+)/g;
-                    let match;
-                    let dataArr = [];
-                    while (match = re.exec(csvToArr[i])) {
-                        let data = match[1] || match[2];
-                        dataArr.push(data);
-                    }
-                    // create object to send to client
-                    let studentObj = {
-                            id: i-1,
-                            studentId: dataArr[0],
-                            firstName: dataArr[1],
-                            lastName: dataArr[2],
-                            email: dataArr[3],
-                            section: dataArr[4],
-                            course: dataArr[5],
-                            mentor: dataArr[6],
-                            faName: dataArr[7],
-                            faType: dataArr[8],
-                            mastered: dataArr[9]
-                    }      
-                    if ((i === 0) && ( dataArr.length < 10)) {
-                        console.log(Date.now(), " Error: Bad File Format")
-                        res.json({success: false, error: ["Missing headers or bad file format - must be csv format."]});
-                        break; 
-                    } 
-                    else if ((i === 0) && ( dataArr.length === 10)) {
-                        // verify the headers are correct so we don't save junk
-                        if ((dataArr[0].trim().toUpperCase() !== "STUDENT ID") 
-                        || (dataArr[1].trim().toUpperCase() !== "STUDENT FIRST")
-                        || (dataArr[2].trim().toUpperCase() !== "STUDENT LAST")
-                        || (dataArr[3].trim().toUpperCase() !== "STUDENT EMAIL")
-                        || (dataArr[4].trim().toUpperCase() !== "SECTION NAME")
-                        || (dataArr[5].trim().toUpperCase() !== "COURSE NAME")
-                        || (dataArr[6].trim().toUpperCase() !== "MENTOR NAME")
-                        || (dataArr[7].trim().toUpperCase() !== "FOCUS AREA NAME")
-                        || (dataArr[8].trim().toUpperCase() !== "FOCUS AREA TYPE")
-                        || (dataArr[9].trim().toUpperCase() !== "MASTERED?")) {
-                            console.log(Date.now(), " Error: Header names are incorrect");
-                            res.json({success: false, error: ["Header names are incorrect"]});
+        getUser(req, res, "managestudents").then((response) =>{
+            // main entry point
+            // need to verify csv file and save contents somewhere...
+            var fileContentsFromBuffer = req.body.buffer;
+            // remove the newline char then split on the carriage return 
+            // some csv files have /r some have  /r/n
+            // replace any /r with /n - the remove duplicates i.e. /n/n
+            var fileContent1 = fileContentsFromBuffer.replace(/\r/g, "\n");
+            var csvToArr = fileContent1.replace(/\n\n/g, "\n").split(/\n/);
+            // var csvToArr =  fileContent2.split(/\n/);   
+            //  need to do for loop over array, split on comma and save
+            var studentsArr = [];
+            // do some basic verification
+            // we are expecting 10 fields and we know the first row is headings 
+            // process the file
+            // start at row 1 cos first row is headings
+            if (csvToArr.length < 2) {
+                // file contains no data only headers
+                res.json({success: false, error: ["File contains no data."]}); 
+            } else {     
+                for (var i = 0; i < csvToArr.length; i++) {    
+                    // skip over any trailing empty lines   
+                    if (csvToArr[i] !== ''){
+                        // regex to allow for commas inside ""
+                        let re = /[ ,]*"([^"]+)"|([^,]+)/g;
+                        let match;
+                        let dataArr = [];
+                        while (match = re.exec(csvToArr[i])) {
+                            let data = match[1] || match[2];
+                            dataArr.push(data);
+                        }
+                        // create object to send to client
+                        let studentObj = {
+                                id: i-1,
+                                studentId: dataArr[0],
+                                firstName: dataArr[1],
+                                lastName: dataArr[2],
+                                email: dataArr[3],
+                                section: dataArr[4],
+                                course: dataArr[5],
+                                mentor: dataArr[6],
+                                faName: dataArr[7],
+                                faType: dataArr[8],
+                                mastered: dataArr[9]
+                        }      
+                        if ((i === 0) && ( dataArr.length < 10)) {
+                            console.log(Date.now(), " Error: Bad File Format")
+                            res.json({success: false, error: ["Missing headers or bad file format - must be csv format."]});
                             break; 
                         } 
+                        else if ((i === 0) && ( dataArr.length === 10)) {
+                            // verify the headers are correct so we don't save junk
+                            if ((dataArr[0].trim().toUpperCase() !== "STUDENT ID") 
+                            || (dataArr[1].trim().toUpperCase() !== "STUDENT FIRST")
+                            || (dataArr[2].trim().toUpperCase() !== "STUDENT LAST")
+                            || (dataArr[3].trim().toUpperCase() !== "STUDENT EMAIL")
+                            || (dataArr[4].trim().toUpperCase() !== "SECTION NAME")
+                            || (dataArr[5].trim().toUpperCase() !== "COURSE NAME")
+                            || (dataArr[6].trim().toUpperCase() !== "MENTOR NAME")
+                            || (dataArr[7].trim().toUpperCase() !== "FOCUS AREA NAME")
+                            || (dataArr[8].trim().toUpperCase() !== "FOCUS AREA TYPE")
+                            || (dataArr[9].trim().toUpperCase() !== "MASTERED?")) {
+                                console.log(Date.now(), " Error: Header names are incorrect");
+                                res.json({success: false, error: ["Header names are incorrect"]});
+                                break; 
+                            } 
+                        } 
+                        // pre-format - create array of objects to be saved to database
+                        studentsArr.push(studentObj);
                     } 
-                    // pre-format - create array of objects to be saved to database
-                    studentsArr.push(studentObj);
-                } 
+                }
+                // send results back to client
+                var resultsObj = {success: true, results: studentsArr }
+                res.json(resultsObj);
+                // }
             }
-            // send results back to client
-            var resultsObj = {success: true, results: studentsArr }
-            res.json(resultsObj);
-            // }
-        }
+        }).catch((error) => {
+             console.log(Date.now() + " Authentication Error");
+             res.json({success: false, error: "No Permissions to Upload file"})
+        })
     })
+    app.get('/api/roles/all', function(req, res){
+        // get roles from database
+        let query = aql`
+            for a in auth_roles
+            sort a.name asc
+            return {name: a.name, _id: a._id, description: a.description}`;
 
+        db.query(query)
+        .then(cursor => {  
+            // console.log("type of", cursor._result);
+            res.json(cursor._result);
+        }).catch(error => {
+            console.log(Date.now() + " Error (Get Roles from Database):", error);
+            res.json();
+        }) 
+
+     })
+
+
+    app.get('/api/topics/all', function(req, res){
+        let query = aql`
+            let topics = UNIQUE(FLATTEN(
+                for p in projects
+                return p.topics
+            ))
+
+           for t in topics
+            sort t
+            return t
+        `;
+
+        db.query(query)
+        .then(cursor => {  
+            // console.log("type of", cursor._result);
+            
+            res.json(cursor._result);
+        }).catch(error => {
+            console.log(Date.now() + " Error (Get Topics from Database):", error);
+            res.json();
+        })         
+        
+    })
+    app.get('/api/standards/:grade?', function(req, res){
+        let grades = req.params.grade;
+        let queryGrades = [];
+        if (grades) queryGrades = grades.split(',');
+         
+        // console.log("standards grade", queryGrades)
+        let query = aql`
+            RETURN TO_ARRAY((for s in standards
+            filter length(${queryGrades}) > 0 ? TO_ARRAY(s.grade) any in ${queryGrades} : true
+            sort s.standard
+            return s.standard))
+        `;
+        db.query(query)
+        .then(cursor => {  
+            // console.log("standards", cursor._result);
+            res.json(cursor._result);
+        }).catch(error => {
+            console.log(Date.now() + " Error (Get Standards from Database):", error);
+            res.json();
+        })         
+        
+    })  
+    app.get('/api/courses/:grade?', function(req, res){
+        let grades = req.params.grade;
+        let queryGrades = [];
+        // console.log(grades)
+        if (grades) queryGrades = grades.split(',');
+        let query = aql`
+            for c in courses
+            filter length(${queryGrades}) > 0 ? TO_ARRAY(TO_STRING(c.grade)) any in ${queryGrades} : true
+            SORT c.name asc
+            return {_id: c._id, name: c.name}
+        `;
+
+        db.query(query)
+        .then(cursor => { 
+            res.json(cursor._result);
+        }).catch(error => {
+            console.log(Date.now() + " Error (Get Courses from Database):", error);
+            res.json();
+        })            
+    })
     app.use(function(req, res){
         // main entry point
         res.sendFile(path.join(__dirname, '/../public/index.html'));

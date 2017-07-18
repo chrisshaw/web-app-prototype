@@ -67,13 +67,13 @@ class Main extends Component{
         injectTapEventPlugin();
     }
     handleLogout(){
-      helper.logout(this.props.dispatch);
+      helper.logout(this.props.dispatch, this.props.router);
     }
     render(){
          return(
             <MuiThemeProvider muiTheme={navBarTheme}>
             <div>
-                <AppNav pathname={this.props.location.pathname} handleLogout={this.handleLogout} loggedin={this.props.loggedin} showPathBuilder={this.showPathBuilder} />
+                <AppNav pathname={this.props.location.pathname} handleLogout={this.handleLogout} loggedin={this.props.loggedin} perms={this.props.perms} />
                 <div className="wrapper">          
                    {this.props.children}
               </div>
@@ -86,6 +86,7 @@ class Main extends Component{
 const mapStateToProps = (store) => {
     return {
         loggedin: store.authState.loggedin,
+        perms: store.authState.perms,
     }
 }
 export default connect(mapStateToProps)(Main);

@@ -31,6 +31,8 @@ var helpers = {
                 };    
                 return axios.post('/csv/file', postObj).then(function(response){
                     console.log("response", response.data);
+                    //  added perms check res.json({success: false, auth: false})
+                    // handle no perms error auth == false too
                     dispatch(actions.viewUploadedCSVData(response.data.results, response.data.error))          
                 })
             }
@@ -54,6 +56,7 @@ var helpers = {
                 // this will clear the data from the upload Page after saving....
                 // by settting csvdata to ""
                 dispatch(actions.viewUploadedCSVData(""));
+                // ***handle no perms error response.data.auth == false too
                 // success or failure - return mesage to client this.props.dataupload = boolean
                 component.dataUploadStatus(response.data.success, response.data.error, dispatch);
                 return;               
@@ -216,33 +219,54 @@ var helpers = {
             return;
         }) 
     },
+    // getUserPerms(dispatch) {
+    //     return axios.get('/api/perms/user').then(function(response) {
+    //         // send results to redux store for use by SignUp component
+    //         dispatch(actions.getPerms(response.data));
+    //         return;
+    //     }) 
+
+    // },
     loginUser(email, password, dispatch, router){      
         // capture data in object
         let userObj = { 
-            "username": email,
+            "username": email.toLowerCase(),
             "password": password
         }
         // send request to server
         return axios.post('/login', userObj).then(function(response) {
             let msg = "Invalid username or password - please try again";
             // sets login to true or false as appropriate
+            // saves the permssions
+            dispatch(actions.userPerms(response.data.perms));
             dispatch(actions.userLogin(response.data.success));
             // captures error and sends any relevant message to UI
             dispatch(actions.userLoginError(!response.data.success, msg));
             // successful login route to default page
-            router.push('/');
+            // capture redirect and make change passowrd
+            console.log("chg pwd:", response.data.chgPwd);
+            // if a new user force them to create their own secret password 
+            // if not new the just log in as normal
+            if (response.data.chgPwd) {
+                router.push('/password');
+                console.log('router', router);
+            } else {
+                router.push('/buildpath');
+            }
+           
             return;
         })
     },
 
     signUpUsers(email, password, first, last, company, role, dispatch, router){      
         let userObj = { 
-            "username": email,
+            "username": email.toLowerCase(),
             "password": password,
             "first": first,
             "last": last,
             "company": company,
-            "role": role
+            "role": role,
+            "chgPwd": 'true'
         }
         // reset the signup success message
         dispatch(actions.userSignUp(false));
@@ -256,21 +280,44 @@ var helpers = {
                 data: userObj
         }).then(function(response) {  
             // captures error and sends any relevant message to UI
+            // handle no perms error auth == false 
+            console.log("response.data", response.data)
             dispatch(actions.userSignUp(response.data.success));
             dispatch(actions.userLoginError(!response.data.success, response.data.msg));
             return;
         });
     },
+    changePwd(pwd, dispatch, route) {
+       
+        let dataObj = {"password": pwd};
+         console.log("pwd", dataObj)
+        return axios({
+                method: 'post',
+                url: '/password', 
+                data: dataObj
+        }).then(function(response) {  
+            // handle false later!
+            console.log("pwd", response.data);
+            if (response.data.success) {
+                route.push('/');
+            } else {
+               dispatch(actions.userLoginError(!response.data.success, response.data.msg));
+            }
+            return;
+        });
+        
+    },
     loginError(value, msg, dispatch){
          dispatch(actions.userLoginError(value, msg))
     },
 
-    logout(dispatch){
+    logout(dispatch, router){
         // send to api for auth
         // set logged in to false
         dispatch(actions.userLogin(false));
         // clear redux store and reset
         dispatch(actions.userLogout());
+        router.push('/login');
      }
  };
 

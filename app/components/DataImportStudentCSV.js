@@ -57,7 +57,6 @@ class DataImportStudentCSV extends Component{
     render(){
         // add a save button and a clear button
         var component = this;
-        // console.log(this.props.error)
         if (this.props.saveerror){
             var problemFA = this.props.saveerror.map( function (row, rowindex){
                var  faArrItems = row.map(function (val, index){
