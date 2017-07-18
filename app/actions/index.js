@@ -111,48 +111,42 @@ searchPaths: (searching) => {
     searching,
   }
 },
-saveSelectedGroup : (addOrRemove, item) => {
+saveSelectedGroup : (item) => {
     return {
       type: 'UPDATE_SELECTED_GROUPS',
-      delete: addOrRemove,
       item
     }
 },
-saveSelectedGrade : (addOrRemove, item) => {
+saveSelectedGrade : (item) => {
     return {
       type: 'UPDATE_SELECTED_GRADES',
-      delete: addOrRemove,
       item
     }
 },
-saveSelectedCourse : (addOrRemove, item) => {
+saveSelectedCourse : (item) => {
     return {
       type: 'UPDATE_SELECTED_COURSES',
-      delete: addOrRemove,
       item
     }
 },
-saveSelectedSubjects: (addOrRemove, item) => {
+saveSelectedSubjects: (item) => {
   //saves to selected list for query and in chips
     return {
       type: 'UPDATE_SELECTED_SUBJECTS',
-      delete: addOrRemove,
       item
     }
 },
-saveSelectedTopics: (addOrRemove, item) => {
+saveSelectedTopics: (item) => {
   //saves to selected list for query and in chips
     return {
       type: 'UPDATE_SELECTED_TOPICS',
-      delete: addOrRemove,
       item
     }
 },
-saveSelectedStandards: (addOrRemove, item) => {
+saveSelectedStandards: (item) => {
   //saves to selected list for query and in chips
     return {
       type: 'UPDATE_SELECTED_STANDARDS',
-      delete: addOrRemove,
       item
     }
 },

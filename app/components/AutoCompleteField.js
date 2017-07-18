@@ -47,7 +47,7 @@ import ChipInput from 'material-ui-chip-input';
         // make sure a full word supplied is in list
         if (dataSource1.indexOf(e) !== -1){
             //  helper.updateSelectedGroup(e, false, this.props.dispatch);
-             helper.updateSelected(e, false, this.props.queryitem, this.props.dispatch);
+             helper.updateSelected(e, this.props.queryitem, this.props.dispatch);
         }
 
     }

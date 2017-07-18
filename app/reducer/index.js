@@ -60,6 +60,8 @@ const mainReducer = (state={intialstate}, action) => {
         //     return Object.assign({},state, {pathsrendered: action.pathsrendered});
         case 'SEARCHING_PATHS':
             return Object.assign({},state, {searching: action.searching});
+
+        // ***** try to make UPDATE_* more dry as they essentially contain same codeE!!
         case 'UPDATE_GRADES':
             //pulls for display in autopopulate dropdown to selected list for query
             let gradeObj = -1;
@@ -267,231 +269,162 @@ const mainReducer = (state={intialstate}, action) => {
                     return Object.assign({},state, {standardslist: action.standardslist}); 
                 }           
             } 
+        // ***** try to make UPDATE_SELECTED* more dry as they essentially contain same codeE!!
         case 'UPDATE_SELECTED_GRADES':
             // saves to selected list for query and in chips
             // see what action is being performed - delete or add to selected list
-            if (action.delete) {
-                // use filter here to remove deleted group name from selected list
-                let newGroups = state.selectedgradelist.filter((group) => {
-                    // add it back to the grouplist...
-                    if (group.name === action.item){
-                        return false;
+            
+            // decrease groups list and increase selected
+            let newObj = {};
+            let newGroups = state.gradelist.filter((group) => {                  
+                if (group.name === action.item){
+                    newObj = group;
+                    return false;
                     }
                     return true;
                 });
-                return Object.assign({},state, {selectedgradelist: newGroups});       
-            } 
-            else {
-                // decrease groups list and increase selected
-                let newObj = {};
-                let newGroups = state.gradelist.filter((group) => {                  
-                    if (group.name === action.item){
-                        newObj = group;
-                        return false;
-                        }
-                        return true;
-                    });
-               if (newObj !== {}){
-                   // if new Obj is not empty make changes
-                    if (!state.selectedgradelist) {
-                        // initially when array is empty do this
-                        return Object.assign({selectedgradelist: []},state, {selectedgradelist:  [newObj],  gradelist: newGroups});    
-                    } else {     
-                        // after there is at least one item do this
-                        return Object.assign({selectedgradelist: []},state, {selectedgradelist:  [...state.selectedgradelist, newObj], gradelist: newGroups});    
-                    }
-               }           
-            } 
+            if (newObj !== {}){
+                // if new Obj is not empty make changes
+                if (!state.selectedgradelist) {
+                    // initially when array is empty do this
+                    return Object.assign({selectedgradelist: []},state, {selectedgradelist:  [newObj],  gradelist: newGroups});    
+                } else {     
+                    // after there is at least one item do this
+                    return Object.assign({selectedgradelist: []},state, {selectedgradelist:  [...state.selectedgradelist, newObj], gradelist: newGroups});    
+                }
+            }           
+            
         case 'UPDATE_SELECTED_COURSES':
             // saves to selected list for query and in chips
             // see what action is being performed - delete or add to selected list
-            if (action.delete) {
-                // use filter here to remove deleted group name from selected list
-                let newGroups = state.selectedcourselist.filter((group) => {
-                    // add it back to the grouplist...
-                    if (group.name === action.item){
-                        return false;
+                // decrease groups list and increase selected
+            let newCourseObj = {};
+            let newCourses = state.courselist.filter((group) => {                  
+                if (group.name === action.item){
+                    newCourseObj = group;
+                    return false;
                     }
                     return true;
-
                 });
-                return Object.assign({},state, {selectedcourselist: newGroups}); 
-            
-            } 
-            else {
-                // decrease groups list and increase selected
-                let newObj = {};
-                let newGroups = state.courselist.filter((group) => {                  
-                    if (group.name === action.item){
-                        newObj = group;
-                        return false;
-                        }
-                        return true;
-                    });
-               if (newObj !== {}){
-                   // if new Obj is not empty make changes
-                    if (!state.selectedcourselist) {
-                        // initially when array is empty do this
-                        return Object.assign({selectedcourselist: []},state, {selectedcourselist:  [newObj],  courselist: newGroups});    
-                    } else {     
-                        // after there is at least one item do this
-                        return Object.assign({selectedcourselist: []},state, {selectedcourselist:  [...state.selectedcourselist, newObj], courselist: newGroups});    
-                    }
-               }           
-            } 
+            if (newCourseObj !== {}){
+                // if new Obj is not empty make changes
+                if (!state.selectedcourselist) {
+                    // initially when array is empty do this
+                    return Object.assign({selectedcourselist: []},state, {selectedcourselist:  [newCourseObj],  courselist: newCourses});    
+                } else {     
+                    // after there is at least one item do this
+                    return Object.assign({selectedcourselist: []},state, {selectedcourselist:  [...state.selectedcourselist, newCourseObj], courselist: newCourses});    
+                }
+            }           
         case 'UPDATE_SELECTED_GROUPS':
             // saves to selected list for query and in chips
             // see what action is being performed - delete or add to selected list
-            let newItem ="";
-            if (action.delete) {
-                // use filter here to remove deleted group name from selected list
-                let newGroups = state.selectedgrouplist.filter((group) => {
-                    // add it back to the grouplist...
-                    if (group.name === action.item){
-                        return false;
-                    }
-                    return true;
-
-                });
-                return Object.assign({},state, {selectedgrouplist: newGroups}); 
-            
-            } 
-            else {
                 // decrease groups list and increase selected
-                let newObj = {};
-                let newGroups = state.grouplist.filter((group) => {                  
+                let newGroupObj = {};
+                let newGroup = state.grouplist.filter((group) => {                  
                     if (group.name === action.item){
-                        newObj = group;
+                        newGroupObj = group;
                         return false;
                         }
                         return true;
                     });
-               if (newObj !== {}){
+               if (newGroupObj !== {}){
                    // if new Obj is not empty make changes
                     if (!state.selectedgrouplist) {
                         // initially when array is empty do this
-                        return Object.assign({selectedgrouplist: []},state, {selectedgrouplist:  [newObj],  grouplist: newGroups});    
+                        return Object.assign({selectedgrouplist: []},state, {selectedgrouplist:  [newGroupObj],  grouplist: newGroup});    
                     } else {     
                         // after there is at least one item do this
-                        return Object.assign({selectedgrouplist: []},state, {selectedgrouplist:  [...state.selectedgrouplist, newObj], grouplist: newGroups});    
+                        return Object.assign({selectedgrouplist: []},state, {selectedgrouplist:  [...state.selectedgrouplist, newGroupObj], grouplist: newGroup});    
                     }
                }           
-            } 
+    
         case 'UPDATE_SELECTED_SUBJECTS':
             // saves to selected list for query and in chips
             // see what action is being performed - delete or add to selected list
-            let newSubjectItem ="";
-            if (action.delete) {
-                // use filter here to remove deleted group name from selected list
-                let newGroups = state.selectedsubjectcontentlist.filter((group) => {
-                    // add it back to the grouplist...
-                    if (group.name === action.item){
-                        return false;
-                    }
-                    return true;
+            // let newSubjectItem ="";
+            // if (action.delete) {
+            //     // use filter here to remove deleted group name from selected list
+            //     let newGroups = state.selectedsubjectcontentlist.filter((group) => {
+            //         // add it back to the grouplist...
+            //         if (group.name === action.item){
+            //             return false;
+            //         }
+            //         return true;
 
-                });
-                return Object.assign({},state, {selectedsubjectcontentlist: newGroups});        
-            } 
-            else {
+            //     });
+            //     return Object.assign({},state, {selectedsubjectcontentlist: newGroups});        
+            // } 
+            // else {
                 // decrease groups list and increase selected
-                let newObj = {};
-                let newGroups = state.subjectcontentlist.filter((group) => {
+                let newSubObj = {};
+                let newSubjectGroups = state.subjectcontentlist.filter((group) => {
                     // console.log(group.name, action.item);
                     if (group.name === action.item){
-                        newObj = group;
+                        newSubObj = group;
                         return false;
                         }
                         return true;
                     });
-               if (newObj !== {}){
+               if (newSubObj !== {}){
                    // if new Obj is not empty make changes
                     if (!state.selectedsubjectcontentlist) {
                         // initially when array is empty do this
-                        return Object.assign({selectedsubjectcontentlist: []},state, {selectedsubjectcontentlist:  [newObj],  subjectcontentlist: newGroups});    
+                        return Object.assign({selectedsubjectcontentlist: []},state, {selectedsubjectcontentlist:  [newSubObj],  subjectcontentlist: newSubjectGroups});    
                     } else {     
                         // after there is at least one item do this
-                        return Object.assign({selectedsubjectcontentlist: []},state, {selectedsubjectcontentlist:  [...state.selectedsubjectcontentlist, newObj], subjectcontentlist: newGroups});    
+                        return Object.assign({selectedsubjectcontentlist: []},state, {selectedsubjectcontentlist:  [...state.selectedsubjectcontentlist, newSubObj], subjectcontentlist: newSubjectGroups});    
                     }
                }
                  
-            } 
+            
         case 'UPDATE_SELECTED_TOPICS':
             // saves to selected list for query and in chips
             // see what action is being performed - delete or add to selected lis
-            let newTopicItem ="";
-            if (action.delete) {
-                // use filter here to remove deleted group name from selected list
-                var newGroups = state.selectedtopiclist.filter((group) => {
-                    // add it back to the grouplist...
-                    if (group.name === action.item){
-                        return false;
-                    }
-                    return true;
-
-                });
-                return Object.assign({},state, {selectedtopiclist: newGroups}); 
+            // decrease groups list and increase selected
+            let newTopObj = {};
+            let newTopGroups = state.topiclist.filter((group) => {                  
+            if (group.name === action.item){
+                newTopObj = group;
+                return false;
+                }
+                return true;
+            });
+            if (newTopObj !== {}){
+                // if new Obj is not empty make changes
+                if (!state.selectedtopiclist) {
+                    // initially when array is empty do this
+                    return Object.assign({selectedtopiclist: []},state, {selectedtopiclist:  [newTopObj],  topiclist: newTopGroups});    
+                } else {     
+                    // after there is at least one item do this
+                    return Object.assign({selectedtopiclist: []},state, {selectedtopiclist:  [...state.selectedtopiclist, newTopObj], topiclist: newTopGroups});    
+                }
+            }
             
-            } 
-            else {
-                // decrease groups list and increase selected
-                let newObj = {};
-                let newGroups = state.topiclist.filter((group) => {                  
-                if (group.name === action.item){
-                    newObj = group;
-                    return false;
-                    }
-                    return true;
-                });
-               if (newObj !== {}){
-                   // if new Obj is not empty make changes
-                    if (!state.selectedtopiclist) {
-                        // initially when array is empty do this
-                        return Object.assign({selectedtopiclist: []},state, {selectedtopiclist:  [newObj],  topiclist: newGroups});    
-                    } else {     
-                        // after there is at least one item do this
-                        return Object.assign({selectedtopiclist: []},state, {selectedtopiclist:  [...state.selectedtopiclist, newObj], topiclist: newGroups});    
-                    }
-               }
-            }  
             case 'UPDATE_SELECTED_STANDARDS':
             // saves to selected list for query and in chips
             // see what action is being performed - delete or add to selected lis
-            let newStandardItem ="";
-            if (action.delete) {
-                // use filter here to remove deleted group name from selected list
-                let newGroups = state.selectedstandardslist.filter((group) => {
-                    // add it back to the grouplist...
-                    if (group.name === action.item){
-                        return false;
-                    }
-                    return true;
+            // decrease groups list and increase selected
+            let newStdObj = {};
+            let newStdGroups = state.standardslist.filter((group) => {              
+            if (group.name === action.item){
+                newStdObj = group;
+                return false;
+                }
+                return true;
 
-                });
-                return Object.assign({},state, {selectedstandardslist: newGroups}); 
-            } 
-            else {
-                // decrease groups list and increase selected
-                let newObj = {};
-                let newGroups = state.standardslist.filter((group) => {              
-                if (group.name === action.item){
-                    newObj = group;
-                    return false;
-                    }
-                    return true;
-
-                });
-               if (newObj !== {}){
-                   // if new Obj is not empty make changes
-                    if (!state.selectedstandardslist) {
-                        // initially when array is empty do this
-                        return Object.assign({selectedstandardslist: []},state, {selectedstandardslist:  [newObj],  standardslist: newGroups});    
-                    } else {     
-                        // after there is at least one item do this
-                        return Object.assign({selectedstandardslist: []},state, {selectedstandardslist:  [...state.selectedstandardslist, newObj], standardslist: newGroups});    
-                    }
-               }
-            }          
+            });
+            if (newStdObj !== {}){
+                // if new Obj is not empty make changes
+                if (!state.selectedstandardslist) {
+                    // initially when array is empty do this
+                    return Object.assign({selectedstandardslist: []},state, {selectedstandardslist:  [newStdObj],  standardslist: newStdGroups});    
+                } else {     
+                    // after there is at least one item do this
+                    return Object.assign({selectedstandardslist: []},state, {selectedstandardslist:  [...state.selectedstandardslist, newStdObj], standardslist: newStdGroups});    
+                }
+            }
+                   
     };    
     return state;
 }

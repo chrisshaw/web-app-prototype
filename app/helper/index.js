@@ -195,19 +195,19 @@ var helpers = {
         }
     },
     // use to update all query items
-    updateSelected: function(e, addOrRemove, queryitem, dispatch){
+    updateSelected: function(e, queryitem, dispatch){
         if (queryitem === "Groups"){
-            dispatch(actions.saveSelectedGroup(addOrRemove, e));
+            dispatch(actions.saveSelectedGroup(e));
         } else if  (queryitem === "Topics") {
-            dispatch(actions.saveSelectedTopics(addOrRemove, e));
+            dispatch(actions.saveSelectedTopics(e));
         }  else if  (queryitem === "Standards") {
-            dispatch(actions.saveSelectedStandards(addOrRemove, e));
+            dispatch(actions.saveSelectedStandards(e));
         }  else if  (queryitem === "Subjects") {
-            dispatch(actions.saveSelectedSubjects(addOrRemove, e));
+            dispatch(actions.saveSelectedSubjects(e));
         }   else if  (queryitem === "Grades") {
-            dispatch(actions.saveSelectedGrade(addOrRemove, e));
+            dispatch(actions.saveSelectedGrade(e));
         }   else if  (queryitem === "Courses") {
-            dispatch(actions.saveSelectedCourse(addOrRemove, e));
+            dispatch(actions.saveSelectedCourse(e));
         }
     },
     showView: function(action, dispatch){
