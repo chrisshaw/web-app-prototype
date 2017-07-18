@@ -1,15 +1,13 @@
 import React, { Component } from 'react';
 import {connect } from 'react-redux';
 import QueryBuilder from './QueryBuilder';
-import LoginSignUpTab from './LoginSignUpTab';
 import helper from '../helper';
 import {Grid, Row, Col} from 'react-bootstrap';
 import AppNav from './AppNav.js';
 import injectTapEventPlugin from 'react-tap-event-plugin';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
-
-
+//
 const navBarTheme = getMuiTheme({
   palette: {
     textColor: '#808080',
@@ -62,31 +60,22 @@ const navBarTheme = getMuiTheme({
   },
   
 });
-
 class Main extends Component{
     constructor(props){
         super(props);
         this.handleLogout = this.handleLogout.bind(this);
-        this.showPathBuilder = this.showPathBuilder.bind(this);
-        // this.state = { showPathBuilder:false }
         injectTapEventPlugin();
     }
     handleLogout(){
-      helper.logout(this.props.dispatch);
-    }
-    showPathBuilder(showPathBuilder){
-      helper.toggleDrawer(true, this.props.dispatch)
+      helper.logout(this.props.dispatch, this.props.router);
     }
     render(){
-      // console.log("main location", this.props.location.pathname);
-        return(
+         return(
             <MuiThemeProvider muiTheme={navBarTheme}>
             <div>
-                <AppNav pathname={this.props.location.pathname} handleLogout={this.handleLogout} loggedin={this.props.loggedin} showPathBuilder={this.showPathBuilder} />
+                <AppNav pathname={this.props.location.pathname} handleLogout={this.handleLogout} loggedin={this.props.loggedin} perms={this.props.perms} />
                 <div className="wrapper">          
-                   { this.props.loggedin ?  this.props.children : (                 
-                       <LoginSignUpTab />
-                  )}
+                   {this.props.children}
               </div>
             </div>
             </MuiThemeProvider>
@@ -94,12 +83,11 @@ class Main extends Component{
     }
 }
 // {React.cloneElement(this.props.children, {fadetail: this.props.fadetail, focusarea: this.props.area, noResultsMsg: this.props.noResultsMsg})}
-
 const mapStateToProps = (store) => {
     return {
         loggedin: store.authState.loggedin,
+        perms: store.authState.perms,
     }
 }
-
 export default connect(mapStateToProps)(Main);
 

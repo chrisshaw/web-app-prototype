@@ -7,6 +7,7 @@ const auth = createAuth();
 const router = createRouter();
 const users = module.context.collection('users');
 const headerTransport = require('@arangodb/foxx/sessions/transports/header');
+var console = require("console");  
 
 var secret="This is a test test test";
 const sessions = sessionsMiddleware({
@@ -42,7 +43,8 @@ module.context.use(router);
 router.get('/user', function (req, res) {
   try {
     const user = users.document(req.session.uid);
-    res.send({username: user.username});
+    // send back all user data
+    res.send({username: user.username, userid: user._id});
   } catch (e) {
     res.send({username: null});
   }
@@ -54,6 +56,7 @@ router.post('/login', function (req, res) {
   const user = users.firstExample({
     username: req.body.username
   });
+  console.log("login pwd")
   const valid = auth.verify(
     // Pretend to validate even if no user was found
     user ? user.authData : {},
@@ -63,7 +66,8 @@ router.post('/login', function (req, res) {
   // Log the user in
   req.session.uid = user._key;
   req.sessionStorage.save(req.session);
-  res.send({success: true});
+  // send back the username in the response
+  res.send({success: true, username: user.username, userid: user._id, chgPwd: user.chgPwd});
 })
 .body(joi.object({
   username: joi.string().required(),
@@ -80,8 +84,47 @@ router.post('/logout', function (req, res) {
 })
 .description('Logs the current user out.');
 
+router.post('/password', function (req, res) {
+  // const user = req.body;
+  try { 
+    // const user = users.document({_key: req.session.uid});
+      const user = users.firstExample({
+    _key: req.session.uid
+  });
+  console.log("user", user);
+    console.log("req.body.password", req.body.password);
+    // Create an authentication hash
+    let authData = auth.create(req.body.password);
+    let chgPwd = false;
+    // delete req.body.password;
+    // const meta = users.save(user);
+    // Object.assign(user, meta);
+    // let updatedata = {authData: auth.create(req.body.password), chgPwd: 'false'};
+    // delete req.body.password;
+    const meta = users.update(user, {authData: authData, chgPwd: chgPwd});
+    Object.assign(user, meta);
+  } catch (e) {
+    // Failed to save the user
+    // We'll assume the UniqueConstraint has been violated
+    res.throw('bad request', 'Problem Updating password', e);
+  }
+  // Log the user in
+  // req.session.uid = user._key;
+  // req.sessionStorage.save(req.session);
+  res.send({success: true});
+})
+.body(joi.object({
+  username: joi.string().email(),
+  password: joi.string().regex(/^(?=.*[A-Z])(?=.*[0-9].*[0-9])[a-zA-Z0-9]{8,16}$/),
+  chgPwd: joi.boolean(),
+}).required(), 'Credentials')
+.description('Creates a new user and logs them in.');
+
+
 router.post('/signup', function (req, res) {
   const user = req.body;
+    console.log("signup user", user);
+    console.log("signup req.body.password", req.body.password);
   try {
     // Create an authentication hash
     user.authData = auth.create(user.password);
@@ -96,11 +139,36 @@ router.post('/signup', function (req, res) {
   // Log the user in
   req.session.uid = user._key;
   req.sessionStorage.save(req.session);
-  res.send({success: true});
+  res.send({success: true, username: user.username, userid: user._id});
 })
 // password must have 1 capital letters and  2 digits
 .body(joi.object({
   username: joi.string().email(),
   password: joi.string().regex(/^(?=.*[A-Z])(?=.*[0-9].*[0-9])[a-zA-Z0-9]{8,16}$/),
+  chgPwd: joi.boolean().default(true),
+  first: joi.string(),
+  last: joi.string(),
+  company: joi.string(),
+  role: joi.string(),
+  createdBy: joi.string(),
+  dateCreated: joi.date(),
 }).required(), 'Credentials')
 .description('Creates a new user and logs them in.');
+
+
+
+
+// // password must have 1 capital letters and  2 digits
+// .body(joi.object({
+//   username: joi.string().email(),
+//   password: joi.string().regex(/^(?=.*[A-Z])(?=.*[0-9].*[0-9])[a-zA-Z0-9]{8,16}$/),
+//   chgPwd: joi.boolean().default(true),
+//   first: joi.string(),
+//   last: joi.string(),
+//   company: joi.string(),
+//   role: joi.string(),
+//   createdBy: joi.string(),
+//   dateCreated: joi.date(),
+
+// }).required(), 'Credentials')
+// .description('Creates a new user and logs them in.');

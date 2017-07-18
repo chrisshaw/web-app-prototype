@@ -44,17 +44,9 @@ class Login extends Component{
             // error - password required
             let msg = "Please provide a valid password of length 8 characters with one capital letter and at least 2 numbers."
              this.setState({error: true, errorMsg: msg})
-        } else if ((this.props.action === 'Sign Up') && (!this.state.verify)){
-            // error - please verify password
-            let msg = "Please verify your password."
-            this.setState({error: true, errorMsg: msg})
-        } else if ((this.props.action === 'Sign Up') && (this.state.verify !== this.state.password)){
-            // error - passwords dont match
-            let msg = "Passwords do not match - please verify."
-            this.setState({error: true, errorMsg: msg})
         } else {
             // if all ok then submit to server
-            helper.loginOrRegister(this.state.email, this.state.password, this.props.action , this.props.dispatch);
+            helper.loginUser(this.state.email, this.state.password,  this.props.dispatch,  this.props.router);
         }
     }
 
@@ -100,18 +92,9 @@ class Login extends Component{
                     </Col>
                     <Col xs={2} md={2}/>  
                 </Row>
-                { (this.props.action === "Sign Up") ? (<Row>
-                    <Col xs={2} md={2}/>
-                        <Col xs={8} md={8} className="text-center">
-                        <label htmlFor="inputPassword" className="sr-only">Verify Password</label>
-                        <input value={this.state.verify} onChange={(e)=>this.handleChange(e)}  id="verifypassword" type="password" className="form-control auth-input" placeholder="Verify Password" minLength="8"
-       maxLength="16" size="16" required />
-                    </Col>
-                    <Col xs={2} md={2}/>
-                </Row>) : "" }
                 <Row>
                     <Col xs={12} md={12} className="text-center">
-                        <RaisedButton style={{margin: 10}} secondary={true} containerElement='label' onTouchTap={this.handleSubmit}  label={this.props.action} />
+                        <RaisedButton style={{margin: 10}} secondary={true} containerElement='label' onTouchTap={this.handleSubmit}  label="Login"/>
                     </Col>
                  
                 </Row>

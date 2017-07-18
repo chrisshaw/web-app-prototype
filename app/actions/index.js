@@ -13,11 +13,23 @@ userLoginError: (loginerror, errormsg) => {
     errormsg
   }
 },
+userSignUp: (signupok) => {
+  return {
+    type: 'SIGN_UP_STATUS',
+    signupok
+  }
+},  
 userLogout: () => {
   return {
       type: 'USER_LOGOUT',
     }
   },
+userPerms: (perms) => {
+  return {
+    type: 'USER_PERMS',
+    perms
+  }
+},
 setPage: (pathbuilderview) => {
    console.log("set page in action:", pathbuilderview)
   return {
@@ -79,6 +91,13 @@ returnUploadedStatus: (datasaved, saveerror) => {
 //       toggledrawer,
 //     }
 // },
+// },
+getRoles: (roles) => {
+  return {
+    type: 'GET_ROLES',
+    roles,
+  }
+},
 searchPaths: (searching) => {
   return {
     type: 'SEARCHING_PATHS',

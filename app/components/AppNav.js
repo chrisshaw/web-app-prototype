@@ -27,30 +27,50 @@ const styles = {
 };
 
 
+var component = this;
+const Small = (props) => (
+  <IconMenu className="menu-on-small-screen"
+    iconButtonElement={
+      <IconButton><MoreVertIcon /></IconButton>
+    }
+    targetOrigin={{horizontal: 'right', vertical: 'top'}}
+    anchorOrigin={{horizontal: 'right', vertical: 'top'}}
+  >
+     { (props.perms.indexOf("buildpath") !== -1) ?  (<MenuItem  containerElement={<Link to="/buildpath"/>} primaryText="Build Paths" />) : ''}
+    { (props.perms.indexOf("managestudents") !== -1) ?  (<MenuItem  primaryText="Manage Students" containerElement='label'  containerElement={<Link to="/managestudents"/>} />) : ''}
+    { (props.perms.indexOf("manageusers") !== -1) ?  (<MenuItem  primaryText="Manage Users"  containerElement={<Link to="/manageusers"/>} />) : ''}
+    <MenuItem   primaryText="Logout" onTouchTap={props.handleLogout} />
+  </IconMenu>
+);
+
+const Normal = (props) => (<div className="menu-on-normal-screen">
+                     { (props.perms.indexOf("buildpath") !== -1) ?  (<FlatButton  labelStyle={{lineHeight: 4}} style={{ borderTop: 'solid 1px #E6E6E6',borderLeft: 'solid 1px #E6E6E6', borderRight: 'solid 1px #E6E6E6',maxWidth: 170, fontSize: 12, height: 50, flex: 'center', borderRadius: 0}} containerElement={<Link to="/buildpath"/>} label="Build Paths" />) : ''} 
+                     { (props.perms.indexOf("managestudents") !== -1) ?  (<FlatButton  labelStyle={{lineHeight: 4}} style={{borderTop: 'solid 1px #E6E6E6',borderLeft: 'solid 1px #E6E6E6', borderRight: 'solid 1px #E6E6E6', maxWidth: 170, fontSize: 12, height: 50, flex: 'center', borderRadius: 0}} containerElement='label' label="Manage Students"  containerElement={<Link to="/managestudents"/>} />) : ''} 
+                     { (props.perms.indexOf("manageusers") !== -1) ?  (<FlatButton  labelStyle={{lineHeight: 4}} style={{borderTop: 'solid 1px #E6E6E6',borderLeft: 'solid 1px #E6E6E6', borderRight: 'solid 1px #E6E6E6', maxWidth: 170, fontSize: 12, height: 50, flex: 'center', borderRadius: 0}} containerElement='label' label="Manage Users"  containerElement={<Link to="/manageusers"/>} />) : ''} 
+                      <IconButton  onTouchTap={props.handleLogout}  iconStyle={{height: 48}} style={{maxWidth: 100, alignSelf: 'center'}} ><LogoutIcon /></IconButton>
+                      </div>);
+
 class AppNav extends Component {
     constructor(props){
         super(props);
     }
     render(){
+      console.log("perms", this.props.perms)
        return (<div>
                   <AppBar className={this.props.loggedin ? "sticky-navbar sticky-navbar-loggedin" : "sticky-navbar"}
-                    title={((this.props.pathname === '/')&&(this.props.loggedin)) ? "" : (<div><span><img src="./public/assets/img/sidekick.png" className="logo" alt="Sidekick" /></span></div>)}
+                    title={(((this.props.pathname === '/buildpath') ||(this.props.pathname === '/')) && (this.props.loggedin)) ? "" : (<div><span><img src="./public/assets/img/sidekick.png" className="logo" alt="Sidekick" /></span></div>)}
                     titleStyle={styles.title}
                     iconStyleRight={{order: 4, marginTop: 0, marginLeft: 0, display: "flex"}}
                     iconStyleLeft={{display: 'none'}}
-                    iconElementRight={<div>{this.props.loggedin ? 
-                      (<div>
-                      <FlatButton  labelStyle={{lineHeight: 4}} style={{ borderTop: 'solid 1px #E6E6E6',borderLeft: 'solid 1px #E6E6E6', borderRight: 'solid 1px #E6E6E6',maxWidth: 170, fontSize: 12, height: 50, flex: 'center', borderRadius: 0}} containerElement={<Link to="/"/>} label="Build Paths" />
-                      <FlatButton  labelStyle={{lineHeight: 4}} style={{borderTop: 'solid 1px #E6E6E6',borderLeft: 'solid 1px #E6E6E6', borderRight: 'solid 1px #E6E6E6', maxWidth: 170, fontSize: 12, height: 50, flex: 'center', borderRadius: 0}} containerElement='label' label="Manage Students"  containerElement={<Link to="/csv"/>} />
-                      <IconButton  onTouchTap={this.props.handleLogout}  iconStyle={{height: 48}} style={{maxWidth: 100, alignSelf: 'center'}} ><LogoutIcon /></IconButton>
-                      </div>)  : (<div className="placeholder"></div>) } </div>}
-                    />            
+                    iconElementRight={<div>{this.props.loggedin && this.props.perms ? 
+                      (<div><Small {...this.props} /><Normal {...this.props}/></div>)  : (<div className="placeholder"></div>) } </div>}
+                    />     
+           
                 </div>)
     }
 };
-const mapStateToProps = (store) => {
-    return {
-        pathbuilderview: store.mainState.pathbuilderview,
-    }
-}
-export default connect(mapStateToProps)(AppNav); 
+export default connect()(AppNav); 
+
+
+
+

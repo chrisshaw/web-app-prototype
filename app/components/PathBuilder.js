@@ -46,6 +46,7 @@ class PathBuilder extends Component{
     //     // helper.showView(true, this.props.dispatch);
     // }
     render(){
+        console.log("What aer thsesese/", this.props)
         return(
             <div>
                 <PathBuilderDrawer handleClose={this.handleClose} />
@@ -61,6 +62,8 @@ class PathBuilder extends Component{
         )
     }
 }
+
+// *** NB: the HOC in validate perms injects {...props} which include router props and the loggedin prop
 
 export default connect()(PathBuilder);
 

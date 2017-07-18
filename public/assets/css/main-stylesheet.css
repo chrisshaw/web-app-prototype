@@ -238,6 +238,11 @@ table {
     color: #2FBB2F;
     font-size: 15px;
 }
+.format-signup-msg-item  {
+    margin: 20px;
+    color: #2FBB2F;
+    font-size: 15px;
+}
 .focus-area-change  {
     margin: 0px;
     margin-top: 15px;
@@ -294,6 +299,10 @@ table {
     position: absolute;
     top: 60px;
     left: 15px;
+}
+
+.menu-on-small-screen {
+    display: none !important
 }
 
 @keyframes spin {
@@ -356,6 +365,12 @@ table {
     }
     .small-appbar  {
         display: flex !important
+    }
+    .menu-on-small-screen {
+        display: block !important
+    }
+    .menu-on-normal-screen {
+        display: none !important
     }
 }
 
