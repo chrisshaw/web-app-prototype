@@ -14,6 +14,7 @@ class Password extends Component{
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleClose = this.handleClose.bind(this);
         this.state = { 
+                    verify: '',
                     password : '', 
                     error: false, 
                     errorMsg: ""};
