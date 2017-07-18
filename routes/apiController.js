@@ -324,6 +324,78 @@ module.exports = function(app){
             res.json({success: false, auth: false})
         })
     })
+
+    app.get('/api/topics/all', function(req, res){
+        let query = aql`
+            let topics = UNIQUE(FLATTEN(
+                for p in projects
+                return p.topics
+            ))
+
+           for t in topics
+            sort t
+            return t
+        `;
+
+        db.query(query)
+        .then(cursor => {  
+            // console.log("type of", cursor._result);
+            
+            res.json(cursor._result);
+        }).catch(error => {
+            console.log(Date.now() + " Error (Get Topics from Database):", error);
+            res.json();
+        })         
+        
+    })
+
+    app.get('/api/standards/:grade?', function(req, res){
+        let grades = req.params.grade;
+        let queryGrades = [];
+        if (grades) queryGrades = grades.split(',');
+         
+        // console.log("standards grade", queryGrades)
+        let query = aql`
+            RETURN TO_ARRAY((for s in standards
+            filter length(${queryGrades}) > 0 ? TO_ARRAY(s.grade) any in ${queryGrades} : true
+            sort s.standard
+            return s.standard))
+        `;
+        db.query(query)
+        .then(cursor => {  
+            // console.log("standards", cursor._result);
+            res.json(cursor._result);
+        }).catch(error => {
+            console.log(Date.now() + " Error (Get Standards from Database):", error);
+            res.json();
+        })         
+        
+    })
+
+    
+    app.get('/api/courses/:grade?', function(req, res){
+        let grades = req.params.grade;
+        let queryGrades = [];
+        // console.log(grades)
+        if (grades) queryGrades = grades.split(',');
+        let query = aql`
+            for c in courses
+            filter length(${queryGrades}) > 0 ? TO_ARRAY(TO_STRING(c.grade)) any in ${queryGrades} : true
+            filter c.ownerIsBaseCurriculum != true
+            SORT c.name asc
+            return {_id: c._id, name: c.name}
+        `;
+
+        db.query(query)
+        .then(cursor => { 
+            res.json(cursor._result);
+        }).catch(error => {
+            console.log(Date.now() + " Error (Get Courses from Database):", error);
+            res.json();
+        })            
+    })
+
+
     // using post as passing object - probably not ideal
     app.post('/api/path/all', function (req, res){
         // intialise
