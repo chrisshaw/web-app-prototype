@@ -70,6 +70,8 @@ class Main extends Component{
       helper.logout(this.props.dispatch, this.props.router);
     }
     render(){
+      console.log("role", this.props.role)
+       console.log("perms", this.props.perms)
          return(
             <MuiThemeProvider muiTheme={navBarTheme}>
             <div>
@@ -87,6 +89,7 @@ const mapStateToProps = (store) => {
     return {
         loggedin: store.authState.loggedin,
         perms: store.authState.perms,
+        role: store.authState.role,
     }
 }
 export default connect(mapStateToProps)(Main);

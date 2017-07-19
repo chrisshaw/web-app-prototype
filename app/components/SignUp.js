@@ -8,7 +8,16 @@ import muiThemeable from 'material-ui/styles/muiThemeable';
 import helper from '../helper';
 import { signUpFields } from '../actions';
 
-var signUpObj = {};
+var signUpObj = {email: "", 
+                    password :"", 
+                    first: "",
+                    last: "",
+                    school:" ",
+                    verify:"", 
+                    selectedrole: "",
+                    description: "",
+                    error: "",
+                    errorMsg: ""} 
 class SignUp extends Component{
     constructor(props){
         super(props);
@@ -18,7 +27,7 @@ class SignUp extends Component{
                     password : this.props.signupfields.password, 
                     first: this.props.signupfields.first,
                     last: this.props.signupfields.last,
-                    company: this.props.signupfields.company,
+                    school: this.props.signupfields.school,
                     verify: this.props.signupfields.verify, 
                     selectedrole:  this.props.signupfields.selectedrole,
                     description: this.props.signupfields.description,
@@ -44,7 +53,7 @@ class SignUp extends Component{
             this.props.dispatch(signUpFields(signUpObj));
             // this.setState({password: e.target.value})
         }
-        if (e.target.id === 'verifypassword') {
+        if (e.target.id === 'verify') {
             signUpObj.verify =   e.target.value;
             this.setState({verify: e.target.value})
             this.props.dispatch(signUpFields(signUpObj));
@@ -62,9 +71,9 @@ class SignUp extends Component{
             this.props.dispatch(signUpFields(signUpObj));
             // this.setState({first: e.target.value})
         }
-        if (e.target.id === 'company') {
-            signUpObj.company =   e.target.value;
-            this.setState({company: e.target.value});
+        if (e.target.id === 'school') {
+            signUpObj.school =   e.target.value;
+            this.setState({school: e.target.value});
             this.props.dispatch(signUpFields(signUpObj));
             // this.setState({company: e.target.value})
         }
@@ -86,9 +95,21 @@ class SignUp extends Component{
         // local validation
         if (this.props.signupfields.error) this.setState({error: false, errorMsg: ""});
     }
-    componentWillMount(){
+    // componentWillMount(){
+    //             if (this.props.signupfields) {
+    //         signUpObj = { email: this.props.signupfields.email, 
+    //                 password : this.props.signupfields.password, 
+    //                 first: this.props.signupfields.first,
+    //                 last: this.props.signupfields.last,
+    //                 school: this.props.signupfields.school,
+    //                 verify: this.props.signupfields.verify, 
+    //                 selectedrole:  this.props.signupfields.selectedrole,
+    //                 description: this.props.signupfields.description,
+    //                 error: this.props.signupfields.error,
+    //                 errorMsg: this.props.signupfields.errorMsg};  
+    //     }
          
-    }
+    // }
     handleSubmit(){    
         // handles local and database errors
         if ((!this.props.signupfields.email) || (this.props.signupfields.email.length < 8)){
@@ -110,14 +131,12 @@ class SignUp extends Component{
             signUpObj.error = true;
              this.setState({error: true, errorMsg: signUpObj.errorMsg})
              this.props.dispatch(signUpFields(signUpObj));
-        } else if ((!this.props.signupfields.company) || (this.props.signupfields.company.length < 2)) {
-            // error - school or company name required
-            signUpObj.errorMsg = "Please provide a valid company or school name.";
+        } else if ((!this.props.signupfields.school) || (this.props.signupfields.school.length < 2)) {
+            signUpObj.errorMsg = "Please provide a valid school name.";
             signUpObj.error = true;
-             this.setState({error: true, errorMsg: signUpObj.errorMsg})
+            this.setState({error: true, errorMsg: signUpObj.errorMsg})
             this.props.dispatch(signUpFields(signUpObj));
         } else if (this.props.signupfields.selectedrole === 'Please Select a Role') {
-            // error - school or company name required
             signUpObj.errorMsg =  "Please provide a valid application access role for this user."
             signUpObj.error = true;
              this.setState({error: true, errorMsg: signUpObj.errorMsg})
@@ -144,13 +163,13 @@ class SignUp extends Component{
             this.props.dispatch(signUpFields(signUpObj));
         } else {
             // if all ok then submit to server
-            helper.signUpUsers(this.props.signupfields.email, this.props.signupfields.password, this.props.signupfields.first, this.props.signupfields.last, this.props.signupfields.company,  this.props.signupfields.selectedrole, this.props.dispatch,  this.props.router);
+            helper.signUpUsers(this.props.signupfields.email, this.props.signupfields.password, this.props.signupfields.first, this.props.signupfields.last, this.props.signupfields.school,  this.props.signupfields.selectedrole, this.props.dispatch,  this.props.router);
             // reset fields
             signUpObj = {email: '', 
                         password : '', 
                         first: '',
                         last: '',
-                        company: '',
+                        school: '',
                         verify: '', 
                         selectedrole: 'Please Select a Role',
                         description: '',
@@ -223,8 +242,8 @@ class SignUp extends Component{
                 <Row>
                     <Col xs={2} md={2}/>
                     <Col xs={8} md={8} className="text-center">
-                        <label htmlFor="inputCompany" className="sr-only">Company / School</label>
-                        <input value={this.state.company} onChange={(e)=>this.handleChange(e)} id="company" type="text" className="form-control auth-input" placeholder="Company or School Name"  autoFocus="" minLength="10"
+                        <label htmlFor="inputSchool" className="sr-only">School</label>
+                        <input value={this.state.school} onChange={(e)=>this.handleChange(e)} id="school" type="text" className="form-control auth-input" placeholder="School Name"  autoFocus="" minLength="10"
        maxLength="40" size="40" required />
                     </Col>
                     <Col md={2}/>
@@ -260,8 +279,8 @@ class SignUp extends Component{
                 <Row>
                     <Col xs={2} md={2}/>
                         <Col xs={8} md={8} className="text-center">
-                        <label htmlFor="inputPassword" className="sr-only">Verify Password</label>
-                        <input value={this.state.verify} onChange={(e)=>this.handleChange(e)}  id="verifypassword" type="password" className="form-control auth-input" placeholder="Verify Password" minLength="8"
+                        <label htmlFor="inputVerify" className="sr-only">Verify Password</label>
+                        <input value={this.state.verify} onChange={(e)=>this.handleChange(e)}  id="verify" type="password" className="form-control auth-input" placeholder="Verify Password" minLength="8"
        maxLength="16" size="16" required />
                     </Col>
                     <Col xs={2} md={2}/>

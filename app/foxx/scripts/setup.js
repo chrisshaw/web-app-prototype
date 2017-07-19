@@ -13,6 +13,6 @@ if (!db._collection(users)) {
 
 db._collection(users).ensureIndex({
   type: 'hash',
-  fields: ['username'],
+  fields: ['username', 'studentId'],
   unique: true
 });

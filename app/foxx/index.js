@@ -56,9 +56,9 @@ router.post('/login', function (req, res) {
   const user = users.firstExample({
     username: req.body.username
   });
-  console.log("login pwd")
   const valid = auth.verify(
     // Pretend to validate even if no user was found
+    // not dummy Student users don't have any authData
     user ? user.authData : {},
     req.body.password
   );
@@ -146,12 +146,17 @@ router.post('/signup', function (req, res) {
   username: joi.string().email(),
   password: joi.string().regex(/^(?=.*[A-Z])(?=.*[0-9].*[0-9])[a-zA-Z0-9]{8,16}$/),
   chgPwd: joi.boolean().default(true),
+  active:  joi.boolean().default(true),
   first: joi.string(),
   last: joi.string(),
-  company: joi.string(),
+  school: joi.string(),
+  studentId: joi.string().default('na'),
+  mentor: joi.string().default('na'),
   role: joi.string(),
   createdBy: joi.string(),
-  dateCreated: joi.date(),
+  dateCreated: joi.date().default(Date.now, 'created date'),
+  updateBy: joi.string(),
+  dateUpdated: joi.date(),
 }).required(), 'Credentials')
 .description('Creates a new user and logs them in.');
 

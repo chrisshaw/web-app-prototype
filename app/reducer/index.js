@@ -170,7 +170,7 @@ const authReducer = (state={loginintialstate}, action) => {
                         password : '', 
                         first: '',
                         last: '',
-                        company: '',
+                        school: '',
                         verify: '', 
                         selectedrole:  'Please Select a Role',
                         description: '',
@@ -178,7 +178,7 @@ const authReducer = (state={loginintialstate}, action) => {
                         errorMsg: ""}
             },state, {signupfields: action.signupfields }); 
         case 'USER_PERMS':
-            return Object.assign({perms: []},state, {perms: action.perms});
+            return Object.assign({perms: []},state, {perms: action.data.perms, role: action.data.role});
  };      
     return state;
 }

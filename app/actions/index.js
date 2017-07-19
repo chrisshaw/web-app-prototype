@@ -31,10 +31,10 @@ userLogout: () => {
       type: 'USER_LOGOUT',
     }
   },
-  userPerms: (perms) => {
+  userPerms: (data) => {
     return {
       type: 'USER_PERMS',
-      perms
+      data
     }
   },
   setPage: (pathbuilderview) => {

@@ -239,8 +239,8 @@ var helpers = {
         return axios.post('/login', userObj).then(function(response) {
             let msg = "Invalid username or password - please try again";
             // sets login to true or false as appropriate
-            // saves the permssions
-            dispatch(actions.userPerms(response.data.perms));
+            // saves the role and permssions
+            dispatch(actions.userPerms(response.data));
             dispatch(actions.userLogin(response.data.success));
             // captures error and sends any relevant message to UI
             dispatch(actions.userLoginError(!response.data.success, msg));
@@ -260,13 +260,13 @@ var helpers = {
         })
     },
 
-    signUpUsers(email, password, first, last, company, role, dispatch, router){      
+    signUpUsers(email, password, first, last, school, role, dispatch, router){      
         let userObj = { 
             "username": email.toLowerCase(),
             "password": password,
             "first": first,
             "last": last,
-            "company": company,
+            "school": school,
             "role": role,
             "chgPwd": 'true'
         }

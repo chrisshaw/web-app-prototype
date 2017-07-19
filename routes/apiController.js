@@ -21,17 +21,22 @@ module.exports = function(app){
 
     function saveStudentGetIds(studentArr, username, i){
         return new Promise((resolve, reject) => {
+            // username uniquely identifies user / student in auth_users 
+            // table but using studentId for students as this identifies them in the school just to be safe
+            // these are dummy users so authData = {} - can be promoted later if required by adding authData
             let query =aql`for s in ${studentArr}
-            let student_id = (UPSERT{ studentId: s.studentId } INSERT { studentId: s.studentId,firstName: s.firstName,  lastName: s.lastName, email: s.email, mentor:  s.mentor, dateCreated: DATE_NOW(),  dateUpdated: null, createdBy: ${username}, updatedBy: null} UPDATE {email: s.email, mentor:  s.mentor,  dateUpdated: DATE_NOW(),  updatedBy: ${username} } IN students RETURN NEW._id )
+            let student_id = (UPSERT{ username: s.email} INSERT { studentId: s.studentId,first: s.firstName,  last: s.lastName, username: s.email, mentor:  s.mentor, school: 'na', role: 'Student', chgPwd: true, active: false, dateCreated: DATE_NOW(),  dateUpdated: null, createdBy: ${username}, updatedBy: null} UPDATE {studentId: s.studentId, mentor:  s.mentor,  dateUpdated: DATE_NOW(),  updatedBy: ${username} } IN auth_users RETURN NEW._id )
             let course_id = (for v in courses Filter v.name == s.course return {_id:v._id, section: s.section})
+            let role_id = (for r in auth_roles filter UPPER(r.name) == "STUDENT" return r._id )
             let fas = (for fa in s.focusAreas
                 let focusArea = (for f in focusAreas filter f["Focus Area"] == fa.faName return f._id)
                 return {fa_id: focusArea[0], focusAreaDetails: fa})
-            return {student_id: student_id, course_id: course_id,focusArea: fas }`
+            return {student_id: student_id, role_id: role_id, course_id: course_id,focusArea: fas }`
             // GET DATA --> UPDATE DATA
             db.query(query)
             .then(cursor => {  
                 // return the data that contains ids for the next steps
+                console.log("what is this", cursor._result)
                 resolve(cursor._result);
             }).catch(error => {
                 reject(error)
@@ -99,12 +104,12 @@ module.exports = function(app){
                 // expect success: true
                 res.json(response.body)
             }).catch(error => { 
-                console.log(Date.now() + " Error (SignUp):", error.response.body.errorMessage);
+                console.log(Date.now() + " Error (Change Password):", error.response.body.errorMessage);
             })
         })
         .catch(error => { 
             // can send error to logs?
-            console.log(Date.now() + " Error (SignUp):", error.response.body.errorMessage);
+            console.log(Date.now() + " Error (Change Password):", error.response.body.errorMessage);
             // send basic success: false
             // send error to client for handling
             res.json({success:false, auth: false, msg: error.response.body.errorMessage});
@@ -118,19 +123,25 @@ module.exports = function(app){
             res.setHeader("Set-Cookie",  'x-foxxsessid='+response.headers['x-foxxsessid']);
             return response.body;
         }).then(response => {
+            // get user role and perms
             let userid = response.userid;
             let chgPwd = response.chgPwd;
-                let query = aql`for u in auth_users for ha in auth_user_hasRole filter ha._from == u._id for ac in auth_roles_can filter ac._from == ha._to for p in auth_permissions filter p._id == ac._to filter u._id == ${userid} return  p.name`;
-                db.query(query)
-                .then(cursor => {  
-                    // send permissions list back to requesting client function
-                    // for updating in redux store
-                    // admin created users must change password on first login
-                    res.json({success:true, perms: cursor._result, chgPwd: chgPwd});
-                }).catch(error => {
-                    console.log(Date.now() + " Error (Get Perms from Database):", error);
-                    res.json();
-                }) 
+            // let query = aql`for u in auth_users for ha in auth_user_hasRole filter ha._from == u._id for ac in auth_roles_can filter ac._from == ha._to for p in auth_permissions filter p._id == ac._to filter u._id == ${userid} return  p.name`;
+            let query = aql`FOR a IN outbound ${userid}
+            auth_user_hasRole
+            let perms = (for p in outbound a auth_roles_can
+                filter p._from == a._to return p.name)
+            return { role: a.name, perms: perms}`;
+            db.query(query)
+            .then(cursor => {  
+                // send permissions list back to requesting client function
+                // for updating in redux store
+                // admin created users must change password on first login  
+                res.json({success:true, role: cursor._result[0].role, perms: cursor._result[0].perms, chgPwd: chgPwd});
+            }).catch(error => {
+                console.log(Date.now() + " Error (Get Perms from Database):", error);
+                res.json();
+            }) 
         }).catch(error => {
             // can send error to logs?
             console.log(Date.now() + " Error (Login):", error.response.body.errorMessage);
@@ -145,25 +156,29 @@ module.exports = function(app){
             // double check user perms on server side
             // if user has the required permission manageusers in their permissions array in
             // req.perms
+            let userObj = req.body;
             // get perms and username of person doing the signup
             let username = response.username;
+            userObj.createdBy = username;
             // post/save data using foxx service for auth
             const foxxService = db.route('auth');
-            foxxService.post('/signup', req.body)
+            foxxService.post('/signup', userObj)
             .then(function(response){
                 // create a user to role mapping.....
                 // get userid of person being the signed up
                 let userid = response.body.userid;
                 let role = req.body.role;    
+                let active = true;     // user will be allowed to login and have authData, dummy student users will be active = false and not have any authData
                 let query=aql`let userid = ${userid} 
                                 let role = (for a in auth_roles 
                                     filter UPPER(a.name) == UPPER(${role})
                                     return {_id: a._id})
-                        UPSERT { _from: ${userid} , _to: role[0]._id} INSERT { _from:  ${userid} , _to: role[0]._id, dateCreated: DATE_NOW(), dateUpdated: null, createdBy:  ${username} , updatedBy: null } UPDATE {  dateUpdated: DATE_NOW(), updatedBy:  ${username} } IN auth_user_hasRole RETURN { doc: NEW, type: OLD ? 'update' : 'insert' }`     
+                        UPSERT { _from: ${userid} , _to: role[0]._id} INSERT { _from:  ${userid} , _to: role[0]._id, active: ${active}, dateCreated: DATE_NOW(), dateUpdated: null, createdBy:  ${username} , updatedBy: null } UPDATE {  dateUpdated: DATE_NOW(), updatedBy:  ${username} } IN auth_user_hasRole RETURN { doc: NEW, type: OLD ? 'update' : 'insert' }`     
                 db.query(query)
                 .then(cursor => {  
                     res.json({success: true})
                 }).catch(error => {
+                    console.log(error);
                     res.json({success: false, msg: error.response.body.errorMessage})
                 })
             })
@@ -272,40 +287,53 @@ module.exports = function(app){
 
                     return [response, errorArr]
                 }).then((response) => { 
-
-                    // update later to:
-                    // studentToFA == hasMastered
-                    // studentToCourse == taking  == inCourse
-                    // courseToFA == covers
-                    let firstUpsert = aql`for s in ${response[0]}
-                    UPSERT { _from: s.student_id[0] , _to: s.course_id[0]._id} INSERT  { _from: s.student_id[0] , _to: s.course_id[0]._id, section: s.course_id[0].section, dateCreated: DATE_NOW(), dateUpdated:  null, createdBy: ${username}, updatedBy: null} UPDATE { section: s.course_id[0].section,  dateUpdated: DATE_NOW(), updatedBy: ${username}} IN inCourse RETURN { doc: NEW, type: OLD ? 'update' : 'insert' } `
-                    db.query(firstUpsert)
-                    .then(cursor => {  
-                        // console.log("inserted 1:", cursor._result);
-                        // INSERT 
-                        // remove any fa where hasMastered != "FALEs"
-                        let secondUpsert = aql`for s in  ${response[0]}
-                        for fa in s.focusArea 
-                        FILTER UPPER(fa.focusAreaDetails.mastered) == 'TRUE'
-                        UPSERT { _from: s.student_id[0], _to: fa.fa_id} INSERT { _from: s.student_id[0], _to: fa.fa_id, type: fa.focusAreaDetails.faType, mastered: UPPER(fa.focusAreaDetails.mastered),  dateCreated: DATE_NOW(), dateUpdated: null, createdBy: ${username} , updatedBy: null } UPDATE { type: fa.focusAreaDetails.faType, mastered: UPPER(fa.focusAreaDetails.mastered),  dateUpdated: DATE_NOW(), updatedBy: ${username}  } IN hasMastered RETURN { doc: NEW, type: OLD ? 'update' : 'insert' }`;
-                        db.query(secondUpsert)
+                    // map new student to role STUDENT in the auth_user_hasRole edge
+                    let roleUpsert = aql`for s in ${response[0]}
+                        UPSERT { _from: s.student_id[0], _to: s.role_id[0]} INSERT { _from: s.student_id[0], _to: s.role_id[0],  dateCreated: DATE_NOW(), dateUpdated: null, createdBy: ${username} , updatedBy: null } UPDATE {} IN auth_user_hasRole RETURN { doc: NEW, type: OLD ? 'update' : 'insert' }`;
+                        db.query(roleUpsert)
                         .then(cursor => {  
                             // console.log("inserted 2:", cursor._result);
-                            if (response[1].length > 0 ) {
-                                // some FA names were not found in the database
-                                res.json({success: false, error: response[1]})
-                            } else {
-                                // all fields saved
-                                res.json({success: true})
-                            }
+                            // update later to:
+                            // studentToFA == hasMastered
+                            // studentToCourse == taking  == inCourse  == hasCourses (latest)
+                            // courseToFA == covers
+                            let courseUpsert = aql`for s in ${response[0]}
+                            UPSERT { _from: s.student_id[0] , _to: s.course_id[0]._id} INSERT  { _from: s.student_id[0] , _to: s.course_id[0]._id, section: s.course_id[0].section, dateCreated: DATE_NOW(), dateUpdated:  null, createdBy: ${username}, updatedBy: null} UPDATE { section: s.course_id[0].section,  dateUpdated: DATE_NOW(), updatedBy: ${username}} IN hasCourse RETURN { doc: NEW, type: OLD ? 'update' : 'insert' } `
+                            db.query(courseUpsert)
+                            .then(cursor => {  
+                                // console.log("inserted 1:", cursor._result);
+                                // INSERT 
+                                // remove any fa where hasMastered != "FALSE"
+                                let masteredUpsert = aql`for s in  ${response[0]}
+                                for fa in s.focusArea 
+                                FILTER UPPER(fa.focusAreaDetails.mastered) == 'TRUE'
+                                UPSERT { _from: s.student_id[0], _to: fa.fa_id} INSERT { _from: s.student_id[0], _to: fa.fa_id, type: fa.focusAreaDetails.faType, mastered: UPPER(fa.focusAreaDetails.mastered),  dateCreated: DATE_NOW(), dateUpdated: null, createdBy: ${username} , updatedBy: null } UPDATE { type: fa.focusAreaDetails.faType, mastered: UPPER(fa.focusAreaDetails.mastered),  dateUpdated: DATE_NOW(), updatedBy: ${username}  } IN hasMastered RETURN { doc: NEW, type: OLD ? 'update' : 'insert' }`;
+                                db.query(masteredUpsert)
+                                .then(cursor => {  
+                                    // console.log("inserted 2:", cursor._result);
+                                    if (response[1].length > 0 ) {
+                                        // some FA names were not found in the database
+                                        res.json({success: false, error: response[1]})
+                                    } else {
+                                        // all fields saved
+                                        res.json({success: true})
+                                    }
+                                }).catch(error => {
+                                    res.json({success: false})
+                                    console.log(Date.now() + " Error (Update 2 Database):", error);
+                                })             
+                            }).catch((error)=>{
+                                console.log(Date.now() + " Error (Getting IDs from Database):", error);
+                                res.json({success: false})
+                            })  
+
                         }).catch(error => {
                             res.json({success: false})
-                            console.log(Date.now() + " Error (Update 2 Database):", error);
-                        })             
-                    }).catch((error)=>{
-                        console.log(Date.now() + " Error (Getting IDs from Database):", error);
-                        res.json({success: false})
-                    })      
+                            console.log(Date.now() + " Error (Update Role Database):", error);
+                    }) 
+
+
+                        
                 }).catch((error) => {
                     console.log(Date.now() + " Error (Getting IDs from Database):", error);
                     res.json({success: false})
@@ -686,9 +714,9 @@ module.exports = function(app){
             // the database exists
             // main entry point
             res.sendFile(path.join(__dirname, '/../public/index.html'));
-            console.log(Date.now() + " Information: Database is Up");
+            // console.log(Date.now() + " Information: Database is Up");
         }).catch(err => {
-            res.json("database error")
+            res.sendFile(path.join(__dirname, '/../public/unavailable.html'));
             console.log(Date.now() + " Error: Database is Down.");
         });
        
