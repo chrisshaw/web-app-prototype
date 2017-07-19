@@ -23,16 +23,20 @@ import ChipInput from 'material-ui-chip-input';
 
 
 
- class AutoCompleteField extends Component {
+ class AutoCompleteStandardField extends Component {
 
   constructor(props) {
     super(props)
+     console.log(this.props)
         this.state = {textFieldValue: "", searchText: ""}; //setting initial default state
         this._handleTextFieldChange = this._handleTextFieldChange.bind(this);
         this.handleRequestDelete = this.handleRequestDelete.bind(this);
         this.handleSelect = this.handleSelect.bind(this);
         this.handleDeleteChip = this.handleDeleteChip.bind(this);
-  }
+        // load once only
+        console.log("list:", this.props.list)
+
+    }
     handleRequestDelete(id) {
         // filter list based on id
         helper.removeChip(id, this.props.queryitem, this.props.dispatch);
@@ -62,7 +66,7 @@ import ChipInput from 'material-ui-chip-input';
   render() {
     var dataSource1 = [];
     var dataSource2 = [];
-    // console.log("this.props.list", this.props.list)
+    console.log("this.props.list", this.props.list)
     // if it exists or is not empty array
     if ((this.props.list) && (this.props.list[0] !== null)){
         dataSource1 = this.props.list.map(function(group, index) {
@@ -102,7 +106,6 @@ import ChipInput from 'material-ui-chip-input';
                 textareaStyle={{fontSize: 13}}
                 hintText="Type and select from list"
                 searchText={this.state.searchText}
-                floatingLabelStyle={{color: '#A35FE3'}}
                 filter={AutoComplete.fuzzyFilter}
                 dataSource={dataSource1}
                 maxSearchResults={5}
@@ -117,4 +120,4 @@ import ChipInput from 'material-ui-chip-input';
     )}
 }
 
-export default connect()(AutoCompleteField);
+export default connect()(AutoCompleteStandardField);

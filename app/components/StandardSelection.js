@@ -16,18 +16,28 @@ class StandardsSelection extends Component{
         // this.handleRequestDelete = this.handleRequestDelete.bind(this);
         this.handleReset = this.handleReset.bind(this);
         this.handleShowGroups = this.handleShowGroups.bind(this);
+        helper.getStandards(false, false, "",this.props.dispatch); 
         // get initial data and set props
         // helper.getStandards(this.props.dispatch);
         var searchObj = {};
         this.state ={
-            showGroups: false, 
+            showGroups: false
         }
     }
-    componentWillMount() {
-        // reset chips and grouplist
-        helper.getStandards(false, false, "",this.props.dispatch); 
-    }
+    // componentWillMount() {
+    //     // reset chips and grouplist
+    //     var dataSource1 = [];
+    //     // this was moved out of the autocomplete to see if it speeds up large list
+    //     if ((this.props.standardslist) && (this.props.standardslist[0] !== null)){
+    //         dataSource1 = this.props.standardslist.map(function(group, index) {
+    //             // strip out just the name for the autocomplete field
+    //                     return group.name             
+    //         })
+    //     }
+    //     this.setState({dataSource1: dataSource1})
+
     // }
+    // // }
     // // handleRequestDelete(id) {
     //     // filter standardslist based on id
     //     helper.removeStandards(id, this.props.dispatch);
@@ -49,6 +59,7 @@ class StandardsSelection extends Component{
         if ( this.props.selectedstandardslist){
              var arrLength = this.props.selectedstandardslist.length;
         }
+        
        
         return(<div>
                     <Row>
