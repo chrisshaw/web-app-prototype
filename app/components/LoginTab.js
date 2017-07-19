@@ -45,7 +45,7 @@ class LoginTab extends React.Component {
 
   constructor(props) {
     super(props);
-    console.log("login", this.props);
+    // console.log("login", this.props);
     this.state = {
       value: 0,
       // contextTypes: {

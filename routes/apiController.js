@@ -15,13 +15,7 @@ db.useBasicAuth(dbUser, dbPwd);
 
 // console.log(db);
 // test connection
-db.get()
-.then(response => {
-    // the database exists
-    console.log(Date.now() + " Information: Database is Up");
-}).catch(err => {
-    console.log(Date.now() + " Error: Database is Down.");
-});
+
 const aql = arangojs.aql;
 module.exports = function(app){
 
@@ -687,8 +681,17 @@ module.exports = function(app){
         })            
     })
     app.use(function(req, res){
-        // main entry point
-        res.sendFile(path.join(__dirname, '/../public/index.html'));
+        db.get()
+        .then(response => {
+            // the database exists
+            // main entry point
+            res.sendFile(path.join(__dirname, '/../public/index.html'));
+            console.log(Date.now() + " Information: Database is Up");
+        }).catch(err => {
+            res.json("database error")
+            console.log(Date.now() + " Error: Database is Down.");
+        });
+       
     })
   
 }

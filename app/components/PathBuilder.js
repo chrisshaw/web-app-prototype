@@ -46,7 +46,7 @@ class PathBuilder extends Component{
     //     // helper.showView(true, this.props.dispatch);
     // }
     render(){
-        console.log("What aer thsesese/", this.props)
+        // console.log("What aer thsesese/", this.props)
         return(
             <div>
                 <PathBuilderDrawer handleClose={this.handleClose} />

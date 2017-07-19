@@ -40,7 +40,6 @@ class StandardsSelection extends Component{
         this.setState({showGroups: !this.state.showGroups})
     }
     render(){
-console.log("in here")
         var styles = {
             button : {
                 backgroundColor: '#9E9E9E'

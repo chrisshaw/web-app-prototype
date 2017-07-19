@@ -81,7 +81,7 @@ class QueryBuilder extends Component{
                     <Col xs={12} md={12} >
                         <div className="query-builder-wrapper">
                         <h3> Build Path </h3>
-                        <p> Enter groups and other filter criteria below, then submit to get reccommended paths. </p> 
+                        <p> Enter grade and other filter criteria below, then submit to get reccommended paths. </p> 
                         </div>
                     </Col>
                 </Row>

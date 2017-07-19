@@ -55,7 +55,7 @@ class AppNav extends Component {
         super(props);
     }
     render(){
-      console.log("perms", this.props.perms)
+      // console.log("perms", this.props.perms)
        return (<div>
                   <AppBar className={this.props.loggedin ? "sticky-navbar sticky-navbar-loggedin" : "sticky-navbar"}
                     title={(((this.props.pathname === '/buildpath') ||(this.props.pathname === '/')) && (this.props.loggedin)) ? "" : (<div><span><img src="./public/assets/img/sidekick.png" className="logo" alt="Sidekick" /></span></div>)}

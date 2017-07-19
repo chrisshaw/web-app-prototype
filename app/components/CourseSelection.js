@@ -33,7 +33,7 @@ class CourseSelection extends Component{
         this.setState({showGroups: !this.state.showGroups})
     }
     render(){
-        console.log("in here course")
+        // console.log("in here course")
         if ( this.props.selectedcourselist){
              var arrLength = this.props.selectedcourselist.length;
         }

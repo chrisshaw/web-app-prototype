@@ -86,23 +86,6 @@ class SignUp extends Component{
         // local validation
         if (this.props.signupfields.error) this.setState({error: false, errorMsg: ""});
     }
-    componentWillReceiveProps(nextProps) {
-        // reset state unless there is an error - in that case the current and next props will differ
-        if (nextProps.signUpFields === this.props.signupfields) {
-            console.log(this.props.signupfields, nextProps.signupfields)
-            // let signUpObj = {email: '', 
-            //             password : '', 
-            //             first: '',
-            //             last: '',
-            //             company: '',
-            //             verify: '', 
-            //             selectedrole: 'Please Select a Role',
-            //             description: '',
-            //             error: false, 
-            //             errorMsg: ""};
-            // this.props.dispatch(signUpFields(signUpObj));
-        } 
-    }
     componentWillMount(){
          
     }
@@ -193,7 +176,6 @@ class SignUp extends Component{
                 return  <option key={role._id} value={role.name}>{role.name}</option>     
             });
         } 
-         console.log("signupfields", this.props.signupfields);
         return( 
           
            <div> { this.props.signupfields ? (<div className="form-signin">

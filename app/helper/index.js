@@ -30,7 +30,7 @@ var helpers = {
                     buffer: buffer
                 };    
                 return axios.post('/csv/file', postObj).then(function(response){
-                    console.log("response", response.data);
+                    // console.log("response", response.data);
                     //  added perms check res.json({success: false, auth: false})
                     // handle no perms error auth == false too
                     dispatch(actions.viewUploadedCSVData(response.data.results, response.data.error))          
@@ -78,11 +78,11 @@ var helpers = {
     // },
     getGrades: function(reset, deleteGroup, dispatch){
        var gradeArr = [{_id: 0, name: "6"}, {_id: 1, name: "7"},{_id: 2, name: "8"}, {_id: 3, name: "9"},{_id: 4, name: "10"}, {_id: 5, name: "11"}]
-       dispatch(actions.updateGradeList(reset, deleteGroup, 0, gradeArr));
+       dispatch(actions.updateList(reset, deleteGroup, 0, 'UPDATE_GRADES', gradeArr));
     },
     getCourses: function(reset, deleteGroup, grade, dispatch){
         /// parse array to a string for query.
-        console.log("herloer get crs")
+        // console.log("herloer get crs")
         let gradeString = "";
         if (grade.length !== 0) {
             if (grade.length === 1){
@@ -97,13 +97,13 @@ var helpers = {
         }
         return axios.get('/api/courses/'+gradeString).then(function(response) {
                 // send results to redux store for use by Results component
-                dispatch(actions.updateCourseList(reset, deleteGroup, 0, response.data));
+                dispatch(actions.updateList(reset, deleteGroup, 0, 'UPDATE_COURSES', response.data));
                 return;
         })
        
     },
     getStandards: function(reset, deleteGroup, grade, dispatch){
-        console.log("herloer get std")
+        // console.log("herloer get std")
         /// parse array to a string for query.
         let gradeString = "";
         if (grade.length > 0) {
@@ -125,7 +125,7 @@ var helpers = {
                     standardsArr.push({ _id: i, name: response.data[0][i]})
                 }
                 // id is not 0 so we can safely use as placeholder
-                dispatch(actions.updateStandardsList(reset, deleteGroup, 0, standardsArr))
+                dispatch(actions.updateList(reset, deleteGroup, 0, 'UPDATE_STANDARDS', standardsArr))
                 return;
             }) 
     },
@@ -151,14 +151,14 @@ var helpers = {
                 // console.log("topics i", response.data[i])
                 topicArr.push({ _id: i, name: response.data[i].toLowerCase()})
             }
-            dispatch(actions.updateTopicList(reset, deleteGroup, 0, topicArr))  
+            dispatch(actions.updateList(reset, deleteGroup, 0, 'UPDATE_TOPICS', topicArr))  
             return;
         }) 
     },
 
     getSubjectContents: function(reset, deleteGroup, dispatch){
         var subjectArr = [{_id: 0, name: "english"}, {_id: 1, name: "math"}, {_id: 2, name: "science"}, {_id: 3, name: "social studies"}]
-        dispatch(actions.updateSubjectContentList(reset, deleteGroup, 0, subjectArr))
+        dispatch(actions.updateList(reset, deleteGroup, 0, 'UPDATE_SUBJECTS', subjectArr))
     },
     newPaths: function(paths, dispatch) {
         // clear old path data
@@ -183,31 +183,31 @@ var helpers = {
 
     removeChip: function(id, queryitem, dispatch){
         if  (queryitem === "Topics") {
-            dispatch(actions.updateTopicList(false, true, id));
+            dispatch(actions.updateList(false, true, id, 'UPDATE_TOPICS'));
         }  else if  (queryitem === "Standards") {
-            dispatch(actions.updateStandardsList(false, true, id));
+            dispatch(actions.updateList(false, true, id, 'UPDATE_STANDARDS'));
         }  else if  (queryitem === "Subjects") {
-            dispatch(actions.updateSubjectContentList( false, true, id))  
+            dispatch(actions.updateList( false, true, id, 'UPDATE_SUBJECTS'))  
         }  else if  (queryitem === "Grades") {
-            dispatch(actions.updateGradeList(false, true, id));   // reset, delete,  id
+            dispatch(actions.updateList(false, true, id, 'UPDATE_GRADES'));   // reset, delete,  id
         }   else if  (queryitem === "Courses") {
-            dispatch(actions.updateCourseList(false, true, id)); // reset, delete,  id
+            dispatch(actions.updateList(false, true, id, 'UPDATE_COURSES')); // reset, delete,  id
         }
     },
     // use to update all query items
     updateSelected: function(e, queryitem, dispatch){
         if (queryitem === "Groups"){
-            dispatch(actions.saveSelectedGroup(e));
+            dispatch(actions.saveSelected(e, 'UPDATE_SELECTED_GROUPS'));
         } else if  (queryitem === "Topics") {
-            dispatch(actions.saveSelectedTopics(e));
+            dispatch(actions.saveSelected(e, 'UPDATE_SELECTED_TOPICS'));
         }  else if  (queryitem === "Standards") {
-            dispatch(actions.saveSelectedStandards(e));
+            dispatch(actions.saveSelected(e, 'UPDATE_SELECTED_STANDARDS'));
         }  else if  (queryitem === "Subjects") {
-            dispatch(actions.saveSelectedSubjects(e));
+            dispatch(actions.saveSelected(e, 'UPDATE_SELECTED_SUBJECTS'));
         }   else if  (queryitem === "Grades") {
-            dispatch(actions.saveSelectedGrade(e));
+            dispatch(actions.saveSelected(e, 'UPDATE_SELECTED_GRADES'));
         }   else if  (queryitem === "Courses") {
-            dispatch(actions.saveSelectedCourse(e));
+            dispatch(actions.saveSelected(e, 'UPDATE_SELECTED_COURSES'));
         }
     },
     showView: function(action, dispatch){
@@ -246,12 +246,12 @@ var helpers = {
             dispatch(actions.userLoginError(!response.data.success, msg));
             // successful login route to default page
             // capture redirect and make change passowrd
-            console.log("chg pwd:", response.data.chgPwd);
+            // console.log("chg pwd:", response.data.chgPwd);
             // if a new user force them to create their own secret password 
             // if not new the just log in as normal
             if (response.data.chgPwd) {
                 router.push('/password');
-                console.log('router', router);
+                // console.log('router', router);
             } else {
                 router.push('/buildpath');
             }
@@ -283,7 +283,7 @@ var helpers = {
         }).then(function(response) {  
             // captures error and sends any relevant message to UI
             // handle no perms error auth == false 
-            console.log("response.data", response.data)
+            // console.log("response.data", response.data)
             dispatch(actions.userSignUp(response.data.success));
             dispatch(actions.userLoginError(!response.data.success, response.data.msg));
             return;
@@ -292,14 +292,14 @@ var helpers = {
     changePwd(pwd, dispatch, route) {
        
         let dataObj = {"password": pwd};
-         console.log("pwd", dataObj)
+        //  console.log("pwd", dataObj)
         return axios({
                 method: 'post',
                 url: '/password', 
                 data: dataObj
         }).then(function(response) {  
             // handle false later!
-            console.log("pwd", response.data);
+            // console.log("pwd", response.data);
             if (response.data.success) {
                 route.push('/');
             } else {
