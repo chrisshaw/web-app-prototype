@@ -156,7 +156,8 @@ const authReducer = (state={loginintialstate}, action) => {
     // console.log("loginintialstate", loginintialstate);
     switch(action.type){    
         case 'LOGGED_IN':
-            return Object.assign({},state, {loggedin: action.loggedin}); 
+        console.log("loggedin ", action.data)
+            return Object.assign({},state, {loggedin: action.data.success, username:  action.data.username, perms: action.data.perms, role: action.data.role}); 
         case 'LOGIN_ERROR':
             return Object.assign({loginerror: false},state, {loginerror: action.loginerror, errormsg: action.errormsg }); 
         case 'GET_ROLES':
@@ -177,8 +178,8 @@ const authReducer = (state={loginintialstate}, action) => {
                         error: false, 
                         errorMsg: ""}
             },state, {signupfields: action.signupfields }); 
-        case 'USER_PERMS':
-            return Object.assign({perms: []},state, {perms: action.data.perms, role: action.data.role});
+        // case 'USER_PERMS':
+        //     return Object.assign({perms: []},state, {});
  };      
     return state;
 }

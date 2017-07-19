@@ -19,10 +19,10 @@ import Dialog from 'material-ui/Dialog';
 class QueryBuilder extends Component{
    constructor(props) {
         super(props);
-        this.handleRequestDelete = this.handleRequestDelete.bind(this);
+        // this.handleRequestDelete = this.handleRequestDelete.bind(this);
         this.handleSubmitAll = this.handleSubmitAll.bind(this);
         this.handleShowGroups = this.handleShowGroups.bind(this);
-        this.handleClose = this.handleClose.bind(this);
+        // this.handleClose = this.handleClose.bind(this);
         // get initial data and set props
         // helper.getGroups(this.props.dispatch);
         var searchObj = {};
@@ -32,24 +32,25 @@ class QueryBuilder extends Component{
         }
     }
    componentDidUpdate(prevProps, prevState){
-        
+       // needed to trigger requery if grade changes    
         if ((prevProps.selectedgradelist !== this.props.selectedgradelist) && (prevProps.selectedgradelist)){
-            helper.getCourses(false, false, this.props.selectedgradelist, this.props.dispatch); 
+            // could equally  just pass this.props and retrieve in helper??
+            helper.getCourses(false, false, this.props.selectedgradelist, this.props.role, this.props.username, this.props.dispatch); 
             helper.getStandards(false, false, this.props.selectedgradelist, this.props.dispatch);     
         }    
     }
-    handleRequestDelete(id) {
-        // filter grouplist based on id
-        helper.removeGroup(id, this.props.dispatch);     
-    }
+    // handleRequestDelete(id) {
+    //     // filter grouplist based on id
+    //     helper.removeGroup(id, this.props.dispatch);     
+    // }
     handleShowGroups() {
         // toggle between true and false
         this.setState({showGroups: !this.state.showGroups})
         this.state.showGroups ?  this.setState({groupState: "Open"}) : this.setState({groupState: "Close"})
     }
-    handleClose = () => {
-        this.setState({nogoupselected: false});
-    };
+    // handleClose = () => {
+    //     this.setState({nogoupselected: false});
+    // };
     handleSubmitAll() {
         // clear message
         // helper.pathsRendered(false, this.props.dispatch);
@@ -59,13 +60,13 @@ class QueryBuilder extends Component{
         helper.getPathsAll(this.props.selectedcourselist,this.props.selectedgradelist, this.props.selectedstandardslist, this.props.selectedtopiclist, this.props.selectedsubjectcontentlist, this.props.dispatch);  
     }
     render(){
-        const actions = [
-            <FlatButton
-                label="Close"
-                onTouchTap={this.handleClose}
-            />
-            ];
-
+        // const actions = [
+        //     <FlatButton
+        //         label="Close"
+        //         onTouchTap={this.handleClose}
+        //     />
+        //     ];
+  console.log("role", this.props.role)
         var styles = {
             dialog : {
                 width: '50vw',
@@ -86,7 +87,7 @@ class QueryBuilder extends Component{
                     </Col>
                 </Row>
                 <GradeSelection selectedgradelist={this.props.selectedgradelist}/>
-                <CourseSelection selectedcourselist={this.props.selectedcourselist}/>
+                <CourseSelection selectedcourselist={this.props.selectedcourselist} role={this.props.role} username={this.props.username}/>
                 <TopicSelection selectedtopiclist={this.props.selectedtopiclist}/>
                 <SubjectContentSelection selectedsubjectcontentlist={this.props.selectedsubjectcontentlist}/>
                 <StandardsSelection  selectedstandardslist={this.props.selectedstandardslist}/>              
@@ -108,6 +109,8 @@ const mapStateToProps = (store) => {
         selectedtopiclist: store.mainState.selectedtopiclist,
         selectedstandardslist: store.mainState.selectedstandardslist, 
         selectedsubjectcontentlist: store.mainState.selectedsubjectcontentlist,
+        role: store.authState.role,
+        username: store.authState.username,
         // pathsrendered: store.mainState.pathsrendered
     }
 }

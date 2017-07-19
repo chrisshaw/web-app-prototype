@@ -13,27 +13,16 @@ class CourseSelection extends Component{
    constructor(props) {
         super(props);
         this.handleReset = this.handleReset.bind(this);
-        this.handleShowGroups = this.handleShowGroups.bind(this);
-        // get initial data and set props
-        var searchObj = {};
-        this.state ={
-            showGroups: false, 
-        }
     }
     handleReset() {
         // reset chips and grouplist
-        helper.getCourses(true, false,"",this.props.dispatch); 
+        helper.getCourses(true, false,"",this.props.role,  this.props.username, this.props.dispatch); 
     }
     componentWillMount() {
         // reset chips and grouplist
-        helper.getCourses(false,false, "",this.props.dispatch); 
-    }
-    handleShowGroups() {
-        // toggle between true and false
-        this.setState({showGroups: !this.state.showGroups})
+        helper.getCourses(false,false, "", this.props.role, this.props.username, this.props.dispatch); 
     }
     render(){
-        // console.log("in here course")
         if ( this.props.selectedcourselist){
              var arrLength = this.props.selectedcourselist.length;
         }

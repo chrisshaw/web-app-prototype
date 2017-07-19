@@ -126,6 +126,7 @@ module.exports = function(app){
             // get user role and perms
             let userid = response.userid;
             let chgPwd = response.chgPwd;
+            let username = response.username;
             // let query = aql`for u in auth_users for ha in auth_user_hasRole filter ha._from == u._id for ac in auth_roles_can filter ac._from == ha._to for p in auth_permissions filter p._id == ac._to filter u._id == ${userid} return  p.name`;
             let query = aql`FOR a IN outbound ${userid}
             auth_user_hasRole
@@ -137,7 +138,7 @@ module.exports = function(app){
                 // send permissions list back to requesting client function
                 // for updating in redux store
                 // admin created users must change password on first login  
-                res.json({success:true, role: cursor._result[0].role, perms: cursor._result[0].perms, chgPwd: chgPwd});
+                res.json({success:true, username: username, role: cursor._result[0].role, perms: cursor._result[0].perms, chgPwd: chgPwd});
             }).catch(error => {
                 console.log(Date.now() + " Error (Get Perms from Database):", error);
                 res.json();
@@ -347,77 +348,8 @@ module.exports = function(app){
         })
     })
 
-    app.get('/api/topics/all', function(req, res){
-        let query = aql`
-            let topics = UNIQUE(FLATTEN(
-                for p in projects
-                return p.topics
-            ))
-
-           for t in topics
-            sort t
-            return t
-        `;
-
-        db.query(query)
-        .then(cursor => {  
-            // console.log("type of", cursor._result);
-            
-            res.json(cursor._result);
-        }).catch(error => {
-            console.log(Date.now() + " Error (Get Topics from Database):", error);
-            res.json();
-        })         
-        
-    })
-
-    app.get('/api/standards/:grade?', function(req, res){
-        let grades = req.params.grade;
-        let queryGrades = [];
-        if (grades) queryGrades = grades.split(',');
-         
-        // console.log("standards grade", queryGrades)
-        let query = aql`
-            RETURN TO_ARRAY((for s in standards
-            filter length(${queryGrades}) > 0 ? TO_ARRAY(s.grade) any in ${queryGrades} : true
-            sort s.standard
-            return s.standard))
-        `;
-        db.query(query)
-        .then(cursor => {  
-            // console.log("standards", cursor._result);
-            res.json(cursor._result);
-        }).catch(error => {
-            console.log(Date.now() + " Error (Get Standards from Database):", error);
-            res.json();
-        })         
-        
-    })
 
     
-    app.get('/api/courses/:grade?', function(req, res){
-        let grades = req.params.grade;
-        let queryGrades = [];
-        // console.log(grades)
-        if (grades) queryGrades = grades.split(',');
-        let query = aql`
-            for c in courses
-            filter length(${queryGrades}) > 0 ? TO_ARRAY(TO_STRING(c.grade)) any in ${queryGrades} : true
-            filter c.ownerIsBaseCurriculum != true
-            SORT c.name asc
-            return {_id: c._id, name: c.name}
-        `;
-
-        db.query(query)
-        .then(cursor => { 
-            res.json(cursor._result);
-        }).catch(error => {
-            console.log(Date.now() + " Error (Get Courses from Database):", error);
-            res.json();
-        })            
-    })
-
-
     // using post as passing object - probably not ideal
     app.post('/api/path/all', function (req, res){
         // intialise
@@ -667,7 +599,7 @@ module.exports = function(app){
             res.json();
         })         
         
-    })
+    }) 
     app.get('/api/standards/:grade?', function(req, res){
         let grades = req.params.grade;
         let queryGrades = [];
@@ -689,25 +621,40 @@ module.exports = function(app){
         })         
         
     })  
-    app.get('/api/courses/:grade?', function(req, res){
+
+       
+
+    app.get('/api/courses/:role/:username/:grade?', function(req, res){
         let grades = req.params.grade;
         let queryGrades = [];
         if (grades) queryGrades = grades.split(',');
+        // wondering if we should get this from front end  or from db..
+        let role = req.params.role;
+        let username = req.params.username;
+     console.log(role, username)
+        /// *********now filter based on user role!!
+        // filter length(queryCourses) > 0 ? c._id in queryCourses : true
         let query = aql`
-            for c in courses
+          let userid = (UNIQUE(for u in auth_users filter u.username == ${username} return u._id))
+          let queryCourses = (for c in outbound userid hasCourse return c._id)
+          for c in courses
             filter length(${queryGrades}) > 0 ? TO_ARRAY(TO_STRING(c.grade)) any in ${queryGrades} : true
+            filter  c._id in queryCourses 
+            filter c.ownerIsBaseCurriculum != true
             SORT c.name asc
             return {_id: c._id, name: c.name}
-        `;
+            `;
 
         db.query(query)
         .then(cursor => { 
+            console.log(cursor._result)
             res.json(cursor._result);
         }).catch(error => {
             console.log(Date.now() + " Error (Get Courses from Database):", error);
             res.json();
         })            
     })
+
     app.use(function(req, res){
         db.get()
         .then(response => {

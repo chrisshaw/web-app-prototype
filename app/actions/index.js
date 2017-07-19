@@ -1,9 +1,9 @@
 const action = {
 
-userLogin: (loggedin) => {
+userLogin: (data) => {
   return {
     type: 'LOGGED_IN',
-    loggedin
+    data
   }
 },
 userLoginError: (loginerror, errormsg) => {
@@ -31,12 +31,12 @@ userLogout: () => {
       type: 'USER_LOGOUT',
     }
   },
-  userPerms: (data) => {
-    return {
-      type: 'USER_PERMS',
-      data
-    }
-  },
+  // userPerms: (data) => {
+  //   return {
+  //     type: 'USER_PERMS',
+  //     data
+  //   }
+  // },
   setPage: (pathbuilderview) => {
     //  console.log("set page in action:", pathbuilderview)
     return {

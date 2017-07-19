@@ -80,9 +80,11 @@ var helpers = {
        var gradeArr = [{_id: 0, name: "6"}, {_id: 1, name: "7"},{_id: 2, name: "8"}, {_id: 3, name: "9"},{_id: 4, name: "10"}, {_id: 5, name: "11"}]
        dispatch(actions.updateList(reset, deleteGroup, 0, 'UPDATE_GRADES', gradeArr));
     },
-    getCourses: function(reset, deleteGroup, grade, dispatch){
+    getCourses: function(reset, deleteGroup, grade, role, username, dispatch){
         /// parse array to a string for query.
         // console.log("herloer get crs")
+        // helper.getCourses(false,false, "", this.props.role, this.props.dispatch); 
+        console.log("role, username", role, username)
         let gradeString = "";
         if (grade.length !== 0) {
             if (grade.length === 1){
@@ -95,7 +97,7 @@ var helpers = {
                 }
             }
         }
-        return axios.get('/api/courses/'+gradeString).then(function(response) {
+        return axios.get('/api/courses/'+role+'/'+username+'/'+gradeString).then(function(response) {
                 // send results to redux store for use by Results component
                 dispatch(actions.updateList(reset, deleteGroup, 0, 'UPDATE_COURSES', response.data));
                 return;
@@ -239,9 +241,9 @@ var helpers = {
         return axios.post('/login', userObj).then(function(response) {
             let msg = "Invalid username or password - please try again";
             // sets login to true or false as appropriate
-            // saves the role and permssions
-            dispatch(actions.userPerms(response.data));
-            dispatch(actions.userLogin(response.data.success));
+            // saves the role and permssions and user data
+            // dispatch(actions.userPerms(response.data));
+            dispatch(actions.userLogin(response.data));
             // captures error and sends any relevant message to UI
             dispatch(actions.userLoginError(!response.data.success, msg));
             // successful login route to default page
@@ -316,7 +318,7 @@ var helpers = {
     logout(dispatch, router){
         // send to api for auth
         // set logged in to false
-        dispatch(actions.userLogin(false));
+        dispatch(actions.userLogin({loggedin: false, username: null, perms: [], role: null}));
         // clear redux store and reset
         dispatch(actions.userLogout());
         router.push('/login');

@@ -14,13 +14,13 @@ class GradeSelection extends Component{
         super(props);
         // this.handleRequestDelete = this.handleRequestDelete.bind(this);
         this.handleReset = this.handleReset.bind(this);
-        this.handleShowGroups = this.handleShowGroups.bind(this);
+        // this.handleShowGroups = this.handleShowGroups.bind(this);
         // get initial data and set props
         helper.getGrades(false, false, this.props.dispatch);
-        var searchObj = {};
-        this.state ={
-            showGroups: false, 
-        }
+        // var searchObj = {};
+        // this.state ={
+        //     showGroups: false, 
+        // }
     }
     // handleRequestDelete(id) {
     //     helper.removeGroup(id, this.props.dispatch);
@@ -33,10 +33,10 @@ class GradeSelection extends Component{
         // reset chips and grouplist
         helper.getGrades(true, false, this.props.dispatch); 
     }
-    handleShowGroups() {
-        // toggle between true and false
-        this.setState({showGroups: !this.state.showGroups})
-    }
+    // handleShowGroups() {
+    //     // toggle between true and false
+    //     this.setState({showGroups: !this.state.showGroups})
+    // }
     render(){
         if ( this.props.selectedgradelist){
              var arrLength = this.props.selectedgradelist.length;

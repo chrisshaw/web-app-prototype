@@ -12,27 +12,12 @@ import ResetIcon from "./ResetIcon";
 class TopicSelection extends Component{
    constructor(props) {
         super(props);
-        // this.handleRequestDelete = this.handleRequestDelete.bind(this);
         this.handleReset = this.handleReset.bind(this);
-        this.handleShowGroups = this.handleShowGroups.bind(this);
         // get initial data and set props
         helper.getTopics(false, false, this.props.dispatch);    
-        var searchObj = {};
-        // state for hide/show selection and text/icon
-        this.state ={
-            showGroups: false, 
-        }
     }
-    // handleRequestDelete(id) {
-    //     // filter topic based on id
-    //     helper.removeTopic(id, this.props.dispatch);
-    // }
     handleReset() {
         helper.getTopics(true, false, this.props.dispatch); 
-    }
-    handleShowGroups() {
-        // toggle between true and false and change the displayed message
-        this.setState({showGroups: !this.state.showGroups});
     }
     render(){
         var styles = {
@@ -68,7 +53,6 @@ class TopicSelection extends Component{
 const mapStateToProps = (store) => {
     return {
         topiclist: store.mainState.topiclist,
-        // selectedtopiclist: store.mainState.selectedtopiclist,
     }
 }
 
