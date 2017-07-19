@@ -35,7 +35,7 @@ class QueryBuilder extends Component{
        // needed to trigger requery if grade changes    
         if ((prevProps.selectedgradelist !== this.props.selectedgradelist) && (prevProps.selectedgradelist)){
             // could equally  just pass this.props and retrieve in helper??
-            helper.getCourses(false, false, this.props.selectedgradelist, this.props.role, this.props.username, this.props.dispatch); 
+            helper.getCourses(false, false, this.props.selectedgradelist, this.props.username, this.props.dispatch); 
             helper.getStandards(false, false, this.props.selectedgradelist, this.props.dispatch);     
         }    
     }

@@ -80,11 +80,11 @@ var helpers = {
        var gradeArr = [{_id: 0, name: "6"}, {_id: 1, name: "7"},{_id: 2, name: "8"}, {_id: 3, name: "9"},{_id: 4, name: "10"}, {_id: 5, name: "11"}]
        dispatch(actions.updateList(reset, deleteGroup, 0, 'UPDATE_GRADES', gradeArr));
     },
-    getCourses: function(reset, deleteGroup, grade, role, username, dispatch){
+    getCourses: function(reset, deleteGroup, grade, username, dispatch){
         /// parse array to a string for query.
         // console.log("herloer get crs")
         // helper.getCourses(false,false, "", this.props.role, this.props.dispatch); 
-        console.log("role, username", role, username)
+        // dont need role here - should bring back a teacher or students courses - the query will pull these back if queryCourse !== [] elese it will bring all back
         let gradeString = "";
         if (grade.length !== 0) {
             if (grade.length === 1){
@@ -97,8 +97,9 @@ var helpers = {
                 }
             }
         }
-        return axios.get('/api/courses/'+role+'/'+username+'/'+gradeString).then(function(response) {
+        return axios.get('/api/courses/'+username+'/'+gradeString).then(function(response) {
                 // send results to redux store for use by Results component
+                console.log(response.data)
                 dispatch(actions.updateList(reset, deleteGroup, 0, 'UPDATE_COURSES', response.data));
                 return;
         })

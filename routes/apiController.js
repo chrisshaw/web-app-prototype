@@ -624,22 +624,23 @@ module.exports = function(app){
 
        
 
-    app.get('/api/courses/:role/:username/:grade?', function(req, res){
+    app.get('/api/courses/:username/:grade?', function(req, res){
         let grades = req.params.grade;
         let queryGrades = [];
         if (grades) queryGrades = grades.split(',');
         // wondering if we should get this from front end  or from db..
-        let role = req.params.role;
+        // let role = req.params.role;
         let username = req.params.username;
-     console.log(role, username)
         /// *********now filter based on user role!!
-        // filter length(queryCourses) > 0 ? c._id in queryCourses : true
+        // dont need role here - should bring back a teacher or students courses - the query will pull these back if queryCourse !== [] elese it will bring all back
+        // only teachers or students will have mappings in hasCourses table
+        // role will be needed in paths.....role = student should only see their own courses not other students
         let query = aql`
           let userid = (UNIQUE(for u in auth_users filter u.username == ${username} return u._id))
-          let queryCourses = (for c in outbound userid hasCourse return c._id)
+          let queryCourses = (for c in outbound userid[0] hasCourse return c._id)
           for c in courses
             filter length(${queryGrades}) > 0 ? TO_ARRAY(TO_STRING(c.grade)) any in ${queryGrades} : true
-            filter  c._id in queryCourses 
+            filter  length(queryCourses) > 0 ? c._id in queryCourses : true
             filter c.ownerIsBaseCurriculum != true
             SORT c.name asc
             return {_id: c._id, name: c.name}
@@ -647,7 +648,7 @@ module.exports = function(app){
 
         db.query(query)
         .then(cursor => { 
-            console.log(cursor._result)
+            console.log(cursor._result);
             res.json(cursor._result);
         }).catch(error => {
             console.log(Date.now() + " Error (Get Courses from Database):", error);

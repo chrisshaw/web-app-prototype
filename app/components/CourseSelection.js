@@ -16,11 +16,11 @@ class CourseSelection extends Component{
     }
     handleReset() {
         // reset chips and grouplist
-        helper.getCourses(true, false,"",this.props.role,  this.props.username, this.props.dispatch); 
+        helper.getCourses(true, false,"",  this.props.username, this.props.dispatch); 
     }
     componentWillMount() {
         // reset chips and grouplist
-        helper.getCourses(false,false, "", this.props.role, this.props.username, this.props.dispatch); 
+        helper.getCourses(false,false, "",  this.props.username, this.props.dispatch); 
     }
     render(){
         if ( this.props.selectedcourselist){
