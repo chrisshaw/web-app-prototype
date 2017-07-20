@@ -358,14 +358,18 @@ module.exports = function(app){
         let queryStandards = []; 
         let querySubjects = [];
         let queryTopics = []; 
+console.log("req.body",req.body)
+
         // some pre-processing
         if (req.body.courses){
             if (req.body.courses.length > 0){
                 for (var i = 0; i < req.body.courses.length; i++){
+                    console.log(req.body.courses[i].name);
                     queryCourses.push(req.body.courses[i].name.toUpperCase());
                 }
             }
         }
+
         if (req.body.grades){
             if (req.body.grades.length > 0){
                 for (var i = 0; i < req.body.grades.length; i++){
@@ -405,7 +409,7 @@ module.exports = function(app){
                     ))
                     let courseFas = LENGTH(${queryCourses}) == 0 ? [] : UNIQUE(FLATTEN(
                         for c in courses
-                        filter c.name in ${queryCourses}
+                        filter UPPER(c.name) in ${queryCourses}
                             for fa in
                             outbound c
                             covers
@@ -413,12 +417,16 @@ module.exports = function(app){
                     ))
                     let queryStudents = UNIQUE(FLATTEN(
                         for c in courses
-                        filter LENGTH(${queryCourses}) > 0 ? c.name in ${queryCourses} : true  
-                            for student
-                            in inbound c
-                            hasCourse
-                            filter LENGTH(${queryGrades}) > 0 ? student.grade in ${queryGrades} : true 
-                            return student._id
+                                    filter LENGTH(${queryCourses}) > 0 ? UPPER(c.name) in ${queryCourses} : true  
+                                        for student
+                                        in inbound c
+                                        hasCourse 
+                                        filter LENGTH(${queryGrades}) > 0 ? student.grade in ${queryGrades} : true 
+                                        for role
+                                            in outbound student._id
+                                            auth_user_hasRole 
+                                            filter UPPER(role.name) == 'STUDENT'
+                                        return student._id
                     ))
                     let starters = (
                         for fa in focusAreas
@@ -438,13 +446,13 @@ module.exports = function(app){
                             hasMastered
                             return fa._key
                         )
-
+                        let StudentDetails = (for s in auth_users filter s._id == student return { first: s.first, last: s.last, id: s.studentId})
                         let path  = (
                             for start in starters
                                 for fa
                                 in 0..999 outbound start
                                 thenFocusOn
-                                filter length(${querySubjects}) > 0 ? fa.subject in ${querySubjects} : true
+                                filter length(${querySubjects}) > 0 ? UPPER(fa.subject) in ${querySubjects} : true
                                 filter length(topicalFas) > 0 ? fa._key in topicalFas : true
                                 filter length(courseFas) > 0 ? fa._key in courseFas : true
                                 filter length(masteredFas) > 0 ? fa._key not in masteredFas : true
@@ -459,71 +467,60 @@ module.exports = function(app){
                                 ) : true
                                 return fa
                         )
-                    return {student: student, fa: path}`;
-                    console.log(query);
+                    return {student: student, details: StudentDetails, fa: path}`;
+        console.log(query);
         db.query(query).then(cursor => {
             // cursor is a cursor for the query result
-            // console.log(cursor._result[0])  // just the first one for testing only
+            console.log(cursor._result)  // just the first one for testing only
             // reformat results for  easy client display 
+
             var studentPathArr = [];
-            // console.log(cursor._result)
-            var studentArr = cursor._result;
-            console.log(studentArr.length);
-            if (studentArr.length > 0 ){
-                // for each student         
-                for (var j = 0; j < studentArr.length; j++){ // just the first one for testing only
-                    var studentPathObj = {};
-                    studentPathObj.student = studentArr[j].student;
-                    console.log(studentPathObj.student)
-                    // studentPathObj.fa = studentArr[j].fa;
-                    // for each path
-                    var pathArr = [];
-                    pathArr.push(studentArr[j].fa);
-                    // console.log(pathArr);
-                    console.log("length", pathArr[0].length);
-                    for (var i = 0; i < pathArr[0].length; i++){
-                         console.log("*****iteration:", i );
-                        //  console.log("pathArr[i]", pathArr[i]['Focus Area']);
-                        if ( i < pathArr[0].length-1) pathArr[0][i].nextFA = pathArr[0][i+1]['Focus Area'];
-                        pathArr[0][i].currentStd = [];
-                        pathArr[0][i].nextStd = [];
-                        if (i < pathArr[0].length-1){  
-                            for (var j = 0; j < pathArr[0][i+1].standardConnections.length; j++){
-                                // save the first one
-                                if ((j === 0)){
-                                    pathArr[0][i].nextStd.push(pathArr[0][i+1].standardConnections[j]);
-                                }
-                                // don't save duplicates
-                                else if ((j > 0 ) && (pathArr[0][i+1].standardConnections[j-1] !== pathArr[0][i+1].standardConnections[j] )){
-                                    pathArr[0][i].nextStd.push(pathArr[0][i+1].standardConnections[j]);
-                                }  
+            //  console.log(cursor._result)
+         
+            var studentArr = Array.from(cursor._result);
+            // var studentArr = cursor._result;
+            // for each student
+            for (var p= 0; p < cursor._result.length; p++){
+                // for each focus area
+                // console.log("student", cursor._result[p].student)
+
+                for (var i = 0; i < cursor._result[p].fa.length; i++){
+                    // console.log(i)
+                    // console.log(cursor._result[p].fa[i])
+                    // console.log("fa length", cursor._result[p].fa.length)
+                    if ( i < cursor._result[p].fa.length-1) cursor._result[p].fa[i].nextFA = cursor._result[p].fa[i+1]['Focus Area'];
+                    cursor._result[p].fa[i]['currentStd'] = [];
+                    cursor._result[p].fa[i]['nextStd']= [];
+                    if (i < cursor._result[p].fa.length-1){  
+                        for (var j = 0; j < cursor._result[p].fa[i+1].standardConnections.length; j++){
+                            // save the first one
+                            if ((j === 0)){
+                                cursor._result[p].fa[i].nextStd.push(cursor._result[p].fa[i+1].standardConnections[j]);
                             }
+                            // don't save duplicates
+                            else if ((j > 0 ) && (cursor._result[p].fa[i+1].standardConnections[j-1] !== cursor._result[p].fa[i+1].standardConnections[j] )){
+                                cursor._result[p].fa[i].nextStd.push(cursor._result[p].fa[i+1].standardConnections[j]);
+                            }  
                         }
-                        // de-dup current fa std connections
-                        if ( pathArr[0][i].standardConnections) {
-                            for (var k = 0; k < pathArr[0][i].standardConnections.length; k++){
-                                if ((k === 0)){
-                                    pathArr[0][i].currentStd.push(pathArr[0][i].standardConnections[k]);
-                                }
-                                else if ((k > 0 ) && (pathArr[0][i].standardConnections[k-1] !== pathArr[0][i].standardConnections[k] )){
-                                    pathArr[0][i].nextStd.push(pathArr[0][i].standardConnections[k]);
-                                }                 
-                            }
-                        }       
-                    studentPathObj.fa = [];
-                    studentPathObj.fa.push(pathArr[0]);  
-                    // console.log("studentPathObj.fa", studentPathObj.fa)  
                     }
-                    
-          
-                    studentPathArr.push(studentPathObj);
-                    // console.log("studentPathArr", studentPathArr)
+               
+                    // de-dup current fa std connections
+                    for (var k = 0; k < cursor._result[p].fa[i].standardConnections.length; k++){
+                        if ((k === 0)){
+                            cursor._result[p].fa[i]['currentStd'].push(cursor._result[p].fa[i].standardConnections[k]);
+                        }
+                        else if ((k > 0 ) && (cursor._result[p].fa[i].standardConnections[k-1] !== cursor._result[p].fa[i].standardConnections[k] )){
+                            cursor._result[p].fa[i]['nextStd'].push(cursor._result[p].fa[i].standardConnections[k]);
+                        }                 
+                    }
+                    // console.log(cursor._result[p].fa[i])
                 }
-                res.json(studentPathArr); 
-            } else {
-                // return  empty array
-                res.json(studentArr); 
+
             }
+
+            
+            res.json(cursor._result);  
+    //  
             
             // res.json(pathArr);          
         }).catch((error => {
@@ -682,6 +679,7 @@ module.exports = function(app){
         let grades = req.params.grade;
         let queryGrades = [];
         if (grades) queryGrades = grades.split(',');
+        console.log(req.body)
         // wondering if we should get this from front end  or from db..
         // let role = req.params.role;
         let username = req.params.username;
@@ -702,7 +700,7 @@ module.exports = function(app){
 
         db.query(query)
         .then(cursor => { 
-            console.log(cursor._result);
+            console.log("Course", cursor._result);
             res.json(cursor._result);
         }).catch(error => {
             console.log(Date.now() + " Error (Get Courses from Database):", error);

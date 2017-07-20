@@ -167,21 +167,22 @@ var helpers = {
         // clear old path data
         dispatch(actions.updatePathList(paths));
     },
-    getPathsAll(courses, grades, standards, topics, subjects, dispatch){
+    getPathsAll(courses, grades, standards, topics, subjects, role, dispatch){
          var queryObj = {
             courses: courses,
             grades: grades,
             standards: standards,
             topics: topics,
-            subjects: subjects
+            subjects: subjects,
+            role: role
         }
+        console.log(queryObj);
         dispatch(actions.searchPaths(true));
         return axios.post('/api/path/all', queryObj).then(function(response) {
-            console.log(response)
-
-            // dispatch(actions.updatePathList(response.data));
-            // // hide the searching message
-            // dispatch(actions.searchPaths(false));
+            // console.log(response)
+            dispatch(actions.updatePathList(response.data));
+            // hide the searching message
+            dispatch(actions.searchPaths(false));
             return;
         })
     },

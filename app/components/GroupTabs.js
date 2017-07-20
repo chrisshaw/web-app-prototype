@@ -9,6 +9,8 @@ import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import {connect} from 'react-redux';
 import helper from '../helper';
+// need to move to next versoin of material ui but until then will use import { Tabs, Tab } from 'material-ui-scrollable-tabs/Tabs';
+// import { Tabs, Tab } from 'material-ui-scrollable-tabs/Tabs';
 
 const styles = {
   headline: {
@@ -65,6 +67,7 @@ class GroupTabs extends React.Component {
     this.setState({
       value: value,
     });
+    console.log("value", value);
   };
   componentDidMount(){
     this.setState({
@@ -82,72 +85,90 @@ render() {
       // they just need to be matched  
       if (this.props.paths)  {
         // there will be one results component returned for each pathway / group.
-        var tabindex = this.state.value;
+        // var tabindex = this.state.value;
         let pathResults = this.props.paths.length;
         // only one path returned
+         console.log("this.props.paths.length ", this.props.paths.length )
         if ((pathResults) && (this.props.paths.length > 0)) {
-          var component = this; 
-          // there will be may Focus Areas returned for each pathway / group
-          var faComponents = this.props.paths.map(function(fa, index) {
            
-            if (fa.nextStd) {
-                var nextStandards = fa.nextStd.map((standard, index) => {
-                return   <Col key={index} className="chip-float"><div className="chip">
-                            {standard.toUpperCase()}
-                          </div>
-                          </Col>
-              });
-            }
+          var component = this; 
+          var resultsComponents = this.props.paths.map(function(student, index) {
+            // there will be may Focus Areas returned for each pathway / group
+            console.log("student.fa.length ", student.fa.length )
+            if  (student.fa.length > 0) {
+              var faComponents = student.fa.map(function(fa, index) {
+              // console.log("fa", fa)
+                if (fa.nextStd) {
+                    var nextStandards = fa.nextStd.map((standard, index) => {
+                    return   <Col key={index} className="chip-float"><div className="chip">
+                                {standard.toUpperCase()}
+                              </div>
+                              </Col>
+                  });
+                }
 
-            if (fa.currentStd) {
-              var currentStandards = fa.currentStd.map((standard, index) => {
-                  return   <Col key={index} className="chip-float"><div className="chip">
-                              {standard.toUpperCase()}
+                if (fa.currentStd) {
+                  var currentStandards = fa.currentStd.map((standard, index) => {
+                      return   <Col key={index} className="chip-float"><div className="chip">
+                                  {standard.toUpperCase()}
+                                </div>
+                                </Col>
+                  });
+                }
+
+            
+                /// this return is to facomponent - it displays all the data for one fa within a path
+                return (  <div  key={index} className="fa-wrapper"><Row className="fa-tab-view-rows"><Col md={12}><div style={styles.slide}>
+                            <Row >
+                              <Col  md={3} xs={12}>
+                                <h3  className='fa-headings'>Focus Area</h3>
+                              </Col>
+                              <Col  md={9} xs={12}>
+                                <p  className='fa-headings-span'>{fa["Focus Area"].toString()}</p>
+                              </Col>
+                            </Row>
+                              <hr />
+                            <Row >
+                              <Col className="chip-float">
+                                <div className="chip">                    
+                                  {fa.subject.toUpperCase()}      
+                                </div>
+                              </Col>
+                              {currentStandards}
+                            </Row>
+                              <Row>
+                              <div className="chip-float-text">Connected To</div>
+                              <Col  className="chip-float">
+                                <div className="chip">
+                                  {fa.nextFA}
+                                </div>
+                              </Col> 
+                                {nextStandards}
+                            </Row>
                             </div>
                             </Col>
-              });
+                          </Row>
+                        </div>)         
+              })
+
+            } else {
+              var  faComponents = <p className="no-paths-message"> No path found. Please change search filters and try again.</p>
             }
 
-          
-            /// this return is to facomponent - it displays all the data for one fa within a path
-            return (  <div  key={index} className="fa-wrapper"><Row className="fa-tab-view-rows"><Col md={12}><div style={styles.slide}>
-                        <Row >
-                          <Col  md={3} xs={12}>
-                            <h3  className='fa-headings'>Focus Area</h3>
-                          </Col>
-                          <Col  md={9} xs={12}>
-                            <p  className='fa-headings-span'>{fa["Focus Area"].toString()}</p>
-                          </Col>
-                        </Row>
-                          <hr />
-                        <Row >
-                          <Col className="chip-float">
-                            <div className="chip">                    
-                              {fa.subject.toUpperCase()}      
-                            </div>
-                          </Col>
-                          {currentStandards}
-                        </Row>
-                          <Row>
-                          <div className="chip-float-text">Connected To</div>
-                          <Col  className="chip-float">
-                            <div className="chip">
-                              {fa.nextFA}
-                            </div>
-                          </Col> 
-                            {nextStandards}
-                        </Row>
-                        </div>
-                        </Col>
-                      </Row>
-                    </div>)         
+
+            return  <Tab key={student.student} label={student.details[0].first +" " + student.details[0].last} value={index}  buttonStyle={{color: "#808080"}}>
+                  {faComponents} 
+          </Tab>  
           })
        
-        } else {
-          var faComponents = <p className="no-paths-message"> No path found. Please change search filters and try again.</p>
+        }  else {
+           var resultsComponents = <Tab label="No Paths" value={0}  buttonStyle={{color: "#808080"}}>
+           <p className="no-paths-message"> No Paths Found </p>
+           </Tab>
         }
            
-      } 
+      }
+      
 
 
     return <div>
@@ -159,16 +180,14 @@ render() {
      <div className="text-center loader"></div></div>
     </div>) : ""}
 
-    {this.props.paths ?    ( <Tabs inkBarStyle={{background: '#A35FE3'}}
+    <Tabs inkBarStyle={{background: '#A35FE3'}}
         initialSelectedIndex={0}
         tabItemContainerStyle={{whiteSpace: 'wrap'}}
         value={this.state.value}
         onChange={this.handleChange}
       >
-    <Tab label="Path" value={this.state.value}  buttonStyle={{color: "#808080"}}>
-                  {faComponents}
-          </Tab>  
-      </Tabs>) : ""}
+    {resultsComponents}
+      </Tabs>
     </div>
   
   }
@@ -183,3 +202,35 @@ const mapStateToProps = (store,ownProps) => {
 }
 
 export default connect(mapStateToProps)(GroupTabs);
+
+
+
+
+
+
+      // <Tabs
+      //   value={this.state.value}
+      //   onChange={this.handleChange}
+      // >
+      //   <Tab label="Tab A" value="a">
+      //     <div>
+      //       <h2 style={styles.headline}>Controllable Tab A</h2>
+      //       <p>
+      //         Tabs are also controllable if you want to programmatically pass them their values.
+      //         This allows for more functionality in Tabs such as not
+      //         having any Tab selected or assigning them different values.
+      //       </p>
+      //     </div>
+      //   </Tab>
+      //   <Tab label="Tab B" value="b">
+      //     <div>
+      //       <h2 style={styles.headline}>Controllable Tab B</h2>
+      //       <p>
+      //         This is another example of a controllable tab. Remember, if you
+      //         use controllable Tabs, you need to give all of your tabs values or else
+      //         you wont be able to select them.
+      //       </p>
+      //     </div>
+      //   </Tab>
+      // </Tabs>
+  
