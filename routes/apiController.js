@@ -395,83 +395,137 @@ module.exports = function(app){
                 }
             } 
         } 
+        var query=aql`let topicalFas=LENGTH(${queryTopics}) == 0 ? [] : UNIQUE(FLATTEN(
+                        for p in projects
+                        filter p.topics[* return UPPER(CURRENT)] any in ${queryTopics}[* return UPPER(CURRENT)]
+                            for fa in
+                            2 outbound p
+                            alignsTo, addressedBy
+                            return fa._key
+                    ))
+                    let courseFas = LENGTH(${queryCourses}) == 0 ? [] : UNIQUE(FLATTEN(
+                        for c in courses
+                        filter c.name in ${queryCourses}
+                            for fa in
+                            outbound c
+                            covers
+                            return fa._key
+                    ))
+                    let queryStudents = UNIQUE(FLATTEN(
+                        for c in courses
+                        filter LENGTH(${queryCourses}) > 0 ? c.name in ${queryCourses} : true  
+                            for student
+                            in inbound c
+                            hasCourse
+                            filter LENGTH(${queryGrades}) > 0 ? student.grade in ${queryGrades} : true 
+                            return student._id
+                    ))
+                    let starters = (
+                        for fa in focusAreas
+                        let priors = (
+                            for v
+                            in inbound fa
+                            thenFocusOn
+                            return 1
+                        )
+                        filter LENGTH(priors) == 0
+                        return fa._id
+                    )
+                    for student in queryStudents
+                        let masteredFas = (
+                            FOR fa
+                            IN outbound student
+                            hasMastered
+                            return fa._key
+                        )
 
-        // grab topics from projects, find connected fas
-        var query = aql`let topicalFas = LENGTH(${queryTopics}) == 0 ? [] : (
-            return UNIQUE(FLATTEN(
-                for p in projects
-                filter p.topics[* return UPPER(CURRENT)] any in ${queryTopics}[* return UPPER(CURRENT)]                
-                    for fa in
-                    2 outbound p
-                    alignsTo, addressedBy
-                    return fa._key
-                ))
-        )
-        let courseFas = LENGTH(${queryCourses}) == 0 ? [] : (
-            return UNIQUE(FLATTEN(
-                for c in courses
-                filter UPPER(c.name) in ${queryCourses}
-                    for fa in
-                    outbound c
-                    covers
-                    return fa._key
-                ))
-        )
-        let starters = (
-            for fa in focusAreas
-            let priors = (
-                for v
-                in inbound fa
-                thenFocusOn
-                return v
-            )
-            filter LENGTH(priors) == 0
-            return fa._id
-        )
-        // the path we want to send to the front
-        for start in starters
-            for fa in
-            0..999 outbound start
-            thenFocusOn
-            filter length(${querySubjects}) > 0 ? UPPER(fa.subject) in ${querySubjects} : true
-            filter length(${queryGrades}) > 0 ? TO_ARRAY(fa.grade) any in ${queryGrades} : true
-            filter length(courseFas) > 0 ? fa._key in courseFas[0] : true
-            filter length(topicalFas) > 0 ? fa._key in topicalFas[0]: true
-            filter length(${queryStandards}) > 0 ? fa.standardConnections[* return UPPER(CURRENT)] any in ${queryStandards}[* return UPPER(CURRENT)] : true
-            return fa`; // return grade and groupname too`
-        
+                        let path  = (
+                            for start in starters
+                                for fa
+                                in 0..999 outbound start
+                                thenFocusOn
+                                filter length(${querySubjects}) > 0 ? fa.subject in ${querySubjects} : true
+                                filter length(topicalFas) > 0 ? fa._key in topicalFas : true
+                                filter length(courseFas) > 0 ? fa._key in courseFas : true
+                                filter length(masteredFas) > 0 ? fa._key not in masteredFas : true
+                                filter length(${queryStandards}) > 0 ? (
+                                    let standardConnections = (
+                                        for standard
+                                        in outbound fa
+                                        alignsTo
+                                        return UPPER(standard._key)
+                                    )
+                                    return standardConnections any in ${queryStandards}[* return UPPER(CURRENT)]
+                                ) : true
+                                return fa
+                        )
+                    return {student: student, fa: path}`;
+                    console.log(query);
         db.query(query).then(cursor => {
             // cursor is a cursor for the query result
-            // reformat results for  easy client display
-            var pathArr = cursor._result;
-            for (var i = 0; i < pathArr.length; i++){
-                if ( i < pathArr.length-1) pathArr[i].nextFA = pathArr[i+1]['Focus Area'];
-                pathArr[i].currentStd = [];
-                pathArr[i].nextStd = [];
-                if (i < pathArr.length-1){  
-                    for (var j = 0; j < pathArr[i+1].standardConnections.length; j++){
-                        // save the first one
-                        if ((j === 0)){
-                            pathArr[i].nextStd.push(pathArr[i+1].standardConnections[j]);
+            // console.log(cursor._result[0])  // just the first one for testing only
+            // reformat results for  easy client display 
+            var studentPathArr = [];
+            // console.log(cursor._result)
+            var studentArr = cursor._result;
+            console.log(studentArr.length);
+            if (studentArr.length > 0 ){
+                // for each student         
+                for (var j = 0; j < studentArr.length; j++){ // just the first one for testing only
+                    var studentPathObj = {};
+                    studentPathObj.student = studentArr[j].student;
+                    console.log(studentPathObj.student)
+                    // studentPathObj.fa = studentArr[j].fa;
+                    // for each path
+                    var pathArr = [];
+                    pathArr.push(studentArr[j].fa);
+                    // console.log(pathArr);
+                    console.log("length", pathArr[0].length);
+                    for (var i = 0; i < pathArr[0].length; i++){
+                         console.log("*****iteration:", i );
+                        //  console.log("pathArr[i]", pathArr[i]['Focus Area']);
+                        if ( i < pathArr[0].length-1) pathArr[0][i].nextFA = pathArr[0][i+1]['Focus Area'];
+                        pathArr[0][i].currentStd = [];
+                        pathArr[0][i].nextStd = [];
+                        if (i < pathArr[0].length-1){  
+                            for (var j = 0; j < pathArr[0][i+1].standardConnections.length; j++){
+                                // save the first one
+                                if ((j === 0)){
+                                    pathArr[0][i].nextStd.push(pathArr[0][i+1].standardConnections[j]);
+                                }
+                                // don't save duplicates
+                                else if ((j > 0 ) && (pathArr[0][i+1].standardConnections[j-1] !== pathArr[0][i+1].standardConnections[j] )){
+                                    pathArr[0][i].nextStd.push(pathArr[0][i+1].standardConnections[j]);
+                                }  
+                            }
                         }
-                        // don't save duplicates
-                        else if ((j > 0 ) && (pathArr[i+1].standardConnections[j-1] !== pathArr[i+1].standardConnections[j] )){
-                            pathArr[i].nextStd.push(pathArr[i+1].standardConnections[j]);
-                        }  
+                        // de-dup current fa std connections
+                        if ( pathArr[0][i].standardConnections) {
+                            for (var k = 0; k < pathArr[0][i].standardConnections.length; k++){
+                                if ((k === 0)){
+                                    pathArr[0][i].currentStd.push(pathArr[0][i].standardConnections[k]);
+                                }
+                                else if ((k > 0 ) && (pathArr[0][i].standardConnections[k-1] !== pathArr[0][i].standardConnections[k] )){
+                                    pathArr[0][i].nextStd.push(pathArr[0][i].standardConnections[k]);
+                                }                 
+                            }
+                        }       
+                    studentPathObj.fa = [];
+                    studentPathObj.fa.push(pathArr[0]);  
+                    // console.log("studentPathObj.fa", studentPathObj.fa)  
                     }
+                    
+          
+                    studentPathArr.push(studentPathObj);
+                    // console.log("studentPathArr", studentPathArr)
                 }
-                // de-dup current fa std connections
-                for (var k = 0; k < pathArr[i].standardConnections.length; k++){
-                    if ((k === 0)){
-                        pathArr[i].currentStd.push(pathArr[i].standardConnections[k]);
-                    }
-                    else if ((k > 0 ) && (pathArr[i].standardConnections[k-1] !== pathArr[i].standardConnections[k] )){
-                        pathArr[i].nextStd.push(pathArr[i].standardConnections[k]);
-                    }                 
-                }
+                res.json(studentPathArr); 
+            } else {
+                // return  empty array
+                res.json(studentArr); 
             }
             
-            res.json(pathArr);          
+            // res.json(pathArr);          
         }).catch((error => {
              console.log(Date.now() + " Error (Getting paths from Database):", error);
              res.json();

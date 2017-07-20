@@ -177,9 +177,11 @@ var helpers = {
         }
         dispatch(actions.searchPaths(true));
         return axios.post('/api/path/all', queryObj).then(function(response) {
-            dispatch(actions.updatePathList(response.data));
-            // hide the searching message
-            dispatch(actions.searchPaths(false));
+            console.log(response)
+
+            // dispatch(actions.updatePathList(response.data));
+            // // hide the searching message
+            // dispatch(actions.searchPaths(false));
             return;
         })
     },
