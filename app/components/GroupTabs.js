@@ -1,5 +1,5 @@
 import React from 'react';
-import {Tabs, Tab} from 'material-ui/Tabs';
+// import {Tabs, Tab} from 'material-ui/Tabs';
 // From https://github.com/oliviertassinari/react-swipeable-views
 import SwipeableViews from 'react-swipeable-views';
 import uuid from 'uuid';
@@ -10,7 +10,7 @@ import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import {connect} from 'react-redux';
 import helper from '../helper';
 // need to move to next versoin of material ui but until then will use import { Tabs, Tab } from 'material-ui-scrollable-tabs/Tabs';
-// import { Tabs, Tab } from 'material-ui-scrollable-tabs/Tabs';
+import { Tabs, Tab } from 'material-ui-scrollable-tabs/Tabs';
 
 const styles = {
   headline: {
@@ -67,15 +67,24 @@ class GroupTabs extends React.Component {
     this.setState({
       value: value,
     });
-    console.log("value", value);
   };
   componentDidMount(){
+   console.log("paths in group mount", this.props.paths)
     this.setState({
       value: 0,
     });
   }
-render() {
-  return <div></div>}
+  componentWillReceiveProps(nextProps){
+      
+          console.log("nextProps", nextProps)
+           console.log("thisprops", this.props)
+  }
+  // shouldComponentUpdate(nextProps) {
+  //     // if (this.props.path !== nextProps.path) return true;
+  //     // if (this.props.path === nextProps.path) return false;
+
+  //     // const differentDone = this.props.done !== nextProps.done
+  // }
   render() {
       //// GET TABS from results
       // display any paths   
@@ -83,24 +92,27 @@ render() {
       // each array item is an object with a group, grade, faid, and an array of paths in "results" field in order
       // this array of paths is what will be displayed in each group tab
       // they just need to be matched  
+      // console.log("in render")
       if (this.props.paths)  {
+        //  console.log("in render")
         // there will be one results component returned for each pathway / group.
         // var tabindex = this.state.value;
         let pathResults = this.props.paths.length;
         // only one path returned
-         console.log("this.props.paths.length ", this.props.paths.length )
+        
         if ((pathResults) && (this.props.paths.length > 0)) {
-           
+             console.log("in this.props.paths", this.props.paths)
           var component = this; 
           var resultsComponents = this.props.paths.map(function(student, index) {
             // there will be may Focus Areas returned for each pathway / group
-            console.log("student.fa.length ", student.fa.length )
+            var studentName= student.student.first + " " + student.student.last;
             if  (student.fa.length > 0) {
               var faComponents = student.fa.map(function(fa, index) {
-              // console.log("fa", fa)
+                console.log("fa ", fa._id )
                 if (fa.nextStd) {
                     var nextStandards = fa.nextStd.map((standard, index) => {
-                    return   <Col key={index} className="chip-float"><div className="chip">
+                    return   <Col key={fa._id+index.toString()} className="chip-float"><div className="chip">
+                        {console.log("fa._id+index", fa._id+index.toString())}    
                                 {standard.toUpperCase()}
                               </div>
                               </Col>
@@ -109,8 +121,9 @@ render() {
 
                 if (fa.currentStd) {
                   var currentStandards = fa.currentStd.map((standard, index) => {
-                      return   <Col key={index} className="chip-float"><div className="chip">
-                                  {standard.toUpperCase()}
+                      return   <Col key={standard._key+index.toString()} className="chip-float"><div className="chip">
+                           {console.log("standard._key+index", standard._key+index.toString())}            
+                      {standard.toUpperCase()}
                                 </div>
                                 </Col>
                   });
@@ -118,7 +131,8 @@ render() {
 
             
                 /// this return is to facomponent - it displays all the data for one fa within a path
-                return (  <div  key={index} className="fa-wrapper"><Row className="fa-tab-view-rows"><Col md={12}><div style={styles.slide}>
+                return (  <div  key={student.student._id+fa._id} className="fa-wrapper"><Row className="fa-tab-view-rows"><Col md={12}><div style={styles.slide}>
+                            {console.log("student.student._id+fa._id", student.student._id+fa._id)}
                             <Row >
                               <Col  md={3} xs={12}>
                                 <h3  className='fa-headings'>Focus Area</h3>
@@ -143,6 +157,7 @@ render() {
                                   {fa.nextFA}
                                 </div>
                               </Col> 
+                             
                                 {nextStandards}
                             </Row>
                             </div>
@@ -156,21 +171,22 @@ render() {
             }
 
 
-            return  <Tab key={student.student} label={student.details[0].first +" " + student.details[0].last} value={index}  buttonStyle={{color: "#808080"}}>
-                  {faComponents} 
+            return  <Tab key={student.student._id} label={studentName} value={index}  buttonStyle={{color: "#808080"}}>
+                              {console.log("student.student._id", student.student._id)}
+
+            {faComponents} 
           </Tab>  
           })
        
         }  else {
            var resultsComponents = <Tab label="No Paths" value={0}  buttonStyle={{color: "#808080"}}>
            <p className="no-paths-message"> No Paths Found </p>
+            {console.log("rendering")}
            </Tab>
         }
            
       }
       
-
-
     return <div>
         {this.props.searching ? (<div>
      
@@ -182,11 +198,12 @@ render() {
 
     <Tabs inkBarStyle={{background: '#A35FE3'}}
         initialSelectedIndex={0}
-        tabItemContainerStyle={{whiteSpace: 'wrap'}}
         value={this.state.value}
         onChange={this.handleChange}
-      >
-    {resultsComponents}
+        tabType="scrollable"
+      >     
+          {resultsComponents}
+        
       </Tabs>
     </div>
   

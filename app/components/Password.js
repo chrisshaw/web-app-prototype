@@ -30,11 +30,11 @@ class Password extends Component{
     }
     handleClose(){ 
         // // clear local and server error messages
-        // if (this.props.loginerror) helper.loginError(false, "", this.props.dispatch);
+        if (this.props.loginerror) helper.loginError(false, "", this.props.dispatch);
         // local validation
         if (this.state.error) this.setState({error: false, errorMsg: ""});
     }
-    // componentWillReceiveProps(nextProps) {
+//  componentWillReceiveProps(nextProps) {
     //     // reset state unless there is an error - in that case the current and next props will differ
     //     if (nextProps.loginerror === this.props.loginerror) {
     //         this.setState({
@@ -83,6 +83,18 @@ class Password extends Component{
                 >
                  { this.state.errorMsg }
                 </Dialog> : " "}
+                { (this.props.loginerror )  ?  <Dialog
+                bodyStyle={{fontSize: 13}}
+                titleStyle={{fontSize: 14, fontWeight: 'bold'}}
+                title="Sign Up Error"
+                actions={actions}
+                style={{zIndex: 2000,fontSize: 12, height: 300, width: 350, left: 350}}
+                modal={false}
+                open= {true}
+                onRequestClose={this.handleClose}
+                >
+                { this.props.errormsg  }
+                </Dialog> : " "}
                 <Row>
                     <Col xs={2} md={2}/>
                     <Col xs={8} md={8} className="text-center">
@@ -124,6 +136,15 @@ class Password extends Component{
     }
 }
 
-export default Password;
+
+const mapStateToProps = (store) => {
+    return {
+        loginerror: store.authState.loginerror,
+        errormsg: store.authState.errormsg,
+
+       
+    }
+}
+export default connect(mapStateToProps)(Password);
 
 

@@ -111,9 +111,10 @@ const mainReducer = (state={intialstate}, action) => {
         case 'BUILD_VIEW':
             return Object.assign({},state, {pathbuilderview: action.pathbuilderview}); 
         case 'UPDATE_PATHS':
-            return Object.assign({},state, {paths: action.paths});
-        case 'SEARCHING_PATHS':
-            return Object.assign({},state, {searching: action.searching});
+          console.log("paths in reducer")
+            return Object.assign({},state, {paths: action.paths, searching: action.searching});
+        // case 'SEARCHING_PATHS':
+        //     return Object.assign({},state, {searching: action.searching});
         case 'UPDATE_GRADES':
             //pulls for display in autopopulate dropdown to selected list for query
            return updateQueryList(action, state, 'gradelist', 'selectedgradelist');

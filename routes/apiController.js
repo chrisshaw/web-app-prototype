@@ -70,6 +70,8 @@ module.exports = function(app){
                 .then(cursor => {  
                     // validate whether user has required permssion
                     let permissions = cursor._result;
+                    console.log(authPerm)
+                    console.log(permissions)
                     if ((authPerm !== '' ) && (permissions.indexOf(authPerm) !== -1)) {
                         resolve({success:true, userid: userid, username: username});
                     } else if (authPerm === '' ) {
@@ -102,9 +104,11 @@ module.exports = function(app){
             foxxService.post('/password', req.body)
             .then(function(response){
                 // expect success: true
+                console.log(response.body)
                 res.json(response.body)
             }).catch(error => { 
                 console.log(Date.now() + " Error (Change Password):", error.response.body.errorMessage);
+                res.json({success:false, msg: error.response.body.errorMessage})
             })
         })
         .catch(error => { 
@@ -352,181 +356,262 @@ module.exports = function(app){
     
     // using post as passing object - probably not ideal
     app.post('/api/path/all', function (req, res){
-        // intialise
-        let queryCourses = [];
-        let queryGrades = [];
-        let queryStandards = []; 
-        let querySubjects = [];
-        let queryTopics = []; 
-console.log("req.body",req.body)
-
-        // some pre-processing
-        if (req.body.courses){
-            if (req.body.courses.length > 0){
-                for (var i = 0; i < req.body.courses.length; i++){
-                    console.log(req.body.courses[i].name);
-                    queryCourses.push(req.body.courses[i].name.toUpperCase());
+        validateUser(req, res, "buildpath").then((response) =>{
+            // intialise
+            let queryCourses = [];
+            let queryGrades = [];
+            let queryStandards = []; 
+            let querySubjects = [];
+            let queryTopics = []; 
+            let studentUserArr = [];
+            let studentUser = "";
+    console.log("req.body",req.body)
+            // if the user is a student they should only see their own path returned for their courses
+            if (req.body.role.toUpperCase() === 'STUDENT'){
+                console.log(response.userid)
+                studentUserArr.push(response.userid);
+                studentUser = response.userid;
+            }
+            // some pre-processing
+            if (req.body.courses){
+                if (req.body.courses.length > 0){
+                    for (var i = 0; i < req.body.courses.length; i++){
+                        console.log(req.body.courses[i].name);
+                        queryCourses.push(req.body.courses[i].name.toUpperCase());
+                    }
                 }
             }
-        }
-
-        if (req.body.grades){
-            if (req.body.grades.length > 0){
-                for (var i = 0; i < req.body.grades.length; i++){
-                    queryGrades.push(req.body.grades[i].name);
+console.log("queryCourses", queryCourses)
+            if (req.body.grades){
+                if (req.body.grades.length > 0){
+                    for (var i = 0; i < req.body.grades.length; i++){
+                        queryGrades.push(req.body.grades[i].name);
+                    }
                 }
             }
-        }
-        // some pre-processing to put values names into arrays
-        if (req.body.subjects){
-            if (req.body.subjects.length > 0){
-                for (var i = 0; i < req.body.subjects.length; i++){
-                    querySubjects.push(req.body.subjects[i].name.toUpperCase());
+            // some pre-processing to put values names into arrays
+            if (req.body.subjects){
+                if (req.body.subjects.length > 0){
+                    for (var i = 0; i < req.body.subjects.length; i++){
+                        querySubjects.push(req.body.subjects[i].name.toUpperCase());
+                    }
                 }
             }
-        }
-        if (req.body.standards){
-            if (req.body.standards.length > 0){
-                for (var i = 0; i < req.body.standards.length; i++){
-                    queryStandards.push(req.body.standards[i].name.toUpperCase());
+            if (req.body.standards){
+                if (req.body.standards.length > 0){
+                    for (var i = 0; i < req.body.standards.length; i++){
+                        queryStandards.push(req.body.standards[i].name.toUpperCase());
+                    }
                 }
             }
-        }
-        if (req.body.topics){
-            if (req.body.topics.length > 0){
-                for (var i = 0; i < req.body.topics.length; i++){
-                    queryTopics.push(req.body.topics[0].name.toUpperCase()) // changed from toLowerCAse
-                }
+            if (req.body.topics){
+                if (req.body.topics.length > 0){
+                    for (var i = 0; i < req.body.topics.length; i++){
+                        queryTopics.push(req.body.topics[0].name.toUpperCase()) // changed from toLowerCAse
+                    }
+                } 
             } 
-        } 
-        var query=aql`let topicalFas=LENGTH(${queryTopics}) == 0 ? [] : UNIQUE(FLATTEN(
-                        for p in projects
-                        filter p.topics[* return UPPER(CURRENT)] any in ${queryTopics}[* return UPPER(CURRENT)]
-                            for fa in
-                            2 outbound p
-                            alignsTo, addressedBy
-                            return fa._key
-                    ))
-                    let courseFas = LENGTH(${queryCourses}) == 0 ? [] : UNIQUE(FLATTEN(
-                        for c in courses
-                        filter UPPER(c.name) in ${queryCourses}
-                            for fa in
-                            outbound c
-                            covers
-                            return fa._key
-                    ))
-                    let queryStudents = UNIQUE(FLATTEN(
-                        for c in courses
-                                    filter LENGTH(${queryCourses}) > 0 ? UPPER(c.name) in ${queryCourses} : true  
-                                        for student
-                                        in inbound c
-                                        hasCourse 
-                                        filter LENGTH(${queryGrades}) > 0 ? student.grade in ${queryGrades} : true 
-                                        for role
-                                            in outbound student._id
-                                            auth_user_hasRole 
-                                            filter UPPER(role.name) == 'STUDENT'
-                                        return student._id
-                    ))
-                    let starters = (
-                        for fa in focusAreas
-                        let priors = (
-                            for v
-                            in inbound fa
-                            thenFocusOn
-                            return 1
-                        )
-                        filter LENGTH(priors) == 0
-                        return fa._id
+            // var query=aql`let topicalFas=LENGTH(${queryTopics}) == 0 ? [] : UNIQUE(FLATTEN(
+            //                 for p in projects
+            //                 filter p.topics[* return UPPER(CURRENT)] any in ${queryTopics}[* return UPPER(CURRENT)]
+            //                     for fa in
+            //                     2 outbound p
+            //                     alignsTo, addressedBy
+            //                     return fa._key
+            //             ))
+            //             let courseFas = LENGTH(${queryCourses}) == 0 ? [] : UNIQUE(FLATTEN(
+            //                 for c in courses
+            //                 filter UPPER(c.name) in ${queryCourses}
+            //                     for fa in
+            //                     outbound c
+            //                     covers
+            //                     return fa._key
+            //             ))
+            //             let queryStudents = UNIQUE(FLATTEN(
+            //                 for c in courses
+            //                             filter LENGTH(${queryCourses}) > 0 ? UPPER(c.name) in ${queryCourses} : true  
+            //                                 for student
+            //                                 in inbound c
+            //                                 hasCourse 
+            //                                 filter LENGTH(${queryGrades}) > 0 ? student.grade in ${queryGrades} : true 
+            //                                 for role
+            //                                     in outbound student._id
+            //                                     auth_user_hasRole 
+            //                                     filter UPPER(role.name) == 'STUDENT'
+            //                                 return student._id
+            //             ))
+            //             let starters = (
+            //                 for fa in focusAreas
+            //                 let priors = (
+            //                     for v
+            //                     in inbound fa
+            //                     thenFocusOn
+            //                     return 1
+            //                 )
+            //                 filter LENGTH(priors) == 0
+            //                 return fa._id
+            //             )
+            //             for student in queryStudents
+            //                 let masteredFas = (
+            //                     FOR fa
+            //                     IN outbound student
+            //                     hasMastered
+            //                     return fa._key
+            //                 )
+            //                 let StudentDetails = (for s in auth_users filter s._id == student return { first: s.first, last: s.last, id: s.studentId})
+            //                 let path  = (
+            //                     for start in starters
+            //                         for fa
+            //                         in 0..999 outbound start
+            //                         thenFocusOn
+            //                         filter length(${querySubjects}) > 0 ? UPPER(fa.subject) in ${querySubjects} : true
+            //                         filter length(topicalFas) > 0 ? fa._key in topicalFas : true
+            //                         filter length(courseFas) > 0 ? fa._key in courseFas : true
+            //                         filter length(masteredFas) > 0 ? fa._key not in masteredFas : true
+            //                         filter length(${queryStandards}) > 0 ? fa.standardConnections[* return UPPER(CURRENT)] any in ${queryStandards}[* return UPPER(CURRENT)] : true
+            //                         return fa
+            //                 )
+            //             return {student: student, details: StudentDetails, fa: path}`;
+            var query = aql`
+                let topicalFas = LENGTH(${queryTopics}) == 0 ? [] : UNIQUE(FLATTEN(
+                    for p in projects
+                    filter p.topics[* return UPPER(CURRENT)] any in ${queryTopics}[* return UPPER(CURRENT)]
+                        for fa in
+                        2 outbound p
+                        alignsTo, addressedBy
+                        return fa._key
+                ))
+
+                let courseFas = LENGTH(${queryCourses}) == 0 ? [] : UNIQUE(FLATTEN(
+                    for c in courses
+                    filter UPPER(c.name) in ${queryCourses}
+                        for fa in
+                        outbound c
+                        covers
+                        return fa._key
+                ))
+
+                let queryStudents = LENGTH(${studentUserArr}) > 0 ? (for student in auth_users filter student._id == ${studentUser} return {_id: student._id, _key: student._key,  first: student.first, last: student.last}) : UNIQUE(FLATTEN(
+                    for c in courses
+                                filter LENGTH(${queryCourses}) > 0 ? UPPER(c.name) in ${queryCourses} : true  
+                                    for student
+                                    in inbound c
+                                    hasCourse 
+                                    filter LENGTH(${queryGrades}) > 0 ? student.grade in ${queryGrades} : true 
+                                    for role
+                                        in outbound student._id
+                                        auth_user_hasRole 
+                                        filter UPPER(role.name) == 'STUDENT'
+                                    return {_id: student._id, _key: student._key,  first: student.first, last: student.last}
+                ))
+
+                let starters = (
+                    for fa in focusAreas
+                    let priors = (
+                        for v
+                        in inbound fa
+                        thenFocusOn
+                        return 1
                     )
-                    for student in queryStudents
-                        let masteredFas = (
-                            FOR fa
-                            IN outbound student
-                            hasMastered
-                            return fa._key
-                        )
-                        let StudentDetails = (for s in auth_users filter s._id == student return { first: s.first, last: s.last, id: s.studentId})
-                        let path  = (
-                            for start in starters
-                                for fa
-                                in 0..999 outbound start
-                                thenFocusOn
-                                filter length(${querySubjects}) > 0 ? UPPER(fa.subject) in ${querySubjects} : true
-                                filter length(topicalFas) > 0 ? fa._key in topicalFas : true
-                                filter length(courseFas) > 0 ? fa._key in courseFas : true
-                                filter length(masteredFas) > 0 ? fa._key not in masteredFas : true
-                                filter length(${queryStandards}) > 0 ? (
-                                    let standardConnections = (
-                                        for standard
-                                        in outbound fa
-                                        alignsTo
-                                        return UPPER(standard._key)
-                                    )
-                                    return standardConnections any in ${queryStandards}[* return UPPER(CURRENT)]
-                                ) : true
-                                return fa
-                        )
-                    return {student: student, details: StudentDetails, fa: path}`;
-        console.log(query);
-        db.query(query).then(cursor => {
-            // cursor is a cursor for the query result
-            console.log(cursor._result)  // just the first one for testing only
-            // reformat results for  easy client display 
+                    filter LENGTH(priors) == 0
+                    return fa._id
+                )
 
-            var studentPathArr = [];
-            //  console.log(cursor._result)
-         
-            var studentArr = Array.from(cursor._result);
-            // var studentArr = cursor._result;
-            // for each student
-            for (var p= 0; p < cursor._result.length; p++){
-                // for each focus area
-                // console.log("student", cursor._result[p].student)
+                // Main path query
+                for student in queryStudents
 
-                for (var i = 0; i < cursor._result[p].fa.length; i++){
-                    // console.log(i)
-                    // console.log(cursor._result[p].fa[i])
-                    // console.log("fa length", cursor._result[p].fa.length)
-                    if ( i < cursor._result[p].fa.length-1) cursor._result[p].fa[i].nextFA = cursor._result[p].fa[i+1]['Focus Area'];
-                    cursor._result[p].fa[i]['currentStd'] = [];
-                    cursor._result[p].fa[i]['nextStd']= [];
-                    if (i < cursor._result[p].fa.length-1){  
-                        for (var j = 0; j < cursor._result[p].fa[i+1].standardConnections.length; j++){
-                            // save the first one
-                            if ((j === 0)){
-                                cursor._result[p].fa[i].nextStd.push(cursor._result[p].fa[i+1].standardConnections[j]);
+                let masteredFas = (
+                    FOR fa
+                    IN outbound student
+                    hasMastered
+                    return fa._key
+                )
+
+                let path  = UNIQUE(
+                    for start in starters
+                        for fa
+                        in 0..999 outbound start
+                        thenFocusOn
+                        filter length(${querySubjects}) > 0 ? fa.subject in ${querySubjects} : true
+                        filter length(topicalFas) > 0 ? fa._key in topicalFas : true
+                        filter length(courseFas) > 0 ? fa._key in courseFas : true
+                        filter length(masteredFas) > 0 ? fa._key not in masteredFas : true
+                        filter length(${queryStandards}) > 0 ? (
+                            let standardConnections = (
+                                for standard
+                                in outbound fa
+                                alignsTo
+                                return UPPER(standard._key)
+                            )
+                            return standardConnections any in ${queryStandards}[* return UPPER(CURRENT)]
+                        ) : true
+                        return fa
+                )
+
+                return {student: student, fa: path}`
+            console.log(query);
+            db.query(query).then(cursor => {
+                // cursor is a cursor for the query result
+                console.log(cursor._result)  // just the first one for testing only
+                // reformat results for  easy client display 
+
+                var studentPathArr = [];
+                //  console.log(cursor._result)
+            
+                var studentArr = Array.from(cursor._result);
+                // var studentArr = cursor._result;
+                // for each student
+                for (var p= 0; p < cursor._result.length; p++){
+                    // for each focus area
+                    // console.log("student", cursor._result[p].student)
+
+                    for (var i = 0; i < cursor._result[p].fa.length; i++){
+                        // console.log(i)
+                        // console.log(cursor._result[p].fa[i])
+                        // console.log("fa length", cursor._result[p].fa.length)
+                        if ( i < cursor._result[p].fa.length-1) cursor._result[p].fa[i].nextFA = cursor._result[p].fa[i+1]['Focus Area'];
+                        cursor._result[p].fa[i]['currentStd'] = [];
+                        cursor._result[p].fa[i]['nextStd']= [];
+                        if (i < cursor._result[p].fa.length-1){  
+                            for (var j = 0; j < cursor._result[p].fa[i+1].standardConnections.length; j++){
+                                // save the first one
+                                if ((j === 0)){
+                                    cursor._result[p].fa[i].nextStd.push(cursor._result[p].fa[i+1].standardConnections[j]);
+                                }
+                                // don't save duplicates
+                                else if ((j > 0 ) && (cursor._result[p].fa[i+1].standardConnections[j-1] !== cursor._result[p].fa[i+1].standardConnections[j] )){
+                                    cursor._result[p].fa[i].nextStd.push(cursor._result[p].fa[i+1].standardConnections[j]);
+                                }  
                             }
-                            // don't save duplicates
-                            else if ((j > 0 ) && (cursor._result[p].fa[i+1].standardConnections[j-1] !== cursor._result[p].fa[i+1].standardConnections[j] )){
-                                cursor._result[p].fa[i].nextStd.push(cursor._result[p].fa[i+1].standardConnections[j]);
-                            }  
                         }
-                    }
-               
-                    // de-dup current fa std connections
-                    for (var k = 0; k < cursor._result[p].fa[i].standardConnections.length; k++){
-                        if ((k === 0)){
-                            cursor._result[p].fa[i]['currentStd'].push(cursor._result[p].fa[i].standardConnections[k]);
+                
+                        // de-dup current fa std connections
+                        for (var k = 0; k < cursor._result[p].fa[i].standardConnections.length; k++){
+                            if ((k === 0)){
+                                cursor._result[p].fa[i]['currentStd'].push(cursor._result[p].fa[i].standardConnections[k]);
+                            }
+                            else if ((k > 0 ) && (cursor._result[p].fa[i].standardConnections[k-1] !== cursor._result[p].fa[i].standardConnections[k] )){
+                                cursor._result[p].fa[i]['nextStd'].push(cursor._result[p].fa[i].standardConnections[k]);
+                            }                 
                         }
-                        else if ((k > 0 ) && (cursor._result[p].fa[i].standardConnections[k-1] !== cursor._result[p].fa[i].standardConnections[k] )){
-                            cursor._result[p].fa[i]['nextStd'].push(cursor._result[p].fa[i].standardConnections[k]);
-                        }                 
+                        // console.log(cursor._result[p].fa[i])
                     }
-                    // console.log(cursor._result[p].fa[i])
+
                 }
 
-            }
-
-            
-            res.json(cursor._result);  
-    //  
-            
-            // res.json(pathArr);          
-        }).catch((error => {
-             console.log(Date.now() + " Error (Getting paths from Database):", error);
-             res.json();
-        }))
+                
+                res.json(cursor._result);  
+        //  
+                
+                // res.json(pathArr);          
+            }).catch((error => {
+                console.log(Date.now() + " Error (Getting paths from Database):", error);
+                res.json();
+            }))
+        }).catch((error) => {
+             console.log(Date.now() + " Authentication Error");
+             res.json({success: false, error: "No Permissions to View Paths"})
+        })
     })
     app.post("/csv/file", function(req, res, next){
         validateUser(req, res, "managestudents").then((response) =>{
@@ -682,7 +767,8 @@ console.log("req.body",req.body)
         console.log(req.body)
         // wondering if we should get this from front end  or from db..
         // let role = req.params.role;
-        let username = req.params.username;
+        let username = req.params.username;  
+        console.log("username", username)
         /// *********now filter based on user role!!
         // dont need role here - should bring back a teacher or students courses - the query will pull these back if queryCourse !== [] elese it will bring all back
         // only teachers or students will have mappings in hasCourses table
@@ -697,7 +783,7 @@ console.log("req.body",req.body)
             SORT c.name asc
             return {_id: c._id, name: c.name}
             `;
-
+     console.log(query)
         db.query(query)
         .then(cursor => { 
             console.log("Course", cursor._result);

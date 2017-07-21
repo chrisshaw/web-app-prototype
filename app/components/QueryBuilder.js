@@ -54,20 +54,21 @@ class QueryBuilder extends Component{
     handleSubmitAll() {
         // clear message
         // helper.pathsRendered(false, this.props.dispatch);
-        helper.newPaths("", this.props.dispatch);
+        // helper.newPaths("", this.props.dispatch);
         // array to store new paths
         pathArr = [];
         var myCourses = [];
    
         //  console.log("myCourses", myCourses);
-        if (((this.props.role.toUpperCase() === "TEACHER") || (this.props.role.toUpperCase() === "STUDENT")) && (!this.props.selectedcourselist)){
+        if (((this.props.role.toUpperCase() === "TEACHER") || (this.props.role.toUpperCase() === "STUDENT")) && ((this.props.selectedcourselist))){
             // send back all the teachers course - so that not all course are queried only all the teachers / students courses
             console.log("role", this.props.role.toUpperCase()); 
             myCourses = Array.from(this.props.courselist);      
             // myCourses.push(this.props.courselist);
             console.log("myCourses", myCourses)
         } else if (this.props.selectedcourselist) {
-            myCourses = Array.from(this.props.selectedcourselist);      
+            myCourses = Array.from(this.props.selectedcourselist);  
+             console.log("myCourses", myCourses)    
             //  myCourses.push(this.props.selectedcourselist);
         } 
         console.log("myCourses", myCourses)

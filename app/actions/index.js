@@ -65,22 +65,24 @@ userLogout: () => {
       roles,
     }
   },
-  searchPaths: (searching) => {
-    return {
-      type: 'SEARCHING_PATHS',
-      searching,
-    }
-  },
+  // searchPaths: (searching) => {
+  //   return {
+  //     type: 'SEARCHING_PATHS',
+  //     searching,
+  //   }
+  // },
   saveSelected : (item, type) => {
       return {
         type,
         item
       }
   },
-  updatePathList: (paths) => {
+  updatePathList: (paths, searching) => {
+      console.log("paths in action")
     return {
         type: 'UPDATE_PATHS',
-        paths
+        paths,
+        searching
       }
   },
   updateList: (reset, deleteGroup, id, type, list) => {

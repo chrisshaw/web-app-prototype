@@ -97,12 +97,16 @@ var helpers = {
                 }
             }
         }
+        console.log("username", username)
         return axios.get('/api/courses/'+username+'/'+gradeString).then(function(response) {
-                // send results to redux store for use by Results component
-                console.log(response.data)
-                dispatch(actions.updateList(reset, deleteGroup, 0, 'UPDATE_COURSES', response.data));
-                return;
+            // send results to redux store for use by Results component
+            console.log(response.data)
+            dispatch(actions.updateList(reset, deleteGroup, 0, 'UPDATE_COURSES', response.data));
+            return;
         })
+
+  
+
        
     },
     getStandards: function(reset, deleteGroup, grade, dispatch){
@@ -176,13 +180,17 @@ var helpers = {
             subjects: subjects,
             role: role
         }
-        console.log(queryObj);
-        dispatch(actions.searchPaths(true));
+        // if (role.toUpperCase() === "STUDENT"){
+        //     queryObj.userid =
+        // }
+        console.log("queryObj", queryObj);
+        // dispatch(actions.searchPaths(true));
+         dispatch(actions.updatePathList("", true));
         return axios.post('/api/path/all', queryObj).then(function(response) {
-            // console.log(response)
-            dispatch(actions.updatePathList(response.data));
+            console.log("paths returned")
+            dispatch(actions.updatePathList(response.data, false));
             // hide the searching message
-            dispatch(actions.searchPaths(false));
+            // dispatch(actions.searchPaths(false));
             return;
         })
     },
@@ -305,7 +313,7 @@ var helpers = {
                 data: dataObj
         }).then(function(response) {  
             // handle false later!
-            // console.log("pwd", response.data);
+            console.log("pwd", response.data);
             if (response.data.success) {
                 route.push('/');
             } else {
