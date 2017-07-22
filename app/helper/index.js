@@ -217,7 +217,10 @@ var helpers = {
         })
 
     },
+    savePath(newPosition, id, currentPath, dispatch) {
+        console.log("newPosition, id", newPosition, id)
 
+    },
     removeChip: function(id, queryitem, dispatch){
         if  (queryitem === "Topics") {
             dispatch(actions.updateList(false, true, id, 'UPDATE_TOPICS'));

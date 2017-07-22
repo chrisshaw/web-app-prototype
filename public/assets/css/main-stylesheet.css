@@ -230,11 +230,19 @@ table {
     white-space: normal;
     /*max-width: 50vw;*/
     }
-.drag {
+/* .drag:hover {
    color: rgb(163, 95, 227) !important
 }
-.drop {
-    color:  #2FBB2F !important
+.drop:hover {
+    color:  #808080 !important
+} */
+.drop:hover {
+    /* color:  #808080 !important; */
+    border-bottom: solid #808080 1px;
+}
+.over {
+    /* background-color: #E5E5E5; */
+    border-bottom: solid #808080 1px;
 }
 .no-path-message {
     padding: 30px;

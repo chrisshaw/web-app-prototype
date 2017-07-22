@@ -88,7 +88,6 @@ class Login extends Component{
                         <label htmlFor="inputPassword" className="sr-only">Password</label>
                         <input value={this.state.password} onChange={(e)=>this.handleChange(e)} id="password" type="password" className="form-control auth-input" placeholder="Password" minLength="8"
        maxLength="16" size="16" required />
-                        <p className="note-text"><em>* length 8 characters with one capital letter and at least 2 numbers.</em></p>
                     </Col>
                     <Col xs={2} md={2}/>  
                 </Row>

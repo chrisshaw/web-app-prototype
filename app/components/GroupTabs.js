@@ -61,8 +61,10 @@ class GroupTabs extends React.Component {
     this.handleChange = this.handleChange.bind(this);
     this.ondragstart= this.ondragstart.bind(this);
     this.ondragend= this.ondragend.bind(this);
-    this.ondragend= this.ondragend.bind(this);
-     this.ondrop= this.ondrop.bind(this);
+    this.ondragover= this.ondragover.bind(this);
+    this.ondragenter= this.ondragenter.bind(this);
+    this.ondragleave= this.ondragleave.bind(this);
+    this.ondrop= this.ondrop.bind(this);
     this.state = {
       value: 0,
     };
@@ -91,14 +93,28 @@ class GroupTabs extends React.Component {
   //     // const differentDone = this.props.done !== nextProps.done
   // }
     ondragstart(e){
-      console.log("dragstart", e.target.id);
-      // this.drag.className = 'drag';
+      console.log("dragstart src", e.target.id);
+      // e.target.className = 'drag';
       e.dataTransfer.setData('text', e.target.id ); 
+      // e.target.style.opacity = "0.8";
+      // e.target.style.background = "#E5E5E5";
       return false;
     }
     ondragover(e) {  
       e.preventDefault && e.preventDefault();
+      e.dataTransfer.dropEffect = "move";
+      // e.target.className  = 'drop';
+      var dropNode = ReactDOM.findDOMNode(this.drop);
+      dropNode.classList.add('drop:hover');
       return false;
+    }
+    ondragenter(e) {
+      // this / e.target is the current hover target.
+      e.target.classList.add('over');
+    }
+
+    ondragleave(e) {
+      e.target.classList.remove('over');  // this / e.target is previous target element.
     }
     ondragend(e) {  
       return false;
@@ -108,20 +124,21 @@ class GroupTabs extends React.Component {
           // var data = e.dataTransfer.getData();
           console.log(e.target)
           let data = e.dataTransfer.getData('text');
+          // e.target.style.background = "#FFFFFF";
           // let doc = new DOMParser().parseFromString(data, 'text');
-           console.log(data);
+          console.log(data);
           var dragNode = ReactDOM.findDOMNode(this.refs[data]);
-          console.log(dragNode)
-// // var parser = new DOMParser();
-// // var newNode = parser.parseFromString(newCategory, "text/xml");
-// console.log("doc.documentElement", doc.documentElement);
-e.target.appendChild(dragNode);
-//  this.drop.className = 'drop';
-//             e.preventDefault && e.preventDefault();
-//             console.log(e.target)
-//             e.target.appendChild(dropNode);
+          e.target.appendChild(dragNode);
+          // var dropNode = ReactDOM.findDOMNode(e.target.drop);
+          console.log("this",this.refs); // student._key, fa.key and fa._id stored here 
 
-            return false;
+          // dragNode.style.opacity = "1.0";
+          // dragNode.style.background = "#FFFFFF";
+          // helper.savePath(e.target.id, dragNode.id, this.props.path, this.props.dispatch);
+// console.log(ReactDOM.findDOMNode(this.path) )// Returns the elements
+
+
+          return false;
     }
   render() {
       //// GET TABS from results
@@ -147,12 +164,13 @@ e.target.appendChild(dragNode);
             // there will be may Focus Areas returned for each pathway / group
             var studentName= student.student.first + " " + student.student.last;
             if  (student.fa.length > 0) {
+              var idCounter = 0;
               var faComponents = student.fa.map(function(fa, index) {
                 let count = 0;  // instead of using index which is unstable
                 if (fa.nextStd) {
                     var nextStandards = fa.nextStd.map((standard, index) => {
                     count++;
-                    return   <Col key={student.student._id+fa._id+count.toString()} className="chip-float"><div className="chip">
+                    return   <Col key={student.student._key.toString()+'nextStd'+count.toString()} className="chip-float"><div className="chip">
                                 {standard.toUpperCase()}
                               </div>
                               </Col>
@@ -163,18 +181,23 @@ e.target.appendChild(dragNode);
                   let count = 0;  // instead of using index which is unstable
                   var currentStandards = fa.currentStd.map((standard, index) => {
                       count++;
-                      return   <Col key={student.student._id+standard._key+count.toString()} className="chip-float"><div className="chip">
+                      return   <Col key={student.student._key.toString()+'currentStd'+count.toString()} className="chip-float"><div className="chip">
                           {standard.toUpperCase()}
                               </div>
                             </Col>
                   });
                 }
 
-            
+                let dropZone =  <div  className='text-center drop' ref={ref => component.drop = ref} onDrop={(e) => component.ondrop(e)} onDragEnd={(e) => component.ondragend(e)} onDragOver={(e) => component.ondragover(e)} id={idCounter}>...</div>
+              //  console.log("dropZone", dropZone)
+                idCounter++;
                 /// this return is to facomponent - it displays all the data for one fa within a path
-                return (  <div><div  ref={ref => component.drop = ref} onDrop={(e) => component.ondrop(e)} onDragEnd={(e) => component.ondragend(e)} onDragOver={(e) => component.ondragover(e)} id={index}>DROP HERE</div>
-                  <div ref={student.student._key.toString()+fa._key.toString()}  id={student.student._key.toString()+fa._key.toString()} key={student.student._id+fa._id} className="fa-wrapper" draggable="true" onDragStart={(e) => component.ondragstart(e)} >X<Row className="fa-tab-view-rows" ><Col md={12}><div style={styles.slide}>
-                            <Row >
+                return (  <div> {dropZone}
+                  <div ref={student.student._key.toString()+'/'+fa._key.toString()+'/'+fa.name.toString()} id={student.student._key.toString()+'/'+fa._key.toString()+'/'+fa.name.toString()} key={student.student._key.toString()+'/'+fa._key.toString()+'/'+fa.name.toString()}  className="fa-wrapper path" draggable="true" onDragStart={(e) => component.ondragstart(e)}  onDragLeave={(e) => component.ondragleave(e)}  onDragEnter={(e) => component.ondragenter(e)}>
+                  <Row className="text-center" > ... </Row>
+                  <Row className="fa-tab-view-rows" >
+                      <Col md={12}><div style={styles.slide}>    
+                          <Row >
                               <Col  md={3} xs={12}>
                                 <h3  className='fa-headings'>Focus Area</h3>
                               </Col>
@@ -204,7 +227,8 @@ e.target.appendChild(dragNode);
                             </div>
                             </Col>
                           </Row>
-                        </div></div>)         
+                        </div>
+                        </div>)         
               })
 
             } else {
@@ -212,7 +236,7 @@ e.target.appendChild(dragNode);
             }
 
 
-            return  <Tab key={student.student._id} label={studentName} value={index}  buttonStyle={{color: "#808080"}}>
+            return  <Tab key={student.student._key.toString()} ref={ref => component.path = ref}  label={studentName} value={index}  buttonStyle={{color: "#808080"}}>
             {faComponents} 
           </Tab>  
           })
