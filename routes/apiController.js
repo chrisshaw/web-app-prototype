@@ -718,15 +718,17 @@ module.exports = function(app){
                 }
             });
             var server = process.env.EMAIL_FROM_SERVER || "http://localhost:8080"
-            var link = server + "/forgot/"; //API TO RESET PASSWORD
-            var text = 'You are receiving this email because you requested a password reset for the Nerdz website. Please use the following link to reset your password.' + link + ' This link will expire in 5 minutes.';
-            var html = '<br><p>You are receiving this email because you requested a password reset for the Nerdz website.</p><p> Please use the following link to reset your password:' + link + '</p><br><strong> This link will expire in 5 minutes.</strong><br><h2>The Nerdz Team</h2>';
+            // var link = server + "/forgot/"; //API TO RESET PASSWORD
+            var text = 'You are receiving this email because you are a Sidekick Admin responsible for uploading the attached data into Summit.';
+            // var html = '<br><img src="' + server + '"/public/assets/img/sidekick.png" alt="Sidekick" height="42" width="42"/><p>You are receiving this email because you are a Sidekick Admin responsible for uploading the attached data into Summit.</p><br><h4>The Sidekick Team</h4>';
+            var html = '<br><p>You are receiving this email because you are a Sidekick Admin responsible for uploading the attached data into Summit.</p><br><h4>The Sidekick Team</h4>';
+     
             // setup email data
         
             var mailOptions = {
                 from: '" Sidekick Education " <nerdzquiz@gmail.com>',
                 to: email,
-                subject: 'Submit to Summit',
+                subject: 'Send to Summit',
                 text: text,
                 html: html,
                 attachments: {
