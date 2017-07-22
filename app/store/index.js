@@ -3,11 +3,12 @@ import {persistStore, autoRehydrate} from 'redux-persist';
 import reducer from '../reducer';
 
 const configureStore = (initialState={}) => {
-    var store = createStore(reducer, initialState, compose(
-      autoRehydrate()
-    ));
-    persistStore(store).purge(); /// leave this in for now......
-    persistStore(store);
+    // var store = createStore(reducer, initialState, compose(
+    //   autoRehydrate()
+    // ));
+    var store = createStore(reducer, initialState);
+    // persistStore(store).purge(); /// leave this in for now......
+    // persistStore(store);
     return store;
 }
 

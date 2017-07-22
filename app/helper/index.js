@@ -197,7 +197,7 @@ var helpers = {
         // dispatch(actions.searchPaths(true));
          dispatch(actions.updatePathList("", true, true));
         return axios.post('/api/path/all', queryObj).then(function(response) {
-            console.log("paths returned")
+            // console.log("paths returned")
             dispatch(actions.updatePathList(response.data, false, false));
             // hide the searching message
             // dispatch(actions.searchPaths(false));
@@ -217,8 +217,34 @@ var helpers = {
         })
 
     },
-    savePath(newPosition, id, currentPath, dispatch) {
-        console.log("newPosition, id", newPosition, id)
+    savePath(newPosition, draggedId, currentPath, dispatch) {
+        console.log("ewPosition, draggedId, currentPath, dispatch", newPosition, draggedId, currentPath, dispatch)
+        var keyArr =  draggedId.split('/');  // student key [0], fa key [1], faname [2]/[3]
+        console.log("currentPath", currentPath); 
+        for (var i = 0; i < currentPath.length; i++){
+            // find the matching student 
+            if (keyArr[0] === currentPath[i].student._key){
+                // get the index of the matching student
+                // let oldPosition = i;
+                // let oldPosition= currentPath[i].fa._key.getIndexOf[keyArr[1]];
+                for (var j = 0; j <  currentPath[i].fa.length; j++){
+                     if (keyArr[1] === currentPath[i].fa[j]._key){
+                            let oldPosition = j;
+                            console.log("oldPosition", oldPosition)
+                            if (oldPosition > -1) {
+                                // swap from old to new position
+                                currentPath[i].fa.splice(newPosition, 0,  currentPath[i].fa.splice(oldPosition, 1)[0]);
+                                // update path in store
+                                dispatch(actions.updatePathList(currentPath, false, false));
+                            }
+                     }
+                }
+                // console.log("oldPosition", oldPosition)
+                // remove thi
+                // console.log(keyArr[0] , currentPath[i].student._key);
+                return;
+            }
+        }
 
     },
     removeChip: function(id, queryitem, dispatch){

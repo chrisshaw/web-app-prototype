@@ -8,7 +8,7 @@ import uuid from 'uuid';
 import {Grid, Row, Col} from 'react-bootstrap';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
-// import {connect} from 'react-redux';
+import {connect} from 'react-redux';
 import helper from '../helper';
 // need to move to next versoin of material ui but until then will use import { Tabs, Tab } from 'material-ui-scrollable-tabs/Tabs';
 import { Tabs, Tab } from 'material-ui-scrollable-tabs/Tabs';
@@ -122,21 +122,23 @@ class GroupTabs extends React.Component {
     ondrop(e) {
 //           e.preventDefault();
           // var data = e.dataTransfer.getData();
-          console.log(e.target)
+          console.log("drop:", e.target)
           let data = e.dataTransfer.getData('text');
           // e.target.style.background = "#FFFFFF";
           // let doc = new DOMParser().parseFromString(data, 'text');
           console.log(data);
           var dragNode = ReactDOM.findDOMNode(this.refs[data]);
-          e.target.appendChild(dragNode);
-          // var dropNode = ReactDOM.findDOMNode(e.target.drop);
-          console.log("this",this.refs); // student._key, fa.key and fa._id stored here 
-var newPathArr = Object.keys(this.refs);
-console.log(newPathArr);
+          e.target.appendChild(dragNode);   
+          // console.log("this",this.refs); // student._key, fa.key and fa._id stored here 
+          // var newPathArr = Object.keys(this.refs);
+          // console.log(newPathArr);
+
+        
           // dragNode.style.opacity = "1.0";
           // dragNode.style.background = "#FFFFFF";
-          // helper.savePath(e.target.id, dragNode.id, this.props.path, this.props.dispatch);
-// console.log(ReactDOM.findDOMNode(this.path) )// Returns the elements
+          console.log
+          helper.savePath(e.target.id, dragNode.id, this.props.paths, this.props.dispatch);
+          // console.log(ReactDOM.findDOMNode(this.path) )// Returns the elements
 
 
           return false;
@@ -274,7 +276,7 @@ console.log(newPathArr);
   }
 }
 
-export default GroupTabs;
+export default connect()(GroupTabs);
 
 
 

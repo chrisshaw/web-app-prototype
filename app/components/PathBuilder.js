@@ -35,12 +35,13 @@ const style = {
 class PathBuilder extends Component{
    constructor(props) {
         super(props);
-        this.handleClose = this.handleClose.bind(this);
+        // this.handleClose = this.handleClose.bind(this);
         this.handleSend = this.handleSend.bind(this);
     }
-    handleClose(){
-        helper.toggleDrawer(false, this.props.dispatch);
-    }
+    
+    // handleClose(){
+    //     helper.toggleDrawer(false, this.props.dispatch);
+    // }
     handleSend() {
         // used by the "send to Sidekick" button in QueryBuilder
         helper.sendToSummit(this.props.paths)  

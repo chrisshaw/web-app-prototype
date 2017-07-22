@@ -12,7 +12,9 @@ var dbName = 'skdb';
 const db = arangojs(dbHostPort);
 db.useDatabase(dbName);
 db.useBasicAuth(dbUser, dbPwd);
-
+var nodemailer = require("nodemailer");
+var path = require('path');
+var fs = require('fs');
 // console.log(db);
 // test connection
 
@@ -692,19 +694,99 @@ module.exports = function(app){
         })
     })
 
-    app.post('/summit', function(req,res){
-        console.log("req.body",req.body[0].fa[0])
-        var summitArr = [];
-        for (var j = 0; j < req.body.length; j++){
-            for (var i = 0; i < req.body[j].fa.length; i++){
-                var instruction = 'Instruction ' + i + ': Course: ' + req.body[j].fa[i].course + ' -->  Project : ' + req.body[j].fa[i].course + ' --> INCLUDE --> Focus Area: ' + req.body[j].fa[i].name + ' --> POSITION --> ' + req.body[j].fa[i].Sequence + ' --> UPDATE --> Title: ' + req.body[j].fa[i].name + '(' + req.body[j].fa[i].Sequence +')';
-                summitArr.push(instruction);
-            }
-        }
-        // WAiting for updated query srted by query topic === Project
-        // waiting for confirmation where to send this data
-        console.log("summitArr", summitArr);
+    function sendToSummitEmail(email, filePath) {
+        // this part creates a reusable transporter using SMTP of gmail
 
+       console.log("filePath",filePath)
+            var emailAccountPassword = process.env.TEAM_EMAIL || 'C0ffeeCreamer34';
+            var transporter = nodemailer.createTransport({
+                service: 'gmail',
+                host: 'smtp.gmail.com',
+                port: 465,
+                secure: true, // use SSL
+                auth: {
+                    user: 'nerdzquiz@gmail.com',
+                    pass:  emailAccountPassword ///to be removed and changed
+                }
+            });
+
+            transporter.verify(function(error, success) {
+                if (error) {
+                        console.log(error);
+                } else {
+                        console.log('Server is ready to take our messages');
+                }
+            });
+            var server = process.env.EMAIL_FROM_SERVER || "http://localhost:8080"
+            var link = server + "/forgot/"; //API TO RESET PASSWORD
+            var text = 'You are receiving this email because you requested a password reset for the Nerdz website. Please use the following link to reset your password.' + link + ' This link will expire in 5 minutes.';
+            var html = '<br><p>You are receiving this email because you requested a password reset for the Nerdz website.</p><p> Please use the following link to reset your password:' + link + '</p><br><strong> This link will expire in 5 minutes.</strong><br><h2>The Nerdz Team</h2>';
+            // setup email data
+        
+            var mailOptions = {
+                from: '" Sidekick Education " <nerdzquiz@gmail.com>',
+                to: email,
+                subject: 'Submit to Summit',
+                text: text,
+                html: html,
+                attachments: {
+                    path: filePath
+                }
+            };
+
+
+            //send the email
+            transporter.sendMail(mailOptions, function(error, info) {
+                if (error) {
+                    return console.log(error)
+                }
+            })
+
+    }
+    // thi
+    app.post('/summit', function(req,res){
+         //change pathbuilder to sendtosummit...
+        validateUser(req, res, "buildpath").then((response) =>{
+            // console.log("req.body",req.body[0].fa[0])
+            var summitArr = [];
+            for (var j = 0; j < req.body.length; j++){
+                for (var i = 0; i < req.body[j].fa.length; i++){
+                    var instruction = 'Instruction ' + i + ': Course: ' + req.body[j].fa[i].course + ' -->  Project : ' + req.body[j].fa[i].course + ' --> INCLUDE --> Focus Area: ' + req.body[j].fa[i].name + ' --> POSITION --> ' + req.body[j].fa[i].Sequence + ' --> UPDATE --> Title: ' + req.body[j].fa[i].name + '(' + req.body[j].fa[i].Sequence +')';
+                    summitArr.push(instruction);
+                }
+            }
+      
+            // WAiting for updated query srted by query topic === Project
+            // waiting for confirmation where to send this data
+            // console.log("summitArr", summitArr);
+            // create file
+
+            var user =  response.username.split('@');
+            var fileName = __dirname + '/../public/assets/files/sendToSummit_' + user[0]+ '.txt';
+            var file = fs.createWriteStream(fileName);
+            file.on('error', function(err) { 
+                console.log(err)
+                // return error msg
+                // res.json({success: false, error: "Problem creating file"})
+            });
+
+            summitArr.forEach(function(v) { file.write(v + '\n'); });
+            file.end();
+            // send as attachment to email
+            // var adminEmail = "paths@sidekick.education";
+            var adminEmail = "fiona.hegarty@icloud.com";
+            // need to pass file path
+            sendToSummitEmail(adminEmail, fileName);
+            // return fileName;
+        }).then(() =>{
+            // delete file - cant do here! gets delte
+            // fs.unlinkSync(fileName);
+
+        }).catch((error) => {
+            console.log(error);
+            console.log(Date.now() + " Authentication Error");
+            res.json({success: false, error: "No Permissions to Upload file"})
+        })
     })
     app.get('/api/roles/all', function(req, res){
         // get roles from database
