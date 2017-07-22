@@ -77,12 +77,12 @@ userLogout: () => {
         item
       }
   },
-  updatePathList: (paths, searching) => {
-      console.log("paths in action")
+  updatePathList: (paths, searching, disabled) => {
     return {
         type: 'UPDATE_PATHS',
         paths,
-        searching
+        searching,
+        disabled
       }
   },
   updateList: (reset, deleteGroup, id, type, list) => {

@@ -36,9 +36,14 @@ class PathBuilder extends Component{
    constructor(props) {
         super(props);
         this.handleClose = this.handleClose.bind(this);
+        this.handleSend = this.handleSend.bind(this);
     }
     handleClose(){
         helper.toggleDrawer(false, this.props.dispatch);
+    }
+    handleSend() {
+        // used by the "send to Sidekick" button in QueryBuilder
+        helper.sendToSummit(this.props.paths)  
     }
     // componentWillMount(){
     //     // set this.props.build === true so that title is not displayed and appbar is more responsive for
@@ -49,12 +54,12 @@ class PathBuilder extends Component{
         // console.log("What aer thsesese/", this.props)
         return(
             <div>
-                <PathBuilderDrawer handleClose={this.handleClose} />
+                <PathBuilderDrawer handleClose={this.handleClose} handleSend={this.handleSend} />
                 <Row>   
                     <Col lg={5} md={5} sm={5} xs={5}/>       
                     <Col lg={7} md={7} sm={7} xs={7} >      
                        <Paper style={style.paper} zDepth={0}>
-                            <GroupTabs />
+                            <GroupTabs  paths={this.props.paths} searching={this.props.searching}/>
                         </Paper>        
                     </Col>
                 </Row>
@@ -64,7 +69,13 @@ class PathBuilder extends Component{
 }
 
 // *** NB: the HOC in validate perms injects {...props} which include router props and the loggedin prop
+const mapStateToProps = (store,ownProps) => {
+    return {
+        paths: store.mainState.paths,
+        searching: store.mainState.searching
+    }
+}
 
-export default connect()(PathBuilder);
+export default connect(mapStateToProps)(PathBuilder);
 
 

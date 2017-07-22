@@ -108,7 +108,11 @@ module.exports = function(app){
                 res.json(response.body)
             }).catch(error => { 
                 console.log(Date.now() + " Error (Change Password):", error.response.body.errorMessage);
-                res.json({success:false, msg: error.response.body.errorMessage})
+                var msg = error.response.body.errorMessage;
+                if ( error.response.body.errorMessage.includes('fails to match the required pattern')) {
+                    msg = "Password must be at least 8 CHARS, have at least 1 CAPITAL LETTER and 2 NUMBERS."
+                } 
+                res.json({success:false, msg: msg })
             })
         })
         .catch(error => { 
@@ -199,7 +203,7 @@ module.exports = function(app){
     app.post("/csv/students/courses/data", function(req, res, next){
         // validate user before save and use name in save
         // username is null if no valid user
-        validateUser(req, res, "managestudents").then((response) =>{
+        validateUser(req, res, "uploadstudents").then((response) =>{
             // double check user perms on server side
             // if user has the required permission managestudents in their permissions array in
             // req.perms
@@ -365,7 +369,6 @@ module.exports = function(app){
             let queryTopics = []; 
             let studentUserArr = [];
             let studentUser = "";
-    console.log("req.body",req.body)
             // if the user is a student they should only see their own path returned for their courses
             if (req.body.role.toUpperCase() === 'STUDENT'){
                 console.log(response.userid)
@@ -376,12 +379,13 @@ module.exports = function(app){
             if (req.body.courses){
                 if (req.body.courses.length > 0){
                     for (var i = 0; i < req.body.courses.length; i++){
-                        console.log(req.body.courses[i].name);
-                        queryCourses.push(req.body.courses[i].name.toUpperCase());
+                        console.log(req.body.courses[i]._key);
+                        queryCourses.push(req.body.courses[i]._key);  // changed from name to use key
                     }
                 }
             }
-console.log("queryCourses", queryCourses)
+            console.log("queryCourses", queryCourses)
+
             if (req.body.grades){
                 if (req.body.grades.length > 0){
                     for (var i = 0; i < req.body.grades.length; i++){
@@ -484,7 +488,7 @@ console.log("queryCourses", queryCourses)
 
                 let courseFas = LENGTH(${queryCourses}) == 0 ? [] : UNIQUE(FLATTEN(
                     for c in courses
-                    filter UPPER(c.name) in ${queryCourses}
+                    filter c._key in ${queryCourses}
                         for fa in
                         outbound c
                         covers
@@ -493,7 +497,7 @@ console.log("queryCourses", queryCourses)
 
                 let queryStudents = LENGTH(${studentUserArr}) > 0 ? (for student in auth_users filter student._id == ${studentUser} return {_id: student._id, _key: student._key,  first: student.first, last: student.last}) : UNIQUE(FLATTEN(
                     for c in courses
-                                filter LENGTH(${queryCourses}) > 0 ? UPPER(c.name) in ${queryCourses} : true  
+                                filter LENGTH(${queryCourses}) > 0 ? c._key in ${queryCourses} : true  
                                     for student
                                     in inbound c
                                     hasCourse 
@@ -527,7 +531,7 @@ console.log("queryCourses", queryCourses)
                     return fa._key
                 )
 
-                let path  = UNIQUE(
+                let path  = (
                     for start in starters
                         for fa
                         in 0..999 outbound start
@@ -536,15 +540,7 @@ console.log("queryCourses", queryCourses)
                         filter length(topicalFas) > 0 ? fa._key in topicalFas : true
                         filter length(courseFas) > 0 ? fa._key in courseFas : true
                         filter length(masteredFas) > 0 ? fa._key not in masteredFas : true
-                        filter length(${queryStandards}) > 0 ? (
-                            let standardConnections = (
-                                for standard
-                                in outbound fa
-                                alignsTo
-                                return UPPER(standard._key)
-                            )
-                            return standardConnections any in ${queryStandards}[* return UPPER(CURRENT)]
-                        ) : true
+                        filter length(${queryStandards}) > 0 ? fa.standardConnections[* return UPPER(CURRENT)] any in ${queryStandards}[* return UPPER(CURRENT)] : true
                         return fa
                 )
 
@@ -552,7 +548,7 @@ console.log("queryCourses", queryCourses)
             console.log(query);
             db.query(query).then(cursor => {
                 // cursor is a cursor for the query result
-                console.log(cursor._result)  // just the first one for testing only
+                // console.log(cursor._result)  // just the first one for testing only
                 // reformat results for  easy client display 
 
                 var studentPathArr = [];
@@ -614,7 +610,7 @@ console.log("queryCourses", queryCourses)
         })
     })
     app.post("/csv/file", function(req, res, next){
-        validateUser(req, res, "managestudents").then((response) =>{
+        validateUser(req, res, "uploadstudents").then((response) =>{
             // main entry point
             // need to verify csv file and save contents somewhere...
             var fileContentsFromBuffer = req.body.buffer;
@@ -695,6 +691,21 @@ console.log("queryCourses", queryCourses)
              res.json({success: false, error: "No Permissions to Upload file"})
         })
     })
+
+    app.post('/summit', function(req,res){
+        console.log("req.body",req.body[0].fa[0])
+        var summitArr = [];
+        for (var j = 0; j < req.body.length; j++){
+            for (var i = 0; i < req.body[j].fa.length; i++){
+                var instruction = 'Instruction ' + i + ': Course: ' + req.body[j].fa[i].course + ' -->  Project : ' + req.body[j].fa[i].course + ' --> INCLUDE --> Focus Area: ' + req.body[j].fa[i].name + ' --> POSITION --> ' + req.body[j].fa[i].Sequence + ' --> UPDATE --> Title: ' + req.body[j].fa[i].name + '(' + req.body[j].fa[i].Sequence +')';
+                summitArr.push(instruction);
+            }
+        }
+        // WAiting for updated query srted by query topic === Project
+        // waiting for confirmation where to send this data
+        console.log("summitArr", summitArr);
+
+    })
     app.get('/api/roles/all', function(req, res){
         // get roles from database
         let query = aql`
@@ -759,8 +770,8 @@ console.log("queryCourses", queryCourses)
     })  
 
        
-
-    app.get('/api/courses/:username/:grade?', function(req, res){
+   // path for roles !== TEACHER or STUDENT - can likely combine but will leave for now
+    app.get('/api/courses/:username/', function(req, res){
         let grades = req.params.grade;
         let queryGrades = [];
         if (grades) queryGrades = grades.split(',');
@@ -777,12 +788,14 @@ console.log("queryCourses", queryCourses)
           let userid = (UNIQUE(for u in auth_users filter u.username == ${username} return u._id))
           let queryCourses = (for c in outbound userid[0] hasCourse return c._id)
           for c in courses
-            filter length(${queryGrades}) > 0 ? TO_ARRAY(TO_STRING(c.grade)) any in ${queryGrades} : true
-            filter  length(queryCourses) > 0 ? c._id in queryCourses : true
+            filter length(queryCourses) > 0 ? c._id in queryCourses : true
             filter c.ownerIsBaseCurriculum != true
             SORT c.name asc
-            return {_id: c._id, name: c.name}
+            RETURN {_key: c._key, _id: c._id, name: c.name, grade: c.grade}
             `;
+        // let query = aql`
+        //   let userid = (UNIQUE(for c in outbound userid[0] hasCourse return {_key: c._key, _id: c._id, name: c.name, grade: c.grade}))`
+        
      console.log(query)
         db.query(query)
         .then(cursor => { 
@@ -793,6 +806,42 @@ console.log("queryCourses", queryCourses)
             res.json();
         })            
     })
+   
+    // path for roles === TEACHER or STUDENT - can likely combine but will leave for now
+    app.get('/api/courses/teacher/student/:username/', function(req, res){
+        // let grades = req.params.grade;
+        // let queryGrades = [];
+        // if (grades) queryGrades = grades.split(',');
+        console.log(req.body)
+        // wondering if we should get this from front end  or from db..
+        // let role = req.params.role;
+        let username = req.params.username;  
+        console.log("username", username)
+        /// *********now filter based on user role!!
+        // dont need role here - should bring back a teacher or students courses - the query will pull these back if queryCourse !== [] elese it will bring all back
+        // only teachers or students will have mappings in hasCourses table
+        // role will be needed in paths.....role = student should only see their own courses not other students
+        let query = aql`
+          let userid = (UNIQUE(for u in auth_users filter u.username == ${username} return u._id))
+          for c in outbound userid[0] hasCourse return {_key: c._key, _id: c._id, name: c.name, grade: c.grade}`
+        //   for c in courses
+        //     filter c._id in queryCourses 
+        //     filter c.ownerIsBaseCurriculum != true
+        //     return {_key: c._key_id: c._id, name: c.name, grade: c.grade}
+        //     `;
+        // // query=aql`for c in outbound ${username} hasCourse
+        // //     return {_key: c._key_id: c._id, name: c.name, grade: c.grade}`
+     console.log(query)
+        db.query(query)
+        .then(cursor => { 
+            console.log("Course", cursor._result);
+            res.json(cursor._result);
+        }).catch(error => {
+            console.log(Date.now() + " Error (Get Courses from Database):", error);
+            res.json();
+        })            
+    })
+
 
     app.use(function(req, res){
         db.get()

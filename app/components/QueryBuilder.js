@@ -19,70 +19,56 @@ import Dialog from 'material-ui/Dialog';
 class QueryBuilder extends Component{
    constructor(props) {
         super(props);
-        // this.handleRequestDelete = this.handleRequestDelete.bind(this);
         this.handleSubmitAll = this.handleSubmitAll.bind(this);
-        this.handleShowGroups = this.handleShowGroups.bind(this);
-        // this.handleClose = this.handleClose.bind(this);
+        // this.handleSend = this.handleSend.bind(this);
+        this.handleClose = this.handleClose.bind(this);
         // get initial data and set props
-        // helper.getGroups(this.props.dispatch);
         var searchObj = {};
         this.state ={
-            showGroups: false, 
-            // nogoupselected: false,   
+            error: false, 
+            errorMsg: ""
         }
     }
-   componentDidUpdate(prevProps, prevState){
-       // needed to trigger requery if grade changes    
-        if ((prevProps.selectedgradelist !== this.props.selectedgradelist) && (prevProps.selectedgradelist)){
-            // could equally  just pass this.props and retrieve in helper??
-            helper.getCourses(false, false, this.props.selectedgradelist, this.props.username, this.props.dispatch); 
-            helper.getStandards(false, false, this.props.selectedgradelist, this.props.dispatch);     
-        }    
+    handleClose(){ 
+        // local validation
+        this.setState({error: false, errorMsg: ""});
     }
-    // handleRequestDelete(id) {
-    //     // filter grouplist based on id
-    //     helper.removeGroup(id, this.props.dispatch);     
-    // }
-    handleShowGroups() {
-        // toggle between true and false
-        this.setState({showGroups: !this.state.showGroups})
-        this.state.showGroups ?  this.setState({groupState: "Open"}) : this.setState({groupState: "Close"})
-    }
-    // handleClose = () => {
-    //     this.setState({nogoupselected: false});
-    // };
+ 
     handleSubmitAll() {
         // clear message
-        // helper.pathsRendered(false, this.props.dispatch);
-        // helper.newPaths("", this.props.dispatch);
         // array to store new paths
         pathArr = [];
         var myCourses = [];
-   
-        //  console.log("myCourses", myCourses);
-        if (((this.props.role.toUpperCase() === "TEACHER") || (this.props.role.toUpperCase() === "STUDENT")) && ((this.props.selectedcourselist))){
-            // send back all the teachers course - so that not all course are queried only all the teachers / students courses
-            console.log("role", this.props.role.toUpperCase()); 
-            myCourses = Array.from(this.props.courselist);      
-            // myCourses.push(this.props.courselist);
-            console.log("myCourses", myCourses)
-        } else if (this.props.selectedcourselist) {
-            myCourses = Array.from(this.props.selectedcourselist);  
-             console.log("myCourses", myCourses)    
-            //  myCourses.push(this.props.selectedcourselist);
+        var hasCourses = false;
+        var selectedCourses = [];
+        if (this.props.selectedcourselist) selectedCourses.push(this.props.selectedcourselist);
+        // A user will have no courses if courselist + selectedcouselist is empty 
+        if ((this.props.courselist.length > 0) || (selectedCourses.length > 0)){
+            hasCourses = true;
+            if (((this.props.role.toUpperCase() === "TEACHER") || (this.props.role.toUpperCase() === "STUDENT")) && (selectedCourses.length === 0)){
+                // send back all the teachers course - so that not all course are queried only all the teachers / students courses
+                myCourses = Array.from(this.props.courselist);    
+            } else if (this.props.selectedcourselist) {
+                myCourses = Array.from(this.props.selectedcourselist); 
+            } 
         } 
-        console.log("myCourses", myCourses)
-       
-        helper.getPathsAll(myCourses,this.props.selectedgradelist, this.props.selectedstandardslist, this.props.selectedtopiclist, this.props.selectedsubjectcontentlist, this.props.role, this.props.dispatch);  
+        // messy logic will rework later!!!
+        /// if all good then send the query
+        if (hasCourses){
+            helper.getPathsAll(myCourses,this.props.selectedgradelist, this.props.selectedstandardslist, this.props.selectedtopiclist, this.props.selectedsubjectcontentlist, this.props.role, this.props.dispatch);  
+        }  else {
+            this.setState({error: true , errorMsg:  "You have no COURSES set up in Sidekick, please contact your administrator."})
+        }  
     }
     render(){
-        // const actions = [
-        //     <FlatButton
-        //         label="Close"
-        //         onTouchTap={this.handleClose}
-        //     />
-        //     ];
-//   console.log("role", this.props.role)
+        const actions = [
+            <FlatButton
+                label="Close"
+                onTouchTap={this.handleClose}
+            />
+            ];
+
+            console.log("initial disabled: ", this.props)
         var styles = {
             dialog : {
                 width: '50vw',
@@ -102,6 +88,22 @@ class QueryBuilder extends Component{
                         </div>
                     </Col>
                 </Row>
+                <Row>
+                <Col xs={12} md={12} >
+                    { (this.state.error ) ?  <Dialog
+                        bodyStyle={{fontSize: 13}}
+                        titleStyle={{fontSize: 14, fontWeight: 'bold'}}
+                        title="PathBuilder Error"
+                        actions={actions}
+                        style={{zIndex: 2000,fontSize: 12, height: 300}}
+                        modal={false}
+                        open= {this.state.error}
+                        onRequestClose={this.handleClose}
+                        >
+                     { this.state.errorMsg }
+                        </Dialog> : " "}
+                </Col>
+                </Row>
                 <GradeSelection selectedgradelist={this.props.selectedgradelist}/>
                 <CourseSelection selectedcourselist={this.props.selectedcourselist} role={this.props.role} username={this.props.username}/>
                 <TopicSelection selectedtopiclist={this.props.selectedtopiclist}/>
@@ -110,6 +112,11 @@ class QueryBuilder extends Component{
                 <Row>
                     <Col xs={12} md={12} className="text-center" >            
                         <FlatButton containerElement='label' label="Get Recommended Paths" onTouchTap={this.handleSubmitAll} />
+                    </Col>
+                </Row>
+                <Row>
+                    <Col xs={12} md={12} className="text-center" >            
+                        <FlatButton containerElement='label' label="Send To Sidekick" disabled={this.props.disabled} onTouchTap={this.props.handleSend} />
                     </Col>
                 </Row>
             </div>
@@ -128,6 +135,7 @@ const mapStateToProps = (store) => {
         selectedsubjectcontentlist: store.mainState.selectedsubjectcontentlist,
         role: store.authState.role,
         username: store.authState.username,
+        disabled: store.mainState.disabled,
         // pathsrendered: store.mainState.pathsrendered
     }
 }

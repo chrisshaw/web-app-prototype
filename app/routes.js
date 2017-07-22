@@ -21,7 +21,7 @@ var routes = (
             <IndexRoute auth='buildpath' component={validatePerms(PathBuilder)}/>
             <Route path='/manageusers' auth='manageusers' component={validatePerms(SignUpTab)} />
             <Route path='/buildpath' auth='buildpath' component={validatePerms(PathBuilder)} /> 
-            <Route path='/managestudents'  auth='managestudents' component={validatePerms(DataImportStudentCSV)} />
+            <Route path='/uploadstudents'  auth='uploadstudents' component={validatePerms(DataImportStudentCSV)} />
              <Route path='/password' component={Password} />
             <Route path='/forbidden' component={Forbidden} />
             <Route path='/login' component={LoginTab} />

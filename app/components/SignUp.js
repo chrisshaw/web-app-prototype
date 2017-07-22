@@ -198,18 +198,7 @@ class SignUp extends Component{
         return( 
           
            <div> { this.props.signupfields ? (<div className="form-signin">
-               { (this.props.loginerror || (this.state.error ))  ?  <Dialog
-                bodyStyle={{fontSize: 13}}
-                titleStyle={{fontSize: 14, fontWeight: 'bold'}}
-                title="Sign Up Error"
-                actions={actions}
-                style={{zIndex: 2000,fontSize: 12, height: 300, width: 350, left: 350}}
-                modal={false}
-                open= {true}
-                onRequestClose={this.handleClose}
-                >
-                { this.props.loginerror ? this.props.errormsg : this.state.errorMsg }
-                </Dialog> : " "}
+
                 { this.props.signupok ? <div className='text-center format-signup-msg-item'>User successfully saved!</div> : ""}
                 <Row>
                     <Col xs={2} md={2}/>
@@ -224,6 +213,18 @@ class SignUp extends Component{
                 <Row>
                     <Col xs={2} md={2}/>
                     <Col xs={8} md={8} className="text-center">
+                    { (this.props.loginerror || (this.state.error ))  ?  <Dialog
+                        bodyStyle={{fontSize: 13}}
+                        titleStyle={{fontSize: 14, fontWeight: 'bold'}}
+                        title="Sign Up Error"
+                        actions={actions}
+                        style={{zIndex: 2000,fontSize: 12, height: 300}}
+                        modal={false}
+                        open= {true}
+                        onRequestClose={this.handleClose}
+                        >
+                        { this.props.loginerror ? this.props.errormsg : this.state.errorMsg }
+                        </Dialog> : " "}
                         <label htmlFor="inputFirstName" className="sr-only">First Name</label>
                         <input value={this.state.first} onChange={(e)=>this.handleChange(e)} id="first" type="text" className="form-control auth-input" placeholder="First Name"  autoFocus="" minLength="10"
        maxLength="40" size="40" required />

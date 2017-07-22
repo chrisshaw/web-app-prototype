@@ -71,30 +71,6 @@ class Password extends Component{
             ];
         return( 
             <div className="form-signin">
-               { ( this.state.error ) ?  <Dialog
-                bodyStyle={{fontSize: 13}}
-                titleStyle={{fontSize: 14, fontWeight: 'bold'}}
-                title="Sign Up / Login Error"
-                actions={actions}
-                style={{zIndex: 2000,fontSize: 12, height: 300, width: 350, left: 350}}
-                modal={false}
-                open= {true}
-                onRequestClose={this.handleClose}
-                >
-                 { this.state.errorMsg }
-                </Dialog> : " "}
-                { (this.props.loginerror )  ?  <Dialog
-                bodyStyle={{fontSize: 13}}
-                titleStyle={{fontSize: 14, fontWeight: 'bold'}}
-                title="Sign Up Error"
-                actions={actions}
-                style={{zIndex: 2000,fontSize: 12, height: 300, width: 350, left: 350}}
-                modal={false}
-                open= {true}
-                onRequestClose={this.handleClose}
-                >
-                { this.props.errormsg  }
-                </Dialog> : " "}
                 <Row>
                     <Col xs={2} md={2}/>
                     <Col xs={8} md={8} className="text-center">
@@ -107,6 +83,30 @@ class Password extends Component{
                 <Row>
                     <Col xs={2} md={2}/>
                         <Col xs={8} md={8} className="text-center">
+                        { ( this.state.error ) ?  <Dialog
+                        bodyStyle={{fontSize: 13}}
+                        titleStyle={{fontSize: 14, fontWeight: 'bold'}}
+                        title="Sign Up / Login Error"
+                        actions={actions}
+                        style={{zIndex: 2000,fontSize: 12, height: 300}}
+                        modal={false}
+                        open= {true}
+                        onRequestClose={this.handleClose}
+                        >
+                        { this.state.errorMsg }
+                        </Dialog> : " "}
+                        { (this.props.loginerror )  ?  <Dialog
+                        bodyStyle={{fontSize: 13}}
+                        titleStyle={{fontSize: 14, fontWeight: 'bold'}}
+                        title="Sign Up Error"
+                        actions={actions}
+                        style={{zIndex: 2000,fontSize: 12, height: 300}}
+                        modal={false}
+                        open= {true}
+                        onRequestClose={this.handleClose}
+                        >
+                        { this.props.errormsg  }
+                        </Dialog> : " "}
                         <label htmlFor="inputPassword" className="sr-only">Password</label>
                         <input value={this.state.password} onChange={(e)=>this.handleChange(e)} id="password" type="password" className="form-control auth-input" placeholder="Password" minLength="8"
        maxLength="16" size="16" required />

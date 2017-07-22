@@ -230,6 +230,12 @@ table {
     white-space: normal;
     /*max-width: 50vw;*/
     }
+.drag {
+   color: rgb(163, 95, 227) !important
+}
+.drop {
+    color:  #2FBB2F !important
+}
 .no-path-message {
     padding: 30px;
 }

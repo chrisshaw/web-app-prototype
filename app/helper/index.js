@@ -1,6 +1,9 @@
 var axios = require("axios");
 import actions from '../actions';
+// import {connect} from 'react-redux';
+// import store from '../store';
 
+// console.log(store)
 var helpers = {
     getCookie: function(c_name) {
         if (document.cookie.length > 0) {
@@ -80,38 +83,45 @@ var helpers = {
        var gradeArr = [{_id: 0, name: "6"}, {_id: 1, name: "7"},{_id: 2, name: "8"}, {_id: 3, name: "9"},{_id: 4, name: "10"}, {_id: 5, name: "11"}]
        dispatch(actions.updateList(reset, deleteGroup, 0, 'UPDATE_GRADES', gradeArr));
     },
-    getCourses: function(reset, deleteGroup, grade, username, dispatch){
+    getCourses: function(reset, deleteGroup, username, role, dispatch){
         /// parse array to a string for query.
         // console.log("herloer get crs")
         // helper.getCourses(false,false, "", this.props.role, this.props.dispatch); 
         // dont need role here - should bring back a teacher or students courses - the query will pull these back if queryCourse !== [] elese it will bring all back
-        let gradeString = "";
-        if (grade.length !== 0) {
-            if (grade.length === 1){
-                gradeString = grade[0].name;
-            } else {
-                gradeString = grade[0].name;
-                for (var i = 1; i < grade.length; i++){
+        // let gradeString = "";
+        // if (grade.length !== 0) {
+        //     if (grade.length === 1){
+        //         gradeString = grade[0].name;
+        //     } else {
+        //         gradeString = grade[0].name;
+        //         for (var i = 1; i < grade.length; i++){
                     
-                    gradeString +=  ',' + grade[i].name;
-                }
-            }
-        }
-        console.log("username", username)
-        return axios.get('/api/courses/'+username+'/'+gradeString).then(function(response) {
-            // send results to redux store for use by Results component
-            console.log(response.data)
-            dispatch(actions.updateList(reset, deleteGroup, 0, 'UPDATE_COURSES', response.data));
-            return;
-        })
-
-  
-
-       
+        //             gradeString +=  ',' + grade[i].name;
+        //         }
+        //     }
+        // }
+        console.log("role", role);
+        // teachers and students must return their own courses -- everyone else can see all
+        if ((role) && ((role.toUpperCase() === 'TEACHER') || (role.toUpperCase() === 'STUDENT'))){
+            return axios.get('/api/courses/teacher/student/'+username+'/').then(function(response) {
+                // send results to redux store for use by Results component
+                console.log(response.data)
+                dispatch(actions.updateList(reset, deleteGroup, 0, 'UPDATE_COURSES', response.data));
+                return;
+            })
+        } else {
+            return axios.get('/api/courses/'+username+'/').then(function(response) {
+                // send results to redux store for use by Results component
+                console.log(response.data)
+                dispatch(actions.updateList(reset, deleteGroup, 0, 'UPDATE_COURSES', response.data));
+                return;
+            })
+        }       
     },
     getStandards: function(reset, deleteGroup, grade, dispatch){
         // console.log("herloer get std")
         /// parse array to a string for query.
+        // remove grade!!!!!!
         let gradeString = "";
         if (grade.length > 0) {
             if (grade.length === 1){
@@ -185,14 +195,27 @@ var helpers = {
         // }
         console.log("queryObj", queryObj);
         // dispatch(actions.searchPaths(true));
-         dispatch(actions.updatePathList("", true));
+         dispatch(actions.updatePathList("", true, true));
         return axios.post('/api/path/all', queryObj).then(function(response) {
             console.log("paths returned")
-            dispatch(actions.updatePathList(response.data, false));
+            dispatch(actions.updatePathList(response.data, false, false));
             // hide the searching message
             // dispatch(actions.searchPaths(false));
             return;
         })
+    },
+    sendToSummit(paths){
+        // console.log(props);
+       console.log(paths);
+        // dispatch(actions.updatePathList("", true, true));
+        return axios.post('/summit', paths).then(function(response) {
+            console.log("paths returned", response)
+            // dispatch(actions.updatePathList(response.data, false, false));
+            // hide the searching message
+            // dispatch(actions.searchPaths(false));
+            return;
+        })
+
     },
 
     removeChip: function(id, queryitem, dispatch){

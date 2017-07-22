@@ -1,4 +1,5 @@
 import React from 'react';
+import ReactDOM from "react-dom";
 // import {Tabs, Tab} from 'material-ui/Tabs';
 // From https://github.com/oliviertassinari/react-swipeable-views
 import SwipeableViews from 'react-swipeable-views';
@@ -7,7 +8,7 @@ import uuid from 'uuid';
 import {Grid, Row, Col} from 'react-bootstrap';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
-import {connect} from 'react-redux';
+// import {connect} from 'react-redux';
 import helper from '../helper';
 // need to move to next versoin of material ui but until then will use import { Tabs, Tab } from 'material-ui-scrollable-tabs/Tabs';
 import { Tabs, Tab } from 'material-ui-scrollable-tabs/Tabs';
@@ -58,6 +59,10 @@ class GroupTabs extends React.Component {
   constructor(props) {
     super(props);
     this.handleChange = this.handleChange.bind(this);
+    this.ondragstart= this.ondragstart.bind(this);
+    this.ondragend= this.ondragend.bind(this);
+    this.ondragend= this.ondragend.bind(this);
+     this.ondrop= this.ondrop.bind(this);
     this.state = {
       value: 0,
     };
@@ -85,6 +90,39 @@ class GroupTabs extends React.Component {
 
   //     // const differentDone = this.props.done !== nextProps.done
   // }
+    ondragstart(e){
+      console.log("dragstart", e.target.id);
+      // this.drag.className = 'drag';
+      e.dataTransfer.setData('text', e.target.id ); 
+      return false;
+    }
+    ondragover(e) {  
+      e.preventDefault && e.preventDefault();
+      return false;
+    }
+    ondragend(e) {  
+      return false;
+    }
+    ondrop(e) {
+//           e.preventDefault();
+          // var data = e.dataTransfer.getData();
+          console.log(e.target)
+          let data = e.dataTransfer.getData('text');
+          // let doc = new DOMParser().parseFromString(data, 'text');
+           console.log(data);
+          var dragNode = ReactDOM.findDOMNode(this.refs[data]);
+          console.log(dragNode)
+// // var parser = new DOMParser();
+// // var newNode = parser.parseFromString(newCategory, "text/xml");
+// console.log("doc.documentElement", doc.documentElement);
+e.target.appendChild(dragNode);
+//  this.drop.className = 'drop';
+//             e.preventDefault && e.preventDefault();
+//             console.log(e.target)
+//             e.target.appendChild(dropNode);
+
+            return false;
+    }
   render() {
       //// GET TABS from results
       // display any paths   
@@ -101,18 +139,20 @@ class GroupTabs extends React.Component {
         // only one path returned
         
         if ((pathResults) && (this.props.paths.length > 0)) {
-             console.log("in this.props.paths", this.props.paths)
+          console.log("in this.props.paths", this.props.paths)
           var component = this; 
+        
           var resultsComponents = this.props.paths.map(function(student, index) {
+            
             // there will be may Focus Areas returned for each pathway / group
             var studentName= student.student.first + " " + student.student.last;
             if  (student.fa.length > 0) {
               var faComponents = student.fa.map(function(fa, index) {
-                console.log("fa ", fa._id )
+                let count = 0;  // instead of using index which is unstable
                 if (fa.nextStd) {
                     var nextStandards = fa.nextStd.map((standard, index) => {
-                    return   <Col key={fa._id+index.toString()} className="chip-float"><div className="chip">
-                        {console.log("fa._id+index", fa._id+index.toString())}    
+                    count++;
+                    return   <Col key={student.student._id+fa._id+count.toString()} className="chip-float"><div className="chip">
                                 {standard.toUpperCase()}
                               </div>
                               </Col>
@@ -120,19 +160,20 @@ class GroupTabs extends React.Component {
                 }
 
                 if (fa.currentStd) {
+                  let count = 0;  // instead of using index which is unstable
                   var currentStandards = fa.currentStd.map((standard, index) => {
-                      return   <Col key={standard._key+index.toString()} className="chip-float"><div className="chip">
-                           {console.log("standard._key+index", standard._key+index.toString())}            
-                      {standard.toUpperCase()}
-                                </div>
-                                </Col>
+                      count++;
+                      return   <Col key={student.student._id+standard._key+count.toString()} className="chip-float"><div className="chip">
+                          {standard.toUpperCase()}
+                              </div>
+                            </Col>
                   });
                 }
 
             
                 /// this return is to facomponent - it displays all the data for one fa within a path
-                return (  <div  key={student.student._id+fa._id} className="fa-wrapper"><Row className="fa-tab-view-rows"><Col md={12}><div style={styles.slide}>
-                            {console.log("student.student._id+fa._id", student.student._id+fa._id)}
+                return (  <div><div  ref={ref => component.drop = ref} onDrop={(e) => component.ondrop(e)} onDragEnd={(e) => component.ondragend(e)} onDragOver={(e) => component.ondragover(e)} id={index}>DROP HERE</div>
+                  <div ref={student.student._key.toString()+fa._key.toString()}  id={student.student._key.toString()+fa._key.toString()} key={student.student._id+fa._id} className="fa-wrapper" draggable="true" onDragStart={(e) => component.ondragstart(e)} >X<Row className="fa-tab-view-rows" ><Col md={12}><div style={styles.slide}>
                             <Row >
                               <Col  md={3} xs={12}>
                                 <h3  className='fa-headings'>Focus Area</h3>
@@ -163,7 +204,7 @@ class GroupTabs extends React.Component {
                             </div>
                             </Col>
                           </Row>
-                        </div>)         
+                        </div></div>)         
               })
 
             } else {
@@ -172,16 +213,13 @@ class GroupTabs extends React.Component {
 
 
             return  <Tab key={student.student._id} label={studentName} value={index}  buttonStyle={{color: "#808080"}}>
-                              {console.log("student.student._id", student.student._id)}
-
             {faComponents} 
           </Tab>  
           })
        
         }  else {
-           var resultsComponents = <Tab label="No Paths" value={0}  buttonStyle={{color: "#808080"}}>
+           var resultsComponents = <Tab label="No Paths" value={this.state.value}  buttonStyle={{color: "#808080"}}>
            <p className="no-paths-message"> No Paths Found </p>
-            {console.log("rendering")}
            </Tab>
         }
            
@@ -203,6 +241,7 @@ class GroupTabs extends React.Component {
         tabType="scrollable"
       >     
           {resultsComponents}
+          {console.log("value", this.state.value)}
         
       </Tabs>
     </div>
@@ -210,15 +249,7 @@ class GroupTabs extends React.Component {
   }
 }
 
-
-const mapStateToProps = (store,ownProps) => {
-    return {
-        paths: store.mainState.paths,
-        searching: store.mainState.searching
-    }
-}
-
-export default connect(mapStateToProps)(GroupTabs);
+export default GroupTabs;
 
 
 

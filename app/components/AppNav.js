@@ -37,7 +37,7 @@ const Small = (props) => (
     anchorOrigin={{horizontal: 'right', vertical: 'top'}}
   >
      { (props.perms.indexOf("buildpath") !== -1) ?  (<MenuItem  containerElement={<Link to="/buildpath"/>} primaryText="Build Paths" />) : ''}
-    { (props.perms.indexOf("managestudents") !== -1) ?  (<MenuItem  primaryText="Manage Students" containerElement='label'  containerElement={<Link to="/managestudents"/>} />) : ''}
+    { (props.perms.indexOf("uploadstudents") !== -1) ?  (<MenuItem  primaryText="Upload Students" containerElement='label'  containerElement={<Link to="/uploadstudents"/>} />) : ''}
     { (props.perms.indexOf("manageusers") !== -1) ?  (<MenuItem  primaryText="Manage Users"  containerElement={<Link to="/manageusers"/>} />) : ''}
     <MenuItem   primaryText="Logout" onTouchTap={props.handleLogout} />
   </IconMenu>
@@ -45,7 +45,7 @@ const Small = (props) => (
 
 const Normal = (props) => (<div className="menu-on-normal-screen">
                      { (props.perms.indexOf("buildpath") !== -1) ?  (<FlatButton  labelStyle={{lineHeight: 4}} style={{ borderTop: 'solid 1px #E6E6E6',borderLeft: 'solid 1px #E6E6E6', borderRight: 'solid 1px #E6E6E6',maxWidth: 170, fontSize: 12, height: 50, flex: 'center', borderRadius: 0}} containerElement={<Link to="/buildpath"/>} label="Build Paths" />) : ''} 
-                     { (props.perms.indexOf("managestudents") !== -1) ?  (<FlatButton  labelStyle={{lineHeight: 4}} style={{borderTop: 'solid 1px #E6E6E6',borderLeft: 'solid 1px #E6E6E6', borderRight: 'solid 1px #E6E6E6', maxWidth: 170, fontSize: 12, height: 50, flex: 'center', borderRadius: 0}} containerElement='label' label="Manage Students"  containerElement={<Link to="/managestudents"/>} />) : ''} 
+                     { (props.perms.indexOf("uploadstudents") !== -1) ?  (<FlatButton  labelStyle={{lineHeight: 4}} style={{borderTop: 'solid 1px #E6E6E6',borderLeft: 'solid 1px #E6E6E6', borderRight: 'solid 1px #E6E6E6', maxWidth: 170, fontSize: 12, height: 50, flex: 'center', borderRadius: 0}} containerElement='label' label="Upload Students"  containerElement={<Link to="/uploadstudents"/>} />) : ''} 
                      { (props.perms.indexOf("manageusers") !== -1) ?  (<FlatButton  labelStyle={{lineHeight: 4}} style={{borderTop: 'solid 1px #E6E6E6',borderLeft: 'solid 1px #E6E6E6', borderRight: 'solid 1px #E6E6E6', maxWidth: 170, fontSize: 12, height: 50, flex: 'center', borderRadius: 0}} containerElement='label' label="Manage Users"  containerElement={<Link to="/manageusers"/>} />) : ''} 
                       <IconButton  onTouchTap={props.handleLogout}  iconStyle={{height: 48}} style={{maxWidth: 100, alignSelf: 'center'}} ><LogoutIcon /></IconButton>
                       </div>);

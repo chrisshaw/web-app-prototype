@@ -29,13 +29,15 @@ class PathBuilderDrawer extends Component{
                     >     
                         <PathAppNav />   
                         <Row>
-                            <QueryBuilder />
+                            <QueryBuilder handleSend={this.props.handleSend}/>
                         </Row>                  
                     </Drawer>
                 </div>
                 )
     }
    }
+
+
 
 export default PathBuilderDrawer;
 

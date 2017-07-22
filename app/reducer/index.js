@@ -2,24 +2,27 @@ import uuid from 'uuid';
 import {combineReducers } from 'redux';
 
 const intialstate = {
-  toggledrawer: false,
-  grouplist: [],
-  standardslist: [],
-  subjectcontentlist: [],
-  topiclist: [],
-  courselist: [],
-  gradelist: [],
-  grouptabs: [],
-  selectedsubjectcontentlist: [],
-  selectedstandardslist: [],
-  selectedgrouplist: [],
-  selectedcourselist: [],
-  selectedgradelist: [],
-  selectedtopiclist: [],
-  initialSearchTerms: [],
+    //realised that intialstate wasnt workginas it was nesetd {initialstate} below
+    //commmented out any arrays for now but will go back later and fix
+//   toggledrawer: false,
+//   grouplist: [],
+//   standardslist: [],
+//   subjectcontentlist: [],
+//   topiclist: [],
+//   courselist: [],
+//   gradelist: [],
+//   grouptabs: [],
+//   selectedsubjectcontentlist: [],
+//   selectedstandardslist: [],
+//   selectedgrouplist: [],
+//   selectedcourselist: [],
+//   selectedgradelist: [],
+//   selectedtopiclist: [],
+//   initialSearchTerms: [],
   pathsrendered: false,
   pathbuilderview: false,
   paths: [],
+  disabled: true,
   searching: false,  
 }
 
@@ -101,7 +104,7 @@ function updateQueryList(action, state, list, selectedlist) {
 }
             
 //  The below are required and map to the components dispatcher
-const mainReducer = (state={intialstate}, action) => {
+const mainReducer = (state=intialstate, action) => {
 
     switch(action.type){    
         case 'GET_FA':
@@ -111,10 +114,7 @@ const mainReducer = (state={intialstate}, action) => {
         case 'BUILD_VIEW':
             return Object.assign({},state, {pathbuilderview: action.pathbuilderview}); 
         case 'UPDATE_PATHS':
-          console.log("paths in reducer")
-            return Object.assign({},state, {paths: action.paths, searching: action.searching});
-        // case 'SEARCHING_PATHS':
-        //     return Object.assign({},state, {searching: action.searching});
+            return Object.assign({disabled: true},state, {paths: action.paths, searching: action.searching, disabled: action.disabled});
         case 'UPDATE_GRADES':
             //pulls for display in autopopulate dropdown to selected list for query
            return updateQueryList(action, state, 'gradelist', 'selectedgradelist');
@@ -153,7 +153,7 @@ const mainReducer = (state={intialstate}, action) => {
     return state;
 }
 
-const authReducer = (state={loginintialstate}, action) => {
+const authReducer = (state=loginintialstate, action) => {
     // console.log("loginintialstate", loginintialstate);
     switch(action.type){    
         case 'LOGGED_IN':
@@ -185,7 +185,7 @@ const authReducer = (state={loginintialstate}, action) => {
     return state;
 }
 
-const uploadReducer = (state={datainitialstate}, action) => {
+const uploadReducer = (state=datainitialstate, action) => {
     switch(action.type){  
         case 'VIEW_CSV_DATA':
             if (action.uploaderror) {
