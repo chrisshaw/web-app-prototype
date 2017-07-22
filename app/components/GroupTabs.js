@@ -131,7 +131,8 @@ class GroupTabs extends React.Component {
           e.target.appendChild(dragNode);
           // var dropNode = ReactDOM.findDOMNode(e.target.drop);
           console.log("this",this.refs); // student._key, fa.key and fa._id stored here 
-
+var newPathArr = Object.keys(this.refs);
+console.log(newPathArr);
           // dragNode.style.opacity = "1.0";
           // dragNode.style.background = "#FFFFFF";
           // helper.savePath(e.target.id, dragNode.id, this.props.path, this.props.dispatch);
