@@ -78,11 +78,12 @@ userLogout: () => {
       }
   },
   updatePathList: (paths, searching, disabled) => {
+    console.log("action am i being called?")
     return {
         type: 'UPDATE_PATHS',
         paths,
         searching,
-        disabled
+        disabled,
       }
   },
   updateList: (reset, deleteGroup, id, type, list) => {

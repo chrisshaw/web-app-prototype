@@ -1,6 +1,7 @@
 import uuid from 'uuid';
 import {combineReducers } from 'redux';
 
+
 const intialstate = {
     //realised that intialstate wasnt workginas it was nesetd {initialstate} below
     //commmented out any arrays for now but will go back later and fix
@@ -24,6 +25,7 @@ const intialstate = {
   paths: [],
   disabled: true,
   searching: false,  
+  changed: 0,
 }
 
 const loginintialstate = {
@@ -105,7 +107,7 @@ function updateQueryList(action, state, list, selectedlist) {
             
 //  The below are required and map to the components dispatcher
 const mainReducer = (state=intialstate, action) => {
-
+    
     switch(action.type){    
         case 'GET_FA':
             return Object.assign({},state, {focusArea: action.focusArea});
@@ -114,7 +116,11 @@ const mainReducer = (state=intialstate, action) => {
         case 'BUILD_VIEW':
             return Object.assign({},state, {pathbuilderview: action.pathbuilderview}); 
         case 'UPDATE_PATHS':
-            return Object.assign({disabled: true},state, {paths: action.paths, searching: action.searching, disabled: action.disabled});
+            // react not seeing changes to path array after reorder for dnd
+            // a hack i know but trying to force update for dnd re-render...so i use a counter that will change on every path array update
+            // will revisit to improve for now it works!
+            console.log("changed", state.changed)
+            return Object.assign({disabled: true},state, {paths: action.paths, searching: action.searching, disabled: action.disabled, changed: state.changed + 1});
         case 'UPDATE_GRADES':
             //pulls for display in autopopulate dropdown to selected list for query
            return updateQueryList(action, state, 'gradelist', 'selectedgradelist');
@@ -157,7 +163,6 @@ const authReducer = (state=loginintialstate, action) => {
     // console.log("loginintialstate", loginintialstate);
     switch(action.type){    
         case 'LOGGED_IN':
-        console.log("loggedin ", action.data)
             return Object.assign({},state, {loggedin: action.data.success, username:  action.data.username, perms: action.data.perms, role: action.data.role}); 
         case 'LOGIN_ERROR':
             return Object.assign({loginerror: false},state, {loginerror: action.loginerror, errormsg: action.errormsg }); 

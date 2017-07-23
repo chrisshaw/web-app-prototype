@@ -177,10 +177,10 @@ var helpers = {
         var subjectArr = [{_id: 0, name: "english"}, {_id: 1, name: "math"}, {_id: 2, name: "science"}, {_id: 3, name: "social studies"}]
         dispatch(actions.updateList(reset, deleteGroup, 0, 'UPDATE_SUBJECTS', subjectArr))
     },
-    newPaths: function(paths, dispatch) {
-        // clear old path data
-        dispatch(actions.updatePathList(paths));
-    },
+    // newPaths: function(paths, dispatch) {
+    //     // clear old path data
+    //     dispatch(actions.updatePathList(paths));
+    // },
     getPathsAll(courses, grades, standards, topics, subjects, role, dispatch){
          var queryObj = {
             courses: courses,
@@ -217,7 +217,7 @@ var helpers = {
         })
 
     },
-    savePath(newPosition, draggedId, currentPath, dispatch) {
+    movePath(newPosition, draggedId, currentPath, dispatch) {
         console.log("ewPosition, draggedId, currentPath, dispatch", newPosition, draggedId, currentPath, dispatch)
         var keyArr =  draggedId.split('/');  // student key [0], fa key [1], faname [2]/[3]
         console.log("currentPath", currentPath); 
@@ -235,9 +235,11 @@ var helpers = {
                                 // swap from old to new position
                                 currentPath[i].fa.splice(newPosition, 0,  currentPath[i].fa.splice(oldPosition, 1)[0]);
                                 // update path in store
-                                dispatch(actions.updatePathList(currentPath, false, false));
+                                dispatch(actions.updatePathList(currentPath, false, false ));         
+                                // return;  // exit loop?
                             }
                      }
+                    // console.log(i, j)
                 }
                 // console.log("oldPosition", oldPosition)
                 // remove thi
@@ -246,6 +248,15 @@ var helpers = {
             }
         }
 
+    },
+    removeFA(studentPathPosition, idCounter, studentKey, faKey, props){
+       // do quick check to make sure the correct fa is being removed
+       if ((props.paths[studentPathPosition].student._key === studentKey) && (faKey === props.paths[studentPathPosition].fa[idCounter]._key)){
+            // remove 1 FA at array position idCounter
+            props.paths[studentPathPosition].fa.splice(idCounter, 1);
+            props.dispatch(actions.updatePathList( props.paths, false, false ));  
+       }
+   
     },
     removeChip: function(id, queryitem, dispatch){
         if  (queryitem === "Topics") {
