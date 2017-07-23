@@ -563,7 +563,7 @@ module.exports = function(app){
                 for (var p= 0; p < cursor._result.length; p++){
                     // for each focus area
                     // console.log("student", cursor._result[p].student)
-
+   /// replace with parseFa(cursor._result[p]) when ready
                     for (var i = 0; i < cursor._result[p].fa.length; i++){
                         // console.log(i)
                         // console.log(cursor._result[p].fa[i])
@@ -612,6 +612,40 @@ module.exports = function(app){
              res.json({success: false, error: "No Permissions to View Paths"})
         })
     })
+
+    function parseFa(result){
+        // result === cursor._result[p]
+        for (var i = 0; i < result.fa.length; i++){
+            // console.log(i)
+            // console.log(cursor._result[p].fa[i])
+            // console.log("fa length", cursor._result[p].fa.length)
+            if ( i < result.fa.length-1) result.fa[i].nextFA = result.fa[i+1]['Focus Area'];
+            result.fa[i]['currentStd'] = [];
+            result.fa[i]['nextStd']= [];
+            if (i < result.fa.length-1){  
+                for (var j = 0; j <  result.fa[i+1].standardConnections.length; j++){
+                    // save the first one
+                    if ((j === 0)){
+                        result.fa[i].nextStd.push(result.fa[i+1].standardConnections[j]);
+                    }
+                    // don't save duplicates
+                    else if ((j > 0 ) && (result.fa[i+1].standardConnections[j-1] !== result.fa[i+1].standardConnections[j] )){
+                        result.fa[i].nextStd.push(result.fa[i+1].standardConnections[j]);
+                    }  
+                }
+            }
+
+            // de-dup current fa std connections
+            for (var k = 0; k < result.fa[i].standardConnections.length; k++){
+                if ((k === 0)){
+                    result.fa[i]['currentStd'].push(result.fa[i].standardConnections[k]);
+                }
+                else if ((k > 0 ) && (result.fa[i].standardConnections[k-1] !== result.fa[i].standardConnections[k] )){
+                result.fa[i]['nextStd'].push(result.fa[i].standardConnections[k]);
+                }                 
+            }
+        }
+    }
     app.post("/csv/file", function(req, res, next){
         validateUser(req, res, "uploadstudents").then((response) =>{
             // main entry point
@@ -809,6 +843,26 @@ module.exports = function(app){
 
      })
 
+    app.get('/api/fa/:faKey', function(req, res){
+        let faKey = req.params.faKey;
+        // let faKey = parseInt(req.params.faKey);
+        console.log(faKey)
+        // query database
+        let query = aql`
+            for f in focusAreas
+            filter f._key == ${faKey}
+            return f`;
+            console.log(query)
+        db.query(query)
+        .then(cursor => {  
+              console.log(cursor._result)
+            res.json({success: true, fa: cursor._result});
+        }).catch(error => {
+            console.log(Date.now() + " Error (Get FA from Database):", error);
+            res.json({success: false});
+        }) 
+
+    })
 
     app.get('/api/topics/all', function(req, res){
         let query = aql`

@@ -236,6 +236,9 @@ table {
 .drop:hover {
     color:  #808080 !important
 } */
+.add-fa-hide {
+    display: none
+}
 .drop:hover {
     /* color:  #808080 !important; */
     border-bottom: solid #808080 1px;

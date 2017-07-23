@@ -15,6 +15,7 @@ import Dialog from 'material-ui/Dialog';
 import { Tabs, Tab } from 'material-ui-scrollable-tabs/Tabs';
 import FlatButton from 'material-ui/FlatButton';
 import IconButton from 'material-ui/IconButton';
+import AutoCompleteFA from './AutoCompleteFA.js';
 
 const styles = {
   headline: {
@@ -75,24 +76,23 @@ class GroupTabs extends React.Component {
     this.state = {
       value: 0,
       showModal: false,
-      addAfterFA: "",
-      addForStudent: "",
-      addAfterIndex: null
+      // addAfterFA: "",
+      // addForStudent: "",
+      // addAfterIndex: null
     };
   }
-  handleAdd(studentKey, faKey, idCounter){
-    // open modal
-  // must use keys to find position and add
-    console.log("addd", idCounter, studentKey, faKey);
-    this.setState({showModal: true,
-      addAfterFA: faKey,
-      addForStudent: studentKey,
-      addAfterIndex: ""});
+  handleAdd(studentPathPosition, faPosition){
+    let ref = studentPathPosition + '/' + faPosition;
+    var thisNode = ReactDOM.findDOMNode(this.refs[ref]);
+    console.log("node", thisNode)
+    // show this div
+    thisNode.classList.remove('add-fa-hide');
   }
-  handleDelete(studentPathPosition, studentKey, faKey, idCounter){
+  handleDelete(studentPathPosition, studentKey, faKey, faPosition){
   // must use keys to find position and delete
-    console.log("remove",studentPathPosition, idCounter, studentKey, faKey)
-    helper.removeFA(studentPathPosition, idCounter, studentKey, faKey, this.props);
+    console.log("remove",studentPathPosition, faPosition, studentKey, faKey);
+    //submite changes
+    helper.removeFA(studentPathPosition, faPosition, studentKey, faKey, this.props);
   }
   handleChange = (value) => {
     console.log("hnandle change", this.state.value)
@@ -100,17 +100,30 @@ class GroupTabs extends React.Component {
       value: value,
     });
   };
-  handleAddFA(){
-    console.log("add FA")
+  handleAddFA(studentPathPosition, studentKey, faKey, faPosition, addFAKey){
+    console.log("addFA", studentPathPosition, studentKey, faKey, faPosition, addFAKey);
+    // close off the div
+    let ref = studentPathPosition + '/' + faPosition;
+    var thisNode = ReactDOM.findDOMNode(this.refs[ref]);
+    console.log("node", thisNode)
+    thisNode.classList.add('add-fa-hide');
+    // submit changes 
+    helper.addFA(studentPathPosition, faPosition, studentKey, faKey, faKey, this.props);
   }
-  handleClose(){ 
+  handleClose(studentPathPosition, faPosition){ 
+      let ref = studentPathPosition + '/' + faPosition;
+      var thisNode = ReactDOM.findDOMNode(this.refs[ref]);
+      console.log("node", thisNode)
+      // show this div
+      thisNode.classList.add('add-fa-hide');
       // // clear local and server error messages
       // if (this.props.loginerror) helper.loginError(false, "", this.props.dispatch);
       // local validation
-      this.setState({showModal: false,
-      addAfterFA: "",
-      addForStudent: "",
-      addAfterIndex: null});
+      // this.setState({showModal: false,
+      // addAfterFA: "",
+      // addForStudent: "",
+      // addAfterIndex: null});
+
   }
   componentDidMount(){
    console.log("paths in group mount", this.props.paths)
@@ -215,7 +228,7 @@ class GroupTabs extends React.Component {
         
           var resultsComponents = this.props.paths.map(function(student, index) {
             // console.log("student", student)
-            let pathPosition = index;
+            let studentPathPosition = index;
             // there will be may Focus Areas returned for each pathway / group
             var studentName= student.student.first + " " + student.student.last;
             if  (student.fa.length > 0) {
@@ -245,39 +258,30 @@ class GroupTabs extends React.Component {
 
                 let dropZone =  <div key={'dropzone' + index.toString()} className='text-center drop' ref={ref => component.drop = ref} onDrop={(e) => component.ondrop(e)} onDragEnd={(e) => component.ondragend(e)} onDragOver={(e) => component.ondragover(e)} id={idCounter}> . . . </div>
               //  console.log("dropZone", dropZone)
-                let position =  idCounter;
+                let faPosition =  idCounter;
                 
                 let changeButtons = (<div><Col className="text-center" md={12} xs={6}>          
-                            <FlatButton containerElement='label' label="Add"   onTouchTap={(e) => component.handleAdd(pathPosition, student.student._key, fa._key, position)}/>
-                             {pathPosition}
+                            <FlatButton containerElement='label' label="Add"   onTouchTap={(e) => component.handleAdd(studentPathPosition, faPosition)}/>
+                             {studentPathPosition}  {idCounter}
                             </Col> 
                           <Col className="text-center" md={12} xs={6}>
-                          {pathPosition}
-                            <FlatButton containerElement='label' label="Remove"  onTouchTap={() => component.handleDelete(pathPosition, student.student._key, fa._key, position)} />                         
+                          {studentPathPosition}  {idCounter}
+                            <FlatButton containerElement='label' label="Remove"  onTouchTap={() => component.handleDelete(studentPathPosition, student.student._key, fa._key, faPosition)} />                         
                           </Col></div>);
+                let saveFAButton = (<div><Col className="text-center" md={12} xs={6}>          
+                            <FlatButton containerElement='label' label="Add FA"   onTouchTap={() => component.handleAddFA(studentPathPosition, student.student._key, fa._key, faPosition)}/>
+                             {studentPathPosition}  {idCounter}
+                            </Col> </div>);
+                let closeDivButton = (<div><Col className="text-center" md={12} xs={6}>          
+                            <FlatButton containerElement='label' label="Close"   onTouchTap={() => component.handleClose(studentPathPosition, faPosition)}/>
+                            </Col> </div>);
                 idCounter++;
                 // console.log("idCounter", idCounter)
                 /// this return is to facomponent - it displays all the data for one fa within a path
                 return (<div ref={index}> {dropZone}
+                  {console.log("re-rendering")}
                   <div ref={student.student._key.toString()+'/'+fa._key.toString()+'/'+fa.name.toString()} id={student.student._key.toString()+'/'+fa._key.toString()+'/'+fa.name.toString()} key={student.student._key.toString()+'/'+fa._key.toString()+'/'+fa.name.toString()}  className="fa-wrapper path" draggable="true" onDragStart={(e) => component.ondragstart(e)}  onDragLeave={(e) => component.ondragleave(e)}  onDragEnter={(e) => component.ondragenter(e)}>
                   <Row> <Col className="text-center" md={12}> . . . </Col> </Row>
-                  <Row>
-                   <Col className="text-center" md={12}>{ ( component.state.showModal ) ?  <Dialog
-                        bodyStyle={{fontSize: 13}}
-                        titleStyle={{fontSize: 14, fontWeight: 'bold'}}
-                        title="Sign Up / Login Error"
-                        actions={actions}
-                        style={{zIndex: 2000,fontSize: 12, height: 300}}
-                        modal={false}
-                        open= {true}
-                        onRequestClose={component.handleClose}
-                        >
-                          {component.state.addAfterFA}
-                          {component.state.addAfterIndex}
-                          {component.state.addForStudent}
-                        </Dialog> : " "}
-                    </Col>
-                  </Row>
                   <Row className="fa-tab-view-rows" >
                       <Col md={10}><div style={styles.slide}>    
                           <Row >
@@ -313,11 +317,36 @@ class GroupTabs extends React.Component {
                       </Col>
                     </Row>
                   </div>
+                  <Row className="fa-wrapper path add-fa-hide" ref={studentPathPosition+'/'+faPosition} >
+                    <Col xs={6} md={6} >
+                      <AutoCompleteFA />
+                    </Col>
+                    <Col xs={3} md={3} >
+                       {saveFAButton}
+                    </Col>
+                    <Col xs={3} md={3} >
+                       {closeDivButton}
+                    </Col>
+                  </Row>
                 </div>)         
               })
 
             } else {
-              var  faComponents = <p  key={ student.student._key.toString() + "NoPaths"}className="no-paths-message"> No path found. Please change search filters and try again.</p>
+              var  faComponents = <div><p  key={ student.student._key.toString() + "NoPaths"}className="no-paths-message"> No path found. Please change search filters and try again.</p>
+                <div>
+                  <Row className="fa-wrapper path" >
+                    <Col xs={6} md={6} >
+                      <AutoCompleteFA />
+                    </Col>
+                    <Col xs={3} md={3} >
+                       {saveFAButton}
+                    </Col>
+                    <Col xs={3} md={3} >
+                       {closeDivButton}
+                    </Col>
+                  </Row>
+                </div>
+              </div>
             }
 
 

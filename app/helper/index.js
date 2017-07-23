@@ -255,9 +255,73 @@ var helpers = {
        if ((props.paths[studentPathPosition].student._key === studentKey) && (faKey === props.paths[studentPathPosition].fa[idCounter]._key)){
             // remove 1 FA at array position idCounter
             props.paths[studentPathPosition].fa.splice(idCounter, 1);
+             // do some processing to get nextFA and nextStd
+            helpers.parseFa(props.paths[studentPathPosition]);
             props.dispatch(actions.updatePathList( props.paths, false, false ));  
        }
    
+    },
+    addFA(studentPathPosition, idCounter, studentKey, faKey, addFAKey, props){
+       // do quick check to make sure the correct fa is being removed
+       console.log("addFAKey", addFAKey)
+       let addAfterKey =  "";
+       if (faKey){
+            addAfterKey = props.paths[studentPathPosition].fa[idCounter]._key;
+       } 
+       if ((props.paths[studentPathPosition].student._key === studentKey) && (faKey === addAfterKey)){
+            // remove 1 FA at array position idCounter
+            // for now it jst adds a copy
+            // get fa details from databsae
+        return axios.get('/api/fa/'+addFAKey).then(function(response) {
+            console.log(props.paths)
+            console.log("response fa", response.data.fa[0])
+            if (response.data.success){
+                // response.data == fa details
+                props.paths[studentPathPosition].fa.splice(idCounter+1, 0, response.data.fa[0]);
+                // do some processing to get nextFA and nextStd
+                helpers.parseFa(props.paths[studentPathPosition]);
+                props.dispatch(actions.updatePathList( props.paths, false, false )); 
+            } else {
+                // send error message
+            }   
+            return;
+        })
+           
+       }
+   
+    },
+    parseFa: (result) => {
+        // result === cursor._result[p]
+        for (var i = 0; i < result.fa.length; i++){
+            // console.log(i)
+            // console.log(cursor._result[p].fa[i])
+            // console.log("fa length", cursor._result[p].fa.length)
+            if ( i < result.fa.length-1) result.fa[i].nextFA = result.fa[i+1]['Focus Area'];
+            result.fa[i]['currentStd'] = [];
+            result.fa[i]['nextStd']= [];
+            if (i < result.fa.length-1){  
+                for (var j = 0; j <  result.fa[i+1].standardConnections.length; j++){
+                    // save the first one
+                    if ((j === 0)){
+                        result.fa[i].nextStd.push(result.fa[i+1].standardConnections[j]);
+                    }
+                    // don't save duplicates
+                    else if ((j > 0 ) && (result.fa[i+1].standardConnections[j-1] !== result.fa[i+1].standardConnections[j] )){
+                        result.fa[i].nextStd.push(result.fa[i+1].standardConnections[j]);
+                    }  
+                }
+            }
+
+            // de-dup current fa std connections
+            for (var k = 0; k < result.fa[i].standardConnections.length; k++){
+                if ((k === 0)){
+                    result.fa[i]['currentStd'].push(result.fa[i].standardConnections[k]);
+                }
+                else if ((k > 0 ) && (result.fa[i].standardConnections[k-1] !== result.fa[i].standardConnections[k] )){
+                result.fa[i]['nextStd'].push(result.fa[i].standardConnections[k]);
+                }                 
+            }
+        }
     },
     removeChip: function(id, queryitem, dispatch){
         if  (queryitem === "Topics") {
