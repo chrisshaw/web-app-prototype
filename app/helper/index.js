@@ -218,6 +218,7 @@ var helpers = {
 
     },
     movePath(newPosition, draggedId, currentPath, dispatch) {
+        // change to use studentPathPosotin per removeFA
         console.log("ewPosition, draggedId, currentPath, dispatch", newPosition, draggedId, currentPath, dispatch)
         var keyArr =  draggedId.split('/');  // student key [0], fa key [1], faname [2]/[3]
         console.log("currentPath", currentPath); 
