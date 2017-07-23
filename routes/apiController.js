@@ -15,6 +15,7 @@ db.useBasicAuth(dbUser, dbPwd);
 var nodemailer = require("nodemailer");
 var path = require('path');
 var fs = require('fs');
+var fileName = "";
 // console.log(db);
 // test connection
 
@@ -719,9 +720,9 @@ module.exports = function(app){
             });
             var server = process.env.EMAIL_FROM_SERVER || "http://localhost:8080"
             // var link = server + "/forgot/"; //API TO RESET PASSWORD
-            var text = 'You are receiving this email because you are a Sidekick Admin responsible for uploading the attached data into Summit.';
+            var text = 'You are receiving this email because you are a Sidekick Admin responsible for uploading the attached data into Summit./n The Sidekick Team';
             // var html = '<br><img src="' + server + '"/public/assets/img/sidekick.png" alt="Sidekick" height="42" width="42"/><p>You are receiving this email because you are a Sidekick Admin responsible for uploading the attached data into Summit.</p><br><h4>The Sidekick Team</h4>';
-            var html = '<br><p>You are receiving this email because you are a Sidekick Admin responsible for uploading the attached data into Summit.</p><br><h4>The Sidekick Team</h4>';
+            var html = '<br><br><p>You are receiving this email because you are a Sidekick Admin responsible for uploading the attached data into Summit.</p><br><h4>The Sidekick Team</h4>';
      
             // setup email data
         
@@ -747,8 +748,8 @@ module.exports = function(app){
     }
     // thi
     app.post('/summit', function(req,res){
-         //change pathbuilder to sendtosummit...
-        validateUser(req, res, "buildpath").then((response) =>{
+        // sendtosummit is the required permission for this path
+        validateUser(req, res, "sendtosummit").then((response) =>{
             // console.log("req.body",req.body[0].fa[0])
             var summitArr = [];
             for (var j = 0; j < req.body.length; j++){
@@ -764,7 +765,7 @@ module.exports = function(app){
             // create file
 
             var user =  response.username.split('@');
-            var fileName = __dirname + '/../public/assets/files/sendToSummit_' + user[0]+ '.txt';
+            fileName = __dirname + '/../public/assets/files/sendToSummit_' + user[0] +'.'+ Date.now() + '.txt';
             var file = fs.createWriteStream(fileName);
             file.on('error', function(err) { 
                 console.log(err)
@@ -783,7 +784,8 @@ module.exports = function(app){
         }).then(() =>{
             // delete file - cant do here! gets delte
             // fs.unlinkSync(fileName);
-
+            // send OK msg the browser sending emails....res.sendStatus(200)
+            res.json({success: true});
         }).catch((error) => {
             console.log(error);
             console.log(Date.now() + " Authentication Error");

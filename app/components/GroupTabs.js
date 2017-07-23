@@ -12,6 +12,8 @@ import {connect} from 'react-redux';
 import helper from '../helper';
 // need to move to next versoin of material ui but until then will use import { Tabs, Tab } from 'material-ui-scrollable-tabs/Tabs';
 import { Tabs, Tab } from 'material-ui-scrollable-tabs/Tabs';
+import FlatButton from 'material-ui/FlatButton';
+import IconButton from 'material-ui/IconButton';
 
 const styles = {
   headline: {
@@ -59,17 +61,24 @@ class GroupTabs extends React.Component {
   constructor(props) {
     super(props);
     this.handleChange = this.handleChange.bind(this);
-    this.ondragstart= this.ondragstart.bind(this);
-    this.ondragend= this.ondragend.bind(this);
-    this.ondragover= this.ondragover.bind(this);
-    this.ondragenter= this.ondragenter.bind(this);
-    this.ondragleave= this.ondragleave.bind(this);
-    this.ondrop= this.ondrop.bind(this);
+    this.ondragstart = this.ondragstart.bind(this);
+    this.ondragend = this.ondragend.bind(this);
+    this.ondragover = this.ondragover.bind(this);
+    this.ondragenter = this.ondragenter.bind(this);
+    this.ondragleave = this.ondragleave.bind(this);
+    this.ondrop = this.ondrop.bind(this);
+    this.handleAdd = this.handleAdd.bind(this);
+    this.handleDelete = this.handleDelete.bind(this);
     this.state = {
       value: 0,
     };
   }
-
+  handleAdd(position, studentKey, faKey){
+    console.log("addd", position, studentKey, faKey)
+  }
+  handleDelete(position, studentKey, faKey){
+    console.log("remove", position, studentKey, faKey)
+  }
   handleChange = (value) => {
     this.setState({
       value: value,
@@ -191,15 +200,15 @@ class GroupTabs extends React.Component {
                   });
                 }
 
-                let dropZone =  <div  className='text-center drop' ref={ref => component.drop = ref} onDrop={(e) => component.ondrop(e)} onDragEnd={(e) => component.ondragend(e)} onDragOver={(e) => component.ondragover(e)} id={idCounter}>...</div>
+                let dropZone =  <div  className='text-center drop' ref={ref => component.drop = ref} onDrop={(e) => component.ondrop(e)} onDragEnd={(e) => component.ondragend(e)} onDragOver={(e) => component.ondragover(e)} id={idCounter}> . . . </div>
               //  console.log("dropZone", dropZone)
                 idCounter++;
                 /// this return is to facomponent - it displays all the data for one fa within a path
                 return (  <div> {dropZone}
                   <div ref={student.student._key.toString()+'/'+fa._key.toString()+'/'+fa.name.toString()} id={student.student._key.toString()+'/'+fa._key.toString()+'/'+fa.name.toString()} key={student.student._key.toString()+'/'+fa._key.toString()+'/'+fa.name.toString()}  className="fa-wrapper path" draggable="true" onDragStart={(e) => component.ondragstart(e)}  onDragLeave={(e) => component.ondragleave(e)}  onDragEnter={(e) => component.ondragenter(e)}>
-                  <Row className="text-center" > ... </Row>
+                  <Row> <Col className="text-center" md={12}> . . . </Col> </Row>
                   <Row className="fa-tab-view-rows" >
-                      <Col md={12}><div style={styles.slide}>    
+                      <Col md={10}><div style={styles.slide}>    
                           <Row >
                               <Col  md={3} xs={12}>
                                 <h3  className='fa-headings'>Focus Area</h3>
@@ -207,31 +216,38 @@ class GroupTabs extends React.Component {
                               <Col  md={9} xs={12}>
                                 <p  className='fa-headings-span'>{fa["Focus Area"].toString()}</p>
                               </Col>
-                            </Row>
-                              <hr />
-                            <Row >
-                              <Col className="chip-float">
-                                <div className="chip">                    
-                                  {fa.subject.toUpperCase()}      
-                                </div>
-                              </Col>
-                              {currentStandards}
-                            </Row>
-                              <Row>
-                              <div className="chip-float-text">Connected To</div>
-                              <Col  className="chip-float">
-                                <div className="chip">
-                                  {fa.nextFA}
-                                </div>
-                              </Col> 
-                             
-                                {nextStandards}
-                            </Row>
-                            </div>
-                            </Col>
                           </Row>
+                          <hr />
+                          <Row >
+                            <Col className="chip-float">
+                              <div className="chip">                    
+                                {fa.subject.toUpperCase()}      
+                              </div>
+                            </Col>
+                              {currentStandards}
+                          </Row>
+                          <Row>
+                            <div className="chip-float-text">Connected To</div>
+                            <Col  className="chip-float">
+                              <div className="chip">
+                                {fa.nextFA}
+                              </div>
+                            </Col> 
+                            {nextStandards}
+                        </Row>
                         </div>
-                        </div>)         
+                      </Col>
+                      <Col md={2}>
+                          <Col className="text-center" md={12} xs={6}>          
+                            <FlatButton containerElement='label' label="Add"  onTouchTap={() => component.handleAdd(idCounter-1, student.student._key, fa._key)}/>
+                          </Col> 
+                          <Col className="text-center" md={12} xs={6}>
+                            <FlatButton containerElement='label' label="Remove"  onTouchTap={() => component.handleDelete(idCounter-1, student.student._key, fa._key)} />                         
+                          </Col>
+                      </Col>
+                    </Row>
+                  </div>
+                </div>)         
               })
 
             } else {

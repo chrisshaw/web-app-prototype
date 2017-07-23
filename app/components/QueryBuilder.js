@@ -116,7 +116,7 @@ class QueryBuilder extends Component{
                 </Row>
                 <Row>
                     <Col xs={12} md={12} className="text-center" >            
-                        <FlatButton containerElement='label' label="Send To Sidekick" disabled={this.props.disabled} onTouchTap={this.props.handleSend} />
+                        { (this.props.perms) && (this.props.perms.indexOf('sendtosummit') !== -1) ? <FlatButton containerElement='label' label="Send To Sidekick" disabled={this.props.disabled} onTouchTap={this.props.handleSend} /> : ""}
                     </Col>
                 </Row>
             </div>
@@ -136,7 +136,7 @@ const mapStateToProps = (store) => {
         role: store.authState.role,
         username: store.authState.username,
         disabled: store.mainState.disabled,
-        // pathsrendered: store.mainState.pathsrendered
+        perms:  store.authState.perms,
     }
 }
 
