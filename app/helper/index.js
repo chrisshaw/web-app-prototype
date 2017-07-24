@@ -100,19 +100,16 @@ var helpers = {
         //         }
         //     }
         // }
-        console.log("role", role);
         // teachers and students must return their own courses -- everyone else can see all
         if ((role) && ((role.toUpperCase() === 'TEACHER') || (role.toUpperCase() === 'STUDENT'))){
             return axios.get('/api/courses/teacher/student/'+username+'/').then(function(response) {
                 // send results to redux store for use by Results component
-                console.log(response.data)
                 dispatch(actions.updateList(reset, deleteGroup, 0, 'UPDATE_COURSES', response.data));
                 return;
             })
         } else {
             return axios.get('/api/courses/'+username+'/').then(function(response) {
                 // send results to redux store for use by Results component
-                console.log(response.data)
                 dispatch(actions.updateList(reset, deleteGroup, 0, 'UPDATE_COURSES', response.data));
                 return;
             })
@@ -148,7 +145,7 @@ var helpers = {
     },
     saveSelectedFA(e, dispatch){
         // need name and id
-       dispatch(actions.saveSelectedFA(e));
+       dispatch(actions.selectedFA(e));
 
     },
     getFocusArea: function(dispatch){
@@ -206,10 +203,10 @@ var helpers = {
     },
     sendToSummit(paths){
         // console.log(props);
-       console.log(paths);
+    //    console.log(paths);
         // dispatch(actions.updatePathList("", true, true));
         return axios.post('/summit', paths).then(function(response) {
-            console.log("paths returned", response)
+            // console.log("paths returned", response)
             // dispatch(actions.updatePathList(response.data, false, false));
             // hide the searching message
             // dispatch(actions.searchPaths(false));
@@ -219,9 +216,9 @@ var helpers = {
     },
     movePath(newPosition, draggedId, currentPath, dispatch) {
         // change to use studentPathPosotin per removeFA
-        console.log("ewPosition, draggedId, currentPath, dispatch", newPosition, draggedId, currentPath, dispatch)
+        // console.log("ewPosition, draggedId, currentPath, dispatch", newPosition, draggedId, currentPath, dispatch)
         var keyArr =  draggedId.split('/');  // student key [0], fa key [1], faname [2]/[3]
-        console.log("currentPath", currentPath); 
+        // console.log("currentPath", currentPath); 
         for (var i = 0; i < currentPath.length; i++){
             // find the matching student 
             if (keyArr[0] === currentPath[i].student._key){
@@ -236,7 +233,8 @@ var helpers = {
                                 // swap from old to new position
                                 currentPath[i].fa.splice(newPosition, 0,  currentPath[i].fa.splice(oldPosition, 1)[0]);
                                 // update path in store
-                                dispatch(actions.updatePathList(currentPath, false, false ));         
+                                dispatch(actions.updatePathList(currentPath, false, false )); 
+                                helpers.parseFa(currentPath[i]);        
                                 // return;  // exit loop?
                             }
                      }
@@ -262,10 +260,12 @@ var helpers = {
    
     },
     addFA(studentPathPosition, idCounter, studentKey, faKey, addFAKey, props){
+        // console.log(studentPathPosition, idCounter, studentKey, faKey, addFAKey);
+        // (studentPosition, position, studentKey, faKey, this.props.selectedfa._key, this.props);
        // do quick check to make sure the correct fa is being removed
-       console.log("addFAKey", addFAKey)
-       let addAfterKey =  "";
-       if (faKey){
+    //    console.log("faKey", faKey)
+       let addAfterKey = 0;
+       if ((faKey) && (props.paths[studentPathPosition].fa.length > 0)){
             addAfterKey = props.paths[studentPathPosition].fa[idCounter]._key;
        } 
        if ((props.paths[studentPathPosition].student._key === studentKey) && (faKey === addAfterKey)){
@@ -273,8 +273,8 @@ var helpers = {
             // for now it jst adds a copy
             // get fa details from databsae
         return axios.get('/api/fa/'+addFAKey).then(function(response) {
-            console.log(props.paths)
-            console.log("response fa", response.data.fa[0])
+            // console.log(props.paths)
+            // console.log("response fa", response.data.fa[0])
             if (response.data.success){
                 // response.data == fa details
                 props.paths[studentPathPosition].fa.splice(idCounter+1, 0, response.data.fa[0]);
@@ -290,13 +290,29 @@ var helpers = {
        }
    
     },
+    getUserFA(username, dispatch){
+        return axios.get('/fa/'+username).then(function(response) {
+            if (response.data.success){
+                dispatch(actions.focusAreas(response.data.fa))
+                // props.dispatch(actions.updatePathList( props.paths, false, false )); 
+            } else {
+                // send error message
+            }   
+            return;
+        })
+
+
+    },
     parseFa: (result) => {
-        // result === cursor._result[p]
+        console.log("result.fa.length", result.fa.length)
         for (var i = 0; i < result.fa.length; i++){
-            // console.log(i)
-            // console.log(cursor._result[p].fa[i])
-            // console.log("fa length", cursor._result[p].fa.length)
-            if ( i < result.fa.length-1) result.fa[i].nextFA = result.fa[i+1]['Focus Area'];
+            console.log("result.fa.length-1", result.fa.length-1)
+            if ( i < result.fa.length-1) {
+                result.fa[i].nextFA = result.fa[i+1]['Focus Area']
+            } else {
+                result.fa[i].nextFA = [];  // if 
+            }
+            console.log(" result.fa[i].nextFA ",  result.fa[i].nextFA )
             result.fa[i]['currentStd'] = [];
             result.fa[i]['nextStd']= [];
             if (i < result.fa.length-1){  
@@ -310,6 +326,8 @@ var helpers = {
                         result.fa[i].nextStd.push(result.fa[i+1].standardConnections[j]);
                     }  
                 }
+            }  else {
+                result.fa[i].nextStd = [];  // if 
             }
 
             // de-dup current fa std connections
@@ -318,7 +336,7 @@ var helpers = {
                     result.fa[i]['currentStd'].push(result.fa[i].standardConnections[k]);
                 }
                 else if ((k > 0 ) && (result.fa[i].standardConnections[k-1] !== result.fa[i].standardConnections[k] )){
-                result.fa[i]['nextStd'].push(result.fa[i].standardConnections[k]);
+                result.fa[i]['currentStd'].push(result.fa[i].standardConnections[k]);
                 }                 
             }
         }
@@ -441,7 +459,6 @@ var helpers = {
                 data: dataObj
         }).then(function(response) {  
             // handle false later!
-            console.log("pwd", response.data);
             if (response.data.success) {
                 route.push('/');
             } else {

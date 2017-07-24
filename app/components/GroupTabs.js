@@ -62,7 +62,7 @@ class GroupTabs extends React.Component {
 
   constructor(props) {
     super(props);
-    this.handleChange = this.handleChange.bind(this);
+    // this.handleChange = this.handleChange.bind(this);
     this.ondragstart = this.ondragstart.bind(this);
     this.ondragend = this.ondragend.bind(this);
     this.ondragover = this.ondragover.bind(this);
@@ -73,6 +73,8 @@ class GroupTabs extends React.Component {
     this.handleDelete = this.handleDelete.bind(this);
     this.handleClose = this.handleClose.bind(this);
     this.handleAddFA = this.handleAddFA.bind(this);
+    // this.handleSelect = this.handleSelect.bind(this);
+    // get FAlist for current user
     this.state = {
       value: 0,
       showModal: false,
@@ -81,39 +83,43 @@ class GroupTabs extends React.Component {
       // addAfterIndex: null
     };
   }
-  handleAdd(studentPathPosition, faPosition){
-    let ref = studentPathPosition + '/' + faPosition;
+  handleAdd(studentPosition, position){
+    let ref = studentPosition + '/' + position;
     var thisNode = ReactDOM.findDOMNode(this.refs[ref]);
-    console.log("node", thisNode)
+    // console.log("node", thisNode)
     // show this div
     thisNode.classList.remove('add-fa-hide');
   }
-  handleDelete(studentPathPosition, studentKey, faKey, faPosition){
+  // handleSelect(e){
+  //   helper.saveSelectedFA(e, this.props.dispatch);
+  // }
+  handleDelete(studentPosition, studentKey, faKey, position){
   // must use keys to find position and delete
-    console.log("remove",studentPathPosition, faPosition, studentKey, faKey);
+    // console.log("remove",studentPosition, position, studentKey, faKey);
     //submite changes
-    helper.removeFA(studentPathPosition, faPosition, studentKey, faKey, this.props);
+    helper.removeFA(studentPosition, position, studentKey, faKey, this.props);
+    
   }
-  handleChange = (value) => {
-    console.log("hnandle change", this.state.value)
-    this.setState({
-      value: value,
-    });
-  };
-  handleAddFA(studentPathPosition, studentKey, faKey, faPosition, addFAKey){
-    console.log("addFA", studentPathPosition, studentKey, faKey, faPosition, addFAKey);
+  // handleChange = (value) => {
+  //     // console.log("hnandle change", this.state.value)
+  //     this.setState({
+  //     value: value,
+  //     });
+  // };
+  handleAddFA(studentPosition, studentKey, faKey, position){
+    // console.log("addFA", studentPosition, studentKey, faKey, position, this.props.selectedfa._key);
     // close off the div
-    let ref = studentPathPosition + '/' + faPosition;
+    let ref = studentPosition + '/' + position;
     var thisNode = ReactDOM.findDOMNode(this.refs[ref]);
-    console.log("node", thisNode)
+    // console.log("node", thisNode)
     thisNode.classList.add('add-fa-hide');
     // submit changes 
-    helper.addFA(studentPathPosition, faPosition, studentKey, faKey, faKey, this.props);
+    if (this.props.selectedfa) helper.addFA(studentPosition, position, studentKey, faKey, this.props.selectedfa._key, this.props);
   }
-  handleClose(studentPathPosition, faPosition){ 
-      let ref = studentPathPosition + '/' + faPosition;
+  handleClose(studentPosition, position){ 
+      let ref = studentPosition + '/' + position;
       var thisNode = ReactDOM.findDOMNode(this.refs[ref]);
-      console.log("node", thisNode)
+      // console.log("node", thisNode)
       // show this div
       thisNode.classList.add('add-fa-hide');
       // // clear local and server error messages
@@ -126,7 +132,7 @@ class GroupTabs extends React.Component {
 
   }
   componentDidMount(){
-   console.log("paths in group mount", this.props.paths)
+    helper.getUserFA(this.props.username, this.props.dispatch);
     this.setState({
       value: 0,
       showModal: false,
@@ -137,14 +143,15 @@ class GroupTabs extends React.Component {
   }
 
 
-  // shouldComponentUpdate(nextProps) {
-  //     // if (this.props.path !== nextProps.path) return true;
-  //     // if (this.props.path === nextProps.path) return false;
-
-  //     // const differentDone = this.props.done !== nextProps.done
-  // }
+  shouldComponentUpdate(nextProps) {
+      if (this.nextProps === nextProps) {
+        return false
+      } else {
+        return true;
+      } 
+  }
     ondragstart(e){
-      console.log("dragstart src", e.target.id);
+      // console.log("dragstart src", e.target.id);
       // e.target.className = 'drag';
       e.dataTransfer.setData('text', e.target.id ); 
       // e.target.style.opacity = "0.8";
@@ -173,11 +180,11 @@ class GroupTabs extends React.Component {
     ondrop(e) {
 //           e.preventDefault();
           // var data = e.dataTransfer.getData();
-          console.log("drop:", e.target)
+          // console.log("drop:", e.target)
           let data = e.dataTransfer.getData('text');
           // e.target.style.background = "#FFFFFF";
           // let doc = new DOMParser().parseFromString(data, 'text');
-          console.log(data);
+          // console.log(data);
           var dragNode = ReactDOM.findDOMNode(this.refs[data]);
           // e.target.appendChild(dragNode);   
           // console.log("this",this.refs); // student._key, fa.key and fa._id stored here 
@@ -198,7 +205,7 @@ class GroupTabs extends React.Component {
   //     console.log("should not be true", this.props.paths === nextProps.paths)
   // }
   render() {
-    console.log("changing state?",    this.state.value);
+    // console.log("grup props????",    this.props);
       const actions = [
       <FlatButton
           label="Close"
@@ -223,9 +230,7 @@ class GroupTabs extends React.Component {
         // only one path returned
         
         if ((pathResults) && (this.props.paths.length > 0)) {
-          console.log("in this.props.paths", this.props.paths)
-          var component = this; 
-        
+          var component = this;    
           var resultsComponents = this.props.paths.map(function(student, index) {
             // console.log("student", student)
             let studentPathPosition = index;
@@ -260,17 +265,14 @@ class GroupTabs extends React.Component {
               //  console.log("dropZone", dropZone)
                 let faPosition =  idCounter;
                 
-                let changeButtons = (<div><Col className="text-center" md={12} xs={6}>          
+                let changeButtons = (<div><Col className="text-center" md={6} xs={6}>          
                             <FlatButton containerElement='label' label="Add"   onTouchTap={(e) => component.handleAdd(studentPathPosition, faPosition)}/>
-                             {studentPathPosition}  {idCounter}
                             </Col> 
-                          <Col className="text-center" md={12} xs={6}>
-                          {studentPathPosition}  {idCounter}
+                          <Col className="text-center" md={6} xs={6}>
                             <FlatButton containerElement='label' label="Remove"  onTouchTap={() => component.handleDelete(studentPathPosition, student.student._key, fa._key, faPosition)} />                         
                           </Col></div>);
                 let saveFAButton = (<div><Col className="text-center" md={12} xs={6}>          
-                            <FlatButton containerElement='label' label="Add FA"   onTouchTap={() => component.handleAddFA(studentPathPosition, student.student._key, fa._key, faPosition)}/>
-                             {studentPathPosition}  {idCounter}
+                            <FlatButton containerElement='label' label="Add FA"   disabled={component.props.selectedfa ? false: true}  onTouchTap={() => component.handleAddFA(studentPathPosition, student.student._key, fa._key, faPosition)}/>
                             </Col> </div>);
                 let closeDivButton = (<div><Col className="text-center" md={12} xs={6}>          
                             <FlatButton containerElement='label' label="Close"   onTouchTap={() => component.handleClose(studentPathPosition, faPosition)}/>
@@ -279,11 +281,11 @@ class GroupTabs extends React.Component {
                 // console.log("idCounter", idCounter)
                 /// this return is to facomponent - it displays all the data for one fa within a path
                 return (<div ref={index}> {dropZone}
-                  {console.log("re-rendering")}
+
                   <div ref={student.student._key.toString()+'/'+fa._key.toString()+'/'+fa.name.toString()} id={student.student._key.toString()+'/'+fa._key.toString()+'/'+fa.name.toString()} key={student.student._key.toString()+'/'+fa._key.toString()+'/'+fa.name.toString()}  className="fa-wrapper path" draggable="true" onDragStart={(e) => component.ondragstart(e)}  onDragLeave={(e) => component.ondragleave(e)}  onDragEnter={(e) => component.ondragenter(e)}>
                   <Row> <Col className="text-center" md={12}> . . . </Col> </Row>
                   <Row className="fa-tab-view-rows" >
-                      <Col md={10}><div style={styles.slide}>    
+                      <Col md={12}><div style={styles.slide}>    
                           <Row >
                               <Col  md={3} xs={12}>
                                 <h3  className='fa-headings'>Focus Area</h3>
@@ -302,7 +304,7 @@ class GroupTabs extends React.Component {
                               {currentStandards}
                           </Row>
                           <Row>
-                            <div className="chip-float-text">Connected To</div>
+                            { (index === fa.length-1) ? "": <div className="chip-float-text">Connected To</div>}
                             <Col  className="chip-float">
                               <div className="chip">
                                 {fa.nextFA}
@@ -312,46 +314,64 @@ class GroupTabs extends React.Component {
                         </Row>
                         </div>
                       </Col>
-                      <Col md={2}>
-                          {changeButtons}
-                      </Col>
                     </Row>
+                    <br /><hr />
+                  <Row className="fa-tab-view-rows">
+                    <Col md={12}>
+                        {changeButtons}
+                    </Col>
+                  </Row>
                   </div>
-                  <Row className="fa-wrapper path add-fa-hide" ref={studentPathPosition+'/'+faPosition} >
-                    <Col xs={6} md={6} >
+                  <div className="fa-wrapper path add-fa-hide" ref={studentPathPosition+'/'+faPosition}>
+                  <Row >
+                    <Col xs={12} md={12} >
                       <AutoCompleteFA />
                     </Col>
-                    <Col xs={3} md={3} >
+                    </Row>
+                    <Row>
+                    <Col xs={6} md={6} >
                        {saveFAButton}
                     </Col>
-                    <Col xs={3} md={3} >
+                    <Col xs={6} md={6} >
                        {closeDivButton}
                     </Col>
                   </Row>
+                  </div>
                 </div>)         
               })
 
             } else {
-              var  faComponents = <div><p  key={ student.student._key.toString() + "NoPaths"}className="no-paths-message"> No path found. Please change search filters and try again.</p>
+              var  faComponents = <div><p  key={ student.student._key.toString() + "NoPaths"} className="no-paths-message"> No path found. Please change search filters and try again.</p>
                 <div>
-                  <Row className="fa-wrapper path" >
-                    <Col xs={6} md={6} >
-                      <AutoCompleteFA />
-                    </Col>
-                    <Col xs={3} md={3} >
-                       {saveFAButton}
-                    </Col>
-                    <Col xs={3} md={3} >
-                       {closeDivButton}
+                    <Row className="fa-tab-view-rows">
+                    <Col md={12}>
+                        <Col className="text-center" md={12} xs={12}>          
+                            <FlatButton containerElement='label' label="Add FA"   onTouchTap={(e) => component.handleAdd(studentPathPosition, 0)}/>
+                        </Col> 
                     </Col>
                   </Row>
-                </div>
+                  <div className="fa-wrapper path add-fa-hide" ref={studentPathPosition+'/'+0}>
+                    <Row>
+                        <Col className="text-center"  xs={12} md={12} >
+                            <AutoCompleteFA />
+                        </Col>
+                        <Col  className="text-center"  xs={12} md={12} >                  
+                            <FlatButton containerElement='label' label="Save FA"  disabled={component.props.selectedfa ? false: true} onTouchTap={() => component.handleAddFA(studentPathPosition, student.student._key, 0, 0)}/>
+                        </Col>
+                    </Row>
               </div>
+            </div>
+          </div>
             }
 
 
+          
+                // let saveFAButton = ();
+                // let closeDivButton = ();
+
             return  <Tab key={student.student._key.toString() + "Paths"} ref={ref => component.path = ref}  label={studentName} value={index}  buttonStyle={{color: "#808080"}}>
             {faComponents} 
+          
           </Tab>  
           })
        
@@ -371,9 +391,9 @@ class GroupTabs extends React.Component {
       <br />
      <div className="text-center loader"></div></div>
     </div>) : ""}
-
+    {((this.props.paths) && (this.props.paths.length > 0)) ? (<div className="text-center"> <h5><em>Scroll or Use Arrow Keys to View All Students</em> </h5></div>) : ""}
     <Tabs inkBarStyle={{background: '#A35FE3'}}
-        initialSelectedIndex={this.state.value}
+        initialSelectedIndex={0}
         value={this.state.value}
         onChange={this.handleChange}
         tabType="scrollable"

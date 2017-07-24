@@ -71,6 +71,18 @@ userLogout: () => {
   //     searching,
   //   }
   // },
+  focusAreas: (fa) => {
+    return {
+        type: 'GET_FA',
+        fa
+    }
+  },
+  selectedFA: (selectedfa) => {
+    return {
+        type: 'GET_FA',
+        fa
+    }
+  },
   saveSelected : (item, type) => {
       return {
         type,
@@ -78,12 +90,18 @@ userLogout: () => {
       }
   },
   updatePathList: (paths, searching, disabled) => {
-    console.log("action am i being called?")
     return {
         type: 'UPDATE_PATHS',
         paths,
         searching,
         disabled,
+      }
+  },
+  addFAKey: (fakey) => {
+    // console.log("action am i being called?")
+    return {
+        type: 'ADD_FA_TO_PATH',
+        fakey
       }
   },
   updateList: (reset, deleteGroup, id, type, list) => {

@@ -1,14 +1,14 @@
 var arangojs = require('arangojs');
 var Database = arangojs.Database;
 var path = require('path');
-// var dbHostPort = process.env.DB_HOST_PORT;
-// var dbUser = process.env.DB_USER;
-// var dbPwd = process.env.DB_PWD;
-// var dbName = process.env.DB_NAME;
-var dbHostPort = 'http://localhost:8529'
-var dbUser = 'root';
-var dbPwd = 'sidekick';
-var dbName = 'skdb';
+var dbHostPort = process.env.DB_HOST_PORT;
+var dbUser = process.env.DB_USER;
+var dbPwd = process.env.DB_PWD;
+var dbName = process.env.DB_NAME;
+// var dbHostPort = 'http://localhost:8529'
+// var dbUser = 'root';
+// var dbPwd = 'sidekick';
+// var dbName = 'skdb';
 const db = arangojs(dbHostPort);
 db.useDatabase(dbName);
 db.useBasicAuth(dbUser, dbPwd);
@@ -93,6 +93,48 @@ module.exports = function(app){
         });      
     }
 
+   function parseFa(result) {
+       console.log(result)
+        for (var p= 0; p < result.length; p++){
+            // console.log("result.fa.length", result.fa.length)
+            for (var i = 0; i < result[p].fa.length; i++){
+                console.log("result[p].fa.length-1", result[p].fa.length-1)
+                if ( i < result[p].fa.length-1) {
+                    result[p].fa[i].nextFA = result[p].fa[i+1]['Focus Area']
+                } else {
+                    result[p].fa[i].nextFA = [];  // if 
+                }
+                console.log(" result[p].fa[i].nextFA ",  result[p].fa[i].nextFA )
+                result[p].fa[i]['currentStd'] = [];
+                result[p].fa[i]['nextStd']= [];
+                if (i < result[p].fa.length-1){  
+                    for (var j = 0; j <  result[p].fa[i+1].standardConnections.length; j++){
+                        // save the first one
+                        if ((j === 0)){
+                            result[p].fa[i].nextStd.push(result[p].fa[i+1].standardConnections[j]);
+                        }
+                        // don't save duplicates
+                        else if ((j > 0 ) && (result[p].fa[i+1].standardConnections[j-1] !== result[p].fa[i+1].standardConnections[j] )){
+                            result[p].fa[i].nextStd.push(result[p].fa[i+1].standardConnections[j]);
+                        }  
+                    }
+                }  else {
+                    result[p].fa[i].nextStd = [];  // if 
+                }
+
+                // de-dup current fa std connections
+                for (var k = 0; k < result[p].fa[i].standardConnections.length; k++){
+                    if ((k === 0)){
+                        result[p].fa[i]['currentStd'].push(result[p].fa[i].standardConnections[k]);
+                    }
+                    else if ((k > 0 ) && (result[p].fa[i].standardConnections[k-1] !== result[p].fa[i].standardConnections[k] )){
+                    result[p].fa[i]['currentStd'].push(result[p].fa[i].standardConnections[k]);
+                    }                 
+                }
+            }
+        }
+        return result;
+    }
 
     app.post('/password' , function(req, res, next){
         // validate user is logged in
@@ -539,7 +581,7 @@ module.exports = function(app){
                         for fa
                         in 0..999 outbound start
                         thenFocusOn
-                        filter length(${querySubjects}) > 0 ? fa.subject in ${querySubjects} : true
+                        filter length(${querySubjects}) > 0 ? UPPER(fa.subject) in ${querySubjects} : true
                         filter length(topicalFas) > 0 ? fa._key in topicalFas : true
                         filter length(courseFas) > 0 ? fa._key in courseFas : true
                         filter length(masteredFas) > 0 ? fa._key not in masteredFas : true
@@ -548,7 +590,7 @@ module.exports = function(app){
                 )
 
                 return {student: student, fa: path}`
-            console.log(query);
+            // console.log(query);
             db.query(query).then(cursor => {
                 // cursor is a cursor for the query result
                 // console.log(cursor._result)  // just the first one for testing only
@@ -560,46 +602,46 @@ module.exports = function(app){
                 var studentArr = Array.from(cursor._result);
                 // var studentArr = cursor._result;
                 // for each student
-                for (var p= 0; p < cursor._result.length; p++){
+               
                     // for each focus area
                     // console.log("student", cursor._result[p].student)
-   /// replace with parseFa(cursor._result[p]) when ready
-                    for (var i = 0; i < cursor._result[p].fa.length; i++){
-                        // console.log(i)
-                        // console.log(cursor._result[p].fa[i])
-                        // console.log("fa length", cursor._result[p].fa.length)
-                        if ( i < cursor._result[p].fa.length-1) cursor._result[p].fa[i].nextFA = cursor._result[p].fa[i+1]['Focus Area'];
-                        cursor._result[p].fa[i]['currentStd'] = [];
-                        cursor._result[p].fa[i]['nextStd']= [];
-                        if (i < cursor._result[p].fa.length-1){  
-                            for (var j = 0; j < cursor._result[p].fa[i+1].standardConnections.length; j++){
-                                // save the first one
-                                if ((j === 0)){
-                                    cursor._result[p].fa[i].nextStd.push(cursor._result[p].fa[i+1].standardConnections[j]);
-                                }
-                                // don't save duplicates
-                                else if ((j > 0 ) && (cursor._result[p].fa[i+1].standardConnections[j-1] !== cursor._result[p].fa[i+1].standardConnections[j] )){
-                                    cursor._result[p].fa[i].nextStd.push(cursor._result[p].fa[i+1].standardConnections[j]);
-                                }  
-                            }
-                        }
-                
-                        // de-dup current fa std connections
-                        for (var k = 0; k < cursor._result[p].fa[i].standardConnections.length; k++){
-                            if ((k === 0)){
-                                cursor._result[p].fa[i]['currentStd'].push(cursor._result[p].fa[i].standardConnections[k]);
-                            }
-                            else if ((k > 0 ) && (cursor._result[p].fa[i].standardConnections[k-1] !== cursor._result[p].fa[i].standardConnections[k] )){
-                                cursor._result[p].fa[i]['nextStd'].push(cursor._result[p].fa[i].standardConnections[k]);
-                            }                 
-                        }
-                        // console.log(cursor._result[p].fa[i])
-                    }
 
-                }
+                    // for (var i = 0; i < cursor._result[p].fa.length; i++){
+                    //     // console.log(i)
+                    //     // console.log(cursor._result[p].fa[i])
+                    //     // console.log("fa length", cursor._result[p].fa.length)
+                    //     if ( i < cursor._result[p].fa.length-1) cursor._result[p].fa[i].nextFA = cursor._result[p].fa[i+1]['Focus Area'];
+                    //     cursor._result[p].fa[i]['currentStd'] = [];
+                    //     cursor._result[p].fa[i]['nextStd']= [];
+                    //     if (i < cursor._result[p].fa.length-1){  
+                    //         for (var j = 0; j < cursor._result[p].fa[i+1].standardConnections.length; j++){
+                    //             // save the first one
+                    //             if ((j === 0)){
+                    //                 cursor._result[p].fa[i].nextStd.push(cursor._result[p].fa[i+1].standardConnections[j]);
+                    //             }
+                    //             // don't save duplicates
+                    //             else if ((j > 0 ) && (cursor._result[p].fa[i+1].standardConnections[j-1] !== cursor._result[p].fa[i+1].standardConnections[j] )){
+                    //                 cursor._result[p].fa[i].nextStd.push(cursor._result[p].fa[i+1].standardConnections[j]);
+                    //             }  
+                    //         }
+                    //     }
+                
+                    //     // de-dup current fa std connections
+                    //     for (var k = 0; k < cursor._result[p].fa[i].standardConnections.length; k++){
+                    //         if ((k === 0)){
+                    //             cursor._result[p].fa[i]['currentStd'].push(cursor._result[p].fa[i].standardConnections[k]);
+                    //         }
+                    //         else if ((k > 0 ) && (cursor._result[p].fa[i].standardConnections[k-1] !== cursor._result[p].fa[i].standardConnections[k] )){
+                    //             cursor._result[p].fa[i]['nextStd'].push(cursor._result[p].fa[i].standardConnections[k]);
+                    //         }                 
+                    //     }
+                    //     // console.log(cursor._result[p].fa[i])
+                    // }
 
                 
-                res.json(cursor._result);  
+
+                
+                res.json(parseFa(cursor._result));  
         //  
                 
                 // res.json(pathArr);          
@@ -613,39 +655,7 @@ module.exports = function(app){
         })
     })
 
-    function parseFa(result){
-        // result === cursor._result[p]
-        for (var i = 0; i < result.fa.length; i++){
-            // console.log(i)
-            // console.log(cursor._result[p].fa[i])
-            // console.log("fa length", cursor._result[p].fa.length)
-            if ( i < result.fa.length-1) result.fa[i].nextFA = result.fa[i+1]['Focus Area'];
-            result.fa[i]['currentStd'] = [];
-            result.fa[i]['nextStd']= [];
-            if (i < result.fa.length-1){  
-                for (var j = 0; j <  result.fa[i+1].standardConnections.length; j++){
-                    // save the first one
-                    if ((j === 0)){
-                        result.fa[i].nextStd.push(result.fa[i+1].standardConnections[j]);
-                    }
-                    // don't save duplicates
-                    else if ((j > 0 ) && (result.fa[i+1].standardConnections[j-1] !== result.fa[i+1].standardConnections[j] )){
-                        result.fa[i].nextStd.push(result.fa[i+1].standardConnections[j]);
-                    }  
-                }
-            }
-
-            // de-dup current fa std connections
-            for (var k = 0; k < result.fa[i].standardConnections.length; k++){
-                if ((k === 0)){
-                    result.fa[i]['currentStd'].push(result.fa[i].standardConnections[k]);
-                }
-                else if ((k > 0 ) && (result.fa[i].standardConnections[k-1] !== result.fa[i].standardConnections[k] )){
-                result.fa[i]['nextStd'].push(result.fa[i].standardConnections[k]);
-                }                 
-            }
-        }
-    }
+ 
     app.post("/csv/file", function(req, res, next){
         validateUser(req, res, "uploadstudents").then((response) =>{
             // main entry point
@@ -788,7 +798,7 @@ module.exports = function(app){
             var summitArr = [];
             for (var j = 0; j < req.body.length; j++){
                 for (var i = 0; i < req.body[j].fa.length; i++){
-                    var instruction = 'Instruction ' + i + ': Course: ' + req.body[j].fa[i].course + ' -->  Project : ' + req.body[j].fa[i].course + ' --> INCLUDE --> Focus Area: ' + req.body[j].fa[i].name + ' --> POSITION --> ' + req.body[j].fa[i].Sequence + ' --> UPDATE --> Title: ' + req.body[j].fa[i].name + '(' + req.body[j].fa[i].Sequence +')';
+                    var instruction = 'Instruction ' + i + ': Course: ' + req.body[j].fa[i].course + ' -->  Project : ' + 'Topic / Dummy For Now' + ' --> INCLUDE --> Focus Area: ' + req.body[j].fa[i].name + ' --> POSITION --> ' + req.body[j].fa[i].Sequence + ' --> UPDATE --> Title: ' + req.body[j].fa[i].name + '(' + req.body[j].fa[i].Sequence +')';
                     summitArr.push(instruction);
                 }
             }
@@ -810,8 +820,8 @@ module.exports = function(app){
             summitArr.forEach(function(v) { file.write(v + '\n'); });
             file.end();
             // send as attachment to email
-            // var adminEmail = "paths@sidekick.education";
-            var adminEmail = "fiona.hegarty@icloud.com";
+            var adminEmail = "paths@sidekick.education";
+            // var adminEmail = "fiona.hegarty@icloud.com";
             // need to pass file path
             sendToSummitEmail(adminEmail, fileName);
             // return fileName;
@@ -982,7 +992,32 @@ module.exports = function(app){
         })            
     })
 
+    app.get('/fa/:username', function(req, res){
+        let username = req.params.username;
+        // check this query!!!
+        let query = aql`
+        let userid = (for u in auth_users filter u.username == ${username} return u._id)
+        let queryCourses = (for c in outbound userid[0] hasCourse return c._key)
+        let fa_key = (for c in courses
+            filter length(queryCourses) > 0 ? c._key in queryCourses : true
+                for fa in
+                outbound c
+                covers
+                return fa._key)
+        for f in focusAreas 
+        filter f._key in fa_key
+        return {_key: f._key, name: f.name}`;
+     console.log(query)
+        db.query(query)
+        .then(cursor => { 
+            console.log("Course", cursor._result);
+            res.json({success: true, fa: cursor._result});
+        }).catch(error => {
+            console.log(Date.now() + " Error (Get FA from Database):", error);
+            res.json({success: false});
+        })  
 
+    })
     app.use(function(req, res){
         db.get()
         .then(response => {

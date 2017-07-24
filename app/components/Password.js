@@ -47,7 +47,7 @@ class Password extends Component{
         // handles local and database error
         if ((!this.state.password) || (this.state.password.length < 8)) {
             // error - password required
-            let msg = "Please provide a valid password of length 8 characters with one capital letter and at least 2 numbers."
+            let msg = "Please provide a valid password of length 8 characters with one capital letter and at least 2 numbers. No special characters e.g. %, & * etc."
              this.setState({error: true, errorMsg: msg})
         } else if (!this.state.verify){
             // error - please verify password

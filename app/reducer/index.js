@@ -109,12 +109,18 @@ function updateQueryList(action, state, list, selectedlist) {
 const mainReducer = (state=intialstate, action) => {
     
     switch(action.type){    
-        case 'GET_FA':
-            return Object.assign({},state, {focusArea: action.focusArea});
-        case 'SELECTED_FA':
-            return Object.assign({},state, {selectedFocusArea: action.selectedFocusArea});
+        // case 'GET_FA':
+        //     return Object.assign({},state, {focusArea: action.focusArea});
+        // case 'SELECTED_FA':
+        //     return Object.assign({},state, {selectedFocusArea: action.selectedFocusArea});
         case 'BUILD_VIEW':
             return Object.assign({},state, {pathbuilderview: action.pathbuilderview}); 
+        case 'ADD_FA_TO_PATH':
+            return Object.assign({},state, {fakey: action.fakey}); 
+        case 'GET_FA':
+            return Object.assign({},state, {fa: action.fa}); 
+        case 'SELECTED_FA':
+            return Object.assign({},state, {selectedfa: action.selectedfa}); 
         case 'UPDATE_PATHS':
             // react not seeing changes to path array after reorder for dnd
             // a hack i know but trying to force update for dnd re-render...so i use a counter that will change on every path array update

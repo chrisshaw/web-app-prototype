@@ -143,7 +143,7 @@ class SignUp extends Component{
              this.props.dispatch(signUpFields(signUpObj));
         } else if ((!this.props.signupfields.password) || (this.props.signupfields.password.length < 8)) {
             // error - password required
-            signUpObj.errorMsg =  "Please provide a valid password of length 8 characters with one capital letter and at least 2 numbers."      
+            signUpObj.errorMsg =  "Please provide a valid password of length 8 characters with one capital letter and at least 2 numbers. No special characters e.g. %, & * etc."      
             signUpObj.error = true;
             this.setState({error: true, errorMsg: signUpObj.errorMsg})
             this.props.dispatch(signUpFields(signUpObj));
@@ -273,7 +273,7 @@ class SignUp extends Component{
                         <label htmlFor="inputPassword" className="sr-only">Password</label>
                         <input value={this.state.password} onChange={(e)=>this.handleChange(e)} id="password" type="password" className="form-control auth-input" placeholder="Password" minLength="8"
        maxLength="16" size="16" required />
-                        <p className="note-text"><em>* length 8 characters with one capital letter and at least 2 numbers.</em></p>
+                        <p className="note-text"><em>* length 8 characters with one capital letter and at least 2 numbers. No special characters e.g. %, & * etc.</em></p>
                     </Col>
                     <Col xs={2} md={2}/>  
                 </Row>

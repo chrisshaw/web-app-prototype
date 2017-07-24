@@ -60,7 +60,7 @@ class PathBuilder extends Component{
        
     // }
     render(){
-        console.log("What aer thsesese/", this.props)
+        console.log("What aer thsesese fa*********/", this.props.selectedfa)
         return(
             <div>
                 <PathBuilderDrawer handleClose={this.handleClose} handleSend={this.handleSend} />
@@ -68,7 +68,15 @@ class PathBuilder extends Component{
                     <Col lg={5} md={5} sm={5} xs={5}/>       
                     <Col lg={7} md={7} sm={7} xs={7} >      
                        <Paper style={style.paper} zDepth={0}>
-                            <GroupTabs  paths={this.props.paths} changed={this.props.changed} searching={this.props.searching}/>
+                        {this.props.searching ? (<div>
+        
+                            <div className="loader-location">
+                            <div className="loader-text">Searching...</div>
+                            <br />
+                            <div className="text-center loader"></div></div>
+                            </div>) : (<GroupTabs selectedfa={this.props.selectedfa} fa={this.props.fa} username={this.props.username}  paths={this.props.paths} changed={this.props.changed} />)}
+
+                                                
                         </Paper>        
                     </Col>
                 </Row>
@@ -83,6 +91,9 @@ const mapStateToProps = (store,ownProps) => {
         paths: store.mainState.paths,
         searching: store.mainState.searching,
         changed: store.mainState.changed,
+        // addfakey:  store.mainState.addfakey,
+        fa: store.mainState.fa,
+        selectedfa: store.mainState.selectedfa,
     }
 }
 

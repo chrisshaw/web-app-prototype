@@ -70,14 +70,12 @@ class Main extends Component{
       helper.logout(this.props.dispatch, this.props.router);
     }
     render(){
-      console.log("role", this.props.role)
-       console.log("perms", this.props.perms)
          return(
             <MuiThemeProvider muiTheme={navBarTheme}>
             <div>
                 <AppNav pathname={this.props.location.pathname} handleLogout={this.handleLogout} loggedin={this.props.loggedin} perms={this.props.perms} />
                 <div className="wrapper">          
-                   {this.props.children}
+                   {React.cloneElement(this.props.children, {username: this.props.username})}
               </div>
             </div>
             </MuiThemeProvider>
@@ -88,6 +86,7 @@ class Main extends Component{
 const mapStateToProps = (store) => {
     return {
         loggedin: store.authState.loggedin,
+        username: store.authState.username,
         perms: store.authState.perms,
         role: store.authState.role,
     }
