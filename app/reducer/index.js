@@ -125,7 +125,7 @@ const mainReducer = (state=intialstate, action) => {
             // react not seeing changes to path array after reorder for dnd
             // a hack i know but trying to force update for dnd re-render...so i use a counter that will change on every path array update
             // will revisit to improve for now it works!
-            console.log("changed", state.changed)
+            // console.log("changed", state.changed)
             return Object.assign({disabled: true},state, {paths: action.paths, searching: action.searching, disabled: action.disabled, changed: state.changed + 1});
         case 'UPDATE_GRADES':
             //pulls for display in autopopulate dropdown to selected list for query

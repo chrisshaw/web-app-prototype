@@ -1,10 +1,10 @@
 var arangojs = require('arangojs');
 var Database = arangojs.Database;
 var path = require('path');
-var dbHostPort = process.env.DB_HOST_PORT;
-var dbUser = process.env.DB_USER;
-var dbPwd = process.env.DB_PWD;
-var dbName = process.env.DB_NAME;
+// var dbHostPort = process.env.DB_HOST_PORT;
+// var dbUser = process.env.DB_USER;
+// var dbPwd = process.env.DB_PWD;
+// var dbName = process.env.DB_NAME;
 // var dbHostPort = 'http://localhost:8529'
 // var dbUser = 'root';
 // var dbPwd = 'sidekick';

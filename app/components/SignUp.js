@@ -16,7 +16,7 @@ var signUpObj = {email: "",
                     verify:"", 
                     selectedrole: "",
                     description: "",
-                    error: "",
+                    error: false,
                     errorMsg: ""} 
 class SignUp extends Component{
     constructor(props){

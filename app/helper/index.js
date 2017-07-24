@@ -37,6 +37,9 @@ var helpers = {
                     //  added perms check res.json({success: false, auth: false})
                     // handle no perms error auth == false too
                     dispatch(actions.viewUploadedCSVData(response.data.results, response.data.error))          
+                }).catch((error) => {
+                // send message to client...needs work
+                console.log(error)
                 })
             }
             // reader.readAsBinaryString(file);
@@ -60,9 +63,12 @@ var helpers = {
                 // by settting csvdata to ""
                 dispatch(actions.viewUploadedCSVData(""));
                 // ***handle no perms error response.data.auth == false too
-                // success or failure - return mesage to client this.props.dataupload = boolean
+                // success or catchure - return mesage to client this.props.dataupload = boolean
                 component.dataUploadStatus(response.data.success, response.data.error, dispatch);
                 return;               
+            }).catch((error) => {
+                // send message to client...needs work
+                console.log(error)
             })
         }
     },
@@ -141,7 +147,10 @@ var helpers = {
                 // id is not 0 so we can safely use as placeholder
                 dispatch(actions.updateList(reset, deleteGroup, 0, 'UPDATE_STANDARDS', standardsArr))
                 return;
-            }) 
+            }).catch((error) => {
+                // send message to client...needs work
+                console.log(error)
+            })
     },
     saveSelectedFA(e, dispatch){
         // need name and id
@@ -154,7 +163,10 @@ var helpers = {
             // send results to redux store for use by Results component
             dispatch(actions.getFAList(response.data))
             return;
-        })     
+        }).catch((error) => {
+            // send message to client...needs work
+            console.log(error)
+        })   
     },
     getTopics: function(reset, deleteGroup, dispatch){
         return axios.get('/api/topics/all').then(function(response) {
@@ -167,7 +179,10 @@ var helpers = {
             }
             dispatch(actions.updateList(reset, deleteGroup, 0, 'UPDATE_TOPICS', topicArr))  
             return;
-        }) 
+        }).catch((error) => {
+            // send message to client...needs work
+            console.log(error)
+        })   
     },
 
     getSubjectContents: function(reset, deleteGroup, dispatch){
@@ -199,7 +214,10 @@ var helpers = {
             // hide the searching message
             // dispatch(actions.searchPaths(false));
             return;
-        })
+         }).catch((error) => {
+            // send message to client...needs work
+            console.log(error)
+        })  
     },
     sendToSummit(paths){
         // console.log(props);
@@ -211,7 +229,10 @@ var helpers = {
             // hide the searching message
             // dispatch(actions.searchPaths(false));
             return;
-        })
+         }).catch((error) => {
+            // send message to client...needs work
+            console.log(error)
+        })  
 
     },
     movePath(newPosition, draggedId, currentPath, dispatch) {
@@ -281,11 +302,16 @@ var helpers = {
                 // do some processing to get nextFA and nextStd
                 helpers.parseFa(props.paths[studentPathPosition]);
                 props.dispatch(actions.updatePathList( props.paths, false, false )); 
+                // reset selected FA
+                helpers.saveSelectedFA("", props.dispatch);
             } else {
                 // send error message
             }   
             return;
-        })
+        }).catch((error) => {
+            // send message to client...needs work
+            console.log(error)
+        })  
            
        }
    
@@ -299,20 +325,23 @@ var helpers = {
                 // send error message
             }   
             return;
-        })
+        }).catch((error) => {
+            // send message to client...needs work
+            console.log(error)
+        })  
 
 
     },
     parseFa: (result) => {
-        console.log("result.fa.length", result.fa.length)
+        // console.log("result.fa.length", result.fa.length)
         for (var i = 0; i < result.fa.length; i++){
-            console.log("result.fa.length-1", result.fa.length-1)
+            // console.log("result.fa.length-1", result.fa.length-1)
             if ( i < result.fa.length-1) {
                 result.fa[i].nextFA = result.fa[i+1]['Focus Area']
             } else {
                 result.fa[i].nextFA = [];  // if 
             }
-            console.log(" result.fa[i].nextFA ",  result.fa[i].nextFA )
+            // console.log(" result.fa[i].nextFA ",  result.fa[i].nextFA )
             result.fa[i]['currentStd'] = [];
             result.fa[i]['nextStd']= [];
             if (i < result.fa.length-1){  
@@ -379,7 +408,10 @@ var helpers = {
             // send results to redux store for use by SignUp component
             dispatch(actions.getRoles(response.data));
             return;
-        }) 
+         }).catch((error) => {
+            // send message to client...needs work
+            console.log(error)
+        })   
     },
     // getUserPerms(dispatch) {
     //     return axios.get('/api/perms/user').then(function(response) {
@@ -417,7 +449,10 @@ var helpers = {
             }
            
             return;
-        })
+         }).catch((error) => {
+            // send message to client...needs work
+            console.log(error)
+        })  
     },
 
     signUpUsers(email, password, first, last, school, role, dispatch, router){      
@@ -447,7 +482,10 @@ var helpers = {
             dispatch(actions.userSignUp(response.data.success));
             dispatch(actions.userLoginError(!response.data.success, response.data.msg));
             return;
-        });
+         }).catch((error) => {
+            // send message to client...needs work
+            console.log(error)
+        })  
     },
     changePwd(pwd, dispatch, route) {
        
@@ -465,7 +503,10 @@ var helpers = {
                dispatch(actions.userLoginError(!response.data.success, response.data.msg));
             }
             return;
-        });
+         }).catch((error) => {
+            // send message to client...needs work
+            console.log(error)
+        })  
         
     },
     loginError(value, msg, dispatch){

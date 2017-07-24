@@ -205,7 +205,7 @@ class GroupTabs extends React.Component {
   //     console.log("should not be true", this.props.paths === nextProps.paths)
   // }
   render() {
-    // console.log("grup props????",    this.props);
+    console.log("selectedfa????",    this.props.selectedfa);
       const actions = [
       <FlatButton
           label="Close"
