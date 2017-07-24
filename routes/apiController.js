@@ -743,7 +743,7 @@ module.exports = function(app){
         // this part creates a reusable transporter using SMTP of gmail
 
        console.log("filePath",filePath)
-            var emailAccountPassword = process.env.TEAM_EMAIL || 'C0ffeeCreamer34';
+            var emailAccountPassword = process.env.TEAM_EMAIL ;
             var transporter = nodemailer.createTransport({
                 service: 'gmail',
                 host: 'smtp.gmail.com',
