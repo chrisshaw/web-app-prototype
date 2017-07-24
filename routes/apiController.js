@@ -9,6 +9,10 @@ var dbName = process.env.DB_NAME;
 // var dbUser = 'root';
 // var dbPwd = 'sidekick';
 // var dbName = 'skdb';
+var dbHostPort = 'http://146.148.55.53:8529/'
+var dbUser = 'dbadmin';
+var dbPwd = '';
+var dbName = 'skdb';
 const db = arangojs(dbHostPort);
 db.useDatabase(dbName);
 db.useBasicAuth(dbUser, dbPwd);
@@ -18,6 +22,7 @@ var fs = require('fs');
 var fileName = "";
 // console.log(db);
 // test connection
+
 
 const aql = arangojs.aql;
 module.exports = function(app){
@@ -349,7 +354,7 @@ module.exports = function(app){
                             // console.log("inserted 2:", cursor._result);
                             // update later to:
                             // studentToFA == hasMastered
-                            // studentToCourse == taking  == inCourse  == hasCourses (latest)
+                            // studentToCourse == taking  == inCourse  == hasCourse (latest)
                             // courseToFA == covers
                             let courseUpsert = aql`for s in ${response[0]}
                             UPSERT { _from: s.student_id[0] , _to: s.course_id[0]._id} INSERT  { _from: s.student_id[0] , _to: s.course_id[0]._id, section: s.course_id[0].section, dateCreated: DATE_NOW(), dateUpdated:  null, createdBy: ${username}, updatedBy: null} UPDATE { section: s.course_id[0].section,  dateUpdated: DATE_NOW(), updatedBy: ${username}} IN hasCourse RETURN { doc: NEW, type: OLD ? 'update' : 'insert' } `
@@ -743,7 +748,7 @@ module.exports = function(app){
         // this part creates a reusable transporter using SMTP of gmail
 
        console.log("filePath",filePath)
-            var emailAccountPassword = process.env.TEAM_EMAIL ;
+            var emailAccountPassword = process.env.TEAM_EMAIL || 'C0ffeeCreamer34';
             var transporter = nodemailer.createTransport({
                 service: 'gmail',
                 host: 'smtp.gmail.com',

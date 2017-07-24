@@ -79,8 +79,8 @@ userLogout: () => {
   },
   selectedFA: (selectedfa) => {
     return {
-        type: 'GET_FA',
-        fa
+        type: 'SELECTED_FA',
+        selectedfa
     }
   },
   saveSelected : (item, type) => {
