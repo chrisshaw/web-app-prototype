@@ -13,9 +13,6 @@ var path = require('path');
 // var dbUser = 'dbadmin';
 // var dbPwd = '';
 // var dbName = 'skdb';
-const db = arangojs(dbHostPort);
-db.useDatabase(dbName);
-db.useBasicAuth(dbUser, dbPwd);
 var nodemailer = require("nodemailer");
 var path = require('path');
 var fs = require('fs');
@@ -49,6 +46,9 @@ var dbHostPort = dbSwitch[DB_MODE]['dbHostPort'],
     dbPwd = dbSwitch[DB_MODE]['dbPwd'],
     dbName = dbSwitch[DB_MODE]['dbName'];
 
+const db = arangojs(dbHostPort);
+db.useDatabase(dbName);
+db.useBasicAuth(dbUser, dbPwd);
 
 const aql = arangojs.aql;
 module.exports = function(app){
