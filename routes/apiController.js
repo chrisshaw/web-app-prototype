@@ -1,18 +1,18 @@
 var arangojs = require('arangojs');
 var Database = arangojs.Database;
 var path = require('path');
-// var dbHostPort = process.env.DB_HOST_PORT;
-// var dbUser = process.env.DB_USER;
-// var dbPwd = process.env.DB_PWD;
-// var dbName = process.env.DB_NAME;
+// var dbHostPort = process.env.DB_HOST_PORT,
+// var dbUser = process.env.DB_USER,
+// var dbPwd = process.env.DB_PWD,
+// var dbName = process.env.DB_NAME
 // var dbHostPort = 'http://localhost:8529'
 // var dbUser = 'root';
 // var dbPwd = 'sidekick';
 // var dbName = 'skdb';
-var dbHostPort = 'http://146.148.55.53:8529/'
-var dbUser = 'dbadmin';
-var dbPwd = '';
-var dbName = 'skdb';
+// var dbHostPort = 'http://146.148.55.53:8529/'
+// var dbUser = 'dbadmin';
+// var dbPwd = '';
+// var dbName = 'skdb';
 const db = arangojs(dbHostPort);
 db.useDatabase(dbName);
 db.useBasicAuth(dbUser, dbPwd);
@@ -22,6 +22,32 @@ var fs = require('fs');
 var fileName = "";
 // console.log(db);
 // test connection
+const dbSwitch = {
+    FOR_DEPLOY: {
+        dbHostPort: process.env.DB_HOST_PORT,
+        dbUser: process.env.DB_USER,
+        dbPwd: process.env.DB_PWD,
+        dbName: process.env.DB_NAME
+    },
+    DEVDB: {
+        dbHostPort: 'http://146.148.55.53:8529/',
+        dbUser: 'dbadmin',
+        dbPwd: '',
+        dbName: 'skdb'
+    },
+    LOCAL: {
+        dbHostPort: 'http://localhost:8529',
+        dbUser: 'root',
+        dbPwd: 'sidekick',
+        dbName: 'skdb'
+    }
+};
+
+const DB_MODE = 'FOR_DEPLOY';
+var dbHostPort = dbSwitch[DB_MODE]['dbHostPort'],
+    dbUser = dbSwitch[DB_MODE]['dbUser'],
+    dbPwd = dbSwitch[DB_MODE]['dbPwd'],
+    dbName = dbSwitch[DB_MODE]['dbName'];
 
 
 const aql = arangojs.aql;

@@ -1,5 +1,7 @@
 runtime: nodejs
 env: flex
+manual_scaling:
+  instances: 1
 env_variables:
   DB_NAME: 'skdb'
   # DB_HOST_PORT: 'http://146.148.55.53:8529/'
