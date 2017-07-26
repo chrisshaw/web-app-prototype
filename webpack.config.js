@@ -15,12 +15,17 @@ module.exports = {
     loaders: [
       {
         test: /\.jsx?$/,
-        loader: 'babel',
+        loader: 'babel-loader',
         exclude: /node_modules/,
         query: {
           cacheDirectory: true,
-          presets: ['react', 'es2015','stage-1'],
-          plugins: [ 'transform-decorators-legacy'],
+         // presets: ['react', 'es2015','stage-1'],
+          presets: [
+    'babel-preset-es2015',
+    'babel-preset-react',
+    'babel-preset-stage-0',
+  ].map(require.resolve),  
+	plugins: [ 'transform-decorators-legacy'],
         }
       }
     ]
