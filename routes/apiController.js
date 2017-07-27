@@ -16,7 +16,7 @@ var path = require('path');
 var nodemailer = require("nodemailer");
 var path = require('path');
 var fs = require('fs');
-var fileName = "";
+// var fileName = "";
 // console.log(db);
 // test connection
 const dbSwitch = {
@@ -39,12 +39,24 @@ const dbSwitch = {
         dbName: 'skdb'
     }
 };
-
-const DB_MODE = 'FOR_DEPLOY';
-var dbHostPort = dbSwitch[DB_MODE]['dbHostPort'],
-    dbUser = dbSwitch[DB_MODE]['dbUser'],
-    dbPwd = dbSwitch[DB_MODE]['dbPwd'],
-    dbName = dbSwitch[DB_MODE]['dbName'];
+// if running locally make sure you set env varaible 
+// run this in terminal :  export DB_MODE="LOCAL" etc.
+// to make permanent - add to /.bashrc file in $HOME dir
+console.log("process.env.DB_MODE", process.env.DB_MODE);
+// if (process.env.ENVT == "DEMO"){
+//     const DB_MODE = 'FOR_DEPLOY';
+// } else if (process.env.ENVT == "LOCAL") {
+//     // console.log
+//     const DB_MODE = 'LOCAL'; 
+//     console.log(dbSwitch[DB_MODE])
+// } else if (process.env.ENVT == "DEV") {
+//      const DB_MODE = 'DEVDB'; 
+// }
+// const DB_MODE = 'FOR_DEPLOY';
+var dbHostPort = dbSwitch[process.env.DB_MODE]['dbHostPort'],
+    dbUser = dbSwitch[process.env.DB_MODE]['dbUser'],
+    dbPwd = dbSwitch[process.env.DB_MODE]['dbPwd'],
+    dbName = dbSwitch[process.env.DB_MODE]['dbName'];
 
 const db = arangojs(dbHostPort);
 db.useDatabase(dbName);
@@ -621,61 +633,12 @@ module.exports = function(app){
                 )
 
                 return {student: student, fa: path}`
-            // console.log(query);
             db.query(query).then(cursor => {
                 // cursor is a cursor for the query result
-                // console.log(cursor._result)  // just the first one for testing only
-                // reformat results for  easy client display 
-
+                // reformat results for improved client display 
                 var studentPathArr = [];
-                //  console.log(cursor._result)
-            
-                var studentArr = Array.from(cursor._result);
-                // var studentArr = cursor._result;
-                // for each student
-               
-                    // for each focus area
-                    // console.log("student", cursor._result[p].student)
-
-                    // for (var i = 0; i < cursor._result[p].fa.length; i++){
-                    //     // console.log(i)
-                    //     // console.log(cursor._result[p].fa[i])
-                    //     // console.log("fa length", cursor._result[p].fa.length)
-                    //     if ( i < cursor._result[p].fa.length-1) cursor._result[p].fa[i].nextFA = cursor._result[p].fa[i+1]['Focus Area'];
-                    //     cursor._result[p].fa[i]['currentStd'] = [];
-                    //     cursor._result[p].fa[i]['nextStd']= [];
-                    //     if (i < cursor._result[p].fa.length-1){  
-                    //         for (var j = 0; j < cursor._result[p].fa[i+1].standardConnections.length; j++){
-                    //             // save the first one
-                    //             if ((j === 0)){
-                    //                 cursor._result[p].fa[i].nextStd.push(cursor._result[p].fa[i+1].standardConnections[j]);
-                    //             }
-                    //             // don't save duplicates
-                    //             else if ((j > 0 ) && (cursor._result[p].fa[i+1].standardConnections[j-1] !== cursor._result[p].fa[i+1].standardConnections[j] )){
-                    //                 cursor._result[p].fa[i].nextStd.push(cursor._result[p].fa[i+1].standardConnections[j]);
-                    //             }  
-                    //         }
-                    //     }
-                
-                    //     // de-dup current fa std connections
-                    //     for (var k = 0; k < cursor._result[p].fa[i].standardConnections.length; k++){
-                    //         if ((k === 0)){
-                    //             cursor._result[p].fa[i]['currentStd'].push(cursor._result[p].fa[i].standardConnections[k]);
-                    //         }
-                    //         else if ((k > 0 ) && (cursor._result[p].fa[i].standardConnections[k-1] !== cursor._result[p].fa[i].standardConnections[k] )){
-                    //             cursor._result[p].fa[i]['nextStd'].push(cursor._result[p].fa[i].standardConnections[k]);
-                    //         }                 
-                    //     }
-                    //     // console.log(cursor._result[p].fa[i])
-                    // }
-
-                
-
-                
-                res.json(parseFa(cursor._result));  
-        //  
-                
-                // res.json(pathArr);          
+                var studentArr = Array.from(cursor._result);            
+                res.json(parseFa(cursor._result));        
             }).catch((error => {
                 console.log(Date.now() + " Error (Getting paths from Database):", error);
                 res.json();
@@ -686,7 +649,6 @@ module.exports = function(app){
         })
     })
 
- 
     app.post("/csv/file", function(req, res, next){
         validateUser(req, res, "uploadstudents").then((response) =>{
             // main entry point
@@ -772,8 +734,7 @@ module.exports = function(app){
 
     function sendToSummitEmail(email, filePath) {
         // this part creates a reusable transporter using SMTP of gmail
-
-       console.log("filePath",filePath)
+        return new Promise((resolve, reject) => {
             var emailAccountPassword = process.env.TEAM_EMAIL || 'C0ffeeCreamer34';
             var transporter = nodemailer.createTransport({
                 service: 'gmail',
@@ -788,16 +749,17 @@ module.exports = function(app){
 
             transporter.verify(function(error, success) {
                 if (error) {
-                        console.log(error);
+                    console.log(error);
+                    reject(error);
                 } else {
-                        console.log('Server is ready to take our messages');
+                    console.log('Server is ready to take our messages');
                 }
             });
             var server = process.env.EMAIL_FROM_SERVER || "http://localhost:8080"
             // var link = server + "/forgot/"; //API TO RESET PASSWORD
             var text = 'You are receiving this email because you are a Sidekick Admin responsible for uploading the attached data into Summit./n The Sidekick Team';
-            // var html = '<br><img src="' + server + '"/public/assets/img/sidekick.png" alt="Sidekick" height="42" width="42"/><p>You are receiving this email because you are a Sidekick Admin responsible for uploading the attached data into Summit.</p><br><h4>The Sidekick Team</h4>';
-            var html = '<br><br><p>You are receiving this email because you are a Sidekick Admin responsible for uploading the attached data into Summit.</p><br><h4>The Sidekick Team</h4>';
+            var html = '<br><img src="' + server + '"/public/assets/img/sidekick.png" alt="Sidekick" height="42" width="42"/><p>You are receiving this email because you are a Sidekick Admin responsible for uploading the attached data into Summit.</p><br><h4>The Sidekick Team</h4>';
+            // var html = '<br><br><p>You are receiving this email because you are a Sidekick Admin responsible for uploading the attached data into Summit.</p><br><h4>The Sidekick Team</h4>';
      
             // setup email data
         
@@ -811,17 +773,17 @@ module.exports = function(app){
                     path: filePath
                 }
             };
-
-
             //send the email
             transporter.sendMail(mailOptions, function(error, info) {
                 if (error) {
-                    return console.log(error)
+                    console.log(error)
+                    reject(error)
                 }
+                resolve(filePath)
             })
-
+        })
     }
-    // thi
+
     app.post('/summit', function(req,res){
         // sendtosummit is the required permission for this path
         validateUser(req, res, "sendtosummit").then((response) =>{
@@ -836,33 +798,36 @@ module.exports = function(app){
       
             // WAiting for updated query srted by query topic === Project
             // waiting for confirmation where to send this data
-            // console.log("summitArr", summitArr);
             // create file
 
             var user =  response.username.split('@');
-            fileName = __dirname + '/../public/assets/files/sendToSummit_' + user[0] +'.'+ Date.now() + '.txt';
+            var fileName = __dirname + '/../public/assets/files/sendToSummit_' + user[0] +'.'+ Date.now() + '.txt';
             var file = fs.createWriteStream(fileName);
             file.on('error', function(err) { 
                 console.log(err)
                 // return error msg
-                // res.json({success: false, error: "Problem creating file"})
+                res.json({success: false, error: "Problem creating file"})
             });
 
             summitArr.forEach(function(v) { file.write(v + '\n'); });
             file.end();
             // send as attachment to email
-            var adminEmail = "paths@sidekick.education";
+            var adminEmail = "paths@sidekick.education, fiona.hegarty@icloud.com";
             // var adminEmail = "fiona.hegarty@icloud.com";
             // need to pass file path
-            sendToSummitEmail(adminEmail, fileName);
+            sendToSummitEmail(adminEmail, fileName).then((fileName) => {
+                // delete file - cant do here! gets delte
+                fs.unlinkSync(fileName);
+                // send OK msg the browser sending emails....res.sendStatus(200)
+                res.json({success: true});
+            }).catch((error) => {
+                //send error status code?
+                res.json({success: false});
+            })
             // return fileName;
-        }).then(() =>{
-            // delete file - cant do here! gets delte
-            // fs.unlinkSync(fileName);
-            // send OK msg the browser sending emails....res.sendStatus(200)
-            res.json({success: true});
         }).catch((error) => {
             console.log(error);
+           //send error status code?
             console.log(Date.now() + " Authentication Error");
             res.json({success: false, error: "No Permissions to Upload file"})
         })
