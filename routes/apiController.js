@@ -20,23 +20,17 @@ var fs = require('fs');
 // console.log(db);
 // test connection
 const dbSwitch = {
-    FOR_DEPLOY: {
+    ENV: {
         dbHostPort: process.env.DB_HOST_PORT,
         dbUser: process.env.DB_USER,
         dbPwd: process.env.DB_PWD,
         dbName: process.env.DB_NAME
     },
-    DEVDB: {
-        dbHostPort: 'http://146.148.55.53:8529/',
-        dbUser: 'dbadmin',
-        dbPwd: '',
-        dbName: 'skdb'
-    },
     LOCAL: {
-        dbHostPort: 'http://localhost:8529',
-        dbUser: 'root',
-        dbPwd: 'sidekick',
-        dbName: 'skdb'
+        dbHostPort: process.env.LOCAL_DB_HOST_PORT,
+        dbUser: process.env.LOCAL_DB_USER,
+        dbPwd: process.env.LOCAL_DB_PWD,
+        dbName: process.env.LOCAL_DB_NAME
     }
 };
 // if running locally make sure you set env varaible 
