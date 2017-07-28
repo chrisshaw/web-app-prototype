@@ -219,7 +219,7 @@ var helpers = {
             console.log(error)
         })  
     },
-    sendToSummit(paths){
+    sendToSidekick(paths){
         // console.log(props);
     //    console.log(paths);
         // dispatch(actions.updatePathList("", true, true));
