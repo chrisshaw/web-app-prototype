@@ -44,7 +44,7 @@ class PathBuilder extends Component{
     // }
     handleSend() {
         // used by the "send to Sidekick" button in QueryBuilder
-        helper.sendToSummit(this.props.paths)  
+        helper.sendToSidekick(this.props.paths)  
     }
     // componentWillMount(){
     //     // set this.props.build === true so that title is not displayed and appbar is more responsive for
