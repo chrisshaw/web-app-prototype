@@ -38,29 +38,11 @@ class PathBuilder extends Component{
         // this.handleClose = this.handleClose.bind(this);
         this.handleSend = this.handleSend.bind(this);
     }
-    
-    // handleClose(){
-    //     helper.toggleDrawer(false, this.props.dispatch);
-    // }
     handleSend() {
         // used by the "send to Sidekick" button in QueryBuilder
-        helper.sendToSidekick(this.props.paths)  
+        helper.sendToSidekick(this.props.paths)   
     }
-    // componentWillMount(){
-    //     // set this.props.build === true so that title is not displayed and appbar is more responsive for
-    //     // this page on smalle screens
-    //     // helper.showView(true, this.props.dispatch);
-    // }
-    // shouldComponentUpdate(nextProps, nextState){
-    //     // if ((this.props != nextProps) && (this.props.changed !== false)){
-    //         if (nextProps.changed !== false)  return true
-    //         console.log("in if thisprops", this.props)
-           
-    //     // }
-       
-    // }
     render(){
-        console.log("What aer thsesese fa*********/", this.props.selectedfa)
         return(
             <div>
                 <PathBuilderDrawer handleClose={this.handleClose} handleSend={this.handleSend} />
@@ -91,7 +73,6 @@ const mapStateToProps = (store,ownProps) => {
         paths: store.mainState.paths,
         searching: store.mainState.searching,
         changed: store.mainState.changed,
-        // addfakey:  store.mainState.addfakey,
         fa: store.mainState.fa,
         selectedfa: store.mainState.selectedfa,
     }

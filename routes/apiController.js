@@ -35,8 +35,14 @@ const dbSwitch = {
 };
 // if running locally make sure you set env varaible 
 // run this in terminal :  export DB_MODE="LOCAL" etc.
-// to make permanent - add to ~/.bash_profile file in $HOME dir
-console.log("process.env.DB_MODE", process.env.DB_MODE);
+// // to make permanent - add to ~/.bash_profile file in $HOME dir
+// console.log("process.env.DB_MODE", process.env.DB_MODE);
+// console.log("process.env.LOCAL_DB_HOST_PORT", process.env.LOCAL_DB_HOST_PORT);
+// console.log("process.env.LOCAL_DB_USER", process.env.LOCAL_DB_USER);
+// console.log("process.env.LOCAL_DB_PWD", process.env.LOCAL_DB_PWD);
+// console.log("process.env.LOCAL_DB_NAME", process.env.LOCAL_DB_NAME);
+
+
 // if (process.env.ENVT == "DEMO"){
 //     const DB_MODE = 'FOR_DEPLOY';
 // } else if (process.env.ENVT == "LOCAL") {
@@ -778,68 +784,27 @@ module.exports = function(app){
         })
     }
 
-    // function prepareForNewPath(data) {
-    //     // save path to data base then after this send mail to sidekick for upload
-    //     return new Promise((resolve, reject) => {
-    //         // remove all paths for this user then save
-    //         var studentArr = [];
-    //         for (var j = 0; j < data.length; j++){
-    //             studentArr.push(data[j].student._id)
-    //         }
-    //         console.log("studentArr",studentArr);
-    //         // set old path to inactive instead of remove -- safer???
-    //         let query = aql`for user in hasSavedPath
-    //         filter user._from in ${studentArr}    
-    //         REMOVE { _key: user._key } IN hasSavedPath`;
-    //         console.log(query)
-    //         db.query(query)
-    //         .then(cursor => { 
-    //             console.log(cursor) 
-    //             resolve();
-    //         }).catch(error => {
-    //             console.log(Date.now() + " Error (Removing paths from database):", error);
-    //             reject();
-    //         }) 
-
-    //     })
-    // }
-    function prepareForSummit(data, username) {
-        // save path to data base then after this send mail to sidekick for upload
-        return new Promise((resolve, reject) => {
-            var summitArr = []; // holds data for a
-
-            // send to summit
-            for (var j = 0; j < data.length; j++){
-                for (var i = 0; i < data[j].fa.length; i++){
-                    // create data for email
-                    var instruction = 'Instruction ' + i + ': Course: ' + data[j].fa[i].course + ' -->  Project : ' + 'Topic / Dummy For Now' + ' --> INCLUDE --> Focus Area: ' + data[j].fa[i].name + ' --> POSITION --> ' + data[j].fa[i].Sequence + ' --> UPDATE --> Title: ' + data[j].fa[i].name + '(' + data[j].fa[i].Sequence +')';
-                    summitArr.push(instruction);                  
-                }
-                resolve(summitArr)
-            }
-        })
-    }
-
     function saveNewPath(data, username) {
         // save path to data base then after this send mail to sidekick for upload
         return new Promise((resolve, reject) => {
             var studentArr = [];
             var newPathArr = [];
+            var summitArr = []
             // get latest ids
             for (var j = 0; j < data.length; j++){
-                // console.log(data.student)
-                // studentArr.push(data[j].student._id)
+                // prepare data for saving to db
                 let faArr=[];
-                var studentObj = {
-                   studentId : data[j].student._id
-                }
+                var studentObj = {_id: data[j].student._id}
                 for (var i = 0; i < data[j].fa.length; i++){
                     faObj = {
                         _id: data[j].fa[i]._id,
-                        faKey: data[j].fa[i]._key,
+                        _key: data[j].fa[i]._key,
                         sequence: i+1
                     }
-                    faArr.push(faObj)
+                    faArr.push(faObj);
+                    // for send to summit email
+                    var instruction = 'Instruction ' + i + ': Course: ' + data[j].fa[i].course + ' -->  Project : ' + 'Topic / Dummy For Now' + ' --> INCLUDE --> Focus Area: ' + data[j].fa[i].name + ' --> POSITION --> ' + data[j].fa[i].Sequence + ' --> UPDATE --> Title: ' + data[j].fa[i].name + '(' + data[j].fa[i].Sequence +')';
+                    summitArr.push(instruction);   
                 }
                 studentObj.path = faArr;
                 studentObj.active = true;
@@ -849,48 +814,57 @@ module.exports = function(app){
                 studentObj.updatedBy = null;
                 studentArr.push(studentObj)
             }
-            console.log(studentArr);
-                            //    ilter r._f FOR fa IN s.fa
-                    // 
-            // may not be optimal query but doesnt fail if docs not found!
-            // the UPDATE {_from: s, active == true } with {pathRevId: fa.pathRevId + 1, active: true} in currentPath
-            let query = aql`for s in ${studentArr}
-                    FOR fa IN currentPath
-                    filter fa.studentId == s.studentId
-                    filter fa.active == true
+            // db.transaction({
+            //     collections: {
+            //         write: [ "isOn", "currentPath"]
+            //     },
+            //     action: function () {
+            //         // function to be executed inside database
+            //         const db = require('@arangodb').db;
+            //         const aql = require('@arangodb').aql;
+            //         // for (var i = 0; i < 100; ++i) {
+            //         // db.c1.save({ _key: "key" + i });
+            //         // db.c2.save({ _key: "key" + i });
+            //         // }
+            //         db.currentPath.count(); // 100
+            //         // db.c2.count(); // 100
+            //         // abort
+            //         // throw "doh!"
+            //     }
+            //     });
+            // update previous path to inactive and get the currentPath id for use in updatedTo
+            let query=aql`for s in ${studentArr}
+                    for fa in 0..1 outbound s isOn
+                        filter fa.active == true
                     UPDATE fa WITH {
                     active: false,
                     updatedDate:  DATE_NOW(),
                     updatedBy: ${username}
-                } IN currentPath return {_from: NEW.studentId, _to: NEW._id}`;
-       
+                } IN currentPath return {_from: s._id, _to: NEW._id}`
+
             db.query(query)
             .then(cursor => {  
+                // this  value is used as the 'from' path id in updatedTo edge
                 let prevPath = cursor._result;
-                console.log("prevpath", prevPath)
-                // insert path as object - whole path
+                // insert path as object - whole path into currentPath - active = true
                 let insertPathQuery = aql`for s in ${studentArr}
-                    INSERT s IN currentPath return {_from: NEW.studentId, _to: NEW._id}`;
+                    INSERT s IN currentPath return {_from: s._id, _to: NEW._id}`;
                     // console.log(insertPathQuery)
                 db.query(insertPathQuery)
                 .then(cursor => {  
-                    // current path id
+                    // get the latest current path id for use in isOn and updatedTo
                     let isOnEdgeCollection = cursor._result;
-                     console.log("isOnEdgeCollection", isOnEdgeCollection)
                     // this results will be put in edge collection isOn
                     let insertIsOnEdgeQuery = aql`for e in ${isOnEdgeCollection}
                     INSERT e IN isOn return NEW`;
-                    // console.log(insertIsOnEdgeQuery)
                     db.query(insertIsOnEdgeQuery)
                     .then((cursor) => { 
-                            // do some processing
+                            // do some processing the save to updatedTo edge
                             var updatedToArr = [];
                             for (var i = 0; i < prevPath.length; i++){
-                                console.log("prev path in here", prevPath[i]._from)
                                 for (var j = 0; j < isOnEdgeCollection.length; j++){
-                                    console.log("in here", isOnEdgeCollection[j]._from)
                                     if (prevPath[i]._from === isOnEdgeCollection[j]._from){
-                                        console.log("in here")
+                                        // rev path updatedTo to current path
                                         let updatedToObj = {
                                         _from: prevPath[i]._to,
                                         _to: isOnEdgeCollection[j]._to
@@ -898,45 +872,34 @@ module.exports = function(app){
                                         updatedToArr.push(updatedToObj);                            }
                                 } 
                             }
-                            // console.log("updatedToArr", updatedToArr)
                             let insertUpdatedToEdgeQuery = aql`for e in ${updatedToArr}
                             INSERT e IN updatedTo return NEW`;
-                            // console.log(insertUpdatedToEdgeQuery)
                             db.query(insertUpdatedToEdgeQuery)
                             .then((cursor) => { 
-                                console.log("result:", cursor._result);
-                                resolve();
+                                resolve(summitArr);
                             }).catch((error) => {
-                                console.log(error);
+                                let errorMsg = Date.now() + " Error (Insert updatedTo in Database):" + error;
+                                reject(errorMsg);
                             })  
                      }).catch((error) => {
-                         console.log(error);
+                        let errorMsg = Date.now() + " Error (Insert isOn in Database):" + error;
+                        reject(errorMsg);
                     })  
                 }).catch(error => {
-                    console.log(Date.now() + " Error (Insert currentPath from Database):", error);
-                    // res.json();
+                    let errorMsg = Date.now() + " Error (Insert currentPath in Database):" + error;
+                    reject(errorMsg);
                 }) 
             }).catch(error => {
-                console.log(Date.now() + " Error (Get currentPath revision from Database):", error);
-                // res.json();
+                let errorMsg = Date.now() + " Error (Get currentPath set active to false in Database):" + error;
+                reject(errorMsg);
             }) 
         })
     }
     app.post('/summit', function(req,res){
         // sendtosummit is the required permission for this path
         validateUser(req, res, "sendtosummit").then((response) =>{
-            console.log("req.body",req.body)
-            // var summitArr = [];
-            // var newPath=[];
-            saveNewPath(req.body, response.username).then(() => {
-            //    
-            }).catch((error) => {
-                // console.log(error);
-    
-            // res.json({success: false, error: "No Permissions to Upload file"})
-            })
-
-            prepareForSummit(req.body, response.username).then((summitArr) =>{
+            // first save the data then send to summit
+            saveNewPath(req.body, response.username).then((summitArr) => {
                 // Waiting for updated query srted by query topic === Project
                 // waiting for confirmation where to send this data
                 // create file
@@ -961,25 +924,20 @@ module.exports = function(app){
                     // send OK msg the browser sending emails....res.sendStatus(200)
                     res.json({success: true});
                 }).catch((error) => {
+                    console.log(error);
                     //send error status code?
-                    res.json({success: false});
+                    res.json({success: false,  error: error});
                 })
-
+            }).catch((error) => {
+                console.log(error);
+                res.json({success: false, error: error})
             })
-            
-            // console.log("newPath", newPath);
-            // saveNewPath(newPath).then(() => {
 
-            // })
-            //save path to database in one go?
-
-   
-            // return fileName;
         }).catch((error) => {
+            // User validation error
             console.log(error);
-           //send error status code?
-            console.log(Date.now() + " Authentication Error");
-            res.json({success: false, error: "No Permissions to Upload file"})
+            //send error status code?
+            res.json({success: false, error: error})
         })
     })
     app.get('/api/roles/all', function(req, res){

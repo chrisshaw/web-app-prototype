@@ -1,0 +1,5 @@
+export DB_MODE="LOCAL"
+export LOCAL_DB_HOST_PORT="http://localhost:8529"
+export LOCAL_DB_USER="root"
+export LOCAL_DB_PWD="sidekick"
+export LOCAL_DB_NAME="skdb"
