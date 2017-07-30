@@ -814,85 +814,54 @@ module.exports = function(app){
                 studentObj.updatedBy = null;
                 studentArr.push(studentObj)
             }
-            // db.transaction({
-            //     collections: {
-            //         write: [ "isOn", "currentPath"]
-            //     },
-            //     action: function () {
-            //         // function to be executed inside database
-            //         const db = require('@arangodb').db;
-            //         const aql = require('@arangodb').aql;
-            //         // for (var i = 0; i < 100; ++i) {
-            //         // db.c1.save({ _key: "key" + i });
-            //         // db.c2.save({ _key: "key" + i });
-            //         // }
-            //         db.currentPath.count(); // 100
-            //         // db.c2.count(); // 100
-            //         // abort
-            //         // throw "doh!"
-            //     }
-            //     });
-            // update previous path to inactive and get the currentPath id for use in updatedTo
-            let query=aql`for s in ${studentArr}
-                    for fa in 0..1 outbound s isOn
-                        filter fa.active == true
-                    UPDATE fa WITH {
-                    active: false,
-                    updatedDate:  DATE_NOW(),
-                    updatedBy: ${username}
-                } IN currentPath return {_from: s._id, _to: NEW._id}`
-
-            db.query(query)
-            .then(cursor => {  
-                // this  value is used as the 'from' path id in updatedTo edge
-                let prevPath = cursor._result;
-                // insert path as object - whole path into currentPath - active = true
-                let insertPathQuery = aql`for s in ${studentArr}
+            // rewrote update logic for  transation - all or nothing
+            const action = String(function (studentArr, username) {
+                // This code will be executed inside ArangoDB!
+                const db = require('@arangodb').db;
+                const aql = require('@arangodb').aql;
+                // get oldpath ids and store for use below
+                let getOldPath = aql`for s in ${params.studentArr}
+                    let cpArr = (for c in outbound s isOn return c._id)
+                    for cp in currentPath
+                        filter cp._id in cpArr
+                        filter cp.active == true
+                    return { sid: s._id, previd: cp._id}`;
+                params.prevPathIdArr = db._query(getOldPath).toArray();
+                // insert the new path and store the new ids
+                let insertNewPath = aql`for s in ${params.studentArr}
                     INSERT s IN currentPath return {_from: s._id, _to: NEW._id}`;
-                    // console.log(insertPathQuery)
-                db.query(insertPathQuery)
-                .then(cursor => {  
-                    // get the latest current path id for use in isOn and updatedTo
-                    let isOnEdgeCollection = cursor._result;
-                    // this results will be put in edge collection isOn
-                    let insertIsOnEdgeQuery = aql`for e in ${isOnEdgeCollection}
-                    INSERT e IN isOn return NEW`;
-                    db.query(insertIsOnEdgeQuery)
-                    .then((cursor) => { 
-                            // do some processing the save to updatedTo edge
-                            var updatedToArr = [];
-                            for (var i = 0; i < prevPath.length; i++){
-                                for (var j = 0; j < isOnEdgeCollection.length; j++){
-                                    if (prevPath[i]._from === isOnEdgeCollection[j]._from){
-                                        // rev path updatedTo to current path
-                                        let updatedToObj = {
-                                        _from: prevPath[i]._to,
-                                        _to: isOnEdgeCollection[j]._to
-                                        }
-                                        updatedToArr.push(updatedToObj);                            }
-                                } 
-                            }
-                            let insertUpdatedToEdgeQuery = aql`for e in ${updatedToArr}
-                            INSERT e IN updatedTo return NEW`;
-                            db.query(insertUpdatedToEdgeQuery)
-                            .then((cursor) => { 
-                                resolve(summitArr);
-                            }).catch((error) => {
-                                let errorMsg = Date.now() + " Error (Insert updatedTo in Database):" + error;
-                                reject(errorMsg);
-                            })  
-                     }).catch((error) => {
-                        let errorMsg = Date.now() + " Error (Insert isOn in Database):" + error;
-                        reject(errorMsg);
-                    })  
-                }).catch(error => {
-                    let errorMsg = Date.now() + " Error (Insert currentPath in Database):" + error;
-                    reject(errorMsg);
-                }) 
-            }).catch(error => {
-                let errorMsg = Date.now() + " Error (Get currentPath set active to false in Database):" + error;
-                reject(errorMsg);
-            }) 
+                params.newPathIdArr = db._query(insertNewPath).toArray();  
+                // insert newPathIdArr into isOn edge
+                let insertIsOnEdgeQuery = aql`for e in ${params.newPathIdArr} INSERT {_from: e._from, _to: e._to} IN isOn return NEW`;
+                db._query(insertIsOnEdgeQuery);
+                // insert from: oldpathid to: newpathid into UpdateTo
+                let insertUpdatedToEdgeQuery = aql`for old in ${params.prevPathIdArr}
+                    for new in ${params.newPathIdArr} 
+                    filter old.sid == new._from
+                    INSERT {_from: old.previd, _to: new._to} IN updatedTo return NEW`;           
+                let insertUpdatedToEdgeResult = db._query(insertUpdatedToEdgeQuery);
+                // set to old path to inactive 
+                let updateToInactiveQuery = aql`for e in ${params.prevPathIdArr}
+                    for c in currentPath
+                         filter c._id == e.previd
+                        UPDATE c with {active: false, updatedDate:  DATE_NOW(), updatedBy:"TEST" }
+                     IN currentPath return NEW`;
+                let updateToInactiveResult = db._query(updateToInactiveQuery);      
+                return;
+            });
+
+
+            db.transaction({read: ['currentPath', 'isOn'], write: ['currentPath', 'isOn', 'updatedTo']},
+            action,
+            {studentArr: studentArr, user: username, prevPathIdArr:[], newPathIdArr: [] })
+            .then(() => {
+                // all goodnow send to summit
+                resolve(summitArr);
+            })
+            .catch((error)=>{
+                console.log(error);
+                reject(error);
+            })
         })
     }
     app.post('/summit', function(req,res){
