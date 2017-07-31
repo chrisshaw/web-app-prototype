@@ -759,20 +759,25 @@ module.exports = function(app){
             var server = process.env.EMAIL_FROM_SERVER || "http://localhost:8080"
             // var link = server + "/forgot/"; //API TO RESET PASSWORD
             var text = 'You are receiving this email because you are a Sidekick Admin responsible for uploading the attached data into Summit./n The Sidekick Team';
-            var html = '<br><img src="' + server + '"/public/assets/img/sidekick.png" alt="Sidekick" height="42" width="42"/><p>You are receiving this email because you are a Sidekick Admin responsible for uploading the attached data into Summit.</p><br><h4>The Sidekick Team</h4>';
+            var html = '<br><div style="text-align: center; margin: 40px; height:20px; width:30px"><img src="cid:unique@sidekick" height="42" width="42" alt="Sidekick"/></div><p>You are receiving this email because you are a Sidekick Admin responsible for uploading the attached data into Summit.</p><br><h4>The Sidekick Team</h4>';
             // var html = '<br><br><p>You are receiving this email because you are a Sidekick Admin responsible for uploading the attached data into Summit.</p><br><h4>The Sidekick Team</h4>';
-     
-            // setup email data
-        
+    //         html: 'Embedded image: <img src="cid:unique@kreata.ee"/>',
+        // attachments: [
+            var imgPath = __dirname + '/../public/assets/img/sidekick.png';
             var mailOptions = {
                 from: '" Sidekick Education " <nerdzquiz@gmail.com>',
                 to: email,
                 subject: 'Send to Summit',
                 text: text,
                 html: html,
-                attachments: {
+                attachments: [{
                     path: filePath
-                }
+                },
+                {
+                    filename: 'sidekick.png',
+                    path:  imgPath,
+                    cid: 'unique@sidekick' //same cid value as in the html img src
+                }]
             };
             //send the email
             transporter.sendMail(mailOptions, function(error, info) {
@@ -890,6 +895,7 @@ module.exports = function(app){
                 // need to pass file path
                 sendToSummitEmail(adminEmail, fileName).then((fileName) => {
                     // delete file - cant do here! gets delte
+                    console.log("fileName", fileName)
                     fs.unlinkSync(fileName);
                     // send OK msg the browser sending emails....res.sendStatus(200)
                     res.json({success: true});
