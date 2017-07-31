@@ -85,7 +85,13 @@ class GroupTabs extends React.Component {
     this.setState({
       showDiv: "",
       });
-    if (this.props.selectedfa) helper.addFA(studentPosition, position, studentKey, faKey, this.props.selectedfa._key, this.props);
+    if (this.props.selectedfa) {
+      helper.addFA(studentPosition, position, studentKey, faKey, this.props.selectedfa._key, this.props);
+      // increase visible rows by one
+      let index = this.state.value;
+      let newvalue = this.props.falist[index]+1;
+      helper.addRows(newvalue, index, this.props.dispatch)
+    }
   }
   handleClose(studentPosition, position){ 
       let ref = studentPosition + '/' + position;
@@ -217,6 +223,7 @@ class GroupTabs extends React.Component {
                   <Col  className="chip-float">
                     <div className="chip">
                       {fa.nextFA}
+                      {console.log(fa.nextFA)}
                     </div>
                   </Col> 
                   {nextStandards}

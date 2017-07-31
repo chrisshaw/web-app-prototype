@@ -5,8 +5,8 @@ manual_scaling:
 env_variables:
   DB_MODE: "ENV"
   DB_NAME: 'skdb'
-  # DB_HOST_PORT: 'http://146.148.55.53:8529/'
-  DB_HOST_PORT: 'http://sk-arangodb:8529/'
+  DB_HOST_PORT: 'http://146.148.55.53:8529/'
+  # DB_HOST_PORT: 'http://sk-arangodb:8529/'
   DB_USER : 'dbadmin'
   DB_PWD: ''
   EMAIL_FROM_SERVER: 'C0ffeeCreamer34'
