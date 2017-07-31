@@ -112,6 +112,19 @@ userLogout: () => {
         id,
         list,
       }
+  },
+  showMoreRows: (newvalue, index) => {
+    return {
+      type: "SHOW_MORE_ROWS",
+      index,
+      newvalue
+    }
+  },
+  showInitialRows: (falist) => {
+    return {
+      type: "SHOW_INITIAL_ROWS",
+      falist
+    }
   }
 }
 

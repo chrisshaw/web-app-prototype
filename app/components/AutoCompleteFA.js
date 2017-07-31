@@ -21,39 +21,16 @@ class AutoCompleteFA extends Component{
         // this.handleClose = this.handleClose.bind(this);
 
     }
-    //  handleSelect(){
-    //     this.setState({searchText: ''})
-    // }
-   
-    //   _handleTextFieldChange(e, dataSource1) {
-    //     this.setState({searchText: e})
-    //     this.setState({textFieldValue: e})
-    //     // make sure a full word supplied is in list
-    //     if (dataSource1.indexOf(e) !== -1){
-    //         //  helper.updateSelectedGroup(e, false, this.props.dispatch);
-    //          helper.updateSelected(e, this.props.queryitem, this.props.dispatch);
-    //     }
-
-    // }
     handleSelect(e){
-        // this.setState({fa: e})
-        console.log("fa???", e);
         this.setState({searchText: e.name})
-        // this.setState({textFieldValue: ""})
-        console.log(this.props.fa.indexOf(e))
         if (this.props.fa.indexOf(e) !== -1 ){
-            console.log("fa", e);
             helper.saveSelectedFA(e, this.props.dispatch);
             // this.setState({searchText: ""})
         } else {
-            console.log("no fa")
-            helper.saveSelectedFA("", this.props.dispatch);
-            
+            helper.saveSelectedFA("", this.props.dispatch);       
         }    
     }
     render(){
-      
-
         return (<div>
     <AutoComplete
         // onClose={() => this.handleClose(this.state.fa)}

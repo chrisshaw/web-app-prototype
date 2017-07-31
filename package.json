@@ -31,6 +31,7 @@
     "express-graphql": "^0.6.6",
     "express-session": "^1.15.1",
     "graphql": "^0.10.3",
+    "immutability-helper": "^2.3.0",
     "material-ui": "^0.18.5",
     "material-ui-chip-input": "^0.15.0",
     "material-ui-scrollable-tabs": "^1.0.0",

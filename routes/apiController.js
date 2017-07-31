@@ -116,8 +116,8 @@ module.exports = function(app){
                 .then(cursor => {  
                     // validate whether user has required permssion
                     let permissions = cursor._result;
-                    console.log(authPerm)
-                    console.log(permissions)
+                    // console.log(authPerm)
+                    // console.log(permissions)
                     if ((authPerm !== '' ) && (permissions.indexOf(authPerm) !== -1)) {
                         resolve({success:true, userid: userid, username: username});
                     } else if (authPerm === '' ) {
@@ -137,17 +137,17 @@ module.exports = function(app){
     }
 
    function parseFa(result) {
-       console.log(result)
+    //    console.log(result)
         for (var p= 0; p < result.length; p++){
             // console.log("result.fa.length", result.fa.length)
             for (var i = 0; i < result[p].fa.length; i++){
-                console.log("result[p].fa.length-1", result[p].fa.length-1)
+                // console.log("result[p].fa.length-1", result[p].fa.length-1)
                 if ( i < result[p].fa.length-1) {
                     result[p].fa[i].nextFA = result[p].fa[i+1]['Focus Area']
                 } else {
                     result[p].fa[i].nextFA = [];  // if 
                 }
-                console.log(" result[p].fa[i].nextFA ",  result[p].fa[i].nextFA )
+                // console.log(" result[p].fa[i].nextFA ",  result[p].fa[i].nextFA )
                 result[p].fa[i]['currentStd'] = [];
                 result[p].fa[i]['nextStd']= [];
                 if (i < result[p].fa.length-1){  
@@ -637,7 +637,8 @@ module.exports = function(app){
                 // cursor is a cursor for the query result
                 // reformat results for improved client display 
                 var studentPathArr = [];
-                var studentArr = Array.from(cursor._result);            
+                var studentArr = Array.from(cursor._result);    
+                console.log("path", cursor._result)        
                 res.json(parseFa(cursor._result));        
             }).catch((error => {
                 console.log(Date.now() + " Error (Getting paths from Database):", error);
@@ -1002,7 +1003,7 @@ module.exports = function(app){
         // wondering if we should get this from front end  or from db..
         // let role = req.params.role;
         let username = req.params.username;  
-        console.log("username", username)
+        // console.log("username", username)
         /// *********now filter based on user role!!
         // dont need role here - should bring back a teacher or students courses - the query will pull these back if queryCourse !== [] elese it will bring all back
         // only teachers or students will have mappings in hasCourses table
@@ -1039,7 +1040,7 @@ module.exports = function(app){
         // wondering if we should get this from front end  or from db..
         // let role = req.params.role;
         let username = req.params.username;  
-        console.log("username", username)
+        // console.log("username", username)
         /// *********now filter based on user role!!
         // dont need role here - should bring back a teacher or students courses - the query will pull these back if queryCourse !== [] elese it will bring all back
         // only teachers or students will have mappings in hasCourses table

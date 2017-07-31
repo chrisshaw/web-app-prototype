@@ -56,7 +56,7 @@ class PathBuilder extends Component{
                             <div className="loader-text">Searching...</div>
                             <br />
                             <div className="text-center loader"></div></div>
-                            </div>) : (<GroupTabs selectedfa={this.props.selectedfa} fa={this.props.fa} username={this.props.username}  paths={this.props.paths} changed={this.props.changed} />)}
+                            </div>) : (<GroupTabs falist={this.props.falist} selectedfa={this.props.selectedfa} fa={this.props.fa} username={this.props.username}  paths={this.props.paths} changed={this.props.changed} />)}
 
                                                 
                         </Paper>        
@@ -75,6 +75,7 @@ const mapStateToProps = (store,ownProps) => {
         changed: store.mainState.changed,
         fa: store.mainState.fa,
         selectedfa: store.mainState.selectedfa,
+        falist: store.mainState.falist
     }
 }
 

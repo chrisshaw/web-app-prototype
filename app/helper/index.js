@@ -332,7 +332,7 @@ var helpers = {
 
 
     },
-    parseFa: (result) => {
+    parseFa(result){
         // console.log("result.fa.length", result.fa.length)
         for (var i = 0; i < result.fa.length; i++){
             // console.log("result.fa.length-1", result.fa.length-1)
@@ -370,7 +370,7 @@ var helpers = {
             }
         }
     },
-    removeChip: function(id, queryitem, dispatch){
+    removeChip(id, queryitem, dispatch){
         if  (queryitem === "Topics") {
             dispatch(actions.updateList(false, true, id, 'UPDATE_TOPICS'));
         }  else if  (queryitem === "Standards") {
@@ -384,7 +384,7 @@ var helpers = {
         }
     },
     // use to update all query items
-    updateSelected: function(e, queryitem, dispatch){
+    updateSelected(e, queryitem, dispatch){
         if (queryitem === "Groups"){
             dispatch(actions.saveSelected(e, 'UPDATE_SELECTED_GROUPS'));
         } else if  (queryitem === "Topics") {
@@ -399,10 +399,10 @@ var helpers = {
             dispatch(actions.saveSelected(e, 'UPDATE_SELECTED_COURSES'));
         }
     },
-    showView: function(action, dispatch){
+    showView(action, dispatch){
         dispatch(actions.setPage(action));
     },
-    getRoles: function(dispatch) {
+    getRoles(dispatch) {
         // return ['admin', 'teacher', 'user', 'internal']
         return axios.get('/api/roles/all').then(function(response) {
             // send results to redux store for use by SignUp component
@@ -412,6 +412,12 @@ var helpers = {
             // send message to client...needs work
             console.log(error)
         })   
+    },
+    addInitialRows(displayFA, dispatch){
+        dispatch(actions.showInitialRows(displayFA));
+    },
+    addRows(index, newvalue, dispatch){
+        dispatch(actions.showMoreRows(index, newvalue ));
     },
     // getUserPerms(dispatch) {
     //     return axios.get('/api/perms/user').then(function(response) {

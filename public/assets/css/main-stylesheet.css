@@ -239,6 +239,9 @@ table {
 .add-fa-hide {
     display: none
 }
+.add-fa-show {
+display: block
+}
 .drop:hover {
     /* color:  #808080 !important; */
     border-bottom: solid #808080 1px;

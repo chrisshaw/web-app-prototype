@@ -1,6 +1,6 @@
 import uuid from 'uuid';
 import {combineReducers } from 'redux';
-
+import update from 'immutability-helper';
 
 const intialstate = {
     //realised that intialstate wasnt workginas it was nesetd {initialstate} below
@@ -20,6 +20,7 @@ const intialstate = {
 //   selectedgradelist: [],
 //   selectedtopiclist: [],
 //   initialSearchTerms: [],
+  falist: {},
   pathsrendered: false,
   pathbuilderview: false,
   paths: [],
@@ -160,7 +161,14 @@ const mainReducer = (state=intialstate, action) => {
             return updateSelected(action, state, 'topiclist', 'selectedtopiclist'); 
         case 'UPDATE_SELECTED_STANDARDS':
             // saves to selected list for query and in chips
-            return updateSelected(action, state, 'standardslist', 'selectedstandardslist');                
+            return updateSelected(action, state, 'standardslist', 'selectedstandardslist');  
+        case 'SHOW_INITIAL_ROWS': 
+            return Object.assign({},state, {falist: action.falist})
+         case 'SHOW_MORE_ROWS': 
+            return Object.assign({},state, {falist: update(state.falist,{ 
+                  [action.index]: {$set: action.newvalue}
+                })
+            })
     };        
     return state;
 }
