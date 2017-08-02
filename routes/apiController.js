@@ -776,11 +776,14 @@ module.exports = function(app){
             var instructionCounter = 0;
             for (var s = 0; s < data.length; s++ ){
                 // for each project
+                let studentObj={};
                 let projectsArr=[];
+                console.log("data[s].projects.length", data[s].projects.length)
                 for (var j = 0; j < data[s].projects.length; j++){
                     // prepare data for saving to db
                     let faArr=[];
-                    var studentObj = {_id: data[s].student._id}
+                    studentObj = {_id: data[s].student._id}
+                      console.log("data[s].projects[j].fa.length",data[s].projects[j].fa.length)
                     for (var i = 0; i <  data[s].projects[j].fa.length; i++){
                         instructionCounter++;
                         let faObj = {
@@ -797,65 +800,71 @@ module.exports = function(app){
                     projectsArr.push(projectsObj);
                     
                 }
+                console.log("projectsArr", projectsArr)
                 studentObj.path = projectsArr;
                 studentObj.active = true;
                 studentObj.createdDate = Date.now();
                 studentObj.createdBy = username;
                 studentObj.updatedDate = null;
                 studentObj.updatedBy = null;
-                console.log("studentObj",studentObj);
-                console.log("projectsArr",projectsArr);
                 studentArr.push(studentObj)
             }
 
+            console.log("studentArr", studentArr);
             // rewrote update logic for  transation - all or nothing
-            const action = String(function (studentArr, username) {
-                // This code will be executed inside ArangoDB!
-                const db = require('@arangodb').db;
-                const aql = require('@arangodb').aql;
-                // get oldpath ids and store for use below
-                let getOldPath = aql`for s in ${params.studentArr}
-                    let cpArr = (for c in outbound s isOn return c._id)
-                    for cp in currentPath
-                        filter cp._id in cpArr
-                        filter cp.active == true
-                    return { sid: s._id, previd: cp._id}`;
-                params.prevPathIdArr = db._query(getOldPath).toArray();
-                // insert the new path and store the new ids
-                let insertNewPath = aql`for s in ${params.studentArr}
-                    INSERT s IN currentPath return {_from: s._id, _to: NEW._id}`;
-                params.newPathIdArr = db._query(insertNewPath).toArray();  
-                // insert newPathIdArr into isOn edge
-                let insertIsOnEdgeQuery = aql`for e in ${params.newPathIdArr} INSERT {_from: e._from, _to: e._to} IN isOn return NEW`;
-                db._query(insertIsOnEdgeQuery);
-                // insert from: oldpathid to: newpathid into UpdateTo
-                let insertUpdatedToEdgeQuery = aql`for old in ${params.prevPathIdArr}
-                    for new in ${params.newPathIdArr} 
-                    filter old.sid == new._from
-                    INSERT {_from: old.previd, _to: new._to} IN updatedTo return NEW`;           
-                let insertUpdatedToEdgeResult = db._query(insertUpdatedToEdgeQuery);
-                // set to old path to inactive 
-                let updateToInactiveQuery = aql`for e in ${params.prevPathIdArr}
-                    for c in currentPath
-                         filter c._id == e.previd
-                        UPDATE c with {active: false, updatedDate:  DATE_NOW(), updatedBy:"TEST" }
-                     IN currentPath return NEW`;
-                let updateToInactiveResult = db._query(updateToInactiveQuery);      
-                return;
-            });
+            if ( studentArr.length > 0 ){
+
+            
+                const action = String(function (studentArr, username) {
+                    // This code will be executed inside ArangoDB!
+                    const db = require('@arangodb').db;
+                    const aql = require('@arangodb').aql;
+                    // get oldpath ids and store for use below
+                    let getOldPath = aql`for s in ${params.studentArr}
+                        let cpArr = (for c in outbound s isOn return c._id)
+                        for cp in currentPath
+                            filter cp._id in cpArr
+                            filter cp.active == true
+                        return { sid: s._id, previd: cp._id}`;
+                    params.prevPathIdArr = db._query(getOldPath).toArray();
+                    // insert the new path and store the new ids
+                    let insertNewPath = aql`for s in ${params.studentArr}
+                        INSERT s IN currentPath return {_from: s._id, _to: NEW._id}`;
+                    params.newPathIdArr = db._query(insertNewPath).toArray();  
+                    // insert newPathIdArr into isOn edge
+                    let insertIsOnEdgeQuery = aql`for e in ${params.newPathIdArr} INSERT {_from: e._from, _to: e._to} IN isOn return NEW`;
+                    db._query(insertIsOnEdgeQuery);
+                    // insert from: oldpathid to: newpathid into UpdateTo
+                    let insertUpdatedToEdgeQuery = aql`for old in ${params.prevPathIdArr}
+                        for new in ${params.newPathIdArr} 
+                        filter old.sid == new._from
+                        INSERT {_from: old.previd, _to: new._to} IN updatedTo return NEW`;           
+                    let insertUpdatedToEdgeResult = db._query(insertUpdatedToEdgeQuery);
+                    // set to old path to inactive 
+                    let updateToInactiveQuery = aql`for e in ${params.prevPathIdArr}
+                        for c in currentPath
+                            filter c._id == e.previd
+                            UPDATE c with {active: false, updatedDate:  DATE_NOW(), updatedBy:"TEST" }
+                        IN currentPath return NEW`;
+                    let updateToInactiveResult = db._query(updateToInactiveQuery);      
+                    return;
+                });
 
 
-            db.transaction({read: ['currentPath', 'isOn'], write: ['currentPath', 'isOn', 'updatedTo']},
-            action,
-            {studentArr: studentArr, user: username, prevPathIdArr:[], newPathIdArr: [] })
-            .then(() => {
-                // all goodnow send to summit
-                resolve(summitArr);
-            })
-            .catch((error)=>{
-                console.log(error);
-                reject(error);
-            })
+                db.transaction({read: ['currentPath', 'isOn'], write: ['currentPath', 'isOn', 'updatedTo']},
+                action,
+                {studentArr: studentArr, user: username, prevPathIdArr:[], newPathIdArr: [] })
+                .then(() => {
+                    // all goodnow send to summit
+                    resolve(summitArr);
+                })
+                .catch((error)=>{
+                    console.log(error);
+                    reject(error);
+                })
+            } else {
+                resolve([]); // need to think  what to respove
+            }
         })
     }
     app.post('/summit', function(req,res){
