@@ -31,7 +31,7 @@ module.exports = [
     },
     {
         "name": "Project 2",
-        "sequence": 1,
+        "sequence": 2,
         "fa": [{ 
                     _key: '1337033',
                     _id: 'focusAreas/1337033',
@@ -53,7 +53,7 @@ module.exports = [
     },
     {
         "name": "Project 3",
-        "sequence": 1,
+        "sequence": 3,
         "fa": [{ 
                     _key: '1337033',
                     _id: 'focusAreas/1337033',

@@ -772,29 +772,42 @@ module.exports = function(app){
             var newPathArr = [];
             var summitArr = []
             // get latest ids
-            for (var j = 0; j < data.length; j++){
-                // prepare data for saving to db
-                let faArr=[];
-                var studentObj = {_id: data[j].student._id}
-                for (var i = 0; i < data[j].fa.length; i++){
-                    faObj = {
-                        _id: data[j].fa[i]._id,
-                        _key: data[j].fa[i]._key,
-                        sequence: i+1
-                    }
-                    faArr.push(faObj);
-                    // for send to summit email
-                    var instruction = 'Instruction ' + i + ': Course: ' + data[j].fa[i].course + ' -->  Project : ' + 'Topic / Dummy For Now' + ' --> INCLUDE --> Focus Area: ' + data[j].fa[i].name + ' --> POSITION --> ' + data[j].fa[i].Sequence + ' --> UPDATE --> Title: ' + data[j].fa[i].name + '(' + data[j].fa[i].Sequence +')';
-                    summitArr.push(instruction);   
+            // for each student
+            var instructionCounter = 0;
+            for (var s = 0; s < data.length; s++ ){
+                // for each project
+                let projectsArr=[];
+                for (var j = 0; j < data[s].projects.length; j++){
+                    // prepare data for saving to db
+                    let faArr=[];
+                    var studentObj = {_id: data[s].student._id}
+                    for (var i = 0; i <  data[s].projects[j].fa.length; i++){
+                        instructionCounter++;
+                        let faObj = {
+                            _id:   data[s].projects[j].fa[i]._id,
+                            _key:  data[s].projects[j].fa[i]._key,
+                            sequence: i+1
+                        }
+                        faArr.push(faObj);
+                        // for send to summit email
+                        var instruction = 'Instruction ' + instructionCounter + ': Course: ' + data[s].projects[j].fa[i].course + ' -->  Project : ' + data[s].projects[j].name + ' --> INCLUDE --> Focus Area: ' + data[s].projects[j].fa[i].name + ' --> POSITION --> ' + data[s].projects[j].fa[i].courseSequence + ' --> UPDATE --> Title: ' + data[s].projects[j].fa[i].name + '(' + data[s].projects[j].fa[i].projectSequence +')';
+                        summitArr.push(instruction);   
+                    } 
+                    let projectsObj={ name: data[s].projects[j].name, fa: faArr, sequence: j+1}
+                    projectsArr.push(projectsObj);
+                    
                 }
-                studentObj.path = faArr;
+                studentObj.path = projectsArr;
                 studentObj.active = true;
                 studentObj.createdDate = Date.now();
                 studentObj.createdBy = username;
                 studentObj.updatedDate = null;
                 studentObj.updatedBy = null;
+                console.log("studentObj",studentObj);
+                console.log("projectsArr",projectsArr);
                 studentArr.push(studentObj)
             }
+
             // rewrote update logic for  transation - all or nothing
             const action = String(function (studentArr, username) {
                 // This code will be executed inside ArangoDB!

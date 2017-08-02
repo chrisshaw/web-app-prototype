@@ -263,10 +263,22 @@ var helpers = {
        }
    
     },
+    removeProject(studentPathPosition, projPosition, props){
+        // remove empty project 
+        console.log("in here", studentPathPosition, projPosition)
+        props.paths[studentPathPosition].projects.splice(projPosition, 1);
+        // do some processing to get nextFA and nextStd
+        helpers.parseFa(props.paths[studentPathPosition]);    
+        props.dispatch(actions.updatePathList(props.paths, false, false ));  
+
+    },
     addFA(studentPathPosition, projPosition, idCounter, studentKey, faKey, addFAKey, props){
        // do quick check to make sure the correct fa is being removed
        let addAfterKey = 0;
        if ((faKey) && (props.paths[studentPathPosition].projects[projPosition].fa.length > 0)){
+           console.log(studentPathPosition, projPosition, idCounter)
+                       console.log("props.paths[studentPathPosition].projects[projPosition].fa[idCounter]", props.paths[studentPathPosition].projects[projPosition].fa[idCounter])
+
             addAfterKey = props.paths[studentPathPosition].projects[projPosition].fa[idCounter]._key;
        } 
        if ((props.paths[studentPathPosition].student._key === studentKey) && (faKey === addAfterKey)){
