@@ -55,7 +55,9 @@ class QueryBuilder extends Component{
         // messy logic will rework later!!!
         /// if all good then send the query
         if (hasCourses){
-            helper.getPathsAll(myCourses,this.props.selectedgradelist, this.props.selectedstandardslist, this.props.selectedtopiclist, this.props.selectedsubjectcontentlist, this.props.role, this.props.dispatch);  
+            helper.getPathProjectAll(myCourses,this.props.selectedgradelist, this.props.selectedstandardslist, this.props.selectedtopiclist, this.props.selectedsubjectcontentlist, this.props.role, this.props.dispatch); 
+            // reset display settings
+            helper.addInitialRows("", this.props.dispatch); 
         }  else {
             this.setState({error: true , errorMsg:  "You have no COURSES set up in Sidekick, please contact your administrator."})
         }  

@@ -136,43 +136,67 @@ module.exports = function(app){
         });      
     }
 
-   function parseFa(result) {
-    //    console.log(result)
-        for (var p= 0; p < result.length; p++){
-            // console.log("result.fa.length", result.fa.length)
-            for (var i = 0; i < result[p].fa.length; i++){
-                // console.log("result[p].fa.length-1", result[p].fa.length-1)
-                if ( i < result[p].fa.length-1) {
-                    result[p].fa[i].nextFA = result[p].fa[i+1]['Focus Area']
-                } else {
-                    result[p].fa[i].nextFA = [];  // if 
-                }
-                // console.log(" result[p].fa[i].nextFA ",  result[p].fa[i].nextFA )
-                result[p].fa[i]['currentStd'] = [];
-                result[p].fa[i]['nextStd']= [];
-                if (i < result[p].fa.length-1){  
-                    for (var j = 0; j <  result[p].fa[i+1].standardConnections.length; j++){
-                        // save the first one
-                        if ((j === 0)){
-                            result[p].fa[i].nextStd.push(result[p].fa[i+1].standardConnections[j]);
+   function parseFa(result) { 
+        // for each student
+        for (var p = 0; p < result.length; p++){
+            // for each project
+            for (var l = 0; l < result[p].projects.length; l++){
+                // for each fa  
+                for (var i = 0; i < result[p].projects[l].fa.length; i++){
+                    if ( i < result[p].projects[l].fa.length-1) {
+                        result[p].projects[l].fa[i].nextFA = result[p].projects[l].fa[i+1]['Focus Area']
+                    } else {
+                        // if there is another project 
+                        if ((result[p].projects.length-1 > l ) && (result[p].projects[l+1].fa.length > 0)){
+                            // moves to next project and the first fa in that project if one exists
+                            result[p].projects[l].fa[i].nextFA = result[p].projects[l+1].fa[0]['Focus Area'];
+                            console.log("result[p].projects[l].fa[i].nextFA", result[p].projects[l].fa[i].nextFA)
+                        } else {
+                            result[p].projects[l].fa[i].nextFA = [];  
                         }
-                        // don't save duplicates
-                        else if ((j > 0 ) && (result[p].fa[i+1].standardConnections[j-1] !== result[p].fa[i+1].standardConnections[j] )){
-                            result[p].fa[i].nextStd.push(result[p].fa[i+1].standardConnections[j]);
-                        }  
                     }
-                }  else {
-                    result[p].fa[i].nextStd = [];  // if 
-                }
+                    // console.log(" result[p].projects[l].fa[i].nextFA ",  result[p].projects[l].fa[i].nextFA )
+                    result[p].projects[l].fa[i]['currentStd'] = [];
+                    result[p].projects[l].fa[i]['nextStd']= [];
+                    // next standards
+                    if (i < result[p].projects[l].fa.length-1){  
+                        for (var j = 0; j < result[p].projects[l].fa[i+1].standardConnections.length; j++){
+                            // save the first one
+                            if ((j === 0)){
+                                result[p].projects[l].fa[i].nextStd.push(result[p].projects[l].fa[i+1].standardConnections[j]);
+                            }
+                            // don't save duplicates
+                            else if ((j > 0 ) && (result[p].projects[l].fa[i+1].standardConnections[j-1] !== result[p].projects[l].fa[i+1].standardConnections[j] )){
+                                result[p].projects[l].fa[i].nextStd.push(result[p].projects[l].fa[i+1].standardConnections[j]);
+                            }  
+                        }
+                    }  else {
+                         // result[p].projects[k].fa[i].nextFA = [];  
+                        if ((result[p].projects.length-1 > l ) && (result[p].projects[l+1].fa.length > 0)){
+                            // moves to next project and the first fa in that project if one exists
+                            for (var j = 0; j < result[p].projects[l+1].fa[0].standardConnections.length; j++){
+                                if ((j === 0)){
+                                    result[p].projects[l].fa[i].nextStd.push(result[p].projects[l+1].fa[0].standardConnections[j]);
+                                }
+                                // don't save duplicates
+                                else if ((j > 0 ) && (result[p].projects[l+1].fa[0].standardConnections[j-1] !== result[p].projects[l+1].fa[0].standardConnections[j] )){
+                                    result[p].projects[l].fa[i].nextStd.push(result[p].projects[l+1].fa[0].standardConnections[j]);
+                                }
+                            }
+                        } else {
+                           result[p].projects[l].fa[i].nextStd = [];  // if 
+                        }
+                    }
 
-                // de-dup current fa std connections
-                for (var k = 0; k < result[p].fa[i].standardConnections.length; k++){
-                    if ((k === 0)){
-                        result[p].fa[i]['currentStd'].push(result[p].fa[i].standardConnections[k]);
+                    // de-dup current fa std connections
+                    for (var k = 0; k < result[p].projects[l].fa[i].standardConnections.length; k++){
+                        if ((k === 0)){
+                            result[p].projects[l].fa[i]['currentStd'].push(result[p].projects[l].fa[i].standardConnections[k]);
+                        }
+                        else if ((k > 0 ) && (result[p].projects[l].fa[i].standardConnections[k-1] !== result[p].projects[l].fa[i].standardConnections[k] )){
+                        result[p].projects[l].fa[i]['currentStd'].push(result[p].projects[l].fa[i].standardConnections[k]);
+                        }                 
                     }
-                    else if ((k > 0 ) && (result[p].fa[i].standardConnections[k-1] !== result[p].fa[i].standardConnections[k] )){
-                    result[p].fa[i]['currentStd'].push(result[p].fa[i].standardConnections[k]);
-                    }                 
                 }
             }
         }
@@ -444,7 +468,19 @@ module.exports = function(app){
         })
     })
 
-
+   // for now this just returns a json
+    app.post('/api/path/project', function (req, res){
+        
+        // validateUser(req, res, "buildpath").then((response) =>{
+            let path = require('../data/faPath.js'); 
+            console.log("in here.....");
+            let parsedPath = parseFa(path);
+            res.json({success: true, paths: parsedPath })
+        // }).catch((error) => {
+             console.log(Date.now() + " Authentication Error");
+             res.json({success: false, error: "No Permissions to View Paths"})
+        // })
+    })
     
     // using post as passing object - probably not ideal
     app.post('/api/path/all', function (req, res){
@@ -503,67 +539,6 @@ module.exports = function(app){
                     }
                 } 
             } 
-            // var query=aql`let topicalFas=LENGTH(${queryTopics}) == 0 ? [] : UNIQUE(FLATTEN(
-            //                 for p in projects
-            //                 filter p.topics[* return UPPER(CURRENT)] any in ${queryTopics}[* return UPPER(CURRENT)]
-            //                     for fa in
-            //                     2 outbound p
-            //                     alignsTo, addressedBy
-            //                     return fa._key
-            //             ))
-            //             let courseFas = LENGTH(${queryCourses}) == 0 ? [] : UNIQUE(FLATTEN(
-            //                 for c in courses
-            //                 filter UPPER(c.name) in ${queryCourses}
-            //                     for fa in
-            //                     outbound c
-            //                     covers
-            //                     return fa._key
-            //             ))
-            //             let queryStudents = UNIQUE(FLATTEN(
-            //                 for c in courses
-            //                             filter LENGTH(${queryCourses}) > 0 ? UPPER(c.name) in ${queryCourses} : true  
-            //                                 for student
-            //                                 in inbound c
-            //                                 hasCourse 
-            //                                 filter LENGTH(${queryGrades}) > 0 ? student.grade in ${queryGrades} : true 
-            //                                 for role
-            //                                     in outbound student._id
-            //                                     auth_user_hasRole 
-            //                                     filter UPPER(role.name) == 'STUDENT'
-            //                                 return student._id
-            //             ))
-            //             let starters = (
-            //                 for fa in focusAreas
-            //                 let priors = (
-            //                     for v
-            //                     in inbound fa
-            //                     thenFocusOn
-            //                     return 1
-            //                 )
-            //                 filter LENGTH(priors) == 0
-            //                 return fa._id
-            //             )
-            //             for student in queryStudents
-            //                 let masteredFas = (
-            //                     FOR fa
-            //                     IN outbound student
-            //                     hasMastered
-            //                     return fa._key
-            //                 )
-            //                 let StudentDetails = (for s in auth_users filter s._id == student return { first: s.first, last: s.last, id: s.studentId})
-            //                 let path  = (
-            //                     for start in starters
-            //                         for fa
-            //                         in 0..999 outbound start
-            //                         thenFocusOn
-            //                         filter length(${querySubjects}) > 0 ? UPPER(fa.subject) in ${querySubjects} : true
-            //                         filter length(topicalFas) > 0 ? fa._key in topicalFas : true
-            //                         filter length(courseFas) > 0 ? fa._key in courseFas : true
-            //                         filter length(masteredFas) > 0 ? fa._key not in masteredFas : true
-            //                         filter length(${queryStandards}) > 0 ? fa.standardConnections[* return UPPER(CURRENT)] any in ${queryStandards}[* return UPPER(CURRENT)] : true
-            //                         return fa
-            //                 )
-            //             return {student: student, details: StudentDetails, fa: path}`;
             var query = aql`
                 let topicalFas = LENGTH(${queryTopics}) == 0 ? [] : UNIQUE(FLATTEN(
                     for p in projects
@@ -638,7 +613,7 @@ module.exports = function(app){
                 // reformat results for improved client display 
                 var studentPathArr = [];
                 var studentArr = Array.from(cursor._result);    
-                console.log("path", cursor._result)        
+    // !!!*** note parseFA has changed (projects added) so wont work here any more      
                 res.json(parseFa(cursor._result));        
             }).catch((error => {
                 console.log(Date.now() + " Error (Getting paths from Database):", error);
@@ -759,7 +734,7 @@ module.exports = function(app){
             var server = process.env.EMAIL_FROM_SERVER || "http://localhost:8080"
             // var link = server + "/forgot/"; //API TO RESET PASSWORD
             var text = 'You are receiving this email because you are a Sidekick Admin responsible for uploading the attached data into Summit./n The Sidekick Team';
-            var html = '<br><div style="text-align: center; margin: 40px; height:20px; width:30px"><img src="cid:unique@sidekick" height="42" width="42" alt="Sidekick"/></div><p>You are receiving this email because you are a Sidekick Admin responsible for uploading the attached data into Summit.</p><br><h4>The Sidekick Team</h4>';
+            var html = '<br><div style="text-align: right; height:30; width:100"><img src="cid:unique@sidekick" height="42" width="42" alt="Sidekick"/></div><p>You are receiving this email because you are a Sidekick Admin responsible for uploading the attached data into Summit.</p><br><h4>The Sidekick Team</h4>';
             // var html = '<br><br><p>You are receiving this email because you are a Sidekick Admin responsible for uploading the attached data into Summit.</p><br><h4>The Sidekick Team</h4>';
     //         html: 'Embedded image: <img src="cid:unique@kreata.ee"/>',
         // attachments: [
@@ -890,8 +865,8 @@ module.exports = function(app){
                 summitArr.forEach(function(v) { file.write(v + '\n'); });
                 file.end();
                 // send as attachment to email
-                // var adminEmail = "paths@sidekick.education, fiona.hegarty@icloud.com";
-                var adminEmail = "fiona.hegarty@icloud.com";
+                var adminEmail = "paths@sidekick.education, fiona.hegarty@icloud.com";
+                // var adminEmail = "fiona.hegarty@icloud.com";
                 // need to pass file path
                 sendToSummitEmail(adminEmail, fileName).then((fileName) => {
                     // delete file - cant do here! gets delte

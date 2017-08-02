@@ -189,10 +189,27 @@ var helpers = {
         var subjectArr = [{_id: 0, name: "english"}, {_id: 1, name: "math"}, {_id: 2, name: "science"}, {_id: 3, name: "social studies"}]
         dispatch(actions.updateList(reset, deleteGroup, 0, 'UPDATE_SUBJECTS', subjectArr))
     },
-    // newPaths: function(paths, dispatch) {
-    //     // clear old path data
-    //     dispatch(actions.updatePathList(paths));
-    // },
+    // this path is for new query based on project
+    getPathProjectAll(courses, grades, standards, topics, subjects, role, dispatch){
+         var queryObj = {
+            courses: courses,
+            grades: grades,
+            standards: standards,
+            topics: topics,
+            subjects: subjects,
+            role: role
+        }
+        dispatch(actions.updatePathList("", true, true));
+        return axios.post('/api/path/project', queryObj).then(function(response) {
+            console.log("output from file", response.data.paths)
+            dispatch(actions.updatePathList(response.data.paths, false, false));
+            return;
+         }).catch((error) => {
+            // send message to client...needs work
+            console.log(error)
+        })  
+    },
+    // original query based on student and not group into projects
     getPathsAll(courses, grades, standards, topics, subjects, role, dispatch){
          var queryObj = {
             courses: courses,
@@ -202,17 +219,10 @@ var helpers = {
             subjects: subjects,
             role: role
         }
-        // if (role.toUpperCase() === "STUDENT"){
-        //     queryObj.userid =
-        // }
-        console.log("queryObj", queryObj);
-        // dispatch(actions.searchPaths(true));
-         dispatch(actions.updatePathList("", true, true));
+        dispatch(actions.updatePathList("", true, true));
         return axios.post('/api/path/all', queryObj).then(function(response) {
-            // console.log("paths returned")
+            console.log(response.data)
             dispatch(actions.updatePathList(response.data, false, false));
-            // hide the searching message
-            // dispatch(actions.searchPaths(false));
             return;
          }).catch((error) => {
             // send message to client...needs work
@@ -220,14 +230,7 @@ var helpers = {
         })  
     },
     sendToSidekick(paths){
-        // console.log(props);
-    //    console.log(paths);
-        // dispatch(actions.updatePathList("", true, true));
         return axios.post('/summit', paths).then(function(response) {
-            // console.log("paths returned", response)
-            // dispatch(actions.updatePathList(response.data, false, false));
-            // hide the searching message
-            // dispatch(actions.searchPaths(false));
             return;
          }).catch((error) => {
             // send message to client...needs work
@@ -235,59 +238,36 @@ var helpers = {
         })  
 
     },
-    movePath(newPosition, draggedId, currentPath, dispatch) {
+    movePath(newPosition, draggedId, props) {
         // change to use studentPathPosotin per removeFA
-        // console.log("ewPosition, draggedId, currentPath, dispatch", newPosition, draggedId, currentPath, dispatch)
-        var keyArr =  draggedId.split('/');  // student key [0], fa key [1], faname [2]/[3]
-        // console.log("currentPath", currentPath); 
-        for (var i = 0; i < currentPath.length; i++){
-            // find the matching student 
-            if (keyArr[0] === currentPath[i].student._key){
-                // get the index of the matching student
-                // let oldPosition = i;
-                // let oldPosition= currentPath[i].fa._key.getIndexOf[keyArr[1]];
-                for (var j = 0; j <  currentPath[i].fa.length; j++){
-                     if (keyArr[1] === currentPath[i].fa[j]._key){
-                            let oldPosition = j;
-                            console.log("oldPosition", oldPosition)
-                            if (oldPosition > -1) {
-                                // swap from old to new position
-                                currentPath[i].fa.splice(newPosition, 0,  currentPath[i].fa.splice(oldPosition, 1)[0]);
-                                // update path in store
-                                dispatch(actions.updatePathList(currentPath, false, false )); 
-                                helpers.parseFa(currentPath[i]);        
-                                // return;  // exit loop?
-                            }
-                     }
-                    // console.log(i, j)
-                }
-                // console.log("oldPosition", oldPosition)
-                // remove thi
-                // console.log(keyArr[0] , currentPath[i].student._key);
-                return;
-            }
-        }
-
+        var oldArr =  draggedId.split('/');  // student key [0], fa key [1], faname [2] ,  student position [3], proj position [4], fa position[5],
+        var newArr = newPosition.split('/');  // student position [0], proj position [1], fa position[2],
+        let studentPathPosition = oldArr[3];  // should be same as for newArr
+        let oldProject = oldArr[4];
+        let oldFa = oldArr[5];
+        let newProject = newArr[1];
+        let newFa = newArr[2];
+        // use the path position data to add the moved focus area newFa into the relevena position and remove from old position
+        props.paths[studentPathPosition].projects[newProject].fa.splice(newFa, 0,  props.paths[studentPathPosition].projects[oldProject].fa.splice(oldFa, 1)[0]);
+        props.dispatch(actions.updatePathList(props.paths, false, false )); 
+        helpers.parseFa(props.paths[studentPathPosition]);    
     },
-    removeFA(studentPathPosition, idCounter, studentKey, faKey, props){
+    removeFA(studentPathPosition,projPosition, idCounter, studentKey, faKey, props){
        // do quick check to make sure the correct fa is being removed
-       if ((props.paths[studentPathPosition].student._key === studentKey) && (faKey === props.paths[studentPathPosition].fa[idCounter]._key)){
+       if ((props.paths[studentPathPosition].student._key === studentKey) && (faKey === props.paths[studentPathPosition].projects[projPosition].fa[idCounter]._key)){
             // remove 1 FA at array position idCounter
-            props.paths[studentPathPosition].fa.splice(idCounter, 1);
-             // do some processing to get nextFA and nextStd
-            helpers.parseFa(props.paths[studentPathPosition]);
+            props.paths[studentPathPosition].projects[projPosition].fa.splice(idCounter, 1);
+            // do some processing to get nextFA and nextStd
+            helpers.parseFa(props.paths[studentPathPosition]);    
             props.dispatch(actions.updatePathList( props.paths, false, false ));  
        }
    
     },
-    addFA(studentPathPosition, idCounter, studentKey, faKey, addFAKey, props){
-        // console.log(studentPathPosition, idCounter, studentKey, faKey, addFAKey);
-        // (studentPosition, position, studentKey, faKey, this.props.selectedfa._key, this.props);
+    addFA(studentPathPosition, projPosition, idCounter, studentKey, faKey, addFAKey, props){
        // do quick check to make sure the correct fa is being removed
-    //    console.log("faKey", faKey)
        let addAfterKey = 0;
-       if ((faKey) && (props.paths[studentPathPosition].fa.length > 0)){
-            addAfterKey = props.paths[studentPathPosition].fa[idCounter]._key;
+       if ((faKey) && (props.paths[studentPathPosition].projects[projPosition].fa.length > 0)){
+            addAfterKey = props.paths[studentPathPosition].projects[projPosition].fa[idCounter]._key;
        } 
        if ((props.paths[studentPathPosition].student._key === studentKey) && (faKey === addAfterKey)){
             // remove 1 FA at array position idCounter
@@ -298,7 +278,7 @@ var helpers = {
             // console.log("response fa", response.data.fa[0])
             if (response.data.success){
                 // response.data == fa details
-                props.paths[studentPathPosition].fa.splice(idCounter+1, 0, response.data.fa[0]);
+                props.paths[studentPathPosition].projects[projPosition].fa.splice(idCounter+1, 0, response.data.fa[0]);
                 // do some processing to get nextFA and nextStd
                 helpers.parseFa(props.paths[studentPathPosition]);
                 props.dispatch(actions.updatePathList( props.paths, false, false )); 
@@ -332,41 +312,105 @@ var helpers = {
 
 
     },
-    parseFa(result){
-        // console.log("result.fa.length", result.fa.length)
-        for (var i = 0; i < result.fa.length; i++){
-            // console.log("result.fa.length-1", result.fa.length-1)
-            if ( i < result.fa.length-1) {
-                result.fa[i].nextFA = result.fa[i+1]['Focus Area']
-            } else {
-                result.fa[i].nextFA = [];  // if 
-            }
-            // console.log(" result.fa[i].nextFA ",  result.fa[i].nextFA )
-            result.fa[i]['currentStd'] = [];
-            result.fa[i]['nextStd']= [];
-            if (i < result.fa.length-1){  
-                for (var j = 0; j <  result.fa[i+1].standardConnections.length; j++){
-                    // save the first one
-                    if ((j === 0)){
-                        result.fa[i].nextStd.push(result.fa[i+1].standardConnections[j]);
-                    }
-                    // don't save duplicates
-                    else if ((j > 0 ) && (result.fa[i+1].standardConnections[j-1] !== result.fa[i+1].standardConnections[j] )){
-                        result.fa[i].nextStd.push(result.fa[i+1].standardConnections[j]);
-                    }  
-                }
-            }  else {
-                result.fa[i].nextStd = [];  // if 
-            }
+    // parseFa(result){
+    //     // console.log("result.fa.length", result.fa.length)
+    //     for (var i = 0; i < result.fa.length; i++){
+    //         // console.log("result.fa.length-1", result.fa.length-1)
+    //         if ( i < result.fa.length-1) {
+    //             result.fa[i].nextFA = result.fa[i+1]['Focus Area']
+    //         } else {
+    //             result.fa[i].nextFA = [];  // if 
+    //         }
+    //         // console.log(" result.fa[i].nextFA ",  result.fa[i].nextFA )
+    //         result.fa[i]['currentStd'] = [];
+    //         result.fa[i]['nextStd']= [];
+    //         if (i < result.fa.length-1){  
+    //             for (var j = 0; j <  result.fa[i+1].standardConnections.length; j++){
+    //                 // save the first one
+    //                 if ((j === 0)){
+    //                     result.fa[i].nextStd.push(result.fa[i+1].standardConnections[j]);
+    //                 }
+    //                 // don't save duplicates
+    //                 else if ((j > 0 ) && (result.fa[i+1].standardConnections[j-1] !== result.fa[i+1].standardConnections[j] )){
+    //                     result.fa[i].nextStd.push(result.fa[i+1].standardConnections[j]);
+    //                 }  
+    //             }
+    //         }  else {
+    //             result.fa[i].nextStd = [];  // if 
+    //         }
 
-            // de-dup current fa std connections
-            for (var k = 0; k < result.fa[i].standardConnections.length; k++){
-                if ((k === 0)){
-                    result.fa[i]['currentStd'].push(result.fa[i].standardConnections[k]);
+    //         // de-dup current fa std connections
+    //         for (var k = 0; k < result.fa[i].standardConnections.length; k++){
+    //             if ((k === 0)){
+    //                 result.fa[i]['currentStd'].push(result.fa[i].standardConnections[k]);
+    //             }
+    //             else if ((k > 0 ) && (result.fa[i].standardConnections[k-1] !== result.fa[i].standardConnections[k] )){
+    //             result.fa[i]['currentStd'].push(result.fa[i].standardConnections[k]);
+    //             }                 
+    //         }
+    //     }
+    // },
+    parseFa(result){
+        // parse for current student
+        // for each project
+        for (var l = 0; l < result.projects.length; l++){
+            //for each focus area
+            for (var i = 0; i < result.projects[l].fa.length; i++){
+                // if there are more focus areas then get the next
+                if ( i < result.projects[l].fa.length-1) {
+                    result.projects[l].fa[i].nextFA = result.projects[l].fa[i+1]['Focus Area']
+                } else {
+                    // if there are no more focus areas for the current project
+                    // if there is another project  for this student path - point to the first fa of the next project
+                    if ((result.projects.length-1 > l ) && (result.projects[l+1].fa.length > 0)){
+                        // moves to next project and the first fa in that project if one exists
+                        result.projects[l].fa[i].nextFA = result.projects[l+1].fa[0]['Focus Area'];
+                    } else {
+                        result.projects[l].fa[i].nextFA = [];  
+                    }
                 }
-                else if ((k > 0 ) && (result.fa[i].standardConnections[k-1] !== result.fa[i].standardConnections[k] )){
-                result.fa[i]['currentStd'].push(result.fa[i].standardConnections[k]);
-                }                 
+                result.projects[l].fa[i]['currentStd'] = [];
+                result.projects[l].fa[i]['nextStd']= [];
+                // next standards
+                if (i < result.projects[l].fa.length-1){  
+                    for (var j = 0; j < result.projects[l].fa[i+1].standardConnections.length; j++){
+                        // save the first one
+                        if ((j === 0)){
+                            result.projects[l].fa[i].nextStd.push(result.projects[l].fa[i+1].standardConnections[j]);
+                        }
+                        // don't save duplicates
+                        else if ((j > 0 ) && (result.projects[l].fa[i+1].standardConnections[j-1] !== result.projects[l].fa[i+1].standardConnections[j] )){
+                            result.projects[l].fa[i].nextStd.push(result.projects[l].fa[i+1].standardConnections[j]);
+                        }  
+                    }
+                }  else {
+                    // if there are no more focus areas for the current project
+                    // if there is another project  for this student path - point to the standards of first fa of the next project
+                    if ((result.projects.length-1 > l) && (result.projects[l+1].fa.length > 0)){
+                        // moves to next project and the first fa in that project if one exists
+                        for (var j = 0; j <  result.projects[l+1].fa[0].standardConnections.length; j++){
+                             if ((j === 0)){
+                                    result.projects[l].fa[i].nextStd.push(result.projects[l+1].fa[0].standardConnections[j]);
+                                }
+                                // don't save duplicates
+                                else if ((j > 0 ) && (result.projects[l+1].fa[0].standardConnections[j-1] !== result.projects[l+1].fa[0].standardConnections[j] )){
+                                    result.projects[l].fa[i].nextStd.push(result.projects[l+1].fa[0].standardConnections[j]);
+                                }
+                        }
+                    } else {
+                        result.projects[l].fa[i].nextStd = [];  // if 
+                    }
+                }
+
+                // de-dup current fa std connections
+                for (var k = 0; k < result.projects[l].fa[i].standardConnections.length; k++){
+                    if ((k === 0)){
+                        result.projects[l].fa[i]['currentStd'].push(result.projects[l].fa[i].standardConnections[k]);
+                    }
+                    else if ((k > 0 ) && (result.projects[l].fa[i].standardConnections[k-1] !== result.projects[l].fa[i].standardConnections[k] )){
+                    result.projects[l].fa[i]['currentStd'].push(result.projects[l].fa[i].standardConnections[k]);
+                    }                 
+                }
             }
         }
     },
