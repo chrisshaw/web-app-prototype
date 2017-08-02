@@ -776,14 +776,12 @@ module.exports = function(app){
             var instructionCounter = 0;
             for (var s = 0; s < data.length; s++ ){
                 // for each project
-                let studentObj={};
+                let studentObj = {_id: data[s].student._id}
                 let projectsArr=[];
-                console.log("data[s].projects.length", data[s].projects.length)
                 for (var j = 0; j < data[s].projects.length; j++){
                     // prepare data for saving to db
                     let faArr=[];
-                    studentObj = {_id: data[s].student._id}
-                      console.log("data[s].projects[j].fa.length",data[s].projects[j].fa.length)
+                    console.log("data[s].projects[j].fa.length", data[s].projects[j].fa.length)
                     for (var i = 0; i <  data[s].projects[j].fa.length; i++){
                         instructionCounter++;
                         let faObj = {
@@ -796,25 +794,28 @@ module.exports = function(app){
                         var instruction = 'Instruction ' + instructionCounter + ': Course: ' + data[s].projects[j].fa[i].course + ' -->  Project : ' + data[s].projects[j].name + ' --> INCLUDE --> Focus Area: ' + data[s].projects[j].fa[i].name + ' --> POSITION --> ' + data[s].projects[j].fa[i].courseSequence + ' --> UPDATE --> Title: ' + data[s].projects[j].fa[i].name + '(' + data[s].projects[j].fa[i].projectSequence +')';
                         summitArr.push(instruction);   
                     } 
-                    let projectsObj={ name: data[s].projects[j].name, fa: faArr, sequence: j+1}
-                    projectsArr.push(projectsObj);
                     
+                    if (faArr.length > 0 ){
+                        let projectsObj={ name: data[s].projects[j].name, fa: faArr, sequence: j+1}
+                        projectsArr.push(projectsObj);
+                    }      
                 }
-                console.log("projectsArr", projectsArr)
-                studentObj.path = projectsArr;
-                studentObj.active = true;
-                studentObj.createdDate = Date.now();
-                studentObj.createdBy = username;
-                studentObj.updatedDate = null;
-                studentObj.updatedBy = null;
-                studentArr.push(studentObj)
+                // don't save empty paths
+                if (projectsArr.length !== 0){     
+                    studentObj.path = projectsArr;
+                    studentObj.active = true;
+                    studentObj.createdDate = Date.now();
+                    studentObj.createdBy = username;
+                    studentObj.updatedDate = null;
+                    studentObj.updatedBy = null;
+                    studentArr.push(studentObj)
+                }
+
             }
-
-            console.log("studentArr", studentArr);
-            // rewrote update logic for  transation - all or nothing
-            if ( studentArr.length > 0 ){
-
-            
+            console.log("studentArr", studentArr)
+            console.log("summitArr", summitArr);
+            // rewrote update logic for  tran 
+            if ( studentArr.length > 0 ){       
                 const action = String(function (studentArr, username) {
                     // This code will be executed inside ArangoDB!
                     const db = require('@arangodb').db;
@@ -846,9 +847,9 @@ module.exports = function(app){
                             filter c._id == e.previd
                             UPDATE c with {active: false, updatedDate:  DATE_NOW(), updatedBy:"TEST" }
                         IN currentPath return NEW`;
-                    let updateToInactiveResult = db._query(updateToInactiveQuery);      
+                    let updateToInactiveResult = db._query(updateToInactiveQuery);    
                     return;
-                });
+                })
 
 
                 db.transaction({read: ['currentPath', 'isOn'], write: ['currentPath', 'isOn', 'updatedTo']},
@@ -857,13 +858,12 @@ module.exports = function(app){
                 .then(() => {
                     // all goodnow send to summit
                     resolve(summitArr);
-                })
-                .catch((error)=>{
+                }).catch((error)=>{
                     console.log(error);
                     reject(error);
                 })
             } else {
-                resolve([]); // need to think  what to respove
+                resolve(summitArr); // what to resolve?
             }
         })
     }
@@ -875,32 +875,35 @@ module.exports = function(app){
                 // Waiting for updated query srted by query topic === Project
                 // waiting for confirmation where to send this data
                 // create file
-                var user =  response.username.split('@');
-                var fileName = __dirname + '/../public/assets/files/sendToSidekick_' + user[0] +'.'+ Date.now() + '.txt';
-                var file = fs.createWriteStream(fileName);
-                file.on('error', function(err) { 
-                    console.log(err)
-                    // return error msg
-                    res.json({success: false, error: "Problem creating file"})
-                });
-
-                summitArr.forEach(function(v) { file.write(v + '\n'); });
-                file.end();
-                // send as attachment to email
-                var adminEmail = "paths@sidekick.education, fiona.hegarty@icloud.com";
-                // var adminEmail = "fiona.hegarty@icloud.com";
-                // need to pass file path
-                sendToSummitEmail(adminEmail, fileName).then((fileName) => {
-                    // delete file - cant do here! gets delte
-                    console.log("fileName", fileName)
-                    fs.unlinkSync(fileName);
-                    // send OK msg the browser sending emails....res.sendStatus(200)
-                    res.json({success: true});
-                }).catch((error) => {
-                    console.log(error);
-                    //send error status code?
-                    res.json({success: false,  error: error});
-                })
+                if (summitArr.length !== 0 ){
+                    // don't send to Summit Email if no data
+                    var user =  response.username.split('@');
+                    var fileName = __dirname + '/../public/assets/files/sendToSidekick_' + user[0] +'.'+ Date.now() + '.txt';
+                    var file = fs.createWriteStream(fileName);
+                    file.on('error', function(err) { 
+                        console.log(err)
+                        // return error msg
+                        res.json({success: false, error: "Problem creating file"})
+                    });
+                    summitArr.forEach(function(v) { file.write(v + '\n'); });
+                    file.end();
+                    // send as attachment to email
+                    // var adminEmail = "paths@sidekick.education, fiona.hegarty@icloud.com";
+                    var adminEmail = "fiona.hegarty@icloud.com";
+                    // need to pass file path
+                    sendToSummitEmail(adminEmail, fileName).then((fileName) => {
+                        // delete file - cant do here! gets delte
+                        fs.unlinkSync(fileName);
+                        // send OK msg the browser sending emails....res.sendStatus(200)
+                        res.json({success: true});
+                    }).catch((error) => {
+                        console.log(error);
+                        //send error status code?
+                        res.json({success: false,  error: error});
+                    })
+                } else {
+                     res.json({success: false,  error: "error"}); // catch error to say no data!!
+                }
             }).catch((error) => {
                 console.log(error);
                 res.json({success: false, error: error})
