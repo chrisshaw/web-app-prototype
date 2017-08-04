@@ -642,7 +642,7 @@ module.exports = function(app){
                 // cursor is a cursor for the query result
                 // reformat results for improved client display 
                 // var studentPathArr = [];
-               console.log("cursor._result", cursor._result[0].projects)
+               console.log("cursor._result", cursor._result[0].projects[0].fa)
                 // let parsedPath = parseFa(cursor._result);
                 res.json({success: true, paths: cursor._result})
                  
@@ -1107,6 +1107,7 @@ module.exports = function(app){
     app.get('/fa/:username', function(req, res){
         let username = req.params.username;
         // check this query!!!
+///**** prod/dev db covers does not have current courses mapped..... */
         let query = aql`
         let userid = (for u in auth_users filter u.username == ${username} return u._id)
         let queryCourses = (for c in outbound userid[0] hasCourse return c._key)
@@ -1122,7 +1123,7 @@ module.exports = function(app){
      console.log(query)
         db.query(query)
         .then(cursor => { 
-            console.log("Course", cursor._result);
+            console.log("FA", cursor._result);
             res.json({success: true, fa: cursor._result});
         }).catch(error => {
             console.log(Date.now() + " Error (Get FA from Database):", error);

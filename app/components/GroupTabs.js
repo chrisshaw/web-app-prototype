@@ -221,7 +221,7 @@ class GroupTabs extends React.Component {
         idCounter++;
         /// this return is to facomponent - it displays all the data for one fa within a path
         return (<div ref={index}> {dropZone}
-          <div ref={component.props.paths[tabindex].student._key.toString()+'/'+fa._key.toString()+'/'+fa.name.toString()+'/'+studentPathPosition+'/'+projPosition+'/'+faPosition} id={component.props.paths[tabindex].student._key.toString()+'/'+fa._key.toString()+'/'+fa.name.toString()+'/'+studentPathPosition+'/'+projPosition+'/'+faPosition} key={component.props.paths[tabindex].student._key.toString()+'/'+fa._key.toString()+'/'+fa.name.toString()+'/'+studentPathPosition+'/'+projPosition+'/'+faPosition}  className="fa-wrapper path" draggable="true" onDragStart={(e) => component.ondragstart(e)}  onDragLeave={(e) => component.ondragleave(e)}  onDragEnter={(e) => component.ondragenter(e)}>
+          <div ref={component.props.paths[tabindex].student._key.toString()+'/'+fa._key.toString()+'/'+studentPathPosition+'/'+projPosition+'/'+faPosition} id={component.props.paths[tabindex].student._key.toString()+'/'+fa._key.toString()+'/'+studentPathPosition+'/'+projPosition+'/'+faPosition} key={component.props.paths[tabindex].student._key.toString()+'/'+fa._key.toString()+'/'+studentPathPosition+'/'+projPosition+'/'+faPosition}  className="fa-wrapper path" draggable="true" onDragStart={(e) => component.ondragstart(e)}  onDragLeave={(e) => component.ondragleave(e)}  onDragEnter={(e) => component.ondragenter(e)}>
           <Row> <Col className="text-center" md={12}> . . . </Col> </Row>
           <Row className="fa-tab-view-rows" >
               <Col md={12}><div style={styles.slide}>    
@@ -281,46 +281,49 @@ class GroupTabs extends React.Component {
         }) 
       // }
       } else {
-        // return this if there are no focus areas
-        faComponents = <div><p key={component.props.paths[tabindex].student._key.toString() + "NoPaths"} className="no-paths-message"> No focus areas found for this project. Please add some or requery using different filters.</p>
-                <div>
-                    <Row className="fa-tab-view-rows">
-                    <Col md={12}>
-                        <Col className="text-center" md={6} xs={6}>          
-                            <FlatButton containerElement='label' label="Add FA"  onTouchTap={(e) => component.handleAdd(studentPathPosition, projPosition, 0)}/>
-                        </Col> 
-                        <Col className="text-center" md={6} xs={6}>          
-                            <FlatButton containerElement='label' label="Remove Project"  onTouchTap={(e) => component.handleRemoveProject(studentPathPosition, projPosition)}/>
-                        </Col> 
-                    </Col>
-                  </Row>
-                   {component.state.showDiv === studentPathPosition+'/'+ projPosition +'/'+0 ? (<div className="fa-wrapper path" ref={studentPathPosition + '/'+ projPosition + '/'+ 0}>
-                    <Row>
-                        <Col className="text-center"  xs={12} md={12} >
-                            <AutoCompleteFA />
-                        </Col>
-                        <Row>
-                          <Col  className="text-center"  xs={6} md={6} >                  
-                              <FlatButton containerElement='label' label="Save FA"  disabled={component.props.selectedfa ? false: true} onTouchTap={() => component.handleAddFA(studentPathPosition, component.props.paths[tabindex].student._key, 0, projPosition, 0)}/>
-                          </Col> 
-                          <Col className="text-center" md={6} xs={6}>          
-                            <FlatButton containerElement='label' label="Close"   onTouchTap={() => component.handleClose(studentPathPosition, projPosition, 0)}/>
-                          </Col>
-                        </Row>
-                    </Row>
-              </div> ) : ""}
-            </div>
-          </div>
+    //     // return this if there are no focus areas
+    //     // faComponents = <div ><p key={component.props.paths[tabindex].student._key.toString() + "NoPaths"} className="no-paths-message"> No focus areas found for this project. Please add some or requery using different filters.</p>
+    //     //         <div>
+    //     //             <Row className="fa-tab-view-rows">
+    //     //             <Col md={12}>
+    //     //                 <Col className="text-center" md={6} xs={6}>          
+    //     //                     <FlatButton containerElement='label' label="Add FA"  onTouchTap={(e) => component.handleAdd(studentPathPosition, projPosition, 0)}/>
+    //     //                 </Col> 
+    //     //                 <Col className="text-center" md={6} xs={6}>          
+    //     //                     <FlatButton containerElement='label' label="Remove Project"  onTouchTap={(e) => component.handleRemoveProject(studentPathPosition, projPosition)}/>
+    //     //                 </Col> 
+    //     //             </Col>
+    //     //           </Row>
+    //     //            {component.state.showDiv === studentPathPosition+'/'+ projPosition +'/'+0 ? (<div className="fa-wrapper path" ref={studentPathPosition + '/'+ projPosition + '/'+ 0}>
+    //     //             <Row>
+    //     //                 <Col className="text-center"  xs={12} md={12} >
+    //     //                     <AutoCompleteFA />
+    //     //                 </Col>
+    //     //                 <Row>
+    //     //                   <Col  className="text-center"  xs={6} md={6} >                  
+    //     //                       <FlatButton containerElement='label' label="Save FA"  disabled={component.props.selectedfa ? false: true} onTouchTap={() => component.handleAddFA(studentPathPosition, component.props.paths[tabindex].student._key, 0, projPosition, 0)}/>
+    //     //                   </Col> 
+    //     //                   <Col className="text-center" md={6} xs={6}>          
+    //     //                     <FlatButton containerElement='label' label="Close"   onTouchTap={() => component.handleClose(studentPathPosition, projPosition, 0)}/>
+    //     //                   </Col>
+    //     //                 </Row>
+    //     //             </Row>
+    //     //       </div> ) : ""}
+    //     //     </div>
+    //     //   </div>
+        faComponents = <div ><p key={component.props.paths[tabindex].student._key.toString() + "NoPaths"} className="no-paths-message"> No focus areas found for this project. Please requery using different filters.</p></div>
       }
 
       projCounter ++;
       return <div> 
               {maxVisibleFA > 0  ? 
-             <Row className="text-center">
-               <br />
+               <Row className="text-center">
+              <br />
                <Col md={12}><div ref={studentPathPosition+'/'+projPosition}  id={studentPathPosition+'/'+projPosition}><h4>{project.name} </h4></div><hr /></Col>     
              </Row> : ""} 
+            
               {faComponents}
+              
             </div>
 
     })
@@ -347,7 +350,9 @@ class GroupTabs extends React.Component {
       var component = this;    
       let studentPathPosition = tabindex;
       //******* need to rearrange this if loop at bit - it's v messy */
+
       if ((this.props.paths.length > 0)) {
+           
         // if ((this.props.paths[tabindex]) && (this.props.paths[tabindex].fa.length > 0)) {
         if ((this.props.paths[tabindex]) && (this.props.paths[tabindex].projects.length > 0)) {
           // there will be may Focus Areas returned for each pathway / group

@@ -157,10 +157,11 @@ var helpers = {
        dispatch(actions.selectedFA(e));
 
     },
-    getFocusArea: function(dispatch){
+    getFocusArea(dispatch) {
         // for now these are hard coded!!!!!
         return axios.get('/api/focusarea').then(function(response) {
             // send results to redux store for use by Results component
+            console.log("focus areas", response.data)
             dispatch(actions.getFAList(response.data))
             return;
         }).catch((error) => {
@@ -168,7 +169,7 @@ var helpers = {
             console.log(error)
         })   
     },
-    getTopics: function(reset, deleteGroup, dispatch){
+    getTopics(reset, deleteGroup, dispatch){
         return axios.get('/api/topics/all').then(function(response) {
             // send results to redux store for use by Results component
             /// need to put in an object with an id 
@@ -185,7 +186,7 @@ var helpers = {
         })   
     },
 
-    getSubjectContents: function(reset, deleteGroup, dispatch){
+    getSubjectContents(reset, deleteGroup, dispatch){
         var subjectArr = [{_id: 0, name: "english"}, {_id: 1, name: "math"}, {_id: 2, name: "science"}, {_id: 3, name: "social studies"}]
         dispatch(actions.updateList(reset, deleteGroup, 0, 'UPDATE_SUBJECTS', subjectArr))
     },
@@ -241,17 +242,17 @@ var helpers = {
     },
     movePath(newPosition, draggedId, props) {
         // change to use studentPathPosotin per removeFA
-        var oldArr =  draggedId.split('/');  // student key [0], fa key [1], faname [2] ,  student position [3], proj position [4], fa position[5],
+        var oldArr =  draggedId.split('/');  // student key [0], fa key [1],  student position [2], proj position [3], fa position[4],
         var newArr = newPosition.split('/');  // student position [0], proj position [1], fa position[2],
-        let studentPathPosition = oldArr[3];  // should be same as for newArr
-        let oldProject = oldArr[4];
-        let oldFa = oldArr[5];
+        let studentPathPosition = oldArr[2];  // should be same as for newArr
+        let oldProject = oldArr[3];
+        let oldFa = oldArr[4];
         let newProject = newArr[1];
         let newFa = newArr[2];
         // use the path position data to add the moved focus area newFa into the relevena position and remove from old position
         props.paths[studentPathPosition].projects[newProject].fa.splice(newFa, 0,  props.paths[studentPathPosition].projects[oldProject].fa.splice(oldFa, 1)[0]);
         props.dispatch(actions.updatePathList(props.paths, false, false )); 
-        helpers.parseFa(props.paths[studentPathPosition]);    
+        // helpers.parseFa(props.paths[studentPathPosition]);    
     },
     removeFA(studentPathPosition,projPosition, idCounter, studentKey, faKey, props){
        // do quick check to make sure the correct fa is being removed
@@ -259,7 +260,7 @@ var helpers = {
             // remove 1 FA at array position idCounter
             props.paths[studentPathPosition].projects[projPosition].fa.splice(idCounter, 1);
             // do some processing to get nextFA and nextStd
-            helpers.parseFa(props.paths[studentPathPosition]);    
+            // helpers.parseFa(props.paths[studentPathPosition]);    
             props.dispatch(actions.updatePathList( props.paths, false, false ));  
        }
    
@@ -269,7 +270,7 @@ var helpers = {
         console.log("in here", studentPathPosition, projPosition)
         props.paths[studentPathPosition].projects.splice(projPosition, 1);
         // do some processing to get nextFA and nextStd
-        helpers.parseFa(props.paths[studentPathPosition]);    
+        // helpers.parseFa(props.paths[studentPathPosition]);    
         props.dispatch(actions.updatePathList(props.paths, false, false ));  
 
     },
@@ -293,7 +294,7 @@ var helpers = {
                 // response.data == fa details
                 props.paths[studentPathPosition].projects[projPosition].fa.splice(idCounter+1, 0, response.data.fa[0]);
                 // do some processing to get nextFA and nextStd
-                helpers.parseFa(props.paths[studentPathPosition]);
+                // helpers.parseFa(props.paths[studentPathPosition]);
                 props.dispatch(actions.updatePathList( props.paths, false, false )); 
                 // reset selected FA
                 helpers.saveSelectedFA("", props.dispatch);
@@ -311,6 +312,7 @@ var helpers = {
     },
     getUserFA(username, dispatch){
         return axios.get('/fa/'+username).then(function(response) {
+            console.log("focus area ", response.data)
             if (response.data.success){
                 dispatch(actions.focusAreas(response.data.fa))
                 // props.dispatch(actions.updatePathList( props.paths, false, false )); 
