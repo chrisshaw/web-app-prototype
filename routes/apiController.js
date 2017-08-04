@@ -36,11 +36,11 @@ const dbSwitch = {
 // if running locally make sure you set env varaible 
 // run this in terminal :  export DB_MODE="LOCAL" etc.
 // // to make permanent - add to ~/.bash_profile file in $HOME dir
-// console.log("process.env.DB_MODE", process.env.DB_MODE);
-// console.log("process.env.LOCAL_DB_HOST_PORT", process.env.LOCAL_DB_HOST_PORT);
-// console.log("process.env.LOCAL_DB_USER", process.env.LOCAL_DB_USER);
-// console.log("process.env.LOCAL_DB_PWD", process.env.LOCAL_DB_PWD);
-// console.log("process.env.LOCAL_DB_NAME", process.env.LOCAL_DB_NAME);
+console.log("process.env.DB_MODE", process.env.DB_MODE);
+console.log("process.env.LOCAL_DB_HOST_PORT", process.env.DB_HOST_PORT);
+console.log("process.env.LOCAL_DB_USER", process.env.DB_USER);
+console.log("process.env.LOCAL_DB_PWD", process.env.DB_PWD);
+console.log("process.env.LOCAL_DB_NAME", process.env.DB_NAME);
 
 
 // if (process.env.ENVT == "DEMO"){
@@ -160,6 +160,7 @@ module.exports = function(app){
                     result[p].projects[l].fa[i]['nextStd']= [];
                     // next standards
                     if (i < result[p].projects[l].fa.length-1){  
+                        console.log("esult[p].projects[l].fa[i+1].", result[p].projects[l].fa[i+1]);
                         for (var j = 0; j < result[p].projects[l].fa[i+1].standardConnections.length; j++){
                             // save the first one
                             if ((j === 0)){
@@ -469,21 +470,21 @@ module.exports = function(app){
     })
 
    // for now this just returns a json
-    app.post('/api/path/project', function (req, res){
+    // app.post('/api/path/project', function (req, res){
         
-        // validateUser(req, res, "buildpath").then((response) =>{
-            let path = require('../data/faPath.js'); 
-            console.log("in here.....");
-            let parsedPath = parseFa(path);
-            res.json({success: true, paths: parsedPath })
-        // }).catch((error) => {
-             console.log(Date.now() + " Authentication Error");
-             res.json({success: false, error: "No Permissions to View Paths"})
-        // })
-    })
+    //     // validateUser(req, res, "buildpath").then((response) =>{
+    //         let path = require('../data/faPath.js'); 
+    //         console.log("in here.....");
+    //         let parsedPath = parseFa(path);
+    //         res.json({success: true, paths: parsedPath })
+    //     // }).catch((error) => {
+    //          console.log(Date.now() + " Authentication Error");
+    //          res.json({success: false, error: "No Permissions to View Paths"})
+    //     // })
+    // })
     
     // using post as passing object - probably not ideal
-    app.post('/api/path/all', function (req, res){
+    app.post('/api/path/project', function (req, res){
         validateUser(req, res, "buildpath").then((response) =>{
             // intialise
             let queryCourses = [];
@@ -495,7 +496,6 @@ module.exports = function(app){
             let studentUser = "";
             // if the user is a student they should only see their own path returned for their courses
             if (req.body.role.toUpperCase() === 'STUDENT'){
-                console.log(response.userid)
                 studentUserArr.push(response.userid);
                 studentUser = response.userid;
             }
@@ -508,7 +508,7 @@ module.exports = function(app){
                     }
                 }
             }
-            console.log("queryCourses", queryCourses)
+
 
             if (req.body.grades){
                 if (req.body.grades.length > 0){
@@ -535,41 +535,30 @@ module.exports = function(app){
             if (req.body.topics){
                 if (req.body.topics.length > 0){
                     for (var i = 0; i < req.body.topics.length; i++){
-                        queryTopics.push(req.body.topics[0].name.toUpperCase()) // changed from toLowerCAse
+                        queryTopics.push(req.body.topics[i].name.toUpperCase()) // changed from toLowerCAse
                     }
                 } 
             } 
             var query = aql`
-                let topicalFas = LENGTH(${queryTopics}) == 0 ? [] : UNIQUE(FLATTEN(
-                    for p in projects
-                    filter p.topics[* return UPPER(CURRENT)] any in ${queryTopics}[* return UPPER(CURRENT)]
-                        for fa in
-                        2 outbound p
-                        alignsTo, addressedBy
-                        return fa._key
-                ))
-
                 let courseFas = LENGTH(${queryCourses}) == 0 ? [] : UNIQUE(FLATTEN(
                     for c in courses
                     filter c._key in ${queryCourses}
                         for fa in
                         outbound c
-                        covers
+                        focusesOn
                         return fa._key
                 ))
 
-                let queryStudents = LENGTH(${studentUserArr}) > 0 ? (for student in auth_users filter student._id == ${studentUser} return {_id: student._id, _key: student._key,  first: student.first, last: student.last}) : UNIQUE(FLATTEN(
+                let queryStudents = UNIQUE(FLATTEN(
                     for c in courses
-                                filter LENGTH(${queryCourses}) > 0 ? c._key in ${queryCourses} : true  
-                                    for student
-                                    in inbound c
-                                    hasCourse 
-                                    filter LENGTH(${queryGrades}) > 0 ? student.grade in ${queryGrades} : true 
-                                    for role
-                                        in outbound student._id
-                                        auth_user_hasRole 
-                                        filter UPPER(role.name) == 'STUDENT'
-                                    return {_id: student._id, _key: student._key,  first: student.first, last: student.last}
+                    filter LENGTH(${queryCourses}) > 0 ? c._key in ${queryCourses} : true
+                        for v, e, p
+                        in 1..2 inbound c
+                        hasCourse, outbound auth_user_hasRole
+                        filter UPPER(p.vertices[2].name) == 'STUDENT'
+                        let student = p.vertices[1]
+                        filter LENGTH(${queryGrades}) > 0 ? student.grade in ${queryGrades} : true
+                        return distinct KEEP(student, '_id', '_key', 'first', 'last')
                 ))
 
                 let starters = (
@@ -585,36 +574,79 @@ module.exports = function(app){
                 )
 
                 // Main path query
-                for student in queryStudents
-
-                let masteredFas = (
-                    FOR fa
-                    IN outbound student
-                    hasMastered
-                    return fa._key
+                let topicsAndFas = (
+                    for queryTopic in ${queryTopics}
+                    let topicFas = (
+                        for p in projects
+                        filter UPPER(queryTopic) in p.topics[* return UPPER(CURRENT)]
+                            for fa in
+                            2 outbound p
+                            alignsTo, addressedBy
+                            return fa._key
+                    )
+                    return {topic: queryTopic, fa: topicFas}
                 )
 
-                let path  = (
-                    for start in starters
-                        for fa
-                        in 0..999 outbound start
-                        thenFocusOn
-                        filter length(${querySubjects}) > 0 ? UPPER(fa.subject) in ${querySubjects} : true
-                        filter length(topicalFas) > 0 ? fa._key in topicalFas : true
-                        filter length(courseFas) > 0 ? fa._key in courseFas : true
-                        filter length(masteredFas) > 0 ? fa._key not in masteredFas : true
-                        filter length(${queryStandards}) > 0 ? fa.standardConnections[* return UPPER(CURRENT)] any in ${queryStandards}[* return UPPER(CURRENT)] : true
+                let studentPaths = (
+                    for student in queryStudents
+
+                    let masteredFas = (
+                        FOR fa
+                        IN outbound student
+                        hasMastered
+                        return fa._key
+                    )
+
+                    let path  = UNIQUE(FLATTEN(
+                        for start in starters
+                            for fa
+                            in 0..999 outbound start
+                            thenFocusOn
+                            filter length(${querySubjects}) > 0 ? fa.subject in ${querySubjects} : true
+                            filter length(courseFas) > 0 ? fa._key in courseFas : true
+                            filter length(masteredFas) > 0 ? fa._key not in masteredFas : true
+                            filter length(${queryStandards}) > 0 ? (
+                                let standardConnections = (
+                                    for standard
+                                    in outbound fa
+                                    alignsTo
+                                    limit 2
+                                    return UPPER(standard._key)
+                                )
+                                return standardConnections any in ${queryStandards}[* return UPPER(CURRENT)]
+                            ) : true
+                            limit 100
+                            return fa
+                    ))
+                    return {student: student, path: path}
+                )
+
+                for studentPath in studentPaths
+                let path = studentPath.path
+                let projects = (
+                    for topicAndFas in topicsAndFas
+                    let topicName = topicAndFas.topic
+                    let topicFas = topicAndFas.fa
+                    let topicPath = (
+                        for fa in path
+                        filter fa._key in topicFas
+                        sort rand()
                         return fa
+                    )
+                    //collect with count into sequence  
+                    return {name: topicName, fa: topicPath} //, sequence: sequence}
                 )
-
-                return {student: student, fa: path}`
+                return {student: studentPath.student, projects: projects}`;
+                  console.log("query", query)
             db.query(query).then(cursor => {
                 // cursor is a cursor for the query result
                 // reformat results for improved client display 
-                var studentPathArr = [];
-                var studentArr = Array.from(cursor._result);    
-    // !!!*** note parseFA has changed (projects added) so wont work here any more      
-                res.json(parseFa(cursor._result));        
+                // var studentPathArr = [];
+               console.log("cursor._result", cursor._result[0].projects)
+                // let parsedPath = parseFa(cursor._result);
+                res.json({success: true, paths: cursor._result})
+                 
+                   
             }).catch((error => {
                 console.log(Date.now() + " Error (Getting paths from Database):", error);
                 res.json();

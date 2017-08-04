@@ -219,6 +219,7 @@ var helpers = {
             subjects: subjects,
             role: role
         }
+         console.log("queryObj.topics", queryObj.topics)
         dispatch(actions.updatePathList("", true, true));
         return axios.post('/api/path/all', queryObj).then(function(response) {
             console.log(response.data)

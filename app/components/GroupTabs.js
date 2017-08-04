@@ -189,6 +189,7 @@ class GroupTabs extends React.Component {
             count++;
             return   <Col key={component.props.paths[tabindex].student._key.toString()+'nextStd'+count.toString()} className="chip-float"><div className="chip">
                         {standard.toUpperCase()}
+                       
                       </div>
                       </Col>
           });
@@ -229,7 +230,7 @@ class GroupTabs extends React.Component {
                         <h3  className='fa-headings'>Focus Area</h3>
                       </Col>
                       <Col  md={9} xs={12}>
-                        <p  className='fa-headings-span'>{fa["Focus Area"].toString()}</p>
+                        <p  className='fa-headings-span'>{fa.name.toString()}</p>
                       </Col>
                   </Row>
                   <hr />

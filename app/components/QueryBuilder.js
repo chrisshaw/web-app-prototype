@@ -55,6 +55,7 @@ class QueryBuilder extends Component{
         // messy logic will rework later!!!
         /// if all good then send the query
         if (hasCourses){
+            console.log("this.props.selectedtopiclist", this.props.selectedtopiclist)
             helper.getPathProjectAll(myCourses,this.props.selectedgradelist, this.props.selectedstandardslist, this.props.selectedtopiclist, this.props.selectedsubjectcontentlist, this.props.role, this.props.dispatch); 
             // reset display settings
             helper.addInitialRows("", this.props.dispatch); 
