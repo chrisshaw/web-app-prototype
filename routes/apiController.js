@@ -549,7 +549,7 @@ module.exports = function(app){
                         return fa._key
                 ))
 
-                let queryStudents = UNIQUE(FLATTEN(
+                let queryStudents = LENGTH(${studentUserArr}) > 0 ? (for student in auth_users filter student._id == ${studentUser} return {_id: student._id, _key: student._key,  first: student.first, last: student.last}) : UNIQUE(FLATTEN(
                     for c in courses
                     filter LENGTH(${queryCourses}) > 0 ? c._key in ${queryCourses} : true
                         for v, e, p
