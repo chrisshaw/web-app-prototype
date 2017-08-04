@@ -196,7 +196,7 @@ class GroupTabs extends React.Component {
         e.stopPropagation();
       }
           e.target.classList.remove('dragelem');
-      // e.preventDefault && e.preventDefault();
+      e.preventDefault && e.preventDefault();
       let data = e.dataTransfer.getData('text');
 
    
