@@ -240,10 +240,10 @@ var helpers = {
         })  
 
     },
-    movePath(newPosition, draggedId, props) {
+    dragPath(newPosition, draggedId, props) {
         // change to use studentPathPosotin per removeFA
-        var oldArr =  draggedId.split('/');  // student key [0], fa key [1],  student position [2], proj position [3], fa position[4],
-        var newArr = newPosition.split('/');  // student position [0], proj position [1], fa position[2],
+        var oldArr =  draggedId.split('|');  // student key [0], fa key [1],  student position [2], proj position [3], fa position[4],
+        var newArr = newPosition.split('|');  // student position [0], proj position [1], fa position[2],
         let studentPathPosition = oldArr[2];  // should be same as for newArr
         let oldProject = oldArr[3];
         let oldFa = oldArr[4];

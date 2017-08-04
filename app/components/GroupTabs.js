@@ -135,35 +135,78 @@ class GroupTabs extends React.Component {
   }
   ondragstart(e){
     e.dataTransfer.setData('text', e.target.id ); 
+    e.dataTransfer.effectAllowed = 'move';
+    // e.target.style.backgroundColor = "red";
+
+    // var crt = e.target.cloneNode(true);
+    // crt.style.backgroundColor = "red";
+    // crt.style.position = "absolute"; crt.style.bottom = "0px"; crt.style.right = "0px";
+    // document.body.appendChild(crt);
+    // // e.target.style.border = "dashed"
+    // e.target.classList.add('dragelem');
+    // e.dataTransfer.setDragImage(img, 0, 0);
+    // e.dataTransfer.setDragImage(img, 0, 0);
+    // e.target.classList('hide');
+
+    // var crt = this.cloneNode(true);
+    // crt.style.backgroundColor = "red";
+    // e.dataTransfer.setDragImage(crt, 0, 0);
+
+    // var dragIcon = 
+ 
+    // e.dataTransfer.setDragImage(dragIcon, -10, -10);
+    //  e.target.classList.add('hide');
     return false;
   }
   ondragover(e) {  
     e.preventDefault && e.preventDefault();
-    e.dataTransfer.dropEffect = "move";
-    var dropNode = ReactDOM.findDOMNode(this.drop);
-    // dropNode.classList.add('drop:hover');
-       console.log("Drag over");
+    e.dataTransfer.dropEffect = 'move';
+    // var dropNode = ReactDOM.findDOMNode(this.drop);
+    // e.target.classList.add('over');
+    // e.target.classList.add('dragelem');
+    console.log("Drag over");
     return false;
   }
   ondragenter(e) {
-    // this / e.target is the current hover target.
-    console.log("Drag enter");
+    e.preventDefault && e.preventDefault();
+     e.target.classList.add('dragelem');
+    // e.target.style.opacity = '0.4';
+    // e.target.style.background = 'grey';
+    // e.target.classList.add('over');
   }
   ondragleave(e) {
+    e.preventDefault && e.preventDefault();
+     e.target.classList.remove('dragelem');
     // e.target.classList.remove('over');  // this / e.target is previous target element.
-        console.log("Drag leave");
+    // e.target.style.opacity = '1';
+    // dropNode.style.color = 'black';
   }
+  
   ondragend(e) {  
-           console.log("Drag end");
+    e.preventDefault && e.preventDefault();
+    // e.target.classList.add('dragelem');
+    // e.target.style.backgroundColor = "red";
+    e.target.classList.remove('dragelem');
+    // e.target.classList.remove('over');
+    console.log("Drag end");
     return false;
   }
   ondrop(e) {
+      if ( e.stopPropagation()) {
+        e.stopPropagation();
+      }
+          e.target.classList.remove('dragelem');
+      // e.preventDefault && e.preventDefault();
       let data = e.dataTransfer.getData('text');
+
+   
       console.log("data", data);
       var dragNode = ReactDOM.findDOMNode(this.refs[data]);
+
+   
       console.log("dragNode.id", dragNode.id);
       console.log("e.target.id:", e.target.id);
-      helper.movePath(e.target.id, dragNode.id, this.props);
+      helper.dragPath(e.target.id, dragNode.id, this.props);
       return false;
   }
   renderFA(tabindex, component,studentPathPosition, studentName ) {
@@ -205,7 +248,7 @@ class GroupTabs extends React.Component {
           });
         }
         let faPosition =  idCounter;   
-        let dropZone =  <div key={'dropzone' + index.toString()} className='text-center drop' ref={ref => component.drop = ref} onDrop={(e) => component.ondrop(e)} onDragEnd={(e) => component.ondragend(e)} onDragOver={(e) => component.ondragover(e)} id={studentPathPosition+'/'+projPosition+'/'+faPosition}> . . . </div>
+        let dropZone =  <div key={'dropzone' + index.toString()} className='text-center drop' ref={ref => component.drop = ref} onDrop={(e) => component.ondrop(e)} onDragEnd={(e) => component.ondragend(e)} onDragOver={(e) => component.ondragover(e)} onDragLeave={(e) => component.ondragleave(e)}  onDragEnter={(e) => component.ondragenter(e)} id={studentPathPosition+'|'+projPosition+'|'+faPosition}> . . . </div>
         let changeButtons = (<div><Col className="text-center" md={6} xs={6}>          
                     <FlatButton containerElement='label' label="Add"   onTouchTap={(e) => component.handleAdd(studentPathPosition, projPosition, faPosition)}/>  
                     </Col> 
@@ -220,8 +263,48 @@ class GroupTabs extends React.Component {
                     </Col> </div>);
         idCounter++;
         /// this return is to facomponent - it displays all the data for one fa within a path
-        return (<div ref={index}> {dropZone}
-          <div ref={component.props.paths[tabindex].student._key.toString()+'/'+fa._key.toString()+'/'+studentPathPosition+'/'+projPosition+'/'+faPosition} id={component.props.paths[tabindex].student._key.toString()+'/'+fa._key.toString()+'/'+studentPathPosition+'/'+projPosition+'/'+faPosition} key={component.props.paths[tabindex].student._key.toString()+'/'+fa._key.toString()+'/'+studentPathPosition+'/'+projPosition+'/'+faPosition}  className="fa-wrapper path" draggable="true" onDragStart={(e) => component.ondragstart(e)}  onDragLeave={(e) => component.ondragleave(e)}  onDragEnter={(e) => component.ondragenter(e)}>
+        // let shadowDragItem = <div ref={'shadow|'+component.props.paths[tabindex].student._key.toString()+'|'+fa._key.toString()+'|'+studentPathPosition+'|'+projPosition+'|'+faPosition} id={'shadow|'+component.props.paths[tabindex].student._key.toString()+'|'+fa._key.toString()+'|'+studentPathPosition+'|'+projPosition+'|'+faPosition} key={'shadow|'+component.props.paths[tabindex].student._key.toString()+'|'+fa._key.toString()+'|'+studentPathPosition+'|'+projPosition+'|'+faPosition}  className="fa-wrapper hide path" >
+          // <Row> <Col className="text-center" md={12}> . . . </Col> </Row>
+          // <Row className="fa-tab-view-rows" >
+          //     <Col md={12}><div style={styles.slide}>    
+          //         <Row >
+          //             <Col  md={3} xs={12}>
+          //               <h3  className='fa-headings'>Focus Area</h3>
+          //             </Col>
+          //             <Col  md={9} xs={12}>
+          //               <p  className='fa-headings-span'>{fa.name.toString()}</p>
+          //             </Col>
+          //         </Row>
+          //         <hr />
+          //         <Row >
+          //           <Col className="chip-float">
+          //             <div className="chip">                    
+          //               {fa.subject.toUpperCase()}      
+          //             </div>
+          //           </Col>
+          //             {currentStandards}
+          //         </Row>
+          //         <Row>
+          //           { (index === fa.length-1) ? "": <div className="chip-float-text">Connected To</div>}
+          //           <Col  className="chip-float">
+          //             <div className="chip">
+          //               {fa.nextFA}
+          //             </div>
+          //           </Col> 
+          //           {nextStandards}
+          //       </Row>
+          //       </div>
+          //     </Col>
+          //   </Row>
+          //   <br /><hr />
+          // <Row className="fa-tab-view-rows">
+          //   <Col md={12}>
+          //       {changeButtons}                    
+          //   </Col>
+          // </Row>
+          // </div>
+
+        let dragItem = <div ref={component.props.paths[tabindex].student._key.toString()+'|'+fa._key.toString()+'|'+studentPathPosition+'|'+projPosition+'|'+faPosition} id={component.props.paths[tabindex].student._key.toString()+'|'+fa._key.toString()+'|'+studentPathPosition+'|'+projPosition+'|'+faPosition} key={component.props.paths[tabindex].student._key.toString()+'|'+fa._key.toString()+'|'+studentPathPosition+'|'+projPosition+'|'+faPosition}  className="fa-wrapper path" draggable="true" onDragStart={(e) => component.ondragstart(e)}>
           <Row> <Col className="text-center" md={12}> . . . </Col> </Row>
           <Row className="fa-tab-view-rows" >
               <Col md={12}><div style={styles.slide}>    
@@ -261,6 +344,9 @@ class GroupTabs extends React.Component {
             </Col>
           </Row>
           </div>
+
+        return (<div ref={index}> {dropZone}
+          {dragItem}
           {component.state.showDiv === studentPathPosition+'/'+ projPosition+'/'+faPosition ? (<div className="fa-wrapper path" id={studentPathPosition+'/'+faPosition} ref={studentPathPosition+'/'+faPosition}>
           <Row  >
             <Col xs={12} md={12} >
