@@ -23,7 +23,7 @@ const dbSwitch = {
     ENV: {
         dbHostPort: process.env.DB_HOST_PORT,
         dbUser: process.env.DB_USER,
-        dbPwd: process.env.DB_PWD,
+        dbPwd: "",
         dbName: process.env.DB_NAME
     },
     LOCAL: {
@@ -36,11 +36,11 @@ const dbSwitch = {
 // if running locally make sure you set env varaible 
 // run this in terminal :  export DB_MODE="LOCAL" etc.
 // // to make permanent - add to ~/.bash_profile file in $HOME dir
-console.log("process.env.DB_MODE", process.env.DB_MODE);
-console.log("process.env.LOCAL_DB_HOST_PORT", process.env.DB_HOST_PORT);
-console.log("process.env.LOCAL_DB_USER", process.env.DB_USER);
-console.log("process.env.LOCAL_DB_PWD", process.env.DB_PWD);
-console.log("process.env.LOCAL_DB_NAME", process.env.DB_NAME);
+// console.log("process.env.DB_MODE", process.env.DB_MODE);
+// console.log("process.env.LOCAL_DB_HOST_PORT", process.env.DB_HOST_PORT);
+// console.log("process.env.LOCAL_DB_USER", process.env.DB_USER);
+// console.log("process.env.LOCAL_DB_PWD", process.env.DB_PWD);
+// console.log("process.env.LOCAL_DB_NAME", process.env.DB_NAME);
 
 
 // if (process.env.ENVT == "DEMO"){
@@ -763,7 +763,7 @@ module.exports = function(app){
                     console.log('Server is ready to take our messages');
                 }
             });
-            var server = process.env.EMAIL_FROM_SERVER || "http://localhost:8080"
+            // var server = process.env.EMAIL_FROM_SERVER || "http://localhost:8080"
             // var link = server + "/forgot/"; //API TO RESET PASSWORD
             var text = 'You are receiving this email because you are a Sidekick Admin responsible for uploading the attached data into Summit./n The Sidekick Team';
             var html = '<br><div style="text-align: right; height:30; width:100"><img src="cid:unique@sidekick" height="42" width="42" alt="Sidekick"/></div><p>You are receiving this email because you are a Sidekick Admin responsible for uploading the attached data into Summit.</p><br><h4>The Sidekick Team</h4>';
