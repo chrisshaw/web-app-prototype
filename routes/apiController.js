@@ -36,11 +36,11 @@ const dbSwitch = {
 // if running locally make sure you set env varaible 
 // run this in terminal :  export DB_MODE="LOCAL" etc.
 // // to make permanent - add to ~/.bash_profile file in $HOME dir
-// console.log("process.env.DB_MODE", process.env.DB_MODE);
-// console.log("process.env.LOCAL_DB_HOST_PORT", process.env.DB_HOST_PORT);
-// console.log("process.env.LOCAL_DB_USER", process.env.DB_USER);
-// console.log("process.env.LOCAL_DB_PWD", process.env.DB_PWD);
-// console.log("process.env.LOCAL_DB_NAME", process.env.DB_NAME);
+console.log("process.env.DB_MODE", process.env.DB_MODE);
+console.log("process.env.LOCAL_DB_HOST_PORT", process.env.LOCAL_DB_HOST_PORT);
+console.log("process.env.LOCAL_DB_USER", process.env.LOCAL_DB_USER);
+console.log("process.env.LOCAL_DB_PWD", process.env.LOCAL_DB_PWD);
+console.log("process.env.LOCAL_DB_NAME", process.env.LOCAL_DB_NAME);
 
 
 // if (process.env.ENVT == "DEMO"){
