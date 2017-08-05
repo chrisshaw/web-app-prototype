@@ -134,28 +134,55 @@ class GroupTabs extends React.Component {
       } 
   }
   ondragstart(e){
+    // var canvas = document.createElement('canvas');
+    // var context = canvas.getContext('2d');
+
+    // canvas.width = 100;
+    // canvas.height = 200;
+
+    // // context.fillStyle = '#333333';
+    // // context.fisllRect(0, 0, canvas.width, canvas.height);
+
+    // // context.fillStyle = '#999999';
+    // // context.font = 'bold 13px Arial';
+    // // context.fillText('DRAGGING...', 5, 15);
+
+    // // context.drawImage(img,10,10);
+    // console.log("e.target.id", e.target.id)
+    // var srcDiv =  ReactDOM.findDOMNode(this.refs[e.target.id]);
+    // // convert node to string
+    // var tmpNode = document.createElement( "div" );
+    // tmpNode.appendChild( srcDiv.cloneNode( true ) );
+    // var str = tmpNode.innerHTML;
+    // tmpNode = node = null; // prevent memory leaks in IE
+//     // return str;
+// console.log("srcDiv", srcDiv)
+
+// var data = 'data:image/svg+xml;charset=UTF-8,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200">' +
+//            '<foreignObject width="100%" height="100%">' +
+//             str  +
+//            '</foreignObject>' +
+//            '</svg>';
+//     // console.log("data", data)
+//     // var DOMURL = window.URL || window.webkitURL || window;
+
+//     var img = new Image();
+    // var svg = new Blob([data], {type: 'image/svg+html'});
+    // var url = DOMURL.createObjectURL(svg);
+    // console.log(url)
+    // img.onload = function() {
+    //   context.drawImage(img, 100, 100);
+    //   // DOMURL.revokeObjectURL(url);
+    // }
+    // img.src = data;
+    // img.width='100';
+    // console.log("img", img)
     e.dataTransfer.setData('text', e.target.id ); 
     e.dataTransfer.effectAllowed = 'move';
-    // e.target.style.backgroundColor = "red";
-
-    // var crt = e.target.cloneNode(true);
-    // crt.style.backgroundColor = "red";
-    // crt.style.position = "absolute"; crt.style.bottom = "0px"; crt.style.right = "0px";
-    // document.body.appendChild(crt);
-    // // e.target.style.border = "dashed"
-    // e.target.classList.add('dragelem');
     // e.dataTransfer.setDragImage(img, 0, 0);
-    // e.dataTransfer.setDragImage(img, 0, 0);
-    // e.target.classList('hide');
+    // document.body.append(canvas);
+    e.target.classList.add('changeColor');
 
-    // var crt = this.cloneNode(true);
-    // crt.style.backgroundColor = "red";
-    // e.dataTransfer.setDragImage(crt, 0, 0);
-
-    // var dragIcon = 
- 
-    // e.dataTransfer.setDragImage(dragIcon, -10, -10);
-    //  e.target.classList.add('hide');
     return false;
   }
   ondragover(e) {  
@@ -169,43 +196,39 @@ class GroupTabs extends React.Component {
   }
   ondragenter(e) {
     e.preventDefault && e.preventDefault();
-     e.target.classList.add('dragelem');
+    // e.target.classList.remove('hide');
+    e.target.classList.add('dragelem');
+     console.log("Drag enter");
+    // e.target.classList.add('dragelem');
     // e.target.style.opacity = '0.4';
     // e.target.style.background = 'grey';
     // e.target.classList.add('over');
   }
   ondragleave(e) {
     e.preventDefault && e.preventDefault();
-     e.target.classList.remove('dragelem');
+    e.target.classList.remove('dragelem');
+    // e.target.classList.add('hide');
     // e.target.classList.remove('over');  // this / e.target is previous target element.
     // e.target.style.opacity = '1';
     // dropNode.style.color = 'black';
+     return false;
   }
   
   ondragend(e) {  
     e.preventDefault && e.preventDefault();
     // e.target.classList.add('dragelem');
     // e.target.style.backgroundColor = "red";
-    e.target.classList.remove('dragelem');
+    // dropHint.classList.add('hide');
+    e.target.classList.remove('changeColor');
     // e.target.classList.remove('over');
     console.log("Drag end");
     return false;
   }
   ondrop(e) {
-      if ( e.stopPropagation()) {
-        e.stopPropagation();
-      }
-          e.target.classList.remove('dragelem');
       e.preventDefault && e.preventDefault();
+      e.target.classList.remove('dragelem');
       let data = e.dataTransfer.getData('text');
-
-   
-      console.log("data", data);
       var dragNode = ReactDOM.findDOMNode(this.refs[data]);
-
-   
-      console.log("dragNode.id", dragNode.id);
-      console.log("e.target.id:", e.target.id);
       helper.dragPath(e.target.id, dragNode.id, this.props);
       return false;
   }
@@ -248,7 +271,7 @@ class GroupTabs extends React.Component {
           });
         }
         let faPosition =  idCounter;   
-        let dropZone =  <div key={'dropzone' + index.toString()} className='text-center drop' ref={ref => component.drop = ref} onDrop={(e) => component.ondrop(e)} onDragEnd={(e) => component.ondragend(e)} onDragOver={(e) => component.ondragover(e)} onDragLeave={(e) => component.ondragleave(e)}  onDragEnter={(e) => component.ondragenter(e)} id={studentPathPosition+'|'+projPosition+'|'+faPosition}> . . . </div>
+        let dropZone =  <div key={'dropzone' + index.toString()} className='text-center drop' ref={ref => component.drop = ref} onDrop={(e) => component.ondrop(e)}  onDragOver={(e) => component.ondragover(e)} onDragLeave={(e) => component.ondragleave(e)}  onDragEnter={(e) => component.ondragenter(e)} id={studentPathPosition+'|'+projPosition+'|'+faPosition}> . . . </div>
         let changeButtons = (<div><Col className="text-center" md={6} xs={6}>          
                     <FlatButton containerElement='label' label="Add"   onTouchTap={(e) => component.handleAdd(studentPathPosition, projPosition, faPosition)}/>  
                     </Col> 
@@ -304,8 +327,9 @@ class GroupTabs extends React.Component {
           // </Row>
           // </div>
 
-        let dragItem = <div ref={component.props.paths[tabindex].student._key.toString()+'|'+fa._key.toString()+'|'+studentPathPosition+'|'+projPosition+'|'+faPosition} id={component.props.paths[tabindex].student._key.toString()+'|'+fa._key.toString()+'|'+studentPathPosition+'|'+projPosition+'|'+faPosition} key={component.props.paths[tabindex].student._key.toString()+'|'+fa._key.toString()+'|'+studentPathPosition+'|'+projPosition+'|'+faPosition}  className="fa-wrapper path" draggable="true" onDragStart={(e) => component.ondragstart(e)}>
-          <Row> <Col className="text-center" md={12}> . . . </Col> </Row>
+        let dragItem = <div ref={component.props.paths[tabindex].student._key.toString()+'|'+fa._key.toString()+'|'+studentPathPosition+'|'+projPosition+'|'+faPosition} id={component.props.paths[tabindex].student._key.toString()+'|'+fa._key.toString()+'|'+studentPathPosition+'|'+projPosition+'|'+faPosition} key={component.props.paths[tabindex].student._key.toString()+'|'+fa._key.toString()+'|'+studentPathPosition+'|'+projPosition+'|'+faPosition}  className="fa-wrapper path" draggable="true" onDragStart={(e) => component.ondragstart(e)} onDragEnd={(e) => component.ondragend(e)}>
+
+          <Row> <Col className="text-center" md={12}> <div>. . .</div> </Col> </Row>
           <Row className="fa-tab-view-rows" >
               <Col md={12}><div style={styles.slide}>    
                   <Row >

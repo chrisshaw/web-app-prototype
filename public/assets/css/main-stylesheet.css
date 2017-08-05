@@ -327,7 +327,15 @@ display: block
     top: 60px;
     left: 15px;
 }
-
+/*hide the canvas  */
+canvas{
+   position:absolute;
+  right: 0%; 
+}
+.changeColor {
+    background-color: #E6E6E6; 
+   /* display: none; */
+}
 .menu-on-small-screen {
     display: none !important
 }
