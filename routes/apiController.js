@@ -809,6 +809,7 @@ module.exports = function(app){
                  for (var i = 0; i <  data[s].projects[j].fa.length; i++){
                     let faObj = {}
                     faObj.course =  data[s].projects[j].fa[i].course;
+                    faObj.position = data[s].projects[j].fa[i].courseSequence;
                     faObj.faProjSeq = data[s].projects[j].fa[i].name + '(' + data[s].projects[j].fa[i].projectSequence +')';
                     faArr.push(faObj);          
                 }
@@ -816,9 +817,7 @@ module.exports = function(app){
                 projArr.push(projObj);             
              }
              studentObj.project = projArr;
-            
              studentArr.push(studentObj)
-            console.log("studentArr", studentArr)
          } 
         return studentArr; 
     }
@@ -960,6 +959,7 @@ module.exports = function(app){
                                 // console.log(v.project[u].fa)
                                 for (var w = 0; w < v.project[u].fa.length; w++){
                                    file.write('COURSE: ' + v.project[u].fa[w].course + '\n');
+                                //    file.write('POSITION: ' + v.project[u].fa[w].position + '\n');
                                    file.write("TITLE: " + v.project[u].fa[w].faProjSeq + '\n');
                                 }
                                 
