@@ -36,13 +36,6 @@ const dbSwitch = {
 // if running locally make sure you set env varaible 
 // run this in terminal :  export DB_MODE="LOCAL" etc.
 // // to make permanent - add to ~/.bash_profile file in $HOME dir
-console.log("process.env.DB_MODE", process.env.DB_MODE);
-console.log("process.env.LOCAL_DB_HOST_PORT", process.env.LOCAL_DB_HOST_PORT);
-console.log("process.env.LOCAL_DB_USER", process.env.LOCAL_DB_USER);
-console.log("process.env.LOCAL_DB_PWD", process.env.LOCAL_DB_PWD);
-console.log("process.env.LOCAL_DB_NAME", process.env.LOCAL_DB_NAME);
-
-
 // if (process.env.ENVT == "DEMO"){
 //     const DB_MODE = 'FOR_DEPLOY';
 // } else if (process.env.ENVT == "LOCAL") {
@@ -64,7 +57,6 @@ db.useBasicAuth(dbUser, dbPwd);
 
 const aql = arangojs.aql;
 module.exports = function(app){
-
     function saveStudentGetIds(studentArr, username, i){
         return new Promise((resolve, reject) => {
             // username uniquely identifies user / student in auth_users 
@@ -426,7 +418,7 @@ module.exports = function(app){
                                 // console.log("inserted 1:", cursor._result);
                                 // INSERT 
                                 // remove any fa where hasMastered != "FALSE"
-                                let masteredUpsert = aql`for s in  ${response[0]}
+                                let masteredUpsert = aql`for s in ${response[0]}
                                 for fa in s.focusArea 
                                 FILTER UPPER(fa.focusAreaDetails.mastered) == 'TRUE'
                                 UPSERT { _from: s.student_id[0], _to: fa.fa_id} INSERT { _from: s.student_id[0], _to: fa.fa_id, type: fa.focusAreaDetails.faType, mastered: UPPER(fa.focusAreaDetails.mastered),  dateCreated: DATE_NOW(), dateUpdated: null, createdBy: ${username} , updatedBy: null } UPDATE { type: fa.focusAreaDetails.faType, mastered: UPPER(fa.focusAreaDetails.mastered),  dateUpdated: DATE_NOW(), updatedBy: ${username}  } IN hasMastered RETURN { doc: NEW, type: OLD ? 'update' : 'insert' }`;
@@ -797,15 +789,48 @@ module.exports = function(app){
         })
     }
 
+    function createInstructions(data){
+        console.log("data", data)
+        let studentArr = [];
+        for (var s = 0; s < data.length; s++ ){
+            let studentObj = {};   
+            let grade = 'dummygrade';
+            // console.log("grade"grade)
+            studentObj.name =  data[s].student.first + ' ' + data[s].student.last ;
+            studentObj.grade =  "dummy data" + s;  // this is dummy data
+            // for each project
+            let projArr = [];
+            console.log("s", s)
+            for (var j = 0; j < data[s].projects.length; j++){
+                let projObj = {};
+                projObj.name =  data[s].projects[j].name;   
+                // for each fa
+                let faArr = [];
+                 for (var i = 0; i <  data[s].projects[j].fa.length; i++){
+                    let faObj = {}
+                    faObj.course =  data[s].projects[j].fa[i].course;
+                    faObj.faProjSeq = data[s].projects[j].fa[i].name + '(' + data[s].projects[j].fa[i].projectSequence +')';
+                    faArr.push(faObj);          
+                }
+                projObj.fa = faArr; 
+                projArr.push(projObj);             
+             }
+             studentObj.project = projArr;
+            
+             studentArr.push(studentObj)
+            console.log("studentArr", studentArr)
+         } 
+        return studentArr; 
+    }
     function saveNewPath(data, username) {
         // save path to data base then after this send mail to sidekick for upload
         return new Promise((resolve, reject) => {
             var studentArr = [];
             var newPathArr = [];
-            var summitArr = []
+            // var summitArr = []
             // get latest ids
             // for each student
-            var instructionCounter = 0;
+            // var instructionCounter = 0;
             for (var s = 0; s < data.length; s++ ){
                 // for each project
                 let studentObj = {_id: data[s].student._id}
@@ -813,9 +838,9 @@ module.exports = function(app){
                 for (var j = 0; j < data[s].projects.length; j++){
                     // prepare data for saving to db
                     let faArr=[];
-                    console.log("data[s].projects[j].fa.length", data[s].projects[j].fa.length)
+                    // for each focus area
                     for (var i = 0; i <  data[s].projects[j].fa.length; i++){
-                        instructionCounter++;
+                        // instructionCounter++;
                         let faObj = {
                             _id:   data[s].projects[j].fa[i]._id,
                             _key:  data[s].projects[j].fa[i]._key,
@@ -823,10 +848,9 @@ module.exports = function(app){
                         }
                         faArr.push(faObj);
                         // for send to summit email
-                        var instruction = 'Instruction ' + instructionCounter + ': Course: ' + data[s].projects[j].fa[i].course + ' -->  Project : ' + data[s].projects[j].name + ' --> INCLUDE --> Focus Area: ' + data[s].projects[j].fa[i].name + ' --> POSITION --> ' + data[s].projects[j].fa[i].courseSequence + ' --> UPDATE --> Title: ' + data[s].projects[j].fa[i].name + '(' + data[s].projects[j].fa[i].projectSequence +')';
-                        summitArr.push(instruction);   
+                        // var instruction = 'Instruction ' + instructionCounter + ': Course: ' + data[s].projects[j].fa[i].course + ' -->  Project : ' + data[s].projects[j].name + ' --> INCLUDE --> Focus Area: ' + data[s].projects[j].fa[i].name + ' --> POSITION --> ' + data[s].projects[j].fa[i].courseSequence + ' --> UPDATE --> Title: ' + data[s].projects[j].fa[i].name + '(' + data[s].projects[j].fa[i].projectSequence +')';   
                     } 
-                    
+
                     if (faArr.length > 0 ){
                         let projectsObj={ name: data[s].projects[j].name, fa: faArr, sequence: j+1}
                         projectsArr.push(projectsObj);
@@ -844,8 +868,7 @@ module.exports = function(app){
                 }
 
             }
-            console.log("studentArr", studentArr)
-            console.log("summitArr", summitArr);
+            
             // rewrote update logic for  tran 
             if ( studentArr.length > 0 ){       
                 const action = String(function (studentArr, username) {
@@ -889,13 +912,15 @@ module.exports = function(app){
                 {studentArr: studentArr, user: username, prevPathIdArr:[], newPathIdArr: [] })
                 .then(() => {
                     // all goodnow send to summit
-                    resolve(summitArr);
+                    // let summitArr = createInstructions(data);   
+                    resolve(createInstructions(data));
                 }).catch((error)=>{
                     console.log(error);
                     reject(error);
                 })
             } else {
-                resolve(summitArr); // what to resolve?
+                // let summitArr = ;   
+                resolve(createInstructions(data)); // what to resolve?
             }
         })
     }
@@ -907,6 +932,7 @@ module.exports = function(app){
                 // Waiting for updated query srted by query topic === Project
                 // waiting for confirmation where to send this data
                 // create file
+                console.log("summitArr", summitArr)
                 if (summitArr.length !== 0 ){
                     // don't send to Summit Email if no data
                     var user =  response.username.split('@');
@@ -917,11 +943,35 @@ module.exports = function(app){
                         // return error msg
                         res.json({success: false, error: "Problem creating file"})
                     });
-                    summitArr.forEach(function(v) { file.write(v + '\n'); });
+
+                    // // loop through summit array and write it out
+                    // for (var u = 0 ; u < summitArr.length; u++){
+                    //     summitArr
+                    // }
+
+
+                    summitArr.forEach(function(v) { 
+                        // loop through summit array and write it out
+                        // for (var u = 0 ; u < v.length; u++){
+                            file.write("GRADE: " +v.grade + '\n');
+                            file.write("STUDENT:"  + v.name + '\n');
+                            for (var u = 0; u < v.project.length; u++){
+                                file.write('PROJECT: ' + v.project[u].name + '\n');
+                                // console.log(v.project[u].fa)
+                                for (var w = 0; w < v.project[u].fa.length; w++){
+                                   file.write('COURSE: ' + v.project[u].fa[w].course + '\n');
+                                   file.write("TITLE: " + v.project[u].fa[w].faProjSeq + '\n');
+                                }
+                                
+                            }
+                            file.write("***************"  + '\n');
+                        // }
+                        // file.write(v + '\n');
+                    });
                     file.end();
                     // send as attachment to email
-                    var adminEmail = "paths@sidekick.education, fiona.hegarty@icloud.com";
-                    // var adminEmail = "fiona.hegarty@icloud.com";
+                    // var adminEmail = "paths@sidekick.education, fiona.hegarty@icloud.com";
+                    var adminEmail = "fiona.hegarty@icloud.com";
                     // need to pass file path
                     sendToSummitEmail(adminEmail, fileName).then((fileName) => {
                         // delete file - cant do here! gets delte
