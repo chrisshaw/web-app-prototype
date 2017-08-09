@@ -144,12 +144,12 @@ module.exports = function(app){
                 // for each fa  
                 for (var i = 0; i < result[p].projects[l].fa.length; i++){
                     if ( i < result[p].projects[l].fa.length-1) {
-                        result[p].projects[l].fa[i].nextFA = result[p].projects[l].fa[i+1]['Focus Area']
+                        result[p].projects[l].fa[i].nextFA = result[p].projects[l].fa[i+1].name
                     } else {
                         // if there is another project 
                         if ((result[p].projects.length-1 > l ) && (result[p].projects[l+1].fa.length > 0)){
                             // moves to next project and the first fa in that project if one exists
-                            result[p].projects[l].fa[i].nextFA = result[p].projects[l+1].fa[0]['Focus Area'];
+                            result[p].projects[l].fa[i].nextFA = result[p].projects[l+1].fa[0].name;
                             console.log("result[p].projects[l].fa[i].nextFA", result[p].projects[l].fa[i].nextFA)
                         } else {
                             result[p].projects[l].fa[i].nextFA = [];  
@@ -642,7 +642,7 @@ module.exports = function(app){
                 // cursor is a cursor for the query result
                 // reformat results for improved client display 
                 // var studentPathArr = [];
-               console.log("cursor._result", cursor._result[0].projects[0].fa)
+               console.log("cursor._result", cursor._result)
                 // let parsedPath = parseFa(cursor._result);
                 res.json({success: true, paths: cursor._result})
                  
@@ -927,25 +927,25 @@ module.exports = function(app){
                         // delete file - cant do here! gets delte
                         fs.unlinkSync(fileName);
                         // send OK msg the browser sending emails....res.sendStatus(200)
-                        res.json({success: true});
+                        res.json({success: true, successMsg: "Data successfully sent to Summit."});
                     }).catch((error) => {
                         console.log(error);
                         //send error status code?
-                        res.json({success: false,  error: error});
+                        res.json({success: false,  errorMsg:  "There was a problem sending data, please contact support."});
                     })
                 } else {
-                     res.json({success: false,  error: "error"}); // catch error to say no data!!
+                     res.json({success: false,   errorMsg: "There was a problem sending data, please contact support."}); // catch error to say no data!!
                 }
             }).catch((error) => {
                 console.log(error);
-                res.json({success: false, error: error})
+                res.json({success: false, errorMsg:  "There was a problem sending data, please contact support."})
             })
 
         }).catch((error) => {
             // User validation error
             console.log(error);
             //send error status code?
-            res.json({success: false, error: error})
+            res.json({success: false, successMsg: error})
         })
     })
     app.get('/api/roles/all', function(req, res){
@@ -1106,8 +1106,8 @@ module.exports = function(app){
 
     app.get('/fa/:username', function(req, res){
         let username = req.params.username;
+        // covers replaced with focusesOn
         // check this query!!!
-///**** prod/dev db covers does not have current courses mapped..... */
         let query = aql`
         let userid = (for u in auth_users filter u.username == ${username} return u._id)
         let queryCourses = (for c in outbound userid[0] hasCourse return c._key)
@@ -1115,7 +1115,7 @@ module.exports = function(app){
             filter length(queryCourses) > 0 ? c._key in queryCourses : true
                 for fa in
                 outbound c
-                covers
+                focusesOn
                 return fa._key)
         for f in focusAreas 
         filter f._key in fa_key

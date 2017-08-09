@@ -7,6 +7,8 @@ import AppNav from './AppNav.js';
 import injectTapEventPlugin from 'react-tap-event-plugin';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
+import Dialog from 'material-ui/Dialog';
+import FlatButton from 'material-ui/FlatButton';
 //
 const navBarTheme = getMuiTheme({
   palette: {
@@ -64,17 +66,75 @@ class Main extends Component{
     constructor(props){
         super(props);
         this.handleLogout = this.handleLogout.bind(this);
+        this.handleClose = this.handleClose.bind(this);
+        // get initial data
+        helper.getUserFA(this.props.username, this.props.dispatch);
         injectTapEventPlugin();
     }
     handleLogout(){
-      helper.logout(this.props.dispatch, this.props.router);
+       helper.logout(this.props.dispatch, this.props.router);
+    }
+    handleClose(){ 
+
+        // clear local and server error messages
+        if (this.props.error) helper.setErrorMsg(this.props);
+        // local validation
+        if (this.props.success) helper.setSuccessMsg(this.props);
     }
     render(){
+          const actions = [
+            <FlatButton
+                label="Close"
+                onTouchTap={this.handleClose}
+            />
+            ];
+
+
          return(
             <MuiThemeProvider muiTheme={navBarTheme}>
             <div>
                 <AppNav pathname={this.props.location.pathname} handleLogout={this.handleLogout} loggedin={this.props.loggedin} perms={this.props.perms} />
-                <div className="wrapper">          
+                <div className="wrapper">    
+                   {/*Success Message Modal  */}   
+                    <Row>
+                      <Col xs={2} md={2}/>
+                      <Col xs={8} md={8} className="text-center">
+                      <Dialog
+                          bodyStyle={{fontSize: 13}}
+                          titleStyle={{fontSize: 14, fontWeight: 'bold'}}
+                          title="Success"
+                          actions={actions}
+                          style={{zIndex: 2000,fontSize: 12, height: 300}}
+                          modal={false}
+                          open= {this.props.success}
+                          onRequestClose={this.handleClose}
+                          >
+                          {this.props.successMsg}
+                          </Dialog> 
+                      </Col>
+                      <Col md={2}/>
+                  </Row> 
+                 {console.log("successs**", this.props.success)}
+                  {/*Error Modal  */}
+                  <Row>
+                      <Col xs={2} md={2}/>
+                      <Col xs={8} md={8} className="text-center">
+                      <Dialog
+                          bodyStyle={{fontSize: 13}}
+                          titleStyle={{fontSize: 14, fontWeight: 'bold'}}
+                          title="Error"
+                          actions={actions}
+                          style={{zIndex: 2000,fontSize: 12, height: 300}}
+                          modal={false}
+                          open= {this.props.error}
+                          onRequestClose={this.handleClose}
+                          >
+                          {this.props.errorMsg}
+                          </Dialog> 
+
+                      </Col>
+                      <Col md={2}/>
+                  </Row>   
                    {React.cloneElement(this.props.children, {username: this.props.username})}
               </div>
             </div>
@@ -89,6 +149,10 @@ const mapStateToProps = (store) => {
         username: store.authState.username,
         perms: store.authState.perms,
         role: store.authState.role,
+        success: store.appState.success,
+        successMsg: store.appState.successMsg,
+        error: store.appState.error,
+        errorMsg: store.appState.errorMsg,
     }
 }
 export default connect(mapStateToProps)(Main);

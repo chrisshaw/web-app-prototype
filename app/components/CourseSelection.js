@@ -27,10 +27,11 @@ class CourseSelection extends Component{
         if ( this.props.selectedcourselist){
              var arrLength = this.props.selectedcourselist.length;
         }
+        let hintText = "Enter Course(s) e.g. Biology";
         return(<div>
                     <Row>
                         <Col xs={10} md={10} >
-                            <p className="search-text chip-float"> in my courses</p>
+                            <p className="search-text chip-float"> who are enrolled in</p>
                         </Col>
                         <Col xs={2} md={2} >
                             <div className="reset-button text-center" onTouchTap={this.handleReset} ><ResetIcon className="reset-icon" /> Reset</div>        
@@ -38,7 +39,7 @@ class CourseSelection extends Component{
                     </Row>
                     <Row>
                         <Col xs={12} md={12} >
-                            <AutoCompleteField queryitem="Courses" list={this.props.courselist} selectedlist={this.props.selectedcourselist} handleRequestDelete={this.handleRequestDelete}/>
+                            <AutoCompleteField hint={hintText} queryitem="Courses" list={this.props.courselist} selectedlist={this.props.selectedcourselist} handleRequestDelete={this.handleRequestDelete}/>
                         </Col>
                     </Row>
                 </div>

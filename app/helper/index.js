@@ -231,28 +231,55 @@ var helpers = {
             console.log(error)
         })  
     },
-    sendToSidekick(paths){
-        return axios.post('/summit', paths).then(function(response) {
-            return;
+    sendToSidekick(props){
+        return axios.post('/summit', props.paths).then(function(response) {
+            console.log("response.data.successMsg", response.data.successMsg)
+            if (response.data.success) {
+                props.dispatch(actions.setSuccess(response.data.success, response.data.successMsg));
+            } else if (!response.data.success){
+                props.dispatch(actions.setError(true, response.data.errorMsg));
+            }
+            return; 
          }).catch((error) => {
+             console.log("error", error)
             // send message to client...needs work
-            console.log(error)
+            props.dispatch(actions.setError(true, response.data.errorMsg));
         })  
 
     },
-    dragPath(newPosition, draggedId, props) {
-        // change to use studentPathPosotin per removeFA
-        var oldArr =  draggedId.split('|');  // student key [0], fa key [1],  student position [2], proj position [3], fa position[4],
-        var newArr = newPosition.split('|');  // student position [0], proj position [1], fa position[2],
-        let studentPathPosition = oldArr[2];  // should be same as for newArr
-        let oldProject = oldArr[3];
-        let oldFa = oldArr[4];
-        let newProject = newArr[1];
-        let newFa = newArr[2];
-        // use the path position data to add the moved focus area newFa into the relevena position and remove from old position
-        props.paths[studentPathPosition].projects[newProject].fa.splice(newFa, 0,  props.paths[studentPathPosition].projects[oldProject].fa.splice(oldFa, 1)[0]);
-        props.dispatch(actions.updatePathList(props.paths, false, false )); 
-        // helpers.parseFa(props.paths[studentPathPosition]);    
+    setErrorMsg(props){
+        props.dispatch(actions.setError(false, ""))
+    },
+    setSuccessMsg(props){
+        props.dispatch(actions.setSuccess(false, ""))
+    },
+    // dragPath(newPosition, draggedId, props) {
+    //     // change to use studentPathPosotin per removeFA
+    //     var oldArr =  draggedId.split('|');  // student key [0], fa key [1],  student position [2], proj position [3], fa position[4],
+    //     var newArr = newPosition.split('|');  // student position [0], proj position [1], fa position[2],
+    //     let studentPathPosition = oldArr[2];  // should be same as for newArr
+    //     let oldProject = oldArr[3];
+    //     let oldFa = oldArr[4];
+    //     let newProject = newArr[1];
+    //     let newFa = newArr[2];
+    //     // use the path position data to add the moved focus area newFa into the relevena position and remove from old position
+    //     props.paths[studentPathPosition].projects[newProject].fa.splice(newFa, 0,  props.paths[studentPathPosition].projects[oldProject].fa.splice(oldFa, 1)[0]);
+    //     props.dispatch(actions.updatePathList(props.paths, false, false )); 
+    //     // helpers.parseFa(props.paths[studentPathPosition]);    
+    // },
+    moveFaUp(studentPosition, projPosition, faPosition, props){
+        // this is the UP arrow on the Focus Area - moves one position up so that means down a position in the array
+        if (faPosition > 0){
+            props.paths[studentPosition].projects[projPosition].fa.splice(faPosition-1, 0,  props.paths[studentPosition].projects[projPosition].fa.splice(faPosition, 1)[0]);
+            props.dispatch(actions.updatePathList(props.paths, false, false )); 
+        }
+    },
+    moveFaDown(studentPosition, projPosition, faPosition, props){  
+        // this is the DOWN arrow on the Focus Area - moves one position down - that means up a position in the array
+        if (faPosition < props.paths[studentPosition].projects[projPosition].fa.length-1){
+            props.paths[studentPosition].projects[projPosition].fa.splice(faPosition+1, 0,  props.paths[studentPosition].projects[projPosition].fa.splice(faPosition, 1)[0]);
+            props.dispatch(actions.updatePathList(props.paths, false, false )); 
+        }  
     },
     removeFA(studentPathPosition,projPosition, idCounter, studentKey, faKey, props){
        // do quick check to make sure the correct fa is being removed
@@ -311,8 +338,9 @@ var helpers = {
    
     },
     getUserFA(username, dispatch){
+
         return axios.get('/fa/'+username).then(function(response) {
-            console.log("focus area ", response.data)
+            console.log("focus area ******", response.data)
             if (response.data.success){
                 dispatch(actions.focusAreas(response.data.fa))
                 // props.dispatch(actions.updatePathList( props.paths, false, false )); 

@@ -60,11 +60,11 @@ class StandardsSelection extends Component{
              var arrLength = this.props.selectedstandardslist.length;
         }
         
-       
+        let hintText = 'Enter standard(s)'
         return(<div>
                     <Row>
                         <Col xs={10} md={10} >
-                            <p className="search-text chip-float">that aligns to</p>
+                            <p className="search-text chip-float">that aligns to standards</p>
                         </Col>
                         <Col xs={2} md={2} >
                             <div className="reset-button text-center" onTouchTap={this.handleReset} ><ResetIcon className="reset-icon" /> Reset</div>        
@@ -72,7 +72,7 @@ class StandardsSelection extends Component{
                     </Row>
                     <Row>
                         <Col xs={12} md={12} >
-                            <AutoCompleteField queryitem="Standards" list={this.props.standardslist} selectedlist={this.props.selectedstandardslist} handleRequestDelete={this.handleRequestDelete}/>
+                            <AutoCompleteField hint={hintText} queryitem="Standards" list={this.props.standardslist} selectedlist={this.props.selectedstandardslist} handleRequestDelete={this.handleRequestDelete}/>
                         </Col>
                     </Row>
                 </div>

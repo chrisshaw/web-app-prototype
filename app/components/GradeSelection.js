@@ -41,10 +41,11 @@ class GradeSelection extends Component{
         if ( this.props.selectedgradelist){
              var arrLength = this.props.selectedgradelist.length;
         }
+        let hintText = "Enter student grade(s) e.g. 6";
         return(<div>
                     <Row>
                         <Col xs={10} md={10} >
-                            <p className="search-text chip-float"> Students in my grades</p>
+                            <p className="search-text chip-float"> Students in grades</p>
                         </Col>
                         <Col xs={2} md={2} >
                             <div className="reset-button text-center" onTouchTap={this.handleReset} ><ResetIcon className="reset-icon" /> Reset</div>        
@@ -52,7 +53,7 @@ class GradeSelection extends Component{
                     </Row>
                     <Row>
                         <Col xs={12} md={12} >
-                            <AutoCompleteField queryitem="Grades" list={this.props.gradelist} selectedlist={this.props.selectedgradelist} handleRequestDelete={this.handleRequestDelete}/>
+                            <AutoCompleteField hint={hintText} queryitem="Grades" list={this.props.gradelist} selectedlist={this.props.selectedgradelist} handleRequestDelete={this.handleRequestDelete}/>
                         </Col>
                     </Row>
                 </div>

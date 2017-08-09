@@ -43,6 +43,7 @@ class QueryBuilder extends Component{
         var selectedCourses = [];
         if (this.props.selectedcourselist) selectedCourses.push(this.props.selectedcourselist);
         // A user will have no courses if courselist + selectedcouselist is empty 
+        console.log("this.props.courselist", this.props.courselist)
         if ((this.props.courselist.length > 0) || (selectedCourses.length > 0)){
             hasCourses = true;
             if (((this.props.role.toUpperCase() === "TEACHER") || (this.props.role.toUpperCase() === "STUDENT")) && (selectedCourses.length === 0)){
@@ -119,7 +120,7 @@ class QueryBuilder extends Component{
                 </Row>
                 <Row>
                     <Col xs={12} md={12} className="text-center" >            
-                        { (this.props.perms) && (this.props.perms.indexOf('sendtosummit') !== -1) ? <FlatButton containerElement='label' label="Send To Sidekick" disabled={this.props.disabled} onTouchTap={this.props.handleSend} /> : ""}
+                        { (this.props.perms) && (this.props.perms.indexOf('sendtosummit') !== -1) ? <FlatButton containerElement='label' label="Start Updating Summit" disabled={this.props.disabled} onTouchTap={this.props.handleSend} /> : ""}
                     </Col>
                 </Row>
             </div>

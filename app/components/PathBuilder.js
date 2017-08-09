@@ -40,7 +40,7 @@ class PathBuilder extends Component{
     }
     handleSend() {
         // used by the "send to Sidekick" button in QueryBuilder
-        helper.sendToSidekick(this.props.paths)   
+        helper.sendToSidekick(this.props)   
     }
     render(){
         return(

@@ -125,6 +125,21 @@ userLogout: () => {
       type: "SHOW_INITIAL_ROWS",
       falist
     }
+  },
+  setSuccess: (success, successMsg) => {
+    console.log("being called")
+    return {
+      type: "SET_SUCCESS_STATUS",
+      success,
+      successMsg
+    }
+  },
+  setError: (error, errorMsg) => {
+    return {
+      type: "SET_ERROR_STATUS",
+      error,
+      errorMsg
+    }
   }
 }
 
