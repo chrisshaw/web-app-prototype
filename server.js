@@ -21,7 +21,7 @@ app.use(cookieParser());
 
 
 // ***  Must comment this out for aws deploy *********///
-app.use("/public", express.static(path.join(__dirname, 'public')));
+// app.use("/public", express.static(path.join(__dirname, 'public')));
 
 // parse application/x-www-form-urlencoded 
 // found urlencoded extended must be true for nested arrays and for post method
