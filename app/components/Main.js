@@ -114,7 +114,6 @@ class Main extends Component{
                       </Col>
                       <Col md={2}/>
                   </Row> 
-                 {console.log("successs**", this.props.success)}
                   {/*Error Modal  */}
                   <Row>
                       <Col xs={2} md={2}/>
@@ -126,12 +125,11 @@ class Main extends Component{
                           actions={actions}
                           style={{zIndex: 2000,fontSize: 12, height: 300}}
                           modal={false}
-                          open= {this.props.error}
+                          open={this.props.error}
                           onRequestClose={this.handleClose}
                           >
                           {this.props.errorMsg}
                           </Dialog> 
-
                       </Col>
                       <Col md={2}/>
                   </Row>   

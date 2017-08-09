@@ -920,8 +920,8 @@ module.exports = function(app){
                     summitArr.forEach(function(v) { file.write(v + '\n'); });
                     file.end();
                     // send as attachment to email
-                    // var adminEmail = "paths@sidekick.education, fiona.hegarty@icloud.com";
-                    var adminEmail = "fiona.hegarty@icloud.com";
+                    var adminEmail = "paths@sidekick.education, fiona.hegarty@icloud.com";
+                    // var adminEmail = "fiona.hegarty@icloud.com";
                     // need to pass file path
                     sendToSummitEmail(adminEmail, fileName).then((fileName) => {
                         // delete file - cant do here! gets delte
