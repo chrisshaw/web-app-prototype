@@ -1,0 +1,19 @@
+branch-defaults:
+  fiona-branch-1:
+    environment: sidekickEducation-env
+environment-defaults:
+  sidekickEducation-env:
+    branch: null
+    repository: null
+global:
+  application_name: sidekick-education
+  default_ec2_keyname: null
+  default_platform: arn:aws:elasticbeanstalk:us-east-1::platform/Node.js running on
+    64bit Amazon Linux/4.2.0
+  default_region: us-east-1
+  instance_profile: null
+  platform_name: null
+  platform_version: null
+  profile: eb-cli
+  sc: git
+  workspace_type: Application
