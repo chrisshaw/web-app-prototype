@@ -28,11 +28,11 @@ class TopicSelection extends Component{
         if ( this.props.selectedtopiclist){
              var arrLength = this.props.selectedtopiclist.length;
         }
-
+        let hintText = "Enter topic(s) e.g. Immigration";
         return(<div>
                     <Row>
                         <Col xs={10} md={10} >
-                            <p className="search-text chip-float">will explore</p>
+                            <p className="search-text chip-float">will explore topics</p>
                         </Col>
                         <Col xs={2} md={2} >
                             <div className="reset-button text-center" onTouchTap={this.handleReset} ><ResetIcon className="reset-icon" /> Reset</div>        
@@ -40,7 +40,7 @@ class TopicSelection extends Component{
                     </Row>
                     <Row>
                         <Col xs={12} md={12} >
-                            <AutoCompleteField queryitem="Topics" list={this.props.topiclist} selectedlist={this.props.selectedtopiclist} handleRequestDelete={this.handleRequestDelete}/>
+                            <AutoCompleteField hint={hintText} queryitem="Topics" list={this.props.topiclist} selectedlist={this.props.selectedtopiclist} handleRequestDelete={this.handleRequestDelete}/>
                         </Col>
                     </Row>
                 </div>

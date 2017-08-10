@@ -43,6 +43,7 @@ class QueryBuilder extends Component{
         var selectedCourses = [];
         if (this.props.selectedcourselist) selectedCourses.push(this.props.selectedcourselist);
         // A user will have no courses if courselist + selectedcouselist is empty 
+        console.log("this.props.courselist", this.props.courselist)
         if ((this.props.courselist.length > 0) || (selectedCourses.length > 0)){
             hasCourses = true;
             if (((this.props.role.toUpperCase() === "TEACHER") || (this.props.role.toUpperCase() === "STUDENT")) && (selectedCourses.length === 0)){
@@ -55,7 +56,10 @@ class QueryBuilder extends Component{
         // messy logic will rework later!!!
         /// if all good then send the query
         if (hasCourses){
-            helper.getPathsAll(myCourses,this.props.selectedgradelist, this.props.selectedstandardslist, this.props.selectedtopiclist, this.props.selectedsubjectcontentlist, this.props.role, this.props.dispatch);  
+            console.log("this.props.selectedtopiclist", this.props.selectedtopiclist)
+            helper.getPathProjectAll(myCourses,this.props.selectedgradelist, this.props.selectedstandardslist, this.props.selectedtopiclist, this.props.selectedsubjectcontentlist, this.props.role, this.props.dispatch); 
+            // reset display settings
+            helper.addInitialRows("", this.props.dispatch); 
         }  else {
             this.setState({error: true , errorMsg:  "You have no COURSES set up in Sidekick, please contact your administrator."})
         }  
@@ -116,7 +120,7 @@ class QueryBuilder extends Component{
                 </Row>
                 <Row>
                     <Col xs={12} md={12} className="text-center" >            
-                        { (this.props.perms) && (this.props.perms.indexOf('sendtosummit') !== -1) ? <FlatButton containerElement='label' label="Send To Sidekick" disabled={this.props.disabled} onTouchTap={this.props.handleSend} /> : ""}
+                        { (this.props.perms) && (this.props.perms.indexOf('sendtosummit') !== -1) ? <FlatButton containerElement='label' label="Start Updating Summit" disabled={this.props.disabled} onTouchTap={this.props.handleSend} /> : ""}
                     </Col>
                 </Row>
             </div>

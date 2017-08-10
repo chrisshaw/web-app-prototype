@@ -1,0 +1,10 @@
+{"type":2300,"data":{"_from":"auth_roles/2835986","_id":"auth_roles_can/2836919","_key":"2836919","_rev":"_VVHs5Z---C","_to":"auth_permissions/2836328"}}
+{"type":2300,"data":{"_from":"auth_roles/2835986","_id":"auth_roles_can/2836948","_key":"2836948","_rev":"_VVHs5Z---A","_to":"auth_permissions/2836441"}}
+{"type":2300,"data":{"_from":"auth_roles/2835986","_id":"auth_roles_can/3171585","_key":"3171585","_rev":"_VVHs5Xi--_","_to":"auth_permissions/3171432"}}
+{"type":2300,"data":{"_from":"auth_roles/2836253","_id":"auth_roles_can/2837254","_key":"2837254","_rev":"_VVHs5Xi--B","_to":"auth_permissions/2836504"}}
+{"type":2300,"data":{"_from":"auth_roles/2836253","_id":"auth_roles_can/3171568","_key":"3171568","_rev":"_VVHs5Z---B","_to":"auth_permissions/3171432"}}
+{"type":2300,"data":{"_from":"auth_roles/2836253","_id":"auth_roles_can/2837240","_key":"2837240","_rev":"_VVHs5Z---_","_to":"auth_permissions/2836328"}}
+{"type":2300,"data":{"_from":"auth_roles/2835928","_id":"auth_roles_can/2837070","_key":"2837070","_rev":"_VVHs5Xi--A","_to":"auth_permissions/2836328"}}
+{"type":2300,"data":{"_from":"auth_roles/2835986","_id":"auth_roles_can/2836896","_key":"2836896","_rev":"_VVHs5Z----","_to":"auth_permissions/2836504"}}
+{"type":2300,"data":{"_from":"auth_roles/2836152","_id":"auth_roles_can/2837372","_key":"2837372","_rev":"_VVHs5Xi---","_to":"auth_permissions/2836504"}}
+{"type":2300,"data":{"_from":"auth_roles/2835928","_id":"auth_roles_can/5842753","_key":"5842753","_rev":"_VW-2xYq---","_to":"auth_permissions/2836504"}}

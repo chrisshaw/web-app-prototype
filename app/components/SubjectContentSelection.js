@@ -45,10 +45,11 @@ class SubjectContentSelection extends Component{
         if ( this.props.selectedsubjectcontentlist){
              var arrLength = this.props.selectedsubjectcontentlist.length;
         }    
+        let hintText = "Enter subject(s) e.g. english";
         return(<div>
                     <Row>
                         <Col xs={10} md={10} >
-                            <p className="search-text chip-float">to learn content in</p>
+                            <p className="search-text chip-float">while learning content in</p>
                         </Col>
                         <Col xs={2} md={2} >
                             <div className="reset-button text-center" onTouchTap={this.handleReset} ><ResetIcon className="reset-icon" /> Reset</div>        
@@ -56,7 +57,7 @@ class SubjectContentSelection extends Component{
                     </Row>
                     <Row>
                         <Col xs={12} md={12} >
-                            <AutoCompleteField queryitem="Subjects" list={this.props.subjectcontentlist} selectedlist={this.props.selectedsubjectcontentlist} handleRequestDelete={this.handleRequestDelete}/>
+                            <AutoCompleteField hint={hintText} queryitem="Subjects" list={this.props.subjectcontentlist} selectedlist={this.props.selectedsubjectcontentlist} handleRequestDelete={this.handleRequestDelete}/>
                         </Col>
                     </Row>
                 </div>

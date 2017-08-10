@@ -23,7 +23,7 @@ const dbSwitch = {
     ENV: {
         dbHostPort: process.env.DB_HOST_PORT,
         dbUser: process.env.DB_USER,
-        dbPwd: process.env.DB_PWD,
+        dbPwd: "",
         dbName: process.env.DB_NAME
     },
     LOCAL: {
@@ -36,13 +36,6 @@ const dbSwitch = {
 // if running locally make sure you set env varaible 
 // run this in terminal :  export DB_MODE="LOCAL" etc.
 // // to make permanent - add to ~/.bash_profile file in $HOME dir
-// console.log("process.env.DB_MODE", process.env.DB_MODE);
-// console.log("process.env.LOCAL_DB_HOST_PORT", process.env.LOCAL_DB_HOST_PORT);
-// console.log("process.env.LOCAL_DB_USER", process.env.LOCAL_DB_USER);
-// console.log("process.env.LOCAL_DB_PWD", process.env.LOCAL_DB_PWD);
-// console.log("process.env.LOCAL_DB_NAME", process.env.LOCAL_DB_NAME);
-
-
 // if (process.env.ENVT == "DEMO"){
 //     const DB_MODE = 'FOR_DEPLOY';
 // } else if (process.env.ENVT == "LOCAL") {
@@ -64,7 +57,6 @@ db.useBasicAuth(dbUser, dbPwd);
 
 const aql = arangojs.aql;
 module.exports = function(app){
-
     function saveStudentGetIds(studentArr, username, i){
         return new Promise((resolve, reject) => {
             // username uniquely identifies user / student in auth_users 
@@ -136,43 +128,68 @@ module.exports = function(app){
         });      
     }
 
-   function parseFa(result) {
-    //    console.log(result)
-        for (var p= 0; p < result.length; p++){
-            // console.log("result.fa.length", result.fa.length)
-            for (var i = 0; i < result[p].fa.length; i++){
-                // console.log("result[p].fa.length-1", result[p].fa.length-1)
-                if ( i < result[p].fa.length-1) {
-                    result[p].fa[i].nextFA = result[p].fa[i+1]['Focus Area']
-                } else {
-                    result[p].fa[i].nextFA = [];  // if 
-                }
-                // console.log(" result[p].fa[i].nextFA ",  result[p].fa[i].nextFA )
-                result[p].fa[i]['currentStd'] = [];
-                result[p].fa[i]['nextStd']= [];
-                if (i < result[p].fa.length-1){  
-                    for (var j = 0; j <  result[p].fa[i+1].standardConnections.length; j++){
-                        // save the first one
-                        if ((j === 0)){
-                            result[p].fa[i].nextStd.push(result[p].fa[i+1].standardConnections[j]);
+   function parseFa(result) { 
+        // for each student
+        for (var p = 0; p < result.length; p++){
+            // for each project
+            for (var l = 0; l < result[p].projects.length; l++){
+                // for each fa  
+                for (var i = 0; i < result[p].projects[l].fa.length; i++){
+                    if ( i < result[p].projects[l].fa.length-1) {
+                        result[p].projects[l].fa[i].nextFA = result[p].projects[l].fa[i+1].name
+                    } else {
+                        // if there is another project 
+                        if ((result[p].projects.length-1 > l ) && (result[p].projects[l+1].fa.length > 0)){
+                            // moves to next project and the first fa in that project if one exists
+                            result[p].projects[l].fa[i].nextFA = result[p].projects[l+1].fa[0].name;
+                            console.log("result[p].projects[l].fa[i].nextFA", result[p].projects[l].fa[i].nextFA)
+                        } else {
+                            result[p].projects[l].fa[i].nextFA = [];  
                         }
-                        // don't save duplicates
-                        else if ((j > 0 ) && (result[p].fa[i+1].standardConnections[j-1] !== result[p].fa[i+1].standardConnections[j] )){
-                            result[p].fa[i].nextStd.push(result[p].fa[i+1].standardConnections[j]);
-                        }  
                     }
-                }  else {
-                    result[p].fa[i].nextStd = [];  // if 
-                }
+                    // console.log(" result[p].projects[l].fa[i].nextFA ",  result[p].projects[l].fa[i].nextFA )
+                    result[p].projects[l].fa[i]['currentStd'] = [];
+                    result[p].projects[l].fa[i]['nextStd']= [];
+                    // next standards
+                    if (i < result[p].projects[l].fa.length-1){  
+                        console.log("esult[p].projects[l].fa[i+1].", result[p].projects[l].fa[i+1]);
+                        for (var j = 0; j < result[p].projects[l].fa[i+1].standardConnections.length; j++){
+                            // save the first one
+                            if ((j === 0)){
+                                result[p].projects[l].fa[i].nextStd.push(result[p].projects[l].fa[i+1].standardConnections[j]);
+                            }
+                            // don't save duplicates
+                            else if ((j > 0 ) && (result[p].projects[l].fa[i+1].standardConnections[j-1] !== result[p].projects[l].fa[i+1].standardConnections[j] )){
+                                result[p].projects[l].fa[i].nextStd.push(result[p].projects[l].fa[i+1].standardConnections[j]);
+                            }  
+                        }
+                    }  else {
+                         // result[p].projects[k].fa[i].nextFA = [];  
+                        if ((result[p].projects.length-1 > l ) && (result[p].projects[l+1].fa.length > 0)){
+                            // moves to next project and the first fa in that project if one exists
+                            for (var j = 0; j < result[p].projects[l+1].fa[0].standardConnections.length; j++){
+                                if ((j === 0)){
+                                    result[p].projects[l].fa[i].nextStd.push(result[p].projects[l+1].fa[0].standardConnections[j]);
+                                }
+                                // don't save duplicates
+                                else if ((j > 0 ) && (result[p].projects[l+1].fa[0].standardConnections[j-1] !== result[p].projects[l+1].fa[0].standardConnections[j] )){
+                                    result[p].projects[l].fa[i].nextStd.push(result[p].projects[l+1].fa[0].standardConnections[j]);
+                                }
+                            }
+                        } else {
+                           result[p].projects[l].fa[i].nextStd = [];  // if 
+                        }
+                    }
 
-                // de-dup current fa std connections
-                for (var k = 0; k < result[p].fa[i].standardConnections.length; k++){
-                    if ((k === 0)){
-                        result[p].fa[i]['currentStd'].push(result[p].fa[i].standardConnections[k]);
+                    // de-dup current fa std connections
+                    for (var k = 0; k < result[p].projects[l].fa[i].standardConnections.length; k++){
+                        if ((k === 0)){
+                            result[p].projects[l].fa[i]['currentStd'].push(result[p].projects[l].fa[i].standardConnections[k]);
+                        }
+                        else if ((k > 0 ) && (result[p].projects[l].fa[i].standardConnections[k-1] !== result[p].projects[l].fa[i].standardConnections[k] )){
+                        result[p].projects[l].fa[i]['currentStd'].push(result[p].projects[l].fa[i].standardConnections[k]);
+                        }                 
                     }
-                    else if ((k > 0 ) && (result[p].fa[i].standardConnections[k-1] !== result[p].fa[i].standardConnections[k] )){
-                    result[p].fa[i]['currentStd'].push(result[p].fa[i].standardConnections[k]);
-                    }                 
                 }
             }
         }
@@ -401,7 +418,7 @@ module.exports = function(app){
                                 // console.log("inserted 1:", cursor._result);
                                 // INSERT 
                                 // remove any fa where hasMastered != "FALSE"
-                                let masteredUpsert = aql`for s in  ${response[0]}
+                                let masteredUpsert = aql`for s in ${response[0]}
                                 for fa in s.focusArea 
                                 FILTER UPPER(fa.focusAreaDetails.mastered) == 'TRUE'
                                 UPSERT { _from: s.student_id[0], _to: fa.fa_id} INSERT { _from: s.student_id[0], _to: fa.fa_id, type: fa.focusAreaDetails.faType, mastered: UPPER(fa.focusAreaDetails.mastered),  dateCreated: DATE_NOW(), dateUpdated: null, createdBy: ${username} , updatedBy: null } UPDATE { type: fa.focusAreaDetails.faType, mastered: UPPER(fa.focusAreaDetails.mastered),  dateUpdated: DATE_NOW(), updatedBy: ${username}  } IN hasMastered RETURN { doc: NEW, type: OLD ? 'update' : 'insert' }`;
@@ -444,10 +461,22 @@ module.exports = function(app){
         })
     })
 
-
+   // for now this just returns a json
+    // app.post('/api/path/project', function (req, res){
+        
+    //     // validateUser(req, res, "buildpath").then((response) =>{
+    //         let path = require('../data/faPath.js'); 
+    //         console.log("in here.....");
+    //         let parsedPath = parseFa(path);
+    //         res.json({success: true, paths: parsedPath })
+    //     // }).catch((error) => {
+    //          console.log(Date.now() + " Authentication Error");
+    //          res.json({success: false, error: "No Permissions to View Paths"})
+    //     // })
+    // })
     
     // using post as passing object - probably not ideal
-    app.post('/api/path/all', function (req, res){
+    app.post('/api/path/project', function (req, res){
         validateUser(req, res, "buildpath").then((response) =>{
             // intialise
             let queryCourses = [];
@@ -459,7 +488,6 @@ module.exports = function(app){
             let studentUser = "";
             // if the user is a student they should only see their own path returned for their courses
             if (req.body.role.toUpperCase() === 'STUDENT'){
-                console.log(response.userid)
                 studentUserArr.push(response.userid);
                 studentUser = response.userid;
             }
@@ -472,7 +500,7 @@ module.exports = function(app){
                     }
                 }
             }
-            console.log("queryCourses", queryCourses)
+
 
             if (req.body.grades){
                 if (req.body.grades.length > 0){
@@ -499,102 +527,30 @@ module.exports = function(app){
             if (req.body.topics){
                 if (req.body.topics.length > 0){
                     for (var i = 0; i < req.body.topics.length; i++){
-                        queryTopics.push(req.body.topics[0].name.toUpperCase()) // changed from toLowerCAse
+                        queryTopics.push(req.body.topics[i].name.toUpperCase()) // changed from toLowerCAse
                     }
                 } 
             } 
-            // var query=aql`let topicalFas=LENGTH(${queryTopics}) == 0 ? [] : UNIQUE(FLATTEN(
-            //                 for p in projects
-            //                 filter p.topics[* return UPPER(CURRENT)] any in ${queryTopics}[* return UPPER(CURRENT)]
-            //                     for fa in
-            //                     2 outbound p
-            //                     alignsTo, addressedBy
-            //                     return fa._key
-            //             ))
-            //             let courseFas = LENGTH(${queryCourses}) == 0 ? [] : UNIQUE(FLATTEN(
-            //                 for c in courses
-            //                 filter UPPER(c.name) in ${queryCourses}
-            //                     for fa in
-            //                     outbound c
-            //                     covers
-            //                     return fa._key
-            //             ))
-            //             let queryStudents = UNIQUE(FLATTEN(
-            //                 for c in courses
-            //                             filter LENGTH(${queryCourses}) > 0 ? UPPER(c.name) in ${queryCourses} : true  
-            //                                 for student
-            //                                 in inbound c
-            //                                 hasCourse 
-            //                                 filter LENGTH(${queryGrades}) > 0 ? student.grade in ${queryGrades} : true 
-            //                                 for role
-            //                                     in outbound student._id
-            //                                     auth_user_hasRole 
-            //                                     filter UPPER(role.name) == 'STUDENT'
-            //                                 return student._id
-            //             ))
-            //             let starters = (
-            //                 for fa in focusAreas
-            //                 let priors = (
-            //                     for v
-            //                     in inbound fa
-            //                     thenFocusOn
-            //                     return 1
-            //                 )
-            //                 filter LENGTH(priors) == 0
-            //                 return fa._id
-            //             )
-            //             for student in queryStudents
-            //                 let masteredFas = (
-            //                     FOR fa
-            //                     IN outbound student
-            //                     hasMastered
-            //                     return fa._key
-            //                 )
-            //                 let StudentDetails = (for s in auth_users filter s._id == student return { first: s.first, last: s.last, id: s.studentId})
-            //                 let path  = (
-            //                     for start in starters
-            //                         for fa
-            //                         in 0..999 outbound start
-            //                         thenFocusOn
-            //                         filter length(${querySubjects}) > 0 ? UPPER(fa.subject) in ${querySubjects} : true
-            //                         filter length(topicalFas) > 0 ? fa._key in topicalFas : true
-            //                         filter length(courseFas) > 0 ? fa._key in courseFas : true
-            //                         filter length(masteredFas) > 0 ? fa._key not in masteredFas : true
-            //                         filter length(${queryStandards}) > 0 ? fa.standardConnections[* return UPPER(CURRENT)] any in ${queryStandards}[* return UPPER(CURRENT)] : true
-            //                         return fa
-            //                 )
-            //             return {student: student, details: StudentDetails, fa: path}`;
             var query = aql`
-                let topicalFas = LENGTH(${queryTopics}) == 0 ? [] : UNIQUE(FLATTEN(
-                    for p in projects
-                    filter p.topics[* return UPPER(CURRENT)] any in ${queryTopics}[* return UPPER(CURRENT)]
-                        for fa in
-                        2 outbound p
-                        alignsTo, addressedBy
-                        return fa._key
-                ))
-
                 let courseFas = LENGTH(${queryCourses}) == 0 ? [] : UNIQUE(FLATTEN(
                     for c in courses
                     filter c._key in ${queryCourses}
                         for fa in
                         outbound c
-                        covers
+                        focusesOn
                         return fa._key
                 ))
 
                 let queryStudents = LENGTH(${studentUserArr}) > 0 ? (for student in auth_users filter student._id == ${studentUser} return {_id: student._id, _key: student._key,  first: student.first, last: student.last}) : UNIQUE(FLATTEN(
                     for c in courses
-                                filter LENGTH(${queryCourses}) > 0 ? c._key in ${queryCourses} : true  
-                                    for student
-                                    in inbound c
-                                    hasCourse 
-                                    filter LENGTH(${queryGrades}) > 0 ? student.grade in ${queryGrades} : true 
-                                    for role
-                                        in outbound student._id
-                                        auth_user_hasRole 
-                                        filter UPPER(role.name) == 'STUDENT'
-                                    return {_id: student._id, _key: student._key,  first: student.first, last: student.last}
+                    filter LENGTH(${queryCourses}) > 0 ? c._key in ${queryCourses} : true
+                        for v, e, p
+                        in 1..2 inbound c
+                        hasCourse, outbound auth_user_hasRole
+                        filter UPPER(p.vertices[2].name) == 'STUDENT'
+                        let student = p.vertices[1]
+                        filter LENGTH(${queryGrades}) > 0 ? student.grade in ${queryGrades} : true
+                        return distinct KEEP(student, '_id', '_key', 'first', 'last')
                 ))
 
                 let starters = (
@@ -610,36 +566,79 @@ module.exports = function(app){
                 )
 
                 // Main path query
-                for student in queryStudents
-
-                let masteredFas = (
-                    FOR fa
-                    IN outbound student
-                    hasMastered
-                    return fa._key
+                let topicsAndFas = (
+                    for queryTopic in ${queryTopics}
+                    let topicFas = (
+                        for p in projects
+                        filter UPPER(queryTopic) in p.topics[* return UPPER(CURRENT)]
+                            for fa in
+                            2 outbound p
+                            alignsTo, addressedBy
+                            return fa._key
+                    )
+                    return {topic: queryTopic, fa: topicFas}
                 )
 
-                let path  = (
-                    for start in starters
-                        for fa
-                        in 0..999 outbound start
-                        thenFocusOn
-                        filter length(${querySubjects}) > 0 ? UPPER(fa.subject) in ${querySubjects} : true
-                        filter length(topicalFas) > 0 ? fa._key in topicalFas : true
-                        filter length(courseFas) > 0 ? fa._key in courseFas : true
-                        filter length(masteredFas) > 0 ? fa._key not in masteredFas : true
-                        filter length(${queryStandards}) > 0 ? fa.standardConnections[* return UPPER(CURRENT)] any in ${queryStandards}[* return UPPER(CURRENT)] : true
+                let studentPaths = (
+                    for student in queryStudents
+
+                    let masteredFas = (
+                        FOR fa
+                        IN outbound student
+                        hasMastered
+                        return fa._key
+                    )
+
+                    let path  = UNIQUE(FLATTEN(
+                        for start in starters
+                            for fa
+                            in 0..999 outbound start
+                            thenFocusOn
+                            filter length(${querySubjects}) > 0 ? fa.subject in ${querySubjects} : true
+                            filter length(courseFas) > 0 ? fa._key in courseFas : true
+                            filter length(masteredFas) > 0 ? fa._key not in masteredFas : true
+                            filter length(${queryStandards}) > 0 ? (
+                                let standardConnections = (
+                                    for standard
+                                    in outbound fa
+                                    alignsTo
+                                    limit 2
+                                    return UPPER(standard._key)
+                                )
+                                return standardConnections any in ${queryStandards}[* return UPPER(CURRENT)]
+                            ) : true
+                            limit 100
+                            return fa
+                    ))
+                    return {student: student, path: path}
+                )
+
+                for studentPath in studentPaths
+                let path = studentPath.path
+                let projects = (
+                    for topicAndFas in topicsAndFas
+                    let topicName = topicAndFas.topic
+                    let topicFas = topicAndFas.fa
+                    let topicPath = (
+                        for fa in path
+                        filter fa._key in topicFas
+                        sort rand()
                         return fa
+                    )
+                    //collect with count into sequence  
+                    return {name: topicName, fa: topicPath} //, sequence: sequence}
                 )
-
-                return {student: student, fa: path}`
+                return {student: studentPath.student, projects: projects}`;
+                  console.log("query", query)
             db.query(query).then(cursor => {
                 // cursor is a cursor for the query result
                 // reformat results for improved client display 
-                var studentPathArr = [];
-                var studentArr = Array.from(cursor._result);    
-                console.log("path", cursor._result)        
-                res.json(parseFa(cursor._result));        
+                // var studentPathArr = [];
+               console.log("cursor._result", cursor._result)
+                // let parsedPath = parseFa(cursor._result);
+                res.json({success: true, paths: cursor._result})
+                 
+                   
             }).catch((error => {
                 console.log(Date.now() + " Error (Getting paths from Database):", error);
                 res.json();
@@ -756,10 +755,10 @@ module.exports = function(app){
                     console.log('Server is ready to take our messages');
                 }
             });
-            var server = process.env.EMAIL_FROM_SERVER || "http://localhost:8080"
+            // var server = process.env.EMAIL_FROM_SERVER || "http://localhost:8080"
             // var link = server + "/forgot/"; //API TO RESET PASSWORD
             var text = 'You are receiving this email because you are a Sidekick Admin responsible for uploading the attached data into Summit./n The Sidekick Team';
-            var html = '<br><div style="text-align: center; margin: 40px; height:20px; width:30px"><img src="cid:unique@sidekick" height="42" width="42" alt="Sidekick"/></div><p>You are receiving this email because you are a Sidekick Admin responsible for uploading the attached data into Summit.</p><br><h4>The Sidekick Team</h4>';
+            var html = '<br><div style="text-align: right; height:30; width:100"><img src="cid:unique@sidekick" height="42" width="42" alt="Sidekick"/></div><p>You are receiving this email because you are a Sidekick Admin responsible for uploading the attached data into Summit.</p><br><h4>The Sidekick Team</h4>';
             // var html = '<br><br><p>You are receiving this email because you are a Sidekick Admin responsible for uploading the attached data into Summit.</p><br><h4>The Sidekick Team</h4>';
     //         html: 'Embedded image: <img src="cid:unique@kreata.ee"/>',
         // attachments: [
@@ -790,84 +789,138 @@ module.exports = function(app){
         })
     }
 
+    function createInstructions(data){
+        console.log("data", data)
+        let studentArr = [];
+        for (var s = 0; s < data.length; s++ ){
+            let studentObj = {};   
+            let grade = 'dummygrade';
+            // console.log("grade"grade)
+            studentObj.name =  data[s].student.first + ' ' + data[s].student.last ;
+            studentObj.grade =  "dummy data" + s;  // this is dummy data
+            // for each project
+            let projArr = [];
+            console.log("s", s)
+            for (var j = 0; j < data[s].projects.length; j++){
+                let projObj = {};
+                projObj.name =  data[s].projects[j].name;   
+                // for each fa
+                let faArr = [];
+                 for (var i = 0; i <  data[s].projects[j].fa.length; i++){
+                    let faObj = {}
+                    faObj.course =  data[s].projects[j].fa[i].course;
+                    faObj.position = data[s].projects[j].fa[i].courseSequence;
+                    faObj.faProjSeq = data[s].projects[j].fa[i].name + '(' + data[s].projects[j].fa[i].projectSequence +')';
+                    faArr.push(faObj);          
+                }
+                projObj.fa = faArr; 
+                projArr.push(projObj);             
+             }
+             studentObj.project = projArr;
+             studentArr.push(studentObj)
+         } 
+        return studentArr; 
+    }
     function saveNewPath(data, username) {
         // save path to data base then after this send mail to sidekick for upload
         return new Promise((resolve, reject) => {
             var studentArr = [];
             var newPathArr = [];
-            var summitArr = []
+            // var summitArr = []
             // get latest ids
-            for (var j = 0; j < data.length; j++){
-                // prepare data for saving to db
-                let faArr=[];
-                var studentObj = {_id: data[j].student._id}
-                for (var i = 0; i < data[j].fa.length; i++){
-                    faObj = {
-                        _id: data[j].fa[i]._id,
-                        _key: data[j].fa[i]._key,
-                        sequence: i+1
-                    }
-                    faArr.push(faObj);
-                    // for send to summit email
-                    var instruction = 'Instruction ' + i + ': Course: ' + data[j].fa[i].course + ' -->  Project : ' + 'Topic / Dummy For Now' + ' --> INCLUDE --> Focus Area: ' + data[j].fa[i].name + ' --> POSITION --> ' + data[j].fa[i].Sequence + ' --> UPDATE --> Title: ' + data[j].fa[i].name + '(' + data[j].fa[i].Sequence +')';
-                    summitArr.push(instruction);   
+            // for each student
+            // var instructionCounter = 0;
+            for (var s = 0; s < data.length; s++ ){
+                // for each project
+                let studentObj = {_id: data[s].student._id}
+                let projectsArr=[];
+                for (var j = 0; j < data[s].projects.length; j++){
+                    // prepare data for saving to db
+                    let faArr=[];
+                    // for each focus area
+                    for (var i = 0; i <  data[s].projects[j].fa.length; i++){
+                        // instructionCounter++;
+                        let faObj = {
+                            _id:   data[s].projects[j].fa[i]._id,
+                            _key:  data[s].projects[j].fa[i]._key,
+                            sequence: i+1
+                        }
+                        faArr.push(faObj);
+                        // for send to summit email
+                        // var instruction = 'Instruction ' + instructionCounter + ': Course: ' + data[s].projects[j].fa[i].course + ' -->  Project : ' + data[s].projects[j].name + ' --> INCLUDE --> Focus Area: ' + data[s].projects[j].fa[i].name + ' --> POSITION --> ' + data[s].projects[j].fa[i].courseSequence + ' --> UPDATE --> Title: ' + data[s].projects[j].fa[i].name + '(' + data[s].projects[j].fa[i].projectSequence +')';   
+                    } 
+
+                    if (faArr.length > 0 ){
+                        let projectsObj={ name: data[s].projects[j].name, fa: faArr, sequence: j+1}
+                        projectsArr.push(projectsObj);
+                    }      
                 }
-                studentObj.path = faArr;
-                studentObj.active = true;
-                studentObj.createdDate = Date.now();
-                studentObj.createdBy = username;
-                studentObj.updatedDate = null;
-                studentObj.updatedBy = null;
-                studentArr.push(studentObj)
+                // don't save empty paths
+                if (projectsArr.length !== 0){     
+                    studentObj.path = projectsArr;
+                    studentObj.active = true;
+                    studentObj.createdDate = Date.now();
+                    studentObj.createdBy = username;
+                    studentObj.updatedDate = null;
+                    studentObj.updatedBy = null;
+                    studentArr.push(studentObj)
+                }
+
             }
-            // rewrote update logic for  transation - all or nothing
-            const action = String(function (studentArr, username) {
-                // This code will be executed inside ArangoDB!
-                const db = require('@arangodb').db;
-                const aql = require('@arangodb').aql;
-                // get oldpath ids and store for use below
-                let getOldPath = aql`for s in ${params.studentArr}
-                    let cpArr = (for c in outbound s isOn return c._id)
-                    for cp in currentPath
-                        filter cp._id in cpArr
-                        filter cp.active == true
-                    return { sid: s._id, previd: cp._id}`;
-                params.prevPathIdArr = db._query(getOldPath).toArray();
-                // insert the new path and store the new ids
-                let insertNewPath = aql`for s in ${params.studentArr}
-                    INSERT s IN currentPath return {_from: s._id, _to: NEW._id}`;
-                params.newPathIdArr = db._query(insertNewPath).toArray();  
-                // insert newPathIdArr into isOn edge
-                let insertIsOnEdgeQuery = aql`for e in ${params.newPathIdArr} INSERT {_from: e._from, _to: e._to} IN isOn return NEW`;
-                db._query(insertIsOnEdgeQuery);
-                // insert from: oldpathid to: newpathid into UpdateTo
-                let insertUpdatedToEdgeQuery = aql`for old in ${params.prevPathIdArr}
-                    for new in ${params.newPathIdArr} 
-                    filter old.sid == new._from
-                    INSERT {_from: old.previd, _to: new._to} IN updatedTo return NEW`;           
-                let insertUpdatedToEdgeResult = db._query(insertUpdatedToEdgeQuery);
-                // set to old path to inactive 
-                let updateToInactiveQuery = aql`for e in ${params.prevPathIdArr}
-                    for c in currentPath
-                         filter c._id == e.previd
-                        UPDATE c with {active: false, updatedDate:  DATE_NOW(), updatedBy:"TEST" }
-                     IN currentPath return NEW`;
-                let updateToInactiveResult = db._query(updateToInactiveQuery);      
-                return;
-            });
+            
+            // rewrote update logic for  tran 
+            if ( studentArr.length > 0 ){       
+                const action = String(function (studentArr, username) {
+                    // This code will be executed inside ArangoDB!
+                    const db = require('@arangodb').db;
+                    const aql = require('@arangodb').aql;
+                    // get oldpath ids and store for use below
+                    let getOldPath = aql`for s in ${params.studentArr}
+                        let cpArr = (for c in outbound s isOn return c._id)
+                        for cp in currentPath
+                            filter cp._id in cpArr
+                            filter cp.active == true
+                        return { sid: s._id, previd: cp._id}`;
+                    params.prevPathIdArr = db._query(getOldPath).toArray();
+                    // insert the new path and store the new ids
+                    let insertNewPath = aql`for s in ${params.studentArr}
+                        INSERT s IN currentPath return {_from: s._id, _to: NEW._id}`;
+                    params.newPathIdArr = db._query(insertNewPath).toArray();  
+                    // insert newPathIdArr into isOn edge
+                    let insertIsOnEdgeQuery = aql`for e in ${params.newPathIdArr} INSERT {_from: e._from, _to: e._to} IN isOn return NEW`;
+                    db._query(insertIsOnEdgeQuery);
+                    // insert from: oldpathid to: newpathid into UpdateTo
+                    let insertUpdatedToEdgeQuery = aql`for old in ${params.prevPathIdArr}
+                        for new in ${params.newPathIdArr} 
+                        filter old.sid == new._from
+                        INSERT {_from: old.previd, _to: new._to} IN updatedTo return NEW`;           
+                    let insertUpdatedToEdgeResult = db._query(insertUpdatedToEdgeQuery);
+                    // set to old path to inactive 
+                    let updateToInactiveQuery = aql`for e in ${params.prevPathIdArr}
+                        for c in currentPath
+                            filter c._id == e.previd
+                            UPDATE c with {active: false, updatedDate:  DATE_NOW(), updatedBy:"TEST" }
+                        IN currentPath return NEW`;
+                    let updateToInactiveResult = db._query(updateToInactiveQuery);    
+                    return;
+                })
 
 
-            db.transaction({read: ['currentPath', 'isOn'], write: ['currentPath', 'isOn', 'updatedTo']},
-            action,
-            {studentArr: studentArr, user: username, prevPathIdArr:[], newPathIdArr: [] })
-            .then(() => {
-                // all goodnow send to summit
-                resolve(summitArr);
-            })
-            .catch((error)=>{
-                console.log(error);
-                reject(error);
-            })
+                db.transaction({read: ['currentPath', 'isOn'], write: ['currentPath', 'isOn', 'updatedTo']},
+                action,
+                {studentArr: studentArr, user: username, prevPathIdArr:[], newPathIdArr: [] })
+                .then(() => {
+                    // all goodnow send to summit
+                    // let summitArr = createInstructions(data);   
+                    resolve(createInstructions(data));
+                }).catch((error)=>{
+                    console.log(error);
+                    reject(error);
+                })
+            } else {
+                // let summitArr = ;   
+                resolve(createInstructions(data)); // what to resolve?
+            }
         })
     }
     app.post('/summit', function(req,res){
@@ -878,42 +931,71 @@ module.exports = function(app){
                 // Waiting for updated query srted by query topic === Project
                 // waiting for confirmation where to send this data
                 // create file
-                var user =  response.username.split('@');
-                var fileName = __dirname + '/../public/assets/files/sendToSidekick_' + user[0] +'.'+ Date.now() + '.txt';
-                var file = fs.createWriteStream(fileName);
-                file.on('error', function(err) { 
-                    console.log(err)
-                    // return error msg
-                    res.json({success: false, error: "Problem creating file"})
-                });
+                console.log("summitArr", summitArr)
+                if (summitArr.length !== 0 ){
+                    // don't send to Summit Email if no data
+                    var user =  response.username.split('@');
+                    var fileName = __dirname + '/../public/assets/files/sendToSidekick_' + user[0] +'.'+ Date.now() + '.txt';
+                    var file = fs.createWriteStream(fileName);
+                    file.on('error', function(err) { 
+                        console.log(err)
+                        // return error msg
+                        res.json({success: false, error: "Problem creating file"})
+                    });
 
-                summitArr.forEach(function(v) { file.write(v + '\n'); });
-                file.end();
-                // send as attachment to email
-                // var adminEmail = "paths@sidekick.education, fiona.hegarty@icloud.com";
-                var adminEmail = "fiona.hegarty@icloud.com";
-                // need to pass file path
-                sendToSummitEmail(adminEmail, fileName).then((fileName) => {
-                    // delete file - cant do here! gets delte
-                    console.log("fileName", fileName)
-                    fs.unlinkSync(fileName);
-                    // send OK msg the browser sending emails....res.sendStatus(200)
-                    res.json({success: true});
-                }).catch((error) => {
-                    console.log(error);
-                    //send error status code?
-                    res.json({success: false,  error: error});
-                })
+                    // // loop through summit array and write it out
+                    // for (var u = 0 ; u < summitArr.length; u++){
+                    //     summitArr
+                    // }
+
+
+                    summitArr.forEach(function(v) { 
+                        // loop through summit array and write it out
+                        // for (var u = 0 ; u < v.length; u++){
+                            file.write("GRADE: " +v.grade + '\n');
+                            file.write("STUDENT:"  + v.name + '\n');
+                            for (var u = 0; u < v.project.length; u++){
+                                file.write('PROJECT: ' + v.project[u].name + '\n');
+                                // console.log(v.project[u].fa)
+                                for (var w = 0; w < v.project[u].fa.length; w++){
+                                   file.write('COURSE: ' + v.project[u].fa[w].course + '\n');
+                                //    file.write('POSITION: ' + v.project[u].fa[w].position + '\n');
+                                   file.write("TITLE: " + v.project[u].fa[w].faProjSeq + '\n');
+                                }
+                                
+                            }
+                            file.write("***************"  + '\n');
+                        // }
+                        // file.write(v + '\n');
+                    });
+                    file.end();
+                    // send as attachment to email
+                    // var adminEmail = "paths@sidekick.education, fiona.hegarty@icloud.com";
+                    var adminEmail = "fiona.hegarty@icloud.com";
+                    // need to pass file path
+                    sendToSummitEmail(adminEmail, fileName).then((fileName) => {
+                        // delete file - cant do here! gets delte
+                        fs.unlinkSync(fileName);
+                        // send OK msg the browser sending emails....res.sendStatus(200)
+                        res.json({success: true, successMsg: "Data successfully sent to Summit."});
+                    }).catch((error) => {
+                        console.log(error);
+                        //send error status code?
+                        res.json({success: false,  errorMsg:  "There was a problem sending data, please contact support."});
+                    })
+                } else {
+                     res.json({success: false,   errorMsg: "There was a problem sending data, please contact support."}); // catch error to say no data!!
+                }
             }).catch((error) => {
                 console.log(error);
-                res.json({success: false, error: error})
+                res.json({success: false, errorMsg:  "There was a problem sending data, please contact support."})
             })
 
         }).catch((error) => {
             // User validation error
             console.log(error);
             //send error status code?
-            res.json({success: false, error: error})
+            res.json({success: false, successMsg: error})
         })
     })
     app.get('/api/roles/all', function(req, res){
@@ -1074,6 +1156,7 @@ module.exports = function(app){
 
     app.get('/fa/:username', function(req, res){
         let username = req.params.username;
+        // covers replaced with focusesOn
         // check this query!!!
         let query = aql`
         let userid = (for u in auth_users filter u.username == ${username} return u._id)
@@ -1082,7 +1165,7 @@ module.exports = function(app){
             filter length(queryCourses) > 0 ? c._key in queryCourses : true
                 for fa in
                 outbound c
-                covers
+                focusesOn
                 return fa._key)
         for f in focusAreas 
         filter f._key in fa_key
@@ -1090,7 +1173,7 @@ module.exports = function(app){
      console.log(query)
         db.query(query)
         .then(cursor => { 
-            console.log("Course", cursor._result);
+            console.log("FA", cursor._result);
             res.json({success: true, fa: cursor._result});
         }).catch(error => {
             console.log(Date.now() + " Error (Get FA from Database):", error);

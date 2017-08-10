@@ -100,7 +100,7 @@ import ChipInput from 'material-ui-chip-input';
                 onRequestDelete={(chip, index) => this.handleDeleteChip(chip, index)}
                 textFieldStyle={{fontSize: 13}}
                 textareaStyle={{fontSize: 13}}
-                hintText="Type and select from list"
+                hintText={this.props.hint}
                 searchText={this.state.searchText}
                 floatingLabelStyle={{color: '#A35FE3'}}
                 filter={AutoComplete.fuzzyFilter}

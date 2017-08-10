@@ -44,11 +44,13 @@ const loginintialstate = {
         errorMsg: ""
     }
 }
-
 const datainitialstate = {
     dataupload: "",
 }
-
+const statusInitialState = {
+    success: false,
+    successMsg: ""
+}
 function updateSelected(action, state, list, selectedlist){
         // decrease groups list and increase selected
     let newObj = {};
@@ -221,10 +223,22 @@ const uploadReducer = (state=datainitialstate, action) => {
     };      
     return state;
 }
+
+const appStatusReducer = (state=statusInitialState, action) => {
+    switch(action.type){  
+        case 'SET_SUCCESS_STATUS':
+            return Object.assign({},state, {success: action.success, successMsg: action.successMsg});  
+         case 'SET_ERROR_STATUS':
+            return Object.assign({},state, {error: action.error, errorMsg: action.errorMsg});  
+    };      
+    return state;
+}
+
 const appReducer = combineReducers({
     mainState : mainReducer,
     authState : authReducer,
     uploadState: uploadReducer,
+    appState: appStatusReducer,
 })
 // to handle clearing store on logout
 const reducers = (state, action) => {

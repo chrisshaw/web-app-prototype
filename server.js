@@ -18,7 +18,10 @@ app.use(cookieParser());
 
 // Serve static content for the app from the "public" directory in the application directory.
 // this goes before any body-parser calls - static files don't need parsing.
-app.use("/public", express.static(path.join(__dirname, 'public')));
+
+
+// ***  Must comment this out for aws deploy *********///
+// app.use("/public", express.static(path.join(__dirname, 'public')));
 
 // parse application/x-www-form-urlencoded 
 // found urlencoded extended must be true for nested arrays and for post method

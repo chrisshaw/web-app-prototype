@@ -193,6 +193,7 @@ table {
 .search-text {
     margin-top: 10px;
     font-weight: bold;
+    font-size: 20px;
 }
 /*.expand-icon {
     margin: 10px;
@@ -247,8 +248,14 @@ display: block
     border-bottom: solid #808080 1px;
 }
 .over {
-    /* background-color: #E5E5E5; */
-    border-bottom: solid #808080 1px;
+     /* background-color: #red;  */
+      border: dashed red 1px;  
+}
+.dragelem {
+     /* background-color: #808080;  */
+     /* border: dashed red 1px;  */
+     color: red;
+     font-size: 30px;
 }
 .no-path-message {
     padding: 30px;
@@ -320,7 +327,15 @@ display: block
     top: 60px;
     left: 15px;
 }
-
+/*hide the canvas  */
+canvas{
+   position:absolute;
+  right: 0%; 
+}
+.changeColor {
+    background-color: #E6E6E6; 
+   /* display: none; */
+}
 .menu-on-small-screen {
     display: none !important
 }
