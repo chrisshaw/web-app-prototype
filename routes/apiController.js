@@ -22,10 +22,11 @@ const dbSwitch = {
     }
 };
 
-const dbHostPort = dbSwitch[process.env.DB_MODE]['dbHostPort'],
-    dbUser = dbSwitch[process.env.DB_MODE]['dbUser'],
-    dbPwd = dbSwitch[process.env.DB_MODE]['dbPwd'],
-    dbName = dbSwitch[process.env.DB_MODE]['dbName'];
+const dbMode = process.env.DB_MODE;
+const dbHostPort = dbSwitch[dbMode]['dbHostPort'],
+    dbUser = dbSwitch[dbMode]['dbUser'],
+    dbPwd = dbSwitch[dbMode]['dbPwd'],
+    dbName = dbSwitch[dbMode]['dbName'];
 
 const db = arangojs(dbHostPort);
 db.useDatabase(dbName);
