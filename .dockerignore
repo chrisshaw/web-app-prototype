@@ -13,5 +13,6 @@ README.md
 data.js
 arangoFAData.js
 .gitignore
-webpack.config.js
+dbsettings.sh
+
 

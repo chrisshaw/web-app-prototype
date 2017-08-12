@@ -1,18 +1,6 @@
 var arangojs = require('arangojs');
 var Database = arangojs.Database;
 var path = require('path');
-// var dbHostPort = process.env.DB_HOST_PORT;
-// var dbUser = process.env.DB_USER;
-// var dbPwd = process.env.DB_PWD;
-// // var dbName = process.env.DB_NAME;
-// var dbHostPort = 'http://localhost:8529';
-// var dbUser = 'root';
-// var dbPwd = 'sidekick';
-// var dbName = 'skdb';
-// var dbHostPort = 'http://146.148.55.53:8529/'
-// var dbUser = 'dbadmin';
-// var dbPwd = '';
-// var dbName = 'skdb';
 var nodemailer = require("nodemailer");
 var path = require('path');
 var fs = require('fs');
@@ -20,10 +8,10 @@ var fs = require('fs');
 // console.log(db);
 // test connection
 const dbSwitch = {
-    ENV: {
+    PROD: {
         dbHostPort: process.env.DB_HOST_PORT,
         dbUser: process.env.DB_USER,
-        dbPwd: "",
+        dbPwd: process.env.DB_PWD,
         dbName: process.env.DB_NAME
     },
     LOCAL: {
