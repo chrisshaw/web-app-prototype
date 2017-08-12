@@ -21,20 +21,8 @@ const dbSwitch = {
         dbName: process.env.LOCAL_DB_NAME
     }
 };
-// if running locally make sure you set env varaible 
-// run this in terminal :  export DB_MODE="LOCAL" etc.
-// // to make permanent - add to ~/.bash_profile file in $HOME dir
-// if (process.env.ENVT == "DEMO"){
-//     const DB_MODE = 'FOR_DEPLOY';
-// } else if (process.env.ENVT == "LOCAL") {
-//     // console.log
-//     const DB_MODE = 'LOCAL'; 
-//     console.log(dbSwitch[DB_MODE])
-// } else if (process.env.ENVT == "DEV") {
-//      const DB_MODE = 'DEVDB'; 
-// }
-// const DB_MODE = 'FOR_DEPLOY';
-var dbHostPort = dbSwitch[process.env.DB_MODE]['dbHostPort'],
+
+const dbHostPort = dbSwitch[process.env.DB_MODE]['dbHostPort'],
     dbUser = dbSwitch[process.env.DB_MODE]['dbUser'],
     dbPwd = dbSwitch[process.env.DB_MODE]['dbPwd'],
     dbName = dbSwitch[process.env.DB_MODE]['dbName'];
