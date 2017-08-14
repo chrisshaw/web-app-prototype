@@ -4,23 +4,10 @@ var path = require('path');
 var nodemailer = require("nodemailer");
 var path = require('path');
 var fs = require('fs');
+const dbSwitch = require('./dbconfig.js');
 // var fileName = "";
 // console.log(db);
 // test connection
-const dbSwitch = {
-    PROD: {
-        dbHostPort: process.env.DB_HOST_PORT,
-        dbUser: process.env.DB_USER,
-        dbPwd: process.env.DB_PWD,
-        dbName: process.env.DB_NAME
-    },
-    LOCAL: {
-        dbHostPort: process.env.LOCAL_DB_HOST_PORT,
-        dbUser: process.env.LOCAL_DB_USER,
-        dbPwd: process.env.LOCAL_DB_PWD,
-        dbName: process.env.LOCAL_DB_NAME
-    }
-};
 
 const dbMode = process.env.DB_MODE;
 const dbHostPort = dbSwitch[dbMode]['dbHostPort'],

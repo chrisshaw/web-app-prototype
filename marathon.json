@@ -1,0 +1,53 @@
+{
+    "id": "/sk-web-app",
+    "cmd": null,
+    "cpus": 1,
+    "mem": 128,
+    "disk": 0,
+    "instances": 1,
+    "acceptedResourceRoles": [
+      "*"
+    ],
+    "container": {
+      "type": "DOCKER",
+      "volumes": [],
+      "docker": {
+        "image": "sidekickapps/sidekick:webapp",
+        "network": "BRIDGE",
+        "portMappings": [
+          {
+            "containerPort": 8080,
+            "hostPort": 0,
+            "servicePort": 10004,
+            "protocol": "tcp",
+            "labels": {}
+          }
+        ],
+        "privileged": false,
+        "parameters": [],
+        "forcePullImage": true
+      }
+    },
+    "env": {
+      "DB_PWD": "testuser",
+      "DB_NAME": "testdb",
+      "DB_MODE": "PROD",
+      "DB_USER": "testuser",
+      "DB_HOST_PORT": "tcp://arangodb-proxy.marathon.mesos:8529"
+    },
+    "healthChecks": [
+      {
+        "gracePeriodSeconds": 30,
+        "intervalSeconds": 5,
+        "timeoutSeconds": 10,
+        "maxConsecutiveFailures": 2,
+        "portIndex": 0,
+        "path": "/",
+        "protocol": "HTTP",
+        "ignoreHttp1xx": false
+      }
+    ],
+    "labels": {
+      "HAPROXY_GROUP": "external"
+    }
+  }
