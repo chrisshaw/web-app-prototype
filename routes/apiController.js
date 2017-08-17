@@ -456,6 +456,8 @@ module.exports = function(app){
                 studentUser = response.userid;
             }
             // some pre-processing
+            const reqBody = req.body;
+            const queryCourses = reqBody.courses ? reqBody.courses.map( course => course._id ) : []; 
             if (req.body.courses){
                 if (req.body.courses.length > 0){
                     for (var i = 0; i < req.body.courses.length; i++){
@@ -465,7 +467,7 @@ module.exports = function(app){
                 }
             }
 
-
+            const queryGrades = reqBody.grades ? reqBody.grades.map( grade => grade._id ) : [];
             if (req.body.grades){
                 if (req.body.grades.length > 0){
                     for (var i = 0; i < req.body.grades.length; i++){
@@ -474,6 +476,7 @@ module.exports = function(app){
                 }
             }
             // some pre-processing to put values names into arrays
+            const querySubjects = reqBody.subjects ? reqBody.subjects.map( subject => subject._id ) : [];
             if (req.body.subjects){
                 if (req.body.subjects.length > 0){
                     for (var i = 0; i < req.body.subjects.length; i++){
@@ -481,6 +484,8 @@ module.exports = function(app){
                     }
                 }
             }
+
+            const queryStandards = reqBody.standards ? reqBody.standards.map( standard => standard._id ) : [];
             if (req.body.standards){
                 if (req.body.standards.length > 0){
                     for (var i = 0; i < req.body.standards.length; i++){
@@ -488,6 +493,8 @@ module.exports = function(app){
                     }
                 }
             }
+
+            const queryTopics = reqBody.topics ? reqBody.topics.map( topic => topic._id ) : [];
             if (req.body.topics){
                 if (req.body.topics.length > 0){
                     for (var i = 0; i < req.body.topics.length; i++){
@@ -840,7 +847,7 @@ module.exports = function(app){
                     const aql = require('@arangodb').aql;
                     // get oldpath ids and store for use below
                     let getOldPath = aql`for s in ${params.studentArr}
-                        let cpArr = (for c in outbound s isOn return c._id)
+                        let cpArr = (for c in outbound s onPath return c._id)
                         for cp in currentPath
                             filter cp._id in cpArr
                             filter cp.active == true
@@ -850,9 +857,9 @@ module.exports = function(app){
                     let insertNewPath = aql`for s in ${params.studentArr}
                         INSERT s IN currentPath return {_from: s._id, _to: NEW._id}`;
                     params.newPathIdArr = db._query(insertNewPath).toArray();  
-                    // insert newPathIdArr into isOn edge
-                    let insertIsOnEdgeQuery = aql`for e in ${params.newPathIdArr} INSERT {_from: e._from, _to: e._to} IN isOn return NEW`;
-                    db._query(insertIsOnEdgeQuery);
+                    // insert newPathIdArr into onPath edge
+                    let insertonPathEdgeQuery = aql`for e in ${params.newPathIdArr} INSERT {_from: e._from, _to: e._to} IN onPath return NEW`;
+                    db._query(insertonPathEdgeQuery);
                     // insert from: oldpathid to: newpathid into UpdateTo
                     let insertUpdatedToEdgeQuery = aql`for old in ${params.prevPathIdArr}
                         for new in ${params.newPathIdArr} 
@@ -870,7 +877,7 @@ module.exports = function(app){
                 })
 
 
-                db.transaction({read: ['currentPath', 'isOn'], write: ['currentPath', 'isOn', 'updatedTo']},
+                db.transaction({read: ['currentPath', 'onPath'], write: ['currentPath', 'onPath', 'updatedTo']},
                 action,
                 {studentArr: studentArr, user: username, prevPathIdArr:[], newPathIdArr: [] })
                 .then(() => {
