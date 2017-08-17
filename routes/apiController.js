@@ -67,7 +67,7 @@ module.exports = function(app){
                 // e.g. manageusers
                 let userid = response.userid;
                 let username = response.username;
-                let query = aql`for u in auth_users for ha in auth_user_hasRole filter ha._from == u._id for ac in auth_hasPermission filter ac._from == ha._to for p in auth_permissions filter p._id == ac._to filter u._id == ${userid} return  p.name`;
+                let query = aql`for u in auth_users for ha in auth_hasRole filter ha._from == u._id for ac in auth_hasPermission filter ac._from == ha._to for p in auth_permissions filter p._id == ac._to filter u._id == ${userid} return  p.name`;
                 db.query(query)
                 .then(cursor => {  
                     // validate whether user has required permssion
@@ -204,9 +204,9 @@ module.exports = function(app){
             let userid = response.userid;
             let chgPwd = response.chgPwd;
             let username = response.username;
-            // let query = aql`for u in auth_users for ha in auth_user_hasRole filter ha._from == u._id for ac in auth_hasPermission filter ac._from == ha._to for p in auth_permissions filter p._id == ac._to filter u._id == ${userid} return  p.name`;
+            // let query = aql`for u in auth_users for ha in auth_hasRole filter ha._from == u._id for ac in auth_hasPermission filter ac._from == ha._to for p in auth_permissions filter p._id == ac._to filter u._id == ${userid} return  p.name`;
             let query = aql`FOR a IN outbound ${userid}
-            auth_user_hasRole
+            auth_hasRole
             let perms = (for p in outbound a auth_hasPermission
                 filter p._from == a._to return p.name)
             return { role: a.name, perms: perms}`;
@@ -251,7 +251,7 @@ module.exports = function(app){
                                 let role = (for a in auth_roles 
                                     filter UPPER(a.name) == UPPER(${role})
                                     return {_id: a._id})
-                        UPSERT { _from: ${userid} , _to: role[0]._id} INSERT { _from:  ${userid} , _to: role[0]._id, active: ${active}, dateCreated: DATE_NOW(), dateUpdated: null, createdBy:  ${username} , updatedBy: null } UPDATE {  dateUpdated: DATE_NOW(), updatedBy:  ${username} } IN auth_user_hasRole RETURN { doc: NEW, type: OLD ? 'update' : 'insert' }`     
+                        UPSERT { _from: ${userid} , _to: role[0]._id} INSERT { _from:  ${userid} , _to: role[0]._id, active: ${active}, dateCreated: DATE_NOW(), dateUpdated: null, createdBy:  ${username} , updatedBy: null } UPDATE {  dateUpdated: DATE_NOW(), updatedBy:  ${username} } IN auth_hasRole RETURN { doc: NEW, type: OLD ? 'update' : 'insert' }`     
                 db.query(query)
                 .then(cursor => {  
                     res.json({success: true})
@@ -365,9 +365,9 @@ module.exports = function(app){
 
                     return [response, errorArr]
                 }).then((response) => { 
-                    // map new student to role STUDENT in the auth_user_hasRole edge
+                    // map new student to role STUDENT in the auth_hasRole edge
                     let roleUpsert = aql`for s in ${response[0]}
-                        UPSERT { _from: s.student_id[0], _to: s.role_id[0]} INSERT { _from: s.student_id[0], _to: s.role_id[0],  dateCreated: DATE_NOW(), dateUpdated: null, createdBy: ${username} , updatedBy: null } UPDATE {} IN auth_user_hasRole RETURN { doc: NEW, type: OLD ? 'update' : 'insert' }`;
+                        UPSERT { _from: s.student_id[0], _to: s.role_id[0]} INSERT { _from: s.student_id[0], _to: s.role_id[0],  dateCreated: DATE_NOW(), dateUpdated: null, createdBy: ${username} , updatedBy: null } UPDATE {} IN auth_hasRole RETURN { doc: NEW, type: OLD ? 'update' : 'insert' }`;
                         db.query(roleUpsert)
                         .then(cursor => {  
                             // console.log("inserted 2:", cursor._result);
@@ -517,7 +517,7 @@ module.exports = function(app){
                     filter LENGTH(${queryCourses}) > 0 ? c._key in ${queryCourses} : true
                         for v, e, p
                         in 1..2 inbound c
-                        hasCourse, outbound auth_user_hasRole
+                        hasCourse, outbound auth_hasRole
                         filter UPPER(p.vertices[2].name) == 'STUDENT'
                         let student = p.vertices[1]
                         filter LENGTH(${queryGrades}) > 0 ? student.grade in ${queryGrades} : true
