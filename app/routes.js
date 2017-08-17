@@ -18,10 +18,10 @@ import {Router, Route, hashHistory, browserHistory, IndexRoute} from "react-rout
 var routes = (
     <Router history={browserHistory}>
         <Route path='/' component={Main} > 
-            <IndexRoute auth='buildpath' component={validatePerms(PathBuilder)}/>
-            <Route path='/manageusers' auth='manageusers' component={validatePerms(SignUpTab)} />
-            <Route path='/buildpath' auth='buildpath' component={validatePerms(PathBuilder)} /> 
-            <Route path='/uploadstudents'  auth='uploadstudents' component={validatePerms(DataImportStudentCSV)} />
+            <IndexRoute auth='buildPath' component={validatePerms(PathBuilder)}/>
+            <Route path='/manageusers' auth='createAccounts' component={validatePerms(SignUpTab)} />
+            <Route path='/buildpath' auth='buildPath' component={validatePerms(PathBuilder)} /> 
+            <Route path='/uploadstudents'  auth='manageStudents' component={validatePerms(DataImportStudentCSV)} />
              <Route path='/password' component={Password} />
             <Route path='/forbidden' component={Forbidden} />
             <Route path='/login' component={LoginTab} />

@@ -120,7 +120,7 @@ class QueryBuilder extends Component{
                 </Row>
                 <Row>
                     <Col xs={12} md={12} className="text-center" >            
-                        { (this.props.perms) && (this.props.perms.indexOf('sendtosummit') !== -1) ? <FlatButton containerElement='label' label="Start Updating Summit" disabled={this.props.disabled} onTouchTap={this.props.handleSend} /> : ""}
+                        { (this.props.perms) && (this.props.perms.indexOf('publish') !== -1) ? <FlatButton containerElement='label' label="Start Updating Summit" disabled={this.props.disabled} onTouchTap={this.props.handleSend} /> : ""}
                     </Col>
                 </Row>
             </div>

@@ -67,7 +67,12 @@ module.exports = function(app){
                 // e.g. manageusers
                 let userid = response.userid;
                 let username = response.username;
-                let query = aql`for u in auth_users for ha in auth_hasRole filter ha._from == u._id for ac in auth_hasPermission filter ac._from == ha._to for p in auth_permissions filter p._id == ac._to filter u._id == ${userid} return  p.name`;
+                let query = aql`
+                    for permission
+                    in 2 outbound ${userId}
+                    auth_hasRole, auth_hasPermission
+                    return permission._key
+                `;
                 db.query(query)
                 .then(cursor => {  
                     // validate whether user has required permssion
@@ -230,7 +235,7 @@ module.exports = function(app){
     })
     app.post('/signup' , function(req, res, next){
         // verify user is valid and then that they have the right permissions
-        validateUser(req, res, "manageusers").then((response) =>{
+        validateUser(req, res, "createAccounts").then((response) =>{
             // double check user perms on server side
             // if user has the required permission manageusers in their permissions array in
             // req.perms
@@ -272,7 +277,7 @@ module.exports = function(app){
     app.post("/csv/students/courses/data", function(req, res, next){
         // validate user before save and use name in save
         // username is null if no valid user
-        validateUser(req, res, "uploadstudents").then((response) =>{
+        validateUser(req, res, "manageStudents").then((response) =>{
             // double check user perms on server side
             // if user has the required permission managestudents in their permissions array in
             // req.perms
@@ -428,7 +433,7 @@ module.exports = function(app){
    // for now this just returns a json
     // app.post('/api/path/project', function (req, res){
         
-    //     // validateUser(req, res, "buildpath").then((response) =>{
+    //     // validateUser(req, res, "buildPath").then((response) =>{
     //         let path = require('../data/faPath.js'); 
     //         console.log("in here.....");
     //         let parsedPath = parseFa(path);
@@ -441,7 +446,7 @@ module.exports = function(app){
     
     // using post as passing object - probably not ideal
     app.post('/api/path/project', function (req, res){
-        validateUser(req, res, "buildpath").then((response) =>{
+        validateUser(req, res, "buildPath").then((response) =>{
             // intialise
             let queryCourses = [];
             let queryGrades = [];
@@ -621,7 +626,7 @@ module.exports = function(app){
     })
 
     app.post("/csv/file", function(req, res, next){
-        validateUser(req, res, "uploadstudents").then((response) =>{
+        validateUser(req, res, "manageStudents").then((response) =>{
             // main entry point
             // need to verify csv file and save contents somewhere...
             var fileContentsFromBuffer = req.body.buffer;
@@ -896,7 +901,7 @@ module.exports = function(app){
     }
     app.post('/summit', function(req,res){
         // sendtosummit is the required permission for this path
-        validateUser(req, res, "sendtosummit").then((response) =>{
+        validateUser(req, res, "publish").then((response) =>{
             // first save the data then send to summit
             saveNewPath(req.body, response.username).then((summitArr) => {
                 // Waiting for updated query srted by query topic === Project
