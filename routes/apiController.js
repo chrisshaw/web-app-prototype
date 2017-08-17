@@ -67,7 +67,7 @@ module.exports = function(app){
                 // e.g. manageusers
                 let userid = response.userid;
                 let username = response.username;
-                let query = aql`for u in auth_users for ha in auth_user_hasRole filter ha._from == u._id for ac in auth_roles_can filter ac._from == ha._to for p in auth_permissions filter p._id == ac._to filter u._id == ${userid} return  p.name`;
+                let query = aql`for u in auth_users for ha in auth_user_hasRole filter ha._from == u._id for ac in auth_hasPermission filter ac._from == ha._to for p in auth_permissions filter p._id == ac._to filter u._id == ${userid} return  p.name`;
                 db.query(query)
                 .then(cursor => {  
                     // validate whether user has required permssion
@@ -204,10 +204,10 @@ module.exports = function(app){
             let userid = response.userid;
             let chgPwd = response.chgPwd;
             let username = response.username;
-            // let query = aql`for u in auth_users for ha in auth_user_hasRole filter ha._from == u._id for ac in auth_roles_can filter ac._from == ha._to for p in auth_permissions filter p._id == ac._to filter u._id == ${userid} return  p.name`;
+            // let query = aql`for u in auth_users for ha in auth_user_hasRole filter ha._from == u._id for ac in auth_hasPermission filter ac._from == ha._to for p in auth_permissions filter p._id == ac._to filter u._id == ${userid} return  p.name`;
             let query = aql`FOR a IN outbound ${userid}
             auth_user_hasRole
-            let perms = (for p in outbound a auth_roles_can
+            let perms = (for p in outbound a auth_hasPermission
                 filter p._from == a._to return p.name)
             return { role: a.name, perms: perms}`;
             db.query(query)
