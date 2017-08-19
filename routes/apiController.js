@@ -448,11 +448,11 @@ module.exports = function(app){
     app.post('/api/path/project', function (req, res){
         validateUser(req, res, "buildPath").then((response) =>{
             // intialise
-            let queryCourses = [];
-            let queryGrades = [];
-            let queryStandards = []; 
-            let querySubjects = [];
-            let queryTopics = []; 
+            // let queryCourses = [];
+            // let queryGrades = [];
+            // let queryStandards = []; 
+            // let querySubjects = [];
+            // let queryTopics = []; 
             // let studentUserArr = [];
             // let studentUser = "";
             // // if the user is a student they should only see their own path returned for their courses
@@ -507,7 +507,7 @@ module.exports = function(app){
             //         }
             //     } 
             // } 
-            
+
             var query = aql`
                 let courseFas = LENGTH(${queryCourses}) == 0 ? [] : UNIQUE(FLATTEN(
                     for c in courses
