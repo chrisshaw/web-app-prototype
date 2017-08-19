@@ -1,0 +1,16 @@
+{
+    "AWSEBDockerrunVersion": "1",
+    "Authentication": {
+      "Bucket": "sidekick-docker",
+      "Key": "legacy/.dockercfg"
+    },
+    "Image": {
+      "Name": "sidekickapps/sidekick:webapp",
+      "Update": "true"
+    },
+    "Ports": [
+      {
+        "ContainerPort": "80"
+      }
+    ]
+}
