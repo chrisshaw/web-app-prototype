@@ -453,60 +453,61 @@ module.exports = function(app){
             let queryStandards = []; 
             let querySubjects = [];
             let queryTopics = []; 
-            let studentUserArr = [];
-            let studentUser = "";
-            // if the user is a student they should only see their own path returned for their courses
-            if (req.body.role.toUpperCase() === 'STUDENT'){
-                studentUserArr.push(response.userid);
-                studentUser = response.userid;
-            }
+            // let studentUserArr = [];
+            // let studentUser = "";
+            // // if the user is a student they should only see their own path returned for their courses
+            // if (req.body.role.toUpperCase() === 'STUDENT'){
+            //     studentUserArr.push(response.userid);
+            //     studentUser = response.userid;
+            // }
             // some pre-processing
             const reqBody = req.body;
             const queryCourses = reqBody.courses ? reqBody.courses.map( course => course._id ) : []; 
-            if (req.body.courses){
-                if (req.body.courses.length > 0){
-                    for (var i = 0; i < req.body.courses.length; i++){
-                        console.log(req.body.courses[i]._key);
-                        queryCourses.push(req.body.courses[i]._key);  // changed from name to use key
-                    }
-                }
-            }
+            // if (req.body.courses){
+            //     if (req.body.courses.length > 0){
+            //         for (var i = 0; i < req.body.courses.length; i++){
+            //             console.log(req.body.courses[i]._key);
+            //             queryCourses.push(req.body.courses[i]._key);  // changed from name to use key
+            //         }
+            //     }
+            // }
 
             const queryGrades = reqBody.grades ? reqBody.grades.map( grade => grade._id ) : [];
-            if (req.body.grades){
-                if (req.body.grades.length > 0){
-                    for (var i = 0; i < req.body.grades.length; i++){
-                        queryGrades.push(req.body.grades[i].name);
-                    }
-                }
-            }
+            // if (req.body.grades){
+            //     if (req.body.grades.length > 0){
+            //         for (var i = 0; i < req.body.grades.length; i++){
+            //             queryGrades.push(req.body.grades[i].name);
+            //         }
+            //     }
+            // }
             // some pre-processing to put values names into arrays
             const querySubjects = reqBody.subjects ? reqBody.subjects.map( subject => subject._id ) : [];
-            if (req.body.subjects){
-                if (req.body.subjects.length > 0){
-                    for (var i = 0; i < req.body.subjects.length; i++){
-                        querySubjects.push(req.body.subjects[i].name.toUpperCase());
-                    }
-                }
-            }
+            // if (req.body.subjects){
+            //     if (req.body.subjects.length > 0){
+            //         for (var i = 0; i < req.body.subjects.length; i++){
+            //             querySubjects.push(req.body.subjects[i].name.toUpperCase());
+            //         }
+            //     }
+            // }
 
             const queryStandards = reqBody.standards ? reqBody.standards.map( standard => standard._id ) : [];
-            if (req.body.standards){
-                if (req.body.standards.length > 0){
-                    for (var i = 0; i < req.body.standards.length; i++){
-                        queryStandards.push(req.body.standards[i].name.toUpperCase());
-                    }
-                }
-            }
+            // if (req.body.standards){
+            //     if (req.body.standards.length > 0){
+            //         for (var i = 0; i < req.body.standards.length; i++){
+            //             queryStandards.push(req.body.standards[i].name.toUpperCase());
+            //         }
+            //     }
+            // }
 
             const queryTopics = reqBody.topics ? reqBody.topics.map( topic => topic._id ) : [];
-            if (req.body.topics){
-                if (req.body.topics.length > 0){
-                    for (var i = 0; i < req.body.topics.length; i++){
-                        queryTopics.push(req.body.topics[i].name.toUpperCase()) // changed from toLowerCAse
-                    }
-                } 
-            } 
+            // if (req.body.topics){
+            //     if (req.body.topics.length > 0){
+            //         for (var i = 0; i < req.body.topics.length; i++){
+            //             queryTopics.push(req.body.topics[i].name.toUpperCase()) // changed from toLowerCAse
+            //         }
+            //     } 
+            // } 
+            
             var query = aql`
                 let courseFas = LENGTH(${queryCourses}) == 0 ? [] : UNIQUE(FLATTEN(
                     for c in courses
@@ -604,8 +605,9 @@ module.exports = function(app){
                     //collect with count into sequence  
                     return {name: topicName, fa: topicPath} //, sequence: sequence}
                 )
-                return {student: studentPath.student, projects: projects}`;
-                  console.log("query", query)
+                return {student: studentPath.student, projects: projects}
+            `;
+                //   console.log("query", query)
             db.query(query).then(cursor => {
                 // cursor is a cursor for the query result
                 // reformat results for improved client display 
