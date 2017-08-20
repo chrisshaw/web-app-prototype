@@ -21,7 +21,8 @@ app.use(cookieParser());
 
 
 // ***  Must comment this out for aws deploy *********///
-if (process.env.DB_MODE === 'LOCAL') app.use("/public", express.static(path.join(__dirname, 'public')));
+// *** HEADS UP: IF THIS IS A DOCKER CONTAINER, I DON'T THINK THIS IS STILL TRUE *** //
+app.use("/public", express.static(path.join(__dirname, 'public')));
 
 // parse application/x-www-form-urlencoded 
 // found urlencoded extended must be true for nested arrays and for post method
