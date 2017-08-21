@@ -7,7 +7,7 @@ import SignUpTab from "./components/SignUpTab";
 import LoginTab from "./components/LoginTab";
 import Forbidden from "./components/Forbidden";
 import Password from "./components/Password";
-import validatePerms  from "./components/validatePerms";
+import validatePerms  from "./components/ValidatePerms";
 import PathBuilder from "./components/PathBuilder.js";
 import DataImportStudentCSV from "./components/DataImportStudentCSV.js";
 import {Router, Route, hashHistory, browserHistory, IndexRoute} from "react-router";
@@ -30,4 +30,3 @@ var routes = (
 )
 
 export default routes;
-

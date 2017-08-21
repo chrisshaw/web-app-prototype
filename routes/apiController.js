@@ -50,22 +50,29 @@ module.exports = function(app){
         return new Promise( (resolve, reject) => { 
             let cookies = "";
             if (req.cookies) {
-                 var cookie = req.cookies['x-foxxsessid'];;
+                // console.log("There is a cookie");
+                 var cookie = req.cookies['x-foxxsessid'];
             }
-            const foxxService = db.route('auth', {"x-foxxsessid" : cookie});
-            foxxService.get('/user')
+            const authService = db.route('auth', {"x-foxxsessid" : cookie});
+            authService.get('/user')
             .then(response => {
                 // if not null
+                // console.log('Received response.');
+                // console.log('That resposne is','\n',response);
                 if (response.body.username){
+                    // console.log('We found the username in response.body.username');
+                    // console.log('Now we will send over '+ response.body);
                     return response.body;
                 } else {
                     // if username is null reject
+                    // console.log('We could not find userame in response.body.username');
                     reject(response.body.username)
                 }
             }).then(response => {
                 // get the user permissions and validate against current required permission / action 
                 // e.g. manageusers
-                let userid = response.userid;
+                // console.log("we'll now check permissions.");
+                let userId = response.userid;
                 let username = response.username;
                 let query = aql`
                     for permission
@@ -79,22 +86,30 @@ module.exports = function(app){
                     let permissions = cursor._result;
                     // console.log(authPerm)
                     // console.log(permissions)
+                    // console.log("((authPerm !== '' ) && (permissions.indexOf(authPerm) !== -1))", ((authPerm !== '' ) && (permissions.indexOf(authPerm) !== -1)));
                     if ((authPerm !== '' ) && (permissions.indexOf(authPerm) !== -1)) {
-                        resolve({success:true, userid: userid, username: username});
+                        // console.log('cool, permissions checked out');
+                        resolve({success:true, userid: userId, username: username});
                     } else if (authPerm === '' ) {
-                        resolve({success:true, userid: userid, username: username});
+                        // console.log('no permissions ot check so you are good');
+                        resolve({success:true, userid: userId, username: username});
                     } else {
+                        // console.log('We checked permissions and they did not match')
                         reject();
                     }          
                 }).catch(error => {
                     console.log(Date.now() + " Error (Get Perms from Database):");
                     reject();
-                }) 
+                }); 
             }).catch(error => {
-                console.log(Date.now() + " Error (Get Auth User from Database)");
-                reject();
-            })
-        });      
+                if (error) {
+                    console.log(Date.now() + " Error (Get Auth User from Database)");
+                    console.log(error);
+                    reject();
+                }
+                console.log("User was successfully validated");
+            });
+        });
     }
 
    function parseFa(result) { 
@@ -121,7 +136,7 @@ module.exports = function(app){
                     result[p].projects[l].fa[i]['nextStd']= [];
                     // next standards
                     if (i < result[p].projects[l].fa.length-1){  
-                        console.log("esult[p].projects[l].fa[i+1].", result[p].projects[l].fa[i+1]);
+                        console.log("result[p].projects[l].fa[i+1].", result[p].projects[l].fa[i+1]);
                         for (var j = 0; j < result[p].projects[l].fa[i+1].standardConnections.length; j++){
                             // save the first one
                             if ((j === 0)){
@@ -206,21 +221,25 @@ module.exports = function(app){
             return response.body;
         }).then(response => {
             // get user role and perms
-            let userid = response.userid;
+            let userId = response.userid;
             let chgPwd = response.chgPwd;
             let username = response.username;
             // let query = aql`for u in auth_users for ha in auth_hasRole filter ha._from == u._id for ac in auth_hasPermission filter ac._from == ha._to for p in auth_permissions filter p._id == ac._to filter u._id == ${userid} return  p.name`;
-            let query = aql`FOR a IN outbound ${userid}
-            auth_hasRole
-            let perms = (for p in outbound a auth_hasPermission
-                filter p._from == a._to return p.name)
-            return { role: a.name, perms: perms}`;
+            let query = aql`
+                for v, e, p
+                in 2 outbound ${userId}
+                auth_hasRole, auth_hasPermission
+                collect role = p.vertices[1]._key into perms = p.vertices[2]._key
+                return { "role": role, "perms": perms }
+            `;
             db.query(query)
             .then(cursor => {  
                 // send permissions list back to requesting client function
                 // for updating in redux store
-                // admin created users must change password on first login  
-                res.json({success:true, username: username, role: cursor._result[0].role, perms: cursor._result[0].perms, chgPwd: chgPwd});
+                // admin created users must change password on first login
+                const result = cursor._result;
+                // console.log(result);
+                res.json({success:true, id: userId, username: username, role: result[0].role, perms: result[0].perms, chgPwd: chgPwd});
             }).catch(error => {
                 console.log(Date.now() + " Error (Get Perms from Database):", error);
                 res.json();
@@ -461,8 +480,12 @@ module.exports = function(app){
             //     studentUser = response.userid;
             // }
             // some pre-processing
+            
+
+
             const reqBody = req.body;
-            const queryCourses = reqBody.courses ? reqBody.courses.map( course => course._id ) : []; 
+            const queryCourses = reqBody.courses ? reqBody.courses.map( course => course._id ) : [];
+            console.log(queryCourses);
             // if (req.body.courses){
             //     if (req.body.courses.length > 0){
             //         for (var i = 0; i < req.body.courses.length; i++){
@@ -472,7 +495,8 @@ module.exports = function(app){
             //     }
             // }
 
-            const queryGrades = reqBody.grades ? reqBody.grades.map( grade => grade._id ) : [];
+            const queryGrades = reqBody.grades ? reqBody.grades.map( grade => grade.name ) : [];
+            console.log(queryGrades);
             // if (req.body.grades){
             //     if (req.body.grades.length > 0){
             //         for (var i = 0; i < req.body.grades.length; i++){
@@ -481,7 +505,8 @@ module.exports = function(app){
             //     }
             // }
             // some pre-processing to put values names into arrays
-            const querySubjects = reqBody.subjects ? reqBody.subjects.map( subject => subject._id ) : [];
+            const querySubjects = reqBody.subjects ? reqBody.subjects.map( subject => subject.name.toUpperCase() ) : [];
+            console.log(querySubjects);
             // if (req.body.subjects){
             //     if (req.body.subjects.length > 0){
             //         for (var i = 0; i < req.body.subjects.length; i++){
@@ -490,7 +515,8 @@ module.exports = function(app){
             //     }
             // }
 
-            const queryStandards = reqBody.standards ? reqBody.standards.map( standard => standard._id ) : [];
+            const queryStandards = reqBody.standards ? reqBody.standards.map( standard => standard.name.toUpperCase() ) : [];
+            console.log(queryStandards);
             // if (req.body.standards){
             //     if (req.body.standards.length > 0){
             //         for (var i = 0; i < req.body.standards.length; i++){
@@ -499,7 +525,8 @@ module.exports = function(app){
             //     }
             // }
 
-            const queryTopics = reqBody.topics ? reqBody.topics.map( topic => topic._id ) : [];
+            const queryTopics = reqBody.topics ? reqBody.topics.map( topic => topic.name.toUpperCase() ) : [];
+            console.log(queryTopics);
             // if (req.body.topics){
             //     if (req.body.topics.length > 0){
             //         for (var i = 0; i < req.body.topics.length; i++){
@@ -510,24 +537,28 @@ module.exports = function(app){
 
             var query = aql`
                 let courseFas = LENGTH(${queryCourses}) == 0 ? [] : UNIQUE(FLATTEN(
-                    for c in courses
-                    filter c._key in ${queryCourses}
-                        for fa in
-                        outbound c
+                    for c in ${queryCourses}
+                        for fa
+                        in outbound c
                         focusesOn
-                        return fa._key
+                        return fa._id
                 ))
 
-                let queryStudents = LENGTH(${studentUserArr}) > 0 ? (for student in auth_users filter student._id == ${studentUser} return {_id: student._id, _key: student._key,  first: student.first, last: student.last}) : UNIQUE(FLATTEN(
+                let queryStudents = LENGTH(${studentUserArr}) > 0 ? (
+                    for student
+                    in auth_users
+                    filter student._id == ${studentUser}
+                    return {_id: student._id, _key: student._key,  first: student.first, last: student.last, grade: student.grade}
+                ) : UNIQUE(FLATTEN(
                     for c in courses
-                    filter LENGTH(${queryCourses}) > 0 ? c._key in ${queryCourses} : true
+                    filter LENGTH(${queryCourses}) > 0 ? c._id in ${queryCourses} : true
                         for v, e, p
                         in 1..2 inbound c
                         hasCourse, outbound auth_hasRole
                         filter UPPER(p.vertices[2].name) == 'STUDENT'
                         let student = p.vertices[1]
-                        filter LENGTH(${queryGrades}) > 0 ? student.grade in ${queryGrades} : true
-                        return distinct KEEP(student, '_id', '_key', 'first', 'last')
+                        filter LENGTH(${queryGrades}) > 0 ? TO_STRING(student.grade) in ${queryGrades} : true
+                        return distinct KEEP(student, '_id', '_key', 'first', 'last', 'grade')
                 ))
 
                 let starters = (
@@ -551,7 +582,7 @@ module.exports = function(app){
                             for fa in
                             2 outbound p
                             alignsTo, addressedBy
-                            return fa._key
+                            return fa._id
                     )
                     return {topic: queryTopic, fa: topicFas}
                 )
@@ -563,17 +594,17 @@ module.exports = function(app){
                         FOR fa
                         IN outbound student
                         hasMastered
-                        return fa._key
+                        return fa._id
                     )
 
                     let path  = UNIQUE(FLATTEN(
                         for start in starters
                             for fa
-                            in 0..999 outbound start
+                            in 0..40 outbound start
                             thenFocusOn
-                            filter length(${querySubjects}) > 0 ? fa.subject in ${querySubjects} : true
-                            filter length(courseFas) > 0 ? fa._key in courseFas : true
-                            filter length(masteredFas) > 0 ? fa._key not in masteredFas : true
+                            filter length(${querySubjects}) > 0 ? UPPER(fa.subject) in ${querySubjects} : true
+                            filter length(courseFas) > 0 ? fa._id in courseFas : true
+                            filter length(masteredFas) > 0 ? fa._id not in masteredFas : true
                             filter length(${queryStandards}) > 0 ? (
                                 let standardConnections = (
                                     for standard
@@ -582,9 +613,8 @@ module.exports = function(app){
                                     limit 2
                                     return UPPER(standard._key)
                                 )
-                                return standardConnections any in ${queryStandards}[* return UPPER(CURRENT)]
+                                return standardConnections any in ${queryStandards}
                             ) : true
-                            limit 100
                             return fa
                     ))
                     return {student: student, path: path}
@@ -598,7 +628,7 @@ module.exports = function(app){
                     let topicFas = topicAndFas.fa
                     let topicPath = (
                         for fa in path
-                        filter fa._key in topicFas
+                        filter fa._id in topicFas
                         sort rand()
                         return fa
                     )
@@ -607,7 +637,7 @@ module.exports = function(app){
                 )
                 return {student: studentPath.student, projects: projects}
             `;
-                //   console.log("query", query)
+            console.log('Okay let us query some stuff');
             db.query(query).then(cursor => {
                 // cursor is a cursor for the query result
                 // reformat results for improved client display 
@@ -625,7 +655,7 @@ module.exports = function(app){
              console.log(Date.now() + " Authentication Error");
              res.json({success: false, error: "No Permissions to View Paths"})
         })
-    })
+    });
 
     app.post("/csv/file", function(req, res, next){
         validateUser(req, res, "manageStudents").then((response) =>{
@@ -980,8 +1010,8 @@ module.exports = function(app){
         // get roles from database
         let query = aql`
             for a in auth_roles
-            sort a.name asc
-            return {name: a.name, _id: a._id, description: a.description}`;
+            sort a._key asc
+            return {name: a._key, _id: a._id, description: a.description}`;
 
         db.query(query)
         .then(cursor => {  
@@ -1021,7 +1051,7 @@ module.exports = function(app){
                 return p.topics
             ))
 
-           for t in topics
+            for t in topics
             sort t
             return t
         `;
@@ -1047,7 +1077,7 @@ module.exports = function(app){
             RETURN TO_ARRAY((for s in standards
             filter length(${queryGrades}) > 0 ? TO_ARRAY(s.grade) any in ${queryGrades} : true
             sort s.standard
-            return s.standard))
+            return s._key))
         `;
         db.query(query)
         .then(cursor => {  
@@ -1065,7 +1095,7 @@ module.exports = function(app){
         let grades = req.params.grade;
         let queryGrades = [];
         if (grades) queryGrades = grades.split(',');
-        console.log(req.body)
+        // console.log(req.body)
         // wondering if we should get this from front end  or from db..
         // let role = req.params.role;
         let username = req.params.username;  
@@ -1086,10 +1116,10 @@ module.exports = function(app){
         // let query = aql`
         //   let userid = (UNIQUE(for c in outbound userid[0] hasCourse return {_key: c._key, _id: c._id, name: c.name, grade: c.grade}))`
         
-     console.log(query)
+        // console.log(query)
         db.query(query)
         .then(cursor => { 
-            console.log("Course", cursor._result);
+            // console.log("Course", cursor._result);
             res.json(cursor._result);
         }).catch(error => {
             console.log(Date.now() + " Error (Get Courses from Database):", error);
@@ -1121,10 +1151,10 @@ module.exports = function(app){
         //     `;
         // // query=aql`for c in outbound ${username} hasCourse
         // //     return {_key: c._key_id: c._id, name: c.name, grade: c.grade}`
-     console.log(query)
+    //  console.log(query)
         db.query(query)
         .then(cursor => { 
-            console.log("Course", cursor._result);
+            // console.log("Course", cursor._result);
             res.json(cursor._result);
         }).catch(error => {
             console.log(Date.now() + " Error (Get Courses from Database):", error);
@@ -1148,10 +1178,10 @@ module.exports = function(app){
         for f in focusAreas 
         filter f._key in fa_key
         return {_key: f._key, name: f.name}`;
-     console.log(query)
+    //  console.log(query)
         db.query(query)
         .then(cursor => { 
-            console.log("FA", cursor._result);
+            // console.log("FA", cursor._result);
             res.json({success: true, fa: cursor._result});
         }).catch(error => {
             console.log(Date.now() + " Error (Get FA from Database):", error);
