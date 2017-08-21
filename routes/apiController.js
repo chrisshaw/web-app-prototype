@@ -26,14 +26,21 @@ module.exports = function(app){
             // username uniquely identifies user / student in auth_users 
             // table but using studentId for students as this identifies them in the school just to be safe
             // these are dummy users so authData = {} - can be promoted later if required by adding authData
-            let query =aql`for s in ${studentArr}
-            let student_id = (UPSERT{ username: s.email} INSERT { studentId: s.studentId,first: s.firstName,  last: s.lastName, username: s.email, mentor:  s.mentor, school: 'na', role: 'Student', chgPwd: true, active: false, dateCreated: DATE_NOW(),  dateUpdated: null, createdBy: ${username}, updatedBy: null} UPDATE {studentId: s.studentId, mentor:  s.mentor,  dateUpdated: DATE_NOW(),  updatedBy: ${username} } IN auth_users RETURN NEW._id )
-            let course_id = (for v in courses Filter v.name == s.course return {_id:v._id, section: s.section})
-            let role_id = (for r in auth_roles filter UPPER(r.name) == "STUDENT" return r._id )
-            let fas = (for fa in s.focusAreas
-                let focusArea = (for f in focusAreas filter f["Focus Area"] == fa.faName return f._id)
-                return {fa_id: focusArea[0], focusAreaDetails: fa})
-            return {student_id: student_id, role_id: role_id, course_id: course_id,focusArea: fas }`
+            let query =aql`
+                for s in ${studentArr}
+                let student_id = (UPSERT{ username: s.email} INSERT { studentId: s.studentId,first: s.firstName,  last: s.lastName, username: s.email, mentor:  s.mentor, school: 'na', role: 'Student', chgPwd: true, active: false, dateCreated: DATE_NOW(),  dateUpdated: null, createdBy: ${username}, updatedBy: null} UPDATE {studentId: s.studentId, mentor:  s.mentor,  dateUpdated: DATE_NOW(),  updatedBy: ${username} } IN auth_users RETURN NEW._id )
+                let course_id = (for v in courses Filter v.name == s.course return {_id:v._id, section: s.section})
+                let role_id = (for r in auth_roles filter UPPER(r.name) == "STUDENT" return r._id )
+                let fas = (
+                    for fa in s.focusAreas
+                    let focusArea = (
+                        for f in focusAreas
+                        filter f.name == fa.faName
+                        return f._id
+                    )
+                    return { fa_id: focusArea[0], focusAreaDetails: fa }
+                )
+                return {student_id: student_id, role_id: role_id, course_id: course_id,focusArea: fas }`
             // GET DATA --> UPDATE DATA
             db.query(query)
             .then(cursor => {  
@@ -465,20 +472,21 @@ module.exports = function(app){
     
     // using post as passing object - probably not ideal
     app.post('/api/path/project', function (req, res){
-        validateUser(req, res, "buildPath").then((response) =>{
+        validateUser(req, res, "buildPath")
+        .then( response => {
             // intialise
             // let queryCourses = [];
             // let queryGrades = [];
             // let queryStandards = []; 
             // let querySubjects = [];
             // let queryTopics = []; 
-            // let studentUserArr = [];
-            // let studentUser = "";
-            // // if the user is a student they should only see their own path returned for their courses
-            // if (req.body.role.toUpperCase() === 'STUDENT'){
-            //     studentUserArr.push(response.userid);
-            //     studentUser = response.userid;
-            // }
+            let studentUserArr = [];
+            let studentUser = "";
+            // if the user is a student they should only see their own path returned for their courses
+            if (req.body.role.toUpperCase() === 'STUDENT'){
+                studentUserArr.push(response.userid);
+                studentUser = response.userid;
+            }
             // some pre-processing
             
 
@@ -533,8 +541,8 @@ module.exports = function(app){
             //             queryTopics.push(req.body.topics[i].name.toUpperCase()) // changed from toLowerCAse
             //         }
             //     } 
-            // } 
-
+            // }
+            console.log('Defining a query');
             var query = aql`
                 let courseFas = LENGTH(${queryCourses}) == 0 ? [] : UNIQUE(FLATTEN(
                     for c in ${queryCourses}
@@ -637,24 +645,26 @@ module.exports = function(app){
                 )
                 return {student: studentPath.student, projects: projects}
             `;
-            console.log('Okay let us query some stuff');
-            db.query(query).then(cursor => {
+            console.log('Query defined. Let us query some stuff.');
+            db.query(query)
+            .then(cursor => {
                 // cursor is a cursor for the query result
                 // reformat results for improved client display 
                 // var studentPathArr = [];
-               console.log("cursor._result", cursor._result)
+                console.log("cursor._result", cursor._result)
                 // let parsedPath = parseFa(cursor._result);
-                res.json({success: true, paths: cursor._result})
-                 
-                   
-            }).catch((error => {
+                res.json({success: true, paths: cursor._result})   
+            })
+            .catch( error => {
                 console.log(Date.now() + " Error (Getting paths from Database):", error);
                 res.json();
-            }))
-        }).catch((error) => {
-             console.log(Date.now() + " Authentication Error");
-             res.json({success: false, error: "No Permissions to View Paths"})
+            });
         })
+        .catch((error) => {
+            console.log(Date.now() + " Authentication Error");
+            console.log(error);
+            res.json({success: false, error: "No Permissions to View Paths"})
+        });
     });
 
     app.post("/csv/file", function(req, res, next){
