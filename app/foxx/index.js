@@ -42,10 +42,29 @@ module.context.use(router);
 
 router.get('/user', function (req, res) {
   try {
+    console.log(
+      'Trying to find user session',
+      '\n',
+      'Using session.uid: ' + req.session.uid
+    );
     const user = users.document(req.session.uid);
+    console.log(
+      'The user we got back was:',
+      '\n',
+      'Username:',user.username,
+      '\n',
+      'Id:',user._id
+    );
     // send back all user data
     res.send({username: user.username, userid: user._id});
   } catch (e) {
+    console.log(
+      'Something went wrong',
+      '\n',
+      'Error below.',
+      '\n',
+      e
+    );
     res.send({username: null});
   }
 })

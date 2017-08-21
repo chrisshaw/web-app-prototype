@@ -50,10 +50,11 @@ module.exports = function(app){
         return new Promise( (resolve, reject) => { 
             let cookies = "";
             if (req.cookies) {
-                 var cookie = req.cookies['x-foxxsessid'];;
+                console.log("There is a cookie");
+                 var cookie = req.cookies['x-foxxsessid'];
             }
-            const foxxService = db.route('auth', {"x-foxxsessid" : cookie});
-            foxxService.get('/user')
+            const authService = db.route('auth', {"x-foxxsessid" : cookie});
+            authService.get('/user')
             .then(response => {
                 // if not null
                 if (response.body.username){
@@ -65,7 +66,7 @@ module.exports = function(app){
             }).then(response => {
                 // get the user permissions and validate against current required permission / action 
                 // e.g. manageusers
-                let userid = response.userid;
+                let userId = response.userid;
                 let username = response.username;
                 let query = aql`
                     for permission
@@ -80,9 +81,9 @@ module.exports = function(app){
                     // console.log(authPerm)
                     // console.log(permissions)
                     if ((authPerm !== '' ) && (permissions.indexOf(authPerm) !== -1)) {
-                        resolve({success:true, userid: userid, username: username});
+                        resolve({success:true, userid: userId, username: username});
                     } else if (authPerm === '' ) {
-                        resolve({success:true, userid: userid, username: username});
+                        resolve({success:true, userid: userId, username: username});
                     } else {
                         reject();
                     }          
@@ -206,21 +207,25 @@ module.exports = function(app){
             return response.body;
         }).then(response => {
             // get user role and perms
-            let userid = response.userid;
+            let userId = response.userid;
             let chgPwd = response.chgPwd;
             let username = response.username;
             // let query = aql`for u in auth_users for ha in auth_hasRole filter ha._from == u._id for ac in auth_hasPermission filter ac._from == ha._to for p in auth_permissions filter p._id == ac._to filter u._id == ${userid} return  p.name`;
-            let query = aql`FOR a IN outbound ${userid}
-            auth_hasRole
-            let perms = (for p in outbound a auth_hasPermission
-                filter p._from == a._to return p.name)
-            return { role: a.name, perms: perms}`;
+            let query = aql`
+                for v, e, p
+                in 2 outbound ${userId}
+                auth_hasRole, auth_hasPermission
+                collect role = p.vertices[1]._key into perms = p.vertices[2]._key
+                return { "role": role, "perms": perms }
+            `;
             db.query(query)
             .then(cursor => {  
                 // send permissions list back to requesting client function
                 // for updating in redux store
-                // admin created users must change password on first login  
-                res.json({success:true, username: username, role: cursor._result[0].role, perms: cursor._result[0].perms, chgPwd: chgPwd});
+                // admin created users must change password on first login
+                const result = cursor._result;
+                // console.log(result);
+                res.json({success:true, id: userId, username: username, role: result[0].role, perms: result[0].perms, chgPwd: chgPwd});
             }).catch(error => {
                 console.log(Date.now() + " Error (Get Perms from Database):", error);
                 res.json();
@@ -1021,7 +1026,7 @@ module.exports = function(app){
                 return p.topics
             ))
 
-           for t in topics
+            for t in topics
             sort t
             return t
         `;
@@ -1065,7 +1070,7 @@ module.exports = function(app){
         let grades = req.params.grade;
         let queryGrades = [];
         if (grades) queryGrades = grades.split(',');
-        console.log(req.body)
+        // console.log(req.body)
         // wondering if we should get this from front end  or from db..
         // let role = req.params.role;
         let username = req.params.username;  
@@ -1086,10 +1091,10 @@ module.exports = function(app){
         // let query = aql`
         //   let userid = (UNIQUE(for c in outbound userid[0] hasCourse return {_key: c._key, _id: c._id, name: c.name, grade: c.grade}))`
         
-     console.log(query)
+        // console.log(query)
         db.query(query)
         .then(cursor => { 
-            console.log("Course", cursor._result);
+            // console.log("Course", cursor._result);
             res.json(cursor._result);
         }).catch(error => {
             console.log(Date.now() + " Error (Get Courses from Database):", error);
@@ -1121,10 +1126,10 @@ module.exports = function(app){
         //     `;
         // // query=aql`for c in outbound ${username} hasCourse
         // //     return {_key: c._key_id: c._id, name: c.name, grade: c.grade}`
-     console.log(query)
+    //  console.log(query)
         db.query(query)
         .then(cursor => { 
-            console.log("Course", cursor._result);
+            // console.log("Course", cursor._result);
             res.json(cursor._result);
         }).catch(error => {
             console.log(Date.now() + " Error (Get Courses from Database):", error);
@@ -1148,10 +1153,10 @@ module.exports = function(app){
         for f in focusAreas 
         filter f._key in fa_key
         return {_key: f._key, name: f.name}`;
-     console.log(query)
+    //  console.log(query)
         db.query(query)
         .then(cursor => { 
-            console.log("FA", cursor._result);
+            // console.log("FA", cursor._result);
             res.json({success: true, fa: cursor._result});
         }).catch(error => {
             console.log(Date.now() + " Error (Get FA from Database):", error);
