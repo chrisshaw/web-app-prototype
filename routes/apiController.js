@@ -1,26 +1,25 @@
 var arangojs = require('arangojs');
 var Database = arangojs.Database;
+const aql = arangojs.aql;
 var path = require('path');
 var nodemailer = require("nodemailer");
-var path = require('path');
 var fs = require('fs');
 const dbSwitch = require('./dbconfig.js');
 // var fileName = "";
 // console.log(db);
 // test connection
 
-const dbMode = process.env.DB_MODE;
-const dbHostPort = dbSwitch[dbMode]['dbHostPort'],
-    dbUser = dbSwitch[dbMode]['dbUser'],
-    dbPwd = dbSwitch[dbMode]['dbPwd'],
-    dbName = dbSwitch[dbMode]['dbName'];
-
-const db = arangojs(dbHostPort);
-db.useDatabase(dbName);
-db.useBasicAuth(dbUser, dbPwd);
-
-const aql = arangojs.aql;
 module.exports = function(app){
+    const dbMode = process.env.DB_MODE;
+    const dbHostPort = dbSwitch[dbMode]['dbHostPort'],
+        dbUser = dbSwitch[dbMode]['dbUser'],
+        dbPwd = dbSwitch[dbMode]['dbPwd'],
+        dbName = dbSwitch[dbMode]['dbName'];
+    
+    const db = arangojs(dbHostPort);
+    db.useDatabase(dbName);
+    db.useBasicAuth(dbUser, dbPwd);
+
     function saveStudentGetIds(studentArr, username, i){
         return new Promise((resolve, reject) => {
             // username uniquely identifies user / student in auth_users 
@@ -28,9 +27,21 @@ module.exports = function(app){
             // these are dummy users so authData = {} - can be promoted later if required by adding authData
             let query =aql`
                 for s in ${studentArr}
-                let student_id = (UPSERT{ username: s.email} INSERT { studentId: s.studentId,first: s.firstName,  last: s.lastName, username: s.email, mentor:  s.mentor, school: 'na', role: 'Student', chgPwd: true, active: false, dateCreated: DATE_NOW(),  dateUpdated: null, createdBy: ${username}, updatedBy: null} UPDATE {studentId: s.studentId, mentor:  s.mentor,  dateUpdated: DATE_NOW(),  updatedBy: ${username} } IN auth_users RETURN NEW._id )
-                let course_id = (for v in courses Filter v.name == s.course return {_id:v._id, section: s.section})
-                let role_id = (for r in auth_roles filter UPPER(r.name) == "STUDENT" return r._id )
+                let student_id = (
+                    UPSERT { username: s.email}
+                    INSERT { studentId: s.studentId, first: s.firstName, last: s.lastName, username: s.email, mentor: s.mentor, school: 'na', role: 'student', chgPwd: true, active: false, dateCreated: DATE_NOW(), dateUpdated: null, createdBy: ${username}, updatedBy: null }
+                    UPDATE { studentId: s.studentId, mentor:  s.mentor,  dateUpdated: DATE_NOW(),  updatedBy: ${username} } IN auth_users RETURN NEW._id
+                )
+                let course_id = (
+                    for course in courses
+                    filter course.name == s.course
+                    return { _id: course._id, section: s.section }
+                )
+                let role_id = (
+                    for r in auth_roles
+                    filter UPPER(r.name) == "STUDENT"
+                    return r._id
+                )
                 let fas = (
                     for fa in s.focusAreas
                     let focusArea = (
@@ -40,7 +51,8 @@ module.exports = function(app){
                     )
                     return { fa_id: focusArea[0], focusAreaDetails: fa }
                 )
-                return {student_id: student_id, role_id: role_id, course_id: course_id,focusArea: fas }`
+                return { student_id: student_id, role_id: role_id, course_id: course_id, focusArea: fas }
+            `;
             // GET DATA --> UPDATE DATA
             db.query(query)
             .then(cursor => {  
@@ -492,180 +504,161 @@ module.exports = function(app){
 
 
             const reqBody = req.body;
-            const queryCourses = reqBody.courses ? reqBody.courses.map( course => course._id ) : [];
-            console.log(queryCourses);
-            // if (req.body.courses){
-            //     if (req.body.courses.length > 0){
-            //         for (var i = 0; i < req.body.courses.length; i++){
-            //             console.log(req.body.courses[i]._key);
-            //             queryCourses.push(req.body.courses[i]._key);  // changed from name to use key
-            //         }
-            //     }
-            // }
-
-            const queryGrades = reqBody.grades ? reqBody.grades.map( grade => grade.name ) : [];
-            console.log(queryGrades);
-            // if (req.body.grades){
-            //     if (req.body.grades.length > 0){
-            //         for (var i = 0; i < req.body.grades.length; i++){
-            //             queryGrades.push(req.body.grades[i].name);
-            //         }
-            //     }
-            // }
-            // some pre-processing to put values names into arrays
-            const querySubjects = reqBody.subjects ? reqBody.subjects.map( subject => subject.name.toUpperCase() ) : [];
-            console.log(querySubjects);
-            // if (req.body.subjects){
-            //     if (req.body.subjects.length > 0){
-            //         for (var i = 0; i < req.body.subjects.length; i++){
-            //             querySubjects.push(req.body.subjects[i].name.toUpperCase());
-            //         }
-            //     }
-            // }
-
-            const queryStandards = reqBody.standards ? reqBody.standards.map( standard => standard.name.toUpperCase() ) : [];
-            console.log(queryStandards);
-            // if (req.body.standards){
-            //     if (req.body.standards.length > 0){
-            //         for (var i = 0; i < req.body.standards.length; i++){
-            //             queryStandards.push(req.body.standards[i].name.toUpperCase());
-            //         }
-            //     }
-            // }
-
-            const queryTopics = reqBody.topics ? reqBody.topics.map( topic => topic.name.toUpperCase() ) : [];
-            console.log(queryTopics);
-            // if (req.body.topics){
-            //     if (req.body.topics.length > 0){
-            //         for (var i = 0; i < req.body.topics.length; i++){
-            //             queryTopics.push(req.body.topics[i].name.toUpperCase()) // changed from toLowerCAse
-            //         }
-            //     } 
-            // }
-            console.log('Defining a query');
-            var query = aql`
-                let courseFas = LENGTH(${queryCourses}) == 0 ? [] : UNIQUE(FLATTEN(
-                    for c in ${queryCourses}
-                        for fa
-                        in outbound c
-                        focusesOn
-                        return fa._id
-                ))
-
-                let queryStudents = LENGTH(${studentUserArr}) > 0 ? (
-                    for student
-                    in auth_users
-                    filter student._id == ${studentUser}
-                    return {_id: student._id, _key: student._key,  first: student.first, last: student.last, grade: student.grade}
-                ) : UNIQUE(FLATTEN(
-                    for c in courses
-                    filter LENGTH(${queryCourses}) > 0 ? c._id in ${queryCourses} : true
-                        for v, e, p
-                        in 1..2 inbound c
-                        hasCourse, outbound auth_hasRole
-                        filter UPPER(p.vertices[2].name) == 'STUDENT'
-                        let student = p.vertices[1]
-                        filter LENGTH(${queryGrades}) > 0 ? TO_STRING(student.grade) in ${queryGrades} : true
-                        return distinct KEEP(student, '_id', '_key', 'first', 'last', 'grade')
-                ))
-
-                let starters = (
-                    for fa in focusAreas
-                    let priors = (
-                        for v
-                        in inbound fa
-                        thenFocusOn
-                        return 1
-                    )
-                    filter LENGTH(priors) == 0
-                    return fa._id
-                )
-
-                // Main path query
-                let topicsAndFas = (
-                    for queryTopic in ${queryTopics}
-                    let topicFas = (
-                        for p in projects
-                        filter UPPER(queryTopic) in p.topics[* return UPPER(CURRENT)]
-                            for fa in
-                            2 outbound p
-                            alignsTo, addressedBy
-                            return fa._id
-                    )
-                    return {topic: queryTopic, fa: topicFas}
-                )
-
-                let studentPaths = (
-                    for student in queryStudents
-
-                    let masteredFas = (
-                        FOR fa
-                        IN outbound student
-                        hasMastered
-                        return fa._id
-                    )
-
-                    let path  = UNIQUE(FLATTEN(
-                        for start in starters
-                            for fa
-                            in 0..40 outbound start
-                            thenFocusOn
-                            filter length(${querySubjects}) > 0 ? UPPER(fa.subject) in ${querySubjects} : true
-                            filter length(courseFas) > 0 ? fa._id in courseFas : true
-                            filter length(masteredFas) > 0 ? fa._id not in masteredFas : true
-                            filter length(${queryStandards}) > 0 ? (
-                                let standardConnections = (
-                                    for standard
-                                    in outbound fa
-                                    alignsTo
-                                    limit 2
-                                    return UPPER(standard._key)
-                                )
-                                return standardConnections any in ${queryStandards}
-                            ) : true
-                            return fa
-                    ))
-                    return {student: student, path: path}
-                )
-
-                for studentPath in studentPaths
-                let path = studentPath.path
-                let projects = (
-                    for topicAndFas in topicsAndFas
-                    let topicName = topicAndFas.topic
-                    let topicFas = topicAndFas.fa
-                    let topicPath = (
-                        for fa in path
-                        filter fa._id in topicFas
-                        sort rand()
-                        return fa
-                    )
-                    //collect with count into sequence  
-                    return {name: topicName, fa: topicPath} //, sequence: sequence}
-                )
-                return {student: studentPath.student, projects: projects}
-            `;
-            console.log('Query defined. Let us query some stuff.');
-            db.query(query)
-            .then(cursor => {
-                // cursor is a cursor for the query result
-                // reformat results for improved client display 
-                // var studentPathArr = [];
-                console.log("cursor._result", cursor._result)
-                // let parsedPath = parseFa(cursor._result);
-                res.json({success: true, paths: cursor._result})   
+            const userId = reqBody.userid;
+            const queryObject = {
+                courses: reqBody.courses ? reqBody.courses.map( course => course._key ) : [],
+                grades: reqBody.grades ? reqBody.grades.map( grade => grade.name ) : [],
+                subjects: reqBody.subjects ? reqBody.subjects.map( subject => subject.name.toUpperCase() ) : [],
+                standards: reqBody.standards ? reqBody.standards.map( standard => standard.name.toUpperCase() ) : [],
+                topics: reqBody.topics ? reqBody.topics.map( topic => topic.name.toUpperCase() ) : []
+            };
+            Object.keys(queryObject).forEach( key => console.log(key, ':', queryObject[key]));
+            console.log('Constructing query string');
+            const strRequest = constructQueryParams(queryObject);
+            const pathBuilderService = db.route('path');
+            pathBuilderService.get(`/${userId}/build${strRequest}`)
+            .then( response => {
+                res
+                    .status(200)
+                    .json(response)
             })
+            
+            // var query = aql`
+            //     let courseFas = LENGTH(${queryCourses}) == 0 ? [] : UNIQUE(FLATTEN(
+            //         for c in ${queryCourses}
+            //             for fa
+            //             in outbound c
+            //             focusesOn
+            //             return fa._id
+            //     ))
+
+            //     let queryStudents = LENGTH(${studentUserArr}) > 0 ? (
+            //         for student
+            //         in auth_users
+            //         filter student._id == ${studentUser}
+            //         return {_id: student._id, _key: student._key,  first: student.first, last: student.last, grade: student.grade}
+            //     ) : UNIQUE(FLATTEN(
+            //         for c in courses
+            //         filter LENGTH(${queryCourses}) > 0 ? c._id in ${queryCourses} : true
+            //             for v, e, p
+            //             in 1..2 inbound c
+            //             hasCourse, outbound auth_hasRole
+            //             filter UPPER(p.vertices[2].name) == 'STUDENT'
+            //             let student = p.vertices[1]
+            //             filter LENGTH(${queryGrades}) > 0 ? TO_STRING(student.grade) in ${queryGrades} : true
+            //             return distinct KEEP(student, '_id', '_key', 'first', 'last', 'grade')
+            //     ))
+
+            //     let starters = (
+            //         for fa in focusAreas
+            //         let priors = (
+            //             for v
+            //             in inbound fa
+            //             thenFocusOn
+            //             return 1
+            //         )
+            //         filter LENGTH(priors) == 0
+            //         return fa._id
+            //     )
+
+            //     // Main path query
+            //     let topicsAndFas = (
+            //         for queryTopic in ${queryTopics}
+            //         let topicFas = (
+            //             for p in projects
+            //             filter UPPER(queryTopic) in p.topics[* return UPPER(CURRENT)]
+            //                 for fa in
+            //                 2 outbound p
+            //                 alignsTo, addressedBy
+            //                 return fa._id
+            //         )
+            //         return {topic: queryTopic, fa: topicFas}
+            //     )
+
+            //     let studentPaths = (
+            //         for student in queryStudents
+
+            //         let masteredFas = (
+            //             FOR fa
+            //             IN outbound student
+            //             hasMastered
+            //             return fa._id
+            //         )
+
+            //         let path  = UNIQUE(FLATTEN(
+            //             for start in starters
+            //                 for fa
+            //                 in 0..40 outbound start
+            //                 thenFocusOn
+            //                 filter length(${querySubjects}) > 0 ? UPPER(fa.subject) in ${querySubjects} : true
+            //                 filter length(courseFas) > 0 ? fa._id in courseFas : true
+            //                 filter length(masteredFas) > 0 ? fa._id not in masteredFas : true
+            //                 filter length(${queryStandards}) > 0 ? (
+            //                     let standardConnections = (
+            //                         for standard
+            //                         in outbound fa
+            //                         alignsTo
+            //                         limit 2
+            //                         return UPPER(standard._key)
+            //                     )
+            //                     return standardConnections any in ${queryStandards}
+            //                 ) : true
+            //                 return fa
+            //         ))
+            //         return {student: student, path: path}
+            //     )
+
+            //     for studentPath in studentPaths
+            //     let path = studentPath.path
+            //     let projects = (
+            //         for topicAndFas in topicsAndFas
+            //         let topicName = topicAndFas.topic
+            //         let topicFas = topicAndFas.fa
+            //         let topicPath = (
+            //             for fa in path
+            //             filter fa._id in topicFas
+            //             sort rand()
+            //             return fa
+            //         )
+            //         //collect with count into sequence  
+            //         return {name: topicName, fa: topicPath} //, sequence: sequence}
+            //     )
+            //     return {student: studentPath.student, projects: projects}
+            // `;
+            // console.log('Query defined. Let us query some stuff.');
+            // db.query(query)
+            // .then(cursor => {
+            //     // cursor is a cursor for the query result
+            //     // reformat results for improved client display 
+            //     // var studentPathArr = [];
+            //     console.log("cursor._result", cursor._result)
+            //     // let parsedPath = parseFa(cursor._result);
+            //     res.json({success: true, paths: cursor._result})   
+        //     // })
             .catch( error => {
-                console.log(Date.now() + " Error (Getting paths from Database):", error);
+                console.log(Date.now() + " Error (Getting paths from Database):", '\n', error);
                 res.json();
-            });
-        })
+            })
+        // })
         .catch((error) => {
             console.log(Date.now() + " Authentication Error");
             console.log(error);
             res.json({success: false, error: "No Permissions to View Paths"})
         });
     });
+
+    const constructQueryParams = queryObject => {
+        Object.keys(queryObject).reduce( (queryString, currentKey) => {
+            if ( queryObject[key].length > 0 ) {
+                queryString += queryObject[key].join(',');
+            }
+            if (i !== keys.length - 1) {
+                queryString += '&';
+            }
+            return queryString;
+        }
+        , '?', i, keys)
+    };
 
     app.post("/csv/file", function(req, res, next){
         validateUser(req, res, "manageStudents").then((response) =>{
