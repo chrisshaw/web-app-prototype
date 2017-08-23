@@ -93,6 +93,7 @@ module.exports = function(app){
                 // console.log("we'll now check permissions.");
                 let userId = response.userid;
                 let username = response.username;
+                let userKey = response.userkey;
                 let query = aql`
                     for permission
                     in 2 outbound ${userId}
@@ -108,10 +109,10 @@ module.exports = function(app){
                     // console.log("((authPerm !== '' ) && (permissions.indexOf(authPerm) !== -1))", ((authPerm !== '' ) && (permissions.indexOf(authPerm) !== -1)));
                     if ((authPerm !== '' ) && (permissions.indexOf(authPerm) !== -1)) {
                         // console.log('cool, permissions checked out');
-                        resolve({success:true, userid: userId, username: username});
+                        resolve({success:true, userid: userId, username: username, userkey: userKey });
                     } else if (authPerm === '' ) {
                         // console.log('no permissions ot check so you are good');
-                        resolve({success:true, userid: userId, username: username});
+                        resolve({ success:true, userid: userId, username: username, userkey: userKey });
                     } else {
                         // console.log('We checked permissions and they did not match')
                         reject();
@@ -487,24 +488,19 @@ module.exports = function(app){
         validateUser(req, res, "buildPath")
         .then( response => {
             // intialise
-            // let queryCourses = [];
-            // let queryGrades = [];
-            // let queryStandards = []; 
-            // let querySubjects = [];
-            // let queryTopics = []; 
-            let studentUserArr = [];
-            let studentUser = "";
-            // if the user is a student they should only see their own path returned for their courses
-            if (req.body.role.toUpperCase() === 'STUDENT'){
-                studentUserArr.push(response.userid);
-                studentUser = response.userid;
-            }
             // some pre-processing
-            
-
-
+            console.log(
+                "User's validated",
+                '\n',
+                "The request body is",
+                "\n",
+                req.body,
+                '\n',
+                "The response is",
+                response
+            );
             const reqBody = req.body;
-            const userId = reqBody.userid;
+            const userId = response.userid;
             const queryObject = {
                 courses: reqBody.courses ? reqBody.courses.map( course => course._key ) : [],
                 grades: reqBody.grades ? reqBody.grades.map( grade => grade.name ) : [],
@@ -522,124 +518,11 @@ module.exports = function(app){
                     .status(200)
                     .json(response)
             })
-            
-            // var query = aql`
-            //     let courseFas = LENGTH(${queryCourses}) == 0 ? [] : UNIQUE(FLATTEN(
-            //         for c in ${queryCourses}
-            //             for fa
-            //             in outbound c
-            //             focusesOn
-            //             return fa._id
-            //     ))
-
-            //     let queryStudents = LENGTH(${studentUserArr}) > 0 ? (
-            //         for student
-            //         in auth_users
-            //         filter student._id == ${studentUser}
-            //         return {_id: student._id, _key: student._key,  first: student.first, last: student.last, grade: student.grade}
-            //     ) : UNIQUE(FLATTEN(
-            //         for c in courses
-            //         filter LENGTH(${queryCourses}) > 0 ? c._id in ${queryCourses} : true
-            //             for v, e, p
-            //             in 1..2 inbound c
-            //             hasCourse, outbound auth_hasRole
-            //             filter UPPER(p.vertices[2].name) == 'STUDENT'
-            //             let student = p.vertices[1]
-            //             filter LENGTH(${queryGrades}) > 0 ? TO_STRING(student.grade) in ${queryGrades} : true
-            //             return distinct KEEP(student, '_id', '_key', 'first', 'last', 'grade')
-            //     ))
-
-            //     let starters = (
-            //         for fa in focusAreas
-            //         let priors = (
-            //             for v
-            //             in inbound fa
-            //             thenFocusOn
-            //             return 1
-            //         )
-            //         filter LENGTH(priors) == 0
-            //         return fa._id
-            //     )
-
-            //     // Main path query
-            //     let topicsAndFas = (
-            //         for queryTopic in ${queryTopics}
-            //         let topicFas = (
-            //             for p in projects
-            //             filter UPPER(queryTopic) in p.topics[* return UPPER(CURRENT)]
-            //                 for fa in
-            //                 2 outbound p
-            //                 alignsTo, addressedBy
-            //                 return fa._id
-            //         )
-            //         return {topic: queryTopic, fa: topicFas}
-            //     )
-
-            //     let studentPaths = (
-            //         for student in queryStudents
-
-            //         let masteredFas = (
-            //             FOR fa
-            //             IN outbound student
-            //             hasMastered
-            //             return fa._id
-            //         )
-
-            //         let path  = UNIQUE(FLATTEN(
-            //             for start in starters
-            //                 for fa
-            //                 in 0..40 outbound start
-            //                 thenFocusOn
-            //                 filter length(${querySubjects}) > 0 ? UPPER(fa.subject) in ${querySubjects} : true
-            //                 filter length(courseFas) > 0 ? fa._id in courseFas : true
-            //                 filter length(masteredFas) > 0 ? fa._id not in masteredFas : true
-            //                 filter length(${queryStandards}) > 0 ? (
-            //                     let standardConnections = (
-            //                         for standard
-            //                         in outbound fa
-            //                         alignsTo
-            //                         limit 2
-            //                         return UPPER(standard._key)
-            //                     )
-            //                     return standardConnections any in ${queryStandards}
-            //                 ) : true
-            //                 return fa
-            //         ))
-            //         return {student: student, path: path}
-            //     )
-
-            //     for studentPath in studentPaths
-            //     let path = studentPath.path
-            //     let projects = (
-            //         for topicAndFas in topicsAndFas
-            //         let topicName = topicAndFas.topic
-            //         let topicFas = topicAndFas.fa
-            //         let topicPath = (
-            //             for fa in path
-            //             filter fa._id in topicFas
-            //             sort rand()
-            //             return fa
-            //         )
-            //         //collect with count into sequence  
-            //         return {name: topicName, fa: topicPath} //, sequence: sequence}
-            //     )
-            //     return {student: studentPath.student, projects: projects}
-            // `;
-            // console.log('Query defined. Let us query some stuff.');
-            // db.query(query)
-            // .then(cursor => {
-            //     // cursor is a cursor for the query result
-            //     // reformat results for improved client display 
-            //     // var studentPathArr = [];
-            //     console.log("cursor._result", cursor._result)
-            //     // let parsedPath = parseFa(cursor._result);
-            //     res.json({success: true, paths: cursor._result})   
-        //     // })
             .catch( error => {
                 console.log(Date.now() + " Error (Getting paths from Database):", '\n', error);
                 res.json();
             })
-        // })
+        })
         .catch((error) => {
             console.log(Date.now() + " Authentication Error");
             console.log(error);
@@ -648,7 +531,7 @@ module.exports = function(app){
     });
 
     const constructQueryParams = queryObject => {
-        Object.keys(queryObject).reduce( (queryString, currentKey) => {
+        return Object.keys(queryObject).reduce( (queryString, key, i, keys) => {
             if ( queryObject[key].length > 0 ) {
                 queryString += queryObject[key].join(',');
             }
@@ -657,7 +540,7 @@ module.exports = function(app){
             }
             return queryString;
         }
-        , '?', i, keys)
+        , '?');
     };
 
     app.post("/csv/file", function(req, res, next){
@@ -934,6 +817,7 @@ module.exports = function(app){
             }
         })
     }
+
     app.post('/summit', function(req,res){
         // sendtosummit is the required permission for this path
         validateUser(req, res, "publish").then((response) =>{
@@ -1025,7 +909,6 @@ module.exports = function(app){
         }) 
 
      })
-
     app.get('/api/fa/:faKey', function(req, res){
         let faKey = req.params.faKey;
         // let faKey = parseInt(req.params.faKey);
@@ -1046,7 +929,6 @@ module.exports = function(app){
         }) 
 
     })
-
     app.get('/api/topics/all', function(req, res){
         let query = aql`
             let topics = UNIQUE(FLATTEN(
@@ -1067,8 +949,7 @@ module.exports = function(app){
         }).catch(error => {
             console.log(Date.now() + " Error (Get Topics from Database):", error);
             res.json();
-        })         
-        
+        })
     }) 
     app.get('/api/standards/:grade?', function(req, res){
         let grades = req.params.grade;
@@ -1204,6 +1085,6 @@ module.exports = function(app){
             console.log(Date.now() + " Error: Database is Down.");
         });
        
-    })
+    });
   
 }

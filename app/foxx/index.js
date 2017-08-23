@@ -56,7 +56,7 @@ router.get('/user', function (req, res) {
     //   'Id:',user._id
     // );
     // send back all user data
-    res.send({username: user.username, userid: user._id});
+    res.send({username: user.username, userid: user._id, userkey: user._key});
   } catch (e) {
     console.log(
       'Something went wrong',
