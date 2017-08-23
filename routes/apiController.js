@@ -497,16 +497,17 @@ module.exports = function(app){
             const reqBody = req.body;
             const userKey = response.userkey;
             const queryObject = {};
-            if (reqBody.courses > 0) queryObject.courses = reqBody.courses.map( course => course._key.toLowerCase() );
-            if (reqBody.grades > 0) queryObject.grades = reqBody.grades.map( grade => grade.name.toString().toLowerCase() );
-            if (reqBody.subjects > 0) queryObject.subjects = reqBody.subjects.map( subject => subject.name.toLowerCase() );
-            if (reqBody.standards > 0) queryObject.standards = reqBody.standards.map( standard => standard.name.toLowerCase() );
-            if (reqBody.topics > 0) queryObject.topics = reqBody.topics.map( topic => topic.name.toLowerCase() );
+            if ( reqBody.courses && reqBody.courses.length > 0 ) queryObject.courses = reqBody.courses.map( course => course._key.toLowerCase() );
+            if ( reqBody.grades && reqBody.grades.length > 0 ) queryObject.grades = reqBody.grades.map( grade => grade.name.toString().toLowerCase() );
+            if ( reqBody.subjects && reqBody.subjects.length > 0 ) queryObject.subjects = reqBody.subjects.map( subject => subject.name.toLowerCase() );
+            if ( reqBody.standards && reqBody.standards.length > 0 ) queryObject.standards = reqBody.standards.map( standard => standard.name.toLowerCase() );
+            if ( reqBody.topics && reqBody.topics.length > 0 ) queryObject.topics = reqBody.topics.map( topic => topic.name.toLowerCase() );
             Object.keys(queryObject).forEach( key => console.log(key, ':', queryObject[key]));
 
             console.log('Constructing query string');
             const strRequest = constructQueryParams(queryObject);
             const pathBuilderService = db.route('path');
+            console.log('Query string:', `/${userKey}/build${strRequest}`);
             pathBuilderService.get(`/${userKey}/build${strRequest}`)
             .then( response => {
                 res
