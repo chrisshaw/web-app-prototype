@@ -490,36 +490,31 @@ module.exports = function(app){
             // intialise
             // some pre-processing
             console.log(
-                "User's validated",
-                '\n',
                 "The request body is",
                 "\n",
-                req.body,
-                '\n',
-                "The response is",
-                response
+                req.body
             );
             const reqBody = req.body;
-            const userId = response.userid;
-            const queryObject = {
-                courses: reqBody.courses ? reqBody.courses.map( course => course._key ) : [],
-                grades: reqBody.grades ? reqBody.grades.map( grade => grade.name ) : [],
-                subjects: reqBody.subjects ? reqBody.subjects.map( subject => subject.name.toUpperCase() ) : [],
-                standards: reqBody.standards ? reqBody.standards.map( standard => standard.name.toUpperCase() ) : [],
-                topics: reqBody.topics ? reqBody.topics.map( topic => topic.name.toUpperCase() ) : []
-            };
+            const userKey = response.userkey;
+            const queryObject = {};
+            if (reqBody.courses > 0) queryObject.courses = reqBody.courses.map( course => course._key.toLowerCase() );
+            if (reqBody.grades > 0) queryObject.grades = reqBody.grades.map( grade => grade.name.toString().toLowerCase() );
+            if (reqBody.subjects > 0) queryObject.subjects = reqBody.subjects.map( subject => subject.name.toLowerCase() );
+            if (reqBody.standards > 0) queryObject.standards = reqBody.standards.map( standard => standard.name.toLowerCase() );
+            if (reqBody.topics > 0) queryObject.topics = reqBody.topics.map( topic => topic.name.toLowerCase() );
             Object.keys(queryObject).forEach( key => console.log(key, ':', queryObject[key]));
+
             console.log('Constructing query string');
             const strRequest = constructQueryParams(queryObject);
             const pathBuilderService = db.route('path');
-            pathBuilderService.get(`/${userId}/build${strRequest}`)
+            pathBuilderService.get(`/${userKey}/build${strRequest}`)
             .then( response => {
                 res
                     .status(200)
                     .json(response)
             })
             .catch( error => {
-                console.log(Date.now() + " Error (Getting paths from Database):", '\n', error);
+                console.log(Date.now() + " Error (Getting paths from Database):", '\n', error );
                 res.json();
             })
         })
@@ -532,15 +527,18 @@ module.exports = function(app){
 
     const constructQueryParams = queryObject => {
         return Object.keys(queryObject).reduce( (queryString, key, i, keys) => {
-            if ( queryObject[key].length > 0 ) {
-                queryString += queryObject[key].join(',');
+            if (i === 0) {
+                queryString = '?'
             }
-            if (i !== keys.length - 1) {
-                queryString += '&';
+            if ( queryObject[key].length > 0 ) {
+                queryString += key + '=' + queryObject[key].join(',');
+                if (i !== keys.length - 1) {
+                    queryString += '&';
+                }                
             }
             return queryString;
         }
-        , '?');
+        , '');
     };
 
     app.post("/csv/file", function(req, res, next){
