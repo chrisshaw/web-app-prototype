@@ -497,7 +497,7 @@ module.exports = function(app){
             const reqBody = req.body;
             const userKey = response.userkey;
             const queryObject = {};
-            if ( reqBody.courses && reqBody.courses.length > 0 ) queryObject.courses = reqBody.courses.map( course => course._key.toLowerCase() );
+            if ( reqBody.courses && reqBody.courses.length > 0 ) queryObject.courses = reqBody.courses.map( course => course._key );
             if ( reqBody.grades && reqBody.grades.length > 0 ) queryObject.grades = reqBody.grades.map( grade => grade.name.toString().toLowerCase() );
             if ( reqBody.subjects && reqBody.subjects.length > 0 ) queryObject.subjects = reqBody.subjects.map( subject => subject.name.toLowerCase() );
             if ( reqBody.standards && reqBody.standards.length > 0 ) queryObject.standards = reqBody.standards.map( standard => standard.name.toLowerCase() );
@@ -510,9 +510,10 @@ module.exports = function(app){
             console.log('Query string:', `/${userKey}/build${strRequest}`);
             pathBuilderService.get(`/${userKey}/build${strRequest}`)
             .then( response => {
+                console.log("Response",'\n',response.body._documents);
                 res
                     .status(200)
-                    .json(response)
+                    .json(response.body._documents)
             })
             .catch( error => {
                 console.log(Date.now() + " Error (Getting paths from Database):", '\n', error );
