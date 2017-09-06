@@ -6,7 +6,7 @@ import FlatButton from 'material-ui/FlatButton';
 import IconButton from 'material-ui/IconButton';
 import helper from '../helper';
 import {connect} from 'react-redux';
-import AutoCompleteField from './AutoCompleteField';
+import MultiSelectField from './MultiSelectField';
 import ResetIcon from "./ResetIcon";
 
 class CourseSelection extends Component{
@@ -20,7 +20,7 @@ class CourseSelection extends Component{
     }
     componentWillMount() {
         // reset chips and grouplist
-        console.log("role")
+        // console.log("role")
         helper.getCourses(false,false,  this.props.username, this.props.role, this.props.dispatch); 
     }
     render(){
@@ -39,7 +39,7 @@ class CourseSelection extends Component{
                     </Row>
                     <Row>
                         <Col xs={12} md={12} >
-                            <AutoCompleteField hint={hintText} queryitem="Courses" list={this.props.courselist} selectedlist={this.props.selectedcourselist} handleRequestDelete={this.handleRequestDelete}/>
+                            <MultiSelectField hint={hintText} queryitem="Courses" list={this.props.courselist} selectedlist={this.props.selectedcourselist} handleRequestDelete={this.handleRequestDelete}/>
                         </Col>
                     </Row>
                 </div>

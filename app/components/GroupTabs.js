@@ -86,7 +86,7 @@ class GroupTabs extends React.Component {
   }
   handleMoveRight(){
     // console.log("Moved Up", moveStudentPosition, moveProjPosition, moveFaPosition)
-    console.log("this.state.showTabEnd === this.props.paths.length-1", this.state.showTabEnd, this.props.paths.length)
+    // console.log("this.state.showTabEnd === this.props.paths.length-1", this.state.showTabEnd, this.props.paths.length)
     if (this.state.value < this.props.paths.length-1){
       if (this.state.showTabEnd === this.props.paths.length){
          this.handleChange(this.state.value+1, 0)
@@ -115,8 +115,8 @@ class GroupTabs extends React.Component {
     // this.handleActive(this.selectedtab)
   }
   handleChange = (value, delta) => {
-    console.log("showTabStart, delta",this.state.showTabStart, delta)
-    console.log("showTabEnd, delta",this.state.showTabEnd, delta)
+    // console.log("showTabStart, delta",this.state.showTabStart, delta)
+    // console.log("showTabEnd, delta",this.state.showTabEnd, delta)
     this.setState({
       value: value,
       showTabStart: this.state.showTabStart+delta,
@@ -125,20 +125,20 @@ class GroupTabs extends React.Component {
     });
   };
   handleAdd(studentPosition, projPosition, position){
-    console.log("handleAdd",studentPosition, projPosition, position )
+    // console.log("handleAdd",studentPosition, projPosition, position )
     let ref = studentPosition + '/' + projPosition + '/' + position;  // use these 3 coord to locate fa in array
     this.setState({
       showDiv: ref,  // ref should match coords
     });
   }
   handleDelete(studentPosition, studentKey, faKey, projPosition, position){
-      console.log("handleDelet",studentPosition, projPosition, position )
+      // console.log("handleDelet",studentPosition, projPosition, position )
     // must use keys to find position and delete
     helper.removeFA(studentPosition, projPosition, position, studentKey, faKey, this.props);   
   }
   handleActive = (tab) => {
     // console.log(tab)
-    console.log("Active")
+    // console.log("Active")
       this.setState({
         value: tab.props.value,
       });
@@ -478,7 +478,7 @@ class GroupTabs extends React.Component {
     helper.addRows(newvalue, index, this.props.dispatch);
   }
   render() {
-    console.log("this state.value", this.state.value)
+    // console.log("this state.value", this.state.value)
       const actions = [
       <FlatButton
           label="Close"
@@ -493,19 +493,19 @@ class GroupTabs extends React.Component {
       var component = this;    
       let studentPathPosition = tabindex;
       //******* need to rearrange this if loop at bit - it's v messy */
-console.log(this.props.paths)
-console.log("initial tabindex", tabindex)
       if ((this.props.paths.length > 0)) {
            
         // if ((this.props.paths[tabindex]) && (this.props.paths[tabindex].fa.length > 0)) {
-        if ((this.props.paths[tabindex]) && (this.props.paths[tabindex].projects.length > 0)) {
+          // console.log("this.props.paths[tabindex].projects.length",this.props.paths[tabindex].projects.length)
+        if ((this.props.paths[tabindex]) && (this.props.paths[tabindex].projects.length !== 0)) {
+          
           // there will be may Focus Areas returned for each pathway / group
           var studentName= component.props.paths[tabindex].student.first + " " + component.props.paths[tabindex].student.last;
           // rename projectComponent
           var faComponents = component.renderFA(tabindex, component, studentPathPosition, studentName );       
         } else {
           // if student has no paths -- add paths to a project - enhancement later??
-          var faComponents = <div><p  key={component.props.paths[tabindex].student._key.toString() + "NoProjects"} className="no-paths-message"> No Projects found. Please change search filters and try again.</p></div>
+          var faComponents = <div><p  key={tabindex + "NoProjects"} className="no-paths-message"> No Projects found. Please change search filters and try again.</p></div>
         }
 
         // scroll into view not working....
@@ -529,10 +529,12 @@ console.log("initial tabindex", tabindex)
         //      </Tab>
         // })  
         // var resultsComponents = component.props.paths.map(function(result, index) {
-         var resultsComponents  = component.props.paths.slice(this.state.showTabStart, this.state.showTabEnd).map(function(result, index) {
-        let studentTabIndex = component.state.showTabStart +  index;
+        var resultsComponents  = component.props.paths.slice(this.state.showTabStart, this.state.showTabEnd).map(function(result, index) {
+        let studentTabIndex = component.state.showTabStart + index;
         // console.log("  {studentTabIndex}", studentTabIndex)
-        return <Tab  ref={component.selectedtab+index} onActive={component.handleActive}  key={studentTabIndex} label={result.student.first + ' ' + result.student.last } value={studentTabIndex} buttonStyle={{color: "#808080", whiteSpace: "normal"}}>            
+
+        /// ****************need to determine what should be visible on tab.....
+        return <Tab  ref={tabindex} onActive={component.handleActive}  key={studentTabIndex} label={result.student.first + ' ' + result.student.last } value={studentTabIndex} buttonStyle={{color: "#808080", whiteSpace: "normal"}}>            
                     {faComponents}
              </Tab>
         })             
@@ -555,7 +557,6 @@ console.log("initial tabindex", tabindex)
         initialSelectedIndex={0}
         value={this.state.value}
         onChange={(value) => this.handleChange(value, 0)}
-        tabType="fixed"
       >     
           {resultsComponents}   
           {this.state.value}  

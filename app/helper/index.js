@@ -202,12 +202,12 @@ var helpers = {
         }
         dispatch(actions.updatePathList("", true, true));
         return axios.post('/api/path/project', queryObj).then(function(response) {
-            console.log("output from file", response.data.paths)
-            dispatch(actions.updatePathList(response.data.paths, false, false));
+            // console.log("output from file", response.data)
+            dispatch(actions.updatePathList(response.data, false, false));
             return;
          }).catch((error) => {
             // send message to client...needs work
-            console.log(error)
+            console.log("this is an error", error);
         })  
     },
     // original query based on student and not group into projects
@@ -340,7 +340,7 @@ var helpers = {
     getUserFA(username, dispatch){
 
         return axios.get('/fa/'+username).then(function(response) {
-            console.log("focus area ******", response.data)
+            // console.log("focus area ******", response.data)
             if (response.data.success){
                 dispatch(actions.focusAreas(response.data.fa))
                 // props.dispatch(actions.updatePathList( props.paths, false, false )); 

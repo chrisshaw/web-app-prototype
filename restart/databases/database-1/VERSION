@@ -1,0 +1,1 @@
+{"version":30200,"tasks":{"setupGraphs":true,"setupUsers":true,"createUsersIndex":true,"createModules":true,"createRouting":true,"insertRedirectionsAll":true,"setupAqlFunctions":true,"createStatistics":true,"createFrontend":true,"setupQueues":true,"setupJobs":true}}

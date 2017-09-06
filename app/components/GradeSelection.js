@@ -6,7 +6,7 @@ import FlatButton from 'material-ui/FlatButton';
 import IconButton from 'material-ui/IconButton';
 import helper from '../helper';
 import {connect} from 'react-redux';
-import AutoCompleteField from './AutoCompleteField';
+import MultiSelectField from './MultiSelectField.js';
 import ResetIcon from "./ResetIcon";
 
 class GradeSelection extends Component{
@@ -53,7 +53,7 @@ class GradeSelection extends Component{
                     </Row>
                     <Row>
                         <Col xs={12} md={12} >
-                            <AutoCompleteField hint={hintText} queryitem="Grades" list={this.props.gradelist} selectedlist={this.props.selectedgradelist} handleRequestDelete={this.handleRequestDelete}/>
+                            <MultiSelectField hint={hintText} queryitem="Grades" list={this.props.gradelist} selectedlist={this.props.selectedgradelist} handleRequestDelete={this.handleRequestDelete}/>
                         </Col>
                     </Row>
                 </div>

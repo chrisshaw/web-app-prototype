@@ -1,0 +1,1 @@
+{"deduplicate":true,"fields":["user"],"id":"9","selectivityEstimate":1,"sparse":true,"type":"hash","unique":true}

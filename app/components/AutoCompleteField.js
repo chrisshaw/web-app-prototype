@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 // import ReactDOM from "react-dom";
 import AutoComplete from 'material-ui/AutoComplete';
-import MenuItem from 'material-ui/MenuItem';
+// import MenuItem from 'material-ui/MenuItem';
 import helper from '../helper';
 import {connect } from 'react-redux';
 import Chip from 'material-ui/Chip';
@@ -76,19 +76,19 @@ import ChipInput from 'material-ui-chip-input';
                 return group.name
         })
     }
-    if (this.props.selectedlist) {
-    var component = this;
-    var resultComponents = this.props.selectedlist.map(function(result) {
-        return <Chip
-            key={result._id}
-            onRequestDelete={() => component.handleRequestDelete(result._id)}
-            style={styles.chip}
-            >
-            {result.name}
-        </Chip>
+    // if (this.props.selectedlist) {
+    // var component = this;
+    // // var resultComponents = this.props.selectedlist.map(function(result) {
+    // //     return <Chip
+    // //         key={result._id}
+    // //         onRequestDelete={() => component.handleRequestDelete(result._id)}
+    // //         style={styles.chip}
+    // //         >
+    // //         {result.name}
+    // //     </Chip>
 
-        })
-    }
+    // //     })
+    // }
    
     return (
         <div>
