@@ -510,10 +510,10 @@ module.exports = function(app){
             console.log('Query string:', `/${userKey}/build${strRequest}`);
             pathBuilderService.get(`/${userKey}/build${strRequest}`)
             .then( response => {
-                console.log("Response",'\n',response.body._documents);
+                console.log("Response",'\n',response.body);
                 res
                     .status(200)
-                    .json(response.body._documents)
+                    .json(response.body)
             })
             .catch( error => {
                 console.log(Date.now() + " Error (Getting paths from Database):", '\n', error );
