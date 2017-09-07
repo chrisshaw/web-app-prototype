@@ -111,10 +111,10 @@ function updateQueryList(action, state, list, selectedlist) {
         // in case of corrupt data 
         if (newObj !== -1){
             // update
-            return Object.assign({},state, {[selectedlist]: newGroups, [list]: [... state[list], newObj] }); 
+            return Object.assign({},state, {[selectedlist]: newGroups }); 
         } else {
             // no change
-            return Object.assign({},state, {[selectedlist]: state[selectedlist], [list]: state[list] }); 
+            return Object.assign({},state, {[selectedlist]: state[selectedlist] }); 
         }
     } else if ((action.reset === true) &&  (action.delete === false)){
         // console.log("in action.reset true", state.gradelist)

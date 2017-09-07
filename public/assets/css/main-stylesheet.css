@@ -257,6 +257,10 @@ display: block
      color: red;
      font-size: 30px;
 }
+.chip-style {
+    display: flex;
+    flex-wrap: wrap;
+}
 .no-path-message {
     padding: 30px;
 }

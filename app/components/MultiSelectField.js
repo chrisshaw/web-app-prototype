@@ -10,139 +10,137 @@ import {connect } from 'react-redux';
 // import React, {Component} from 'react';
 import SelectField from 'material-ui/SelectField';
 import MenuItem from 'material-ui/MenuItem';
+import Chip from 'material-ui/Chip';
 
-// const names = [
-//   'Oliver Hansen',
-//   'Van Henry',
-//   'April Tucker',
-//   'Ralph Hubbard',
-//   'Omar Alexander',
-//   'Carlos Abbott',
-//   'Miriam Wagner',
-//   'Bradley Wilkerson',
-//   'Virginia Andrews',
-//   'Kelly Snyder',
-// ];
 
-/**
- * `SelectField` can handle multiple selections. It is enabled with the `multiple` property.
- */
-class MultiSelectField extends Component {
-//   state = {
-//     values: [],
-//   };
- constructor(props) {
-    super(props)
-        // this.state = {textFieldValue: "", searchText: ""}; //setting initial default state
-        this.handleChange = this.handleChange.bind(this);
-        this.menuItems = this.menuItems.bind(this);
-        this.handleMenuChange = this.handleMenuChange.bind(this);
-        this.selectionRenderer = this.selectionRenderer.bind(this)
-        this.state = { menuStart: 0, menuEnd: 10}
-        // this.handleRequestDelete = this.handleRequestDelete.bind(this);
-        // this.handleSelect = this.handleSelect.bind(this);
-        // this.handleDeleteChip = this.handleDeleteChip.bind(this);
-  }
-
-//   handleChange =  => this.setState({values});
-    handleMenuChange(e) {
-        console.log("test")
-        // if there is data in values - get the index and display +-5 around it
-    //     if(this.props.list.length > 10) {
-    //     // if (this.props.list.indexOf(values[lastElem-1]) > 10) {
-    //         if (this.props.list.indexOf(values[lastElem-1]) - 5 > 0){
-    //             this.setState({
-    //                 menuStart: this.props.list.indexOf(values[lastElem-1]) - 5,
-    //                 menuEnd: this.props.list.indexOf(values[lastElem-1]) + 5
-    //             })
-    //         } else  {
-    //             this.setState({
-    //                 menuStart: 0,
-    //                 menuEnd: this.props.list.indexOf(values[lastElem-1]) + 5
-    //             })
-    //         }
-    //     // }          
-    // }
+var styles = {
+    chip: {
+    margin: 7,
+    },
+    wrapper: {
+    display: 'flex',
+    flexWrap: 'wrap',
+    },
+    auto: {
+        fontSize: 14,
     }
-   
-    handleChange(event, index, values) {
-        let lastElem = values.length;
-        // console.log("e, i, v", event.target.index, index, values[lastElem-1])
-        // this.setState({searchText: e})
-        // this.setState({textFieldValue: e})
-        // make sure a full word supplied is in listl
-        if (values[lastElem-1] !== []){
-            //  helper.updateSelectedGroup(e, false, this.props.dispatch);
-             helper.updateSelected(values[lastElem-1], this.props.queryitem, this.props.dispatch);
+};
+
+
+
+class MultiSelectField extends Component {
+
+    constructor(props) {
+        super(props)
+            this.handleChange = this.handleChange.bind(this);
+            this.menuItems = this.menuItems.bind(this);
+            this.handleMenuChange = this.handleMenuChange.bind(this);
+            this.handleRequestDelete = this.handleRequestDelete.bind(this);
+            this.state = { menuStart: 0, menuEnd: 10}  // show 10 menu items initially for long lists
+    }
+
+    // function called when list items are scrolled or navigated using  keys
+    handleMenuChange(name) {
+        // get the position in the list - then if > than max list or < min list do something
+        let currentMenuPosition = this.props.list.indexOf(name);
+        // needed to handle long lists like the one for standards
+        if (currentMenuPosition  === this.state.menuEnd - 1){
+            this.setState({
+                menuStart: this.state.menuStart + 1,
+                menuEnd: this.state.menuEnd + 1
+            })
+        } else if ((currentMenuPosition  === this.state.menuStart) && (currentMenuPosition > 0)){
+            this.setState({
+                menuStart: this.state.menuStart-1,
+                menuEnd: this.state.menuEnd-1,
+            })
         }
-        // for long lists like the standards list only display a few items
-
-
+    }
+    // function called when list items are selected
+    handleChange(e, i, values) {
+        let lastElem = values.length;
+                 console.log("values", values[lastElem-1]._id)
+        //  console.log("values._id", values._id)
+        // make sure a full word supplied is in list
+        if (values[lastElem-1] !== []){
+            // verify if to be added or removed   
+           console.log("this.props.selectedlist", this.props.selectedlist)
+            if (this.props.selectedlist && this.props.selectedlist.length > 0 && this.props.selectedlist.indexOf(values[lastElem-1]) !== -1){
+                 console.log("this.props.selectedlist.indexOf(values)", this.props.selectedlist.indexOf(values[lastElem-1]))
+                // remove it       
+                helper.removeChip(values[lastElem-1]._id, this.props.queryitem, this.props.dispatch);
+            } else {
+                helper.updateSelected(values[lastElem-1], this.props.queryitem, this.props.dispatch);
+            }
+            // either way recenter list if necessary
+            let currentMenuPosition = this.props.list.indexOf(values[lastElem-1]);
+            // needed to handle long lists like the one for standards
+            if ((currentMenuPosition > 5) && (this.props.list.length > 10)){
+                this.setState({
+                    menuStart: currentMenuPosition - 4,
+                    menuEnd: currentMenuPosition + 5
+                })
+            }
+        }
     }
 
   menuItems(values) {
-   console.log(this.state)
    if (this.props.list) {
     let items = [];
-    // for (let i = 0; i < 10; i++ ) {
     items.push(this.props.list.slice(this.state.menuStart, this.state.menuEnd).map((name) => (   
         <MenuItem
-            key={name._id}
             insetChildren={true}
             checked={values && values.indexOf(name) > -1}
             value={name}
             primaryText={name.name}
-           
+            onMouseOver={() => this.handleMenuChange(name)}
+            onKeyDown={() => this.handleMenuChange(name)}
+            onKeyUp={() => this.handleMenuChange(name)}
         />           
     )))
-    // }
-
     return items
-
    }
 
   }
-selectionRenderer = (values) => {
-   console.log(values)
-  }
+    handleRequestDelete(id) {
+        // filter list based on id
+        helper.removeChip(id, this.props.queryitem, this.props.dispatch);
+    }
 
   render() {
-
-    // var dataSource1 = [];
-    // var dataSource2 = [];
-    // // console.log("this.props.list", this.props.list)
-    // if it exists or is not empty array
-    // if ((this.props.list) && (this.props.list[0] !== null)){
-    //     dataSource1 = this.props.list.map(function(group, index) {
-    //         // strip out just the name for the autocomplete field
-    //             return group.name             
-    //     })
-    // }
-    // if ((this.props.selectedlist) && (this.props.selectedlist[0] !== null)){
-    //     dataSource2 = this.props.selectedlist.map(function(group, index) {
-    //         // strip out just the name for the autocomplete field
-    //             return group.name
-    //     })
-    // }
-
     let values = [];
-
     if (this.props.selectedlist) {
         values = this.props.selectedlist;
     } 
-   
+    if (this.props.selectedlist) {
+    var component = this;
+    var resultComponents = this.props.selectedlist.map(function(result) {
+        return <Chip
+            key={result._id}
+            onRequestDelete={() => component.handleRequestDelete(result._id)}
+            style={styles.chip}
+            >
+            {result.name}
+        </Chip>
+
+        })
+    }
     return (
+    <div>
+        <div className="chip-style">
+        {resultComponents}
+        </div>
       <SelectField
         multiple={true}
-        hintText="Select a grade"
-        value={values}
-        onChange={(e, i, v) => this.handleChange(e, i, v)}
+        hintText={this.props.hintText}
+        onChange={this.handleChange}
         fullWidth={true}
         maxHeight={200}
-        selectionRenderer={this.selectionRenderer}
+        disableAutoFocus={true}
       >
         {this.menuItems(values)}
       </SelectField>
+      </div>
     );
   }
 }

@@ -481,6 +481,7 @@ var helpers = {
         }  else if  (queryitem === "Subjects") {
             dispatch(actions.saveSelected(e, 'UPDATE_SELECTED_SUBJECTS'));
         }   else if  (queryitem === "Grades") {
+            console.log("what is this", e)
             dispatch(actions.saveSelected(e, 'UPDATE_SELECTED_GRADES'));
         }   else if  (queryitem === "Courses") {
             dispatch(actions.saveSelected(e, 'UPDATE_SELECTED_COURSES'));
