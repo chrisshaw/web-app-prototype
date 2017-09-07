@@ -132,7 +132,7 @@ class MultiSelectField extends Component {
         </div>
       <SelectField
         multiple={true}
-        hintText={this.props.hintText}
+        hintText={this.props.hint}
         onChange={this.handleChange}
         fullWidth={true}
         maxHeight={200}

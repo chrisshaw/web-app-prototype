@@ -60,7 +60,7 @@ class StandardsSelection extends Component{
              var arrLength = this.props.selectedstandardslist.length;
         }
         
-        let hintText = 'Enter standard(s)'
+        let hintText = 'Select one or more standard(s)'
         return(<div>
                     <Row>
                         <Col xs={10} md={10} >

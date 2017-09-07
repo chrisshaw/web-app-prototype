@@ -27,7 +27,7 @@ class CourseSelection extends Component{
         if ( this.props.selectedcourselist){
              var arrLength = this.props.selectedcourselist.length;
         }
-        let hintText = "Enter Course(s) e.g. Biology";
+        let hintText = "Select one or more course(s) e.g. Biology";
         return(<div>
                     <Row>
                         <Col xs={10} md={10} >

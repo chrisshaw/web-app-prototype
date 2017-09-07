@@ -45,7 +45,7 @@ class SubjectContentSelection extends Component{
         if ( this.props.selectedsubjectcontentlist){
              var arrLength = this.props.selectedsubjectcontentlist.length;
         }    
-        let hintText = "Enter subject(s) e.g. english";
+        let hintText = "Select one or more subject(s) e.g. english, math";
         return(<div>
                     <Row>
                         <Col xs={10} md={10} >

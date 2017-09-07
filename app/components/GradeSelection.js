@@ -41,7 +41,7 @@ class GradeSelection extends Component{
         if ( this.props.selectedgradelist){
              var arrLength = this.props.selectedgradelist.length;
         }
-        let hintText = "Enter student grade(s) e.g. 6";
+        let hintText = "Select one or more student grade(s) e.g. 6";
         return(<div>
                     <Row>
                         <Col xs={10} md={10} >

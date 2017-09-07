@@ -28,7 +28,7 @@ class TopicSelection extends Component{
         if ( this.props.selectedtopiclist){
              var arrLength = this.props.selectedtopiclist.length;
         }
-        let hintText = "Enter topic(s) e.g. Immigration";
+        let hintText = "Select one or more topic(s) e.g. immigration";
         return(<div>
                     <Row>
                         <Col xs={10} md={10} >
