@@ -5,7 +5,7 @@
       "Key": "legacy/.dockercfg"
     },
     "Image": {
-      "Name": "sidekickapps/sidekick:webapp",
+      "Name": "sidekickapps/sidekick:testapp",
       "Update": "true"
     },
     "Ports": [
