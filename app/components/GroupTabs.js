@@ -305,7 +305,7 @@ class GroupTabs extends React.Component {
     let faCounter = 0;  // this will be used to keep track of how many fa have been rendered so we dont go over maxVisibibleFA
     let projCounter = 0;
       // not needed?? can use projCounter
-    return component.props.paths[tabindex].projects.map(function(project, index) {
+    return component.props.paths[tabindex].projectPath.map(function(project, index) {
       let projPosition = projCounter;
       let idCounter = 0;
       maxVisibleFA -= faCounter; // reduce by the number in faCounter on each iteration, initially 0
@@ -318,7 +318,7 @@ class GroupTabs extends React.Component {
               let count = 0;  // instead of using index which is unstable
               var nextStandards = fa.nextStd.map((standard, indexNextStd) => {
               count++;
-              return   <Col key={component.props.paths[tabindex].student._key.toString()+'nextStd'+count.toString()} className="chip-float"><div className="chip">
+              return   <Col key={component.props.paths[tabindex].studentsOnPath[0].toString()+'nextStd'+count.toString()} className="chip-float"><div className="chip">
                           {standard.toUpperCase()}
                         
                         </div>
@@ -329,19 +329,18 @@ class GroupTabs extends React.Component {
             let count = 0;  // instead of using index which is unstable
             var currentStandards = fa.currentStd.map((standard, indexCurrentStandards) => {
                 count++;
-                return   <Col key={component.props.paths[tabindex].student._key.toString()+'currentStd'+count.toString()} className="chip-float"><div className="chip">
+                return   <Col key={component.props.paths[tabindex].studentsOnPath[0].toString()+'currentStd'+count.toString()} className="chip-float"><div className="chip">
                     {standard.toUpperCase()}
                         </div>
                       </Col>
             });
           }
           let faPosition =  idCounter;   
-          // let dropZone =  <div key={'dropzone' + index.toString()} className='text-center drop' ref={ref => component.drop = ref} onDrop={(e) => component.ondrop(e)}  onDragOver={(e) => component.ondragover(e)} onDragLeave={(e) => component.ondragleave(e)}  onDragEnter={(e) => component.ondragenter(e)} id={studentPathPosition+'|'+projPosition+'|'+faPosition}> . . . </div>
           let changeButtons = (<div><Col className="text-center" md={3} xs={3}>          
                       <FlatButton containerElement='label' label="Add"   onTouchTap={(e) => component.handleAdd(studentPathPosition, projPosition, faPosition)}/>  
                       </Col> 
                     <Col className="text-center" md={3} xs={3}>
-                      <FlatButton containerElement='label' label="Remove"  onTouchTap={() => component.handleDelete(studentPathPosition, component.props.paths[tabindex].student._key, fa._key, projPosition, faPosition)} />                         
+                      <FlatButton containerElement='label' label="Remove"  onTouchTap={() => component.handleDelete(studentPathPosition, component.props.paths[tabindex].studentsOnPath[0], fa._key, projPosition, faPosition)} />                         
                     </Col>
                     <Col className="text-center" md={3} xs={3}>
                         <IconButton iconStyle={styles.iconButton} onTouchTap={() => component.handleMoveUp(studentPathPosition, projPosition, faPosition)}  iconStyle={{height: 48}} style={{maxWidth: 100}}  tooltip="Move Up"><UpIcon /></IconButton> 
@@ -350,18 +349,14 @@ class GroupTabs extends React.Component {
                       <IconButton iconStyle={styles.iconButton}  onTouchTap={() => component.handleMoveDown(studentPathPosition, projPosition, faPosition)}  iconStyle={{height: 48}} style={{maxWidth: 100}} tooltip="Move Down"><DownIcon /></IconButton>
                     </Col></div>);
           let saveFAButton = (<div><Col className="text-center" md={12} xs={6}>          
-                      <FlatButton containerElement='label' label="Add FA"   disabled={component.props.selectedfa ? false: true}  onTouchTap={() => component.handleAddFA(studentPathPosition, component.props.paths[tabindex].student._key, fa._key, projPosition, faPosition)}/>
+                      <FlatButton containerElement='label' label="Add FA"   disabled={component.props.selectedfa ? false: true}  onTouchTap={() => component.handleAddFA(studentPathPosition, component.props.paths[tabindex].studentsOnPath[0], fa._key, projPosition, faPosition)}/>
                       </Col> </div>);
           let closeDivButton = (<div><Col className="text-center" md={12} xs={6}>          
                       <FlatButton containerElement='label' label="Close"   onTouchTap={() => component.handleClose(studentPathPosition, projPosition, faPosition)}/>
                       </Col> </div>);
           idCounter++;
-          let dragItem = <div ref={component.props.paths[tabindex].student._key.toString()+'|'+fa._key.toString()+'|'+studentPathPosition+'|'+projPosition+'|'+faPosition} id={component.props.paths[tabindex].student._key.toString()+'|'+fa._key.toString()+'|'+studentPathPosition+'|'+projPosition+'|'+faPosition} key={component.props.paths[tabindex].student._key.toString()+'|'+fa._key.toString()+'|'+studentPathPosition+'|'+projPosition+'|'+faPosition}  className="fa-wrapper path">
-          {/* <Row> 
-              <Col className="text-center" md={12}> 
-                <div>. . .</div> 
-              </Col> 
-          </Row> */}
+          let dragItem = <div ref={component.props.paths[tabindex].studentsOnPath[0].toString()+'|'+fa._key.toString()+'|'+studentPathPosition+'|'+projPosition+'|'+faPosition} id={component.props.paths[tabindex].studentsOnPath[0].toString()+'|'+fa._key.toString()+'|'+studentPathPosition+'|'+projPosition+'|'+faPosition} key={component.props.paths[tabindex].studentsOnPath[0].toString()+'|'+fa._key.toString()+'|'+studentPathPosition+'|'+projPosition+'|'+faPosition}  className="fa-wrapper path">
+
           <Row className="fa-tab-view-rows" >
               <Col md={12}><div style={styles.slide}>    
                   <Row >
@@ -423,37 +418,7 @@ class GroupTabs extends React.Component {
         }) 
       // }
       } else {
-    //     // return this if there are no focus areas
-    //     // faComponents = <div ><p key={component.props.paths[tabindex].student._key.toString() + "NoPaths"} className="no-paths-message"> No focus areas found for this project. Please add some or requery using different filters.</p>
-    //     //         <div>
-    //     //             <Row className="fa-tab-view-rows">
-    //     //             <Col md={12}>
-    //     //                 <Col className="text-center" md={6} xs={6}>          
-    //     //                     <FlatButton containerElement='label' label="Add FA"  onTouchTap={(e) => component.handleAdd(studentPathPosition, projPosition, 0)}/>
-    //     //                 </Col> 
-    //     //                 <Col className="text-center" md={6} xs={6}>          
-    //     //                     <FlatButton containerElement='label' label="Remove Project"  onTouchTap={(e) => component.handleRemoveProject(studentPathPosition, projPosition)}/>
-    //     //                 </Col> 
-    //     //             </Col>
-    //     //           </Row>
-    //     //            {component.state.showDiv === studentPathPosition+'/'+ projPosition +'/'+0 ? (<div className="fa-wrapper path" ref={studentPathPosition + '/'+ projPosition + '/'+ 0}>
-    //     //             <Row>
-    //     //                 <Col className="text-center"  xs={12} md={12} >
-    //     //                     <AutoCompleteFA />
-    //     //                 </Col>
-    //     //                 <Row>
-    //     //                   <Col  className="text-center"  xs={6} md={6} >                  
-    //     //                       <FlatButton containerElement='label' label="Save FA"  disabled={component.props.selectedfa ? false: true} onTouchTap={() => component.handleAddFA(studentPathPosition, component.props.paths[tabindex].student._key, 0, projPosition, 0)}/>
-    //     //                   </Col> 
-    //     //                   <Col className="text-center" md={6} xs={6}>          
-    //     //                     <FlatButton containerElement='label' label="Close"   onTouchTap={() => component.handleClose(studentPathPosition, projPosition, 0)}/>
-    //     //                   </Col>
-    //     //                 </Row>
-    //     //             </Row>
-    //     //       </div> ) : ""}
-    //     //     </div>
-    //     //   </div>
-        faComponents = <div ><p key={component.props.paths[tabindex].student._key.toString() + "NoPaths"} className="no-paths-message"> No focus areas found for this project. Please requery using different filters.</p></div>
+        faComponents = <div ><p key={component.props.paths[tabindex].studentsOnPath[0].toString() + "NoPaths"} className="no-paths-message"> No focus areas found for this project. Please requery using different filters.</p></div>
       }
 
       projCounter ++;
@@ -496,8 +461,8 @@ class GroupTabs extends React.Component {
       if ((this.props.paths.length > 0)) {
            
         // if ((this.props.paths[tabindex]) && (this.props.paths[tabindex].fa.length > 0)) {
-          // console.log("this.props.paths[tabindex].projects.length",this.props.paths[tabindex].projects.length)
-        if ((this.props.paths[tabindex]) && (this.props.paths[tabindex].projects.length !== 0)) {
+          // console.log("this.props.paths[tabindex].projectPath.length",this.props.paths[tabindex].projectPath.length)
+        if ((this.props.paths[tabindex]) && (this.props.paths[tabindex].projectPath.length !== 0)) {
           
           // there will be may Focus Areas returned for each pathway / group
           var studentName= component.props.paths[tabindex].student.first + " " + component.props.paths[tabindex].student.last;
@@ -508,27 +473,6 @@ class GroupTabs extends React.Component {
           var faComponents = <div><p  key={tabindex + "NoProjects"} className="no-paths-message"> No Projects found. Please change search filters and try again.</p></div>
         }
 
-        // scroll into view not working....
-        // var resultsComponents = component.props.paths.map(function(result, index) {
-        //     let projectList = result.projects.map(function(project, projindex) {
-        //        return <div key={'projecttab/'+result.student._key+'/'+project.name+'/'+project.sequence} >
-        //             <FlatButton containerElement='label' label={project.name}  id={index+'/'+projindex}  onTouchTap={() => component.handleSelectProject(index, projindex)}/>
-        //          </div>
-
-        //     })
-         
-        // return <Tab  onActive={component.handleActive}  key={index} label={result.student.first + ' ' + result.student.last } value={index} buttonStyle={{color: "#808080"}}>
-        //         <Row>
-        //           <Col xs={2} md={2}>
-        //             {projectList}
-        //           </Col>
-        //           <Col xs={10} md={10}>
-        //             {faComponents}
-        //           </Col>
-        //         </Row>
-        //      </Tab>
-        // })  
-        // var resultsComponents = component.props.paths.map(function(result, index) {
         var resultsComponents  = component.props.paths.slice(this.state.showTabStart, this.state.showTabEnd).map(function(result, index) {
         let studentTabIndex = component.state.showTabStart + index;
         // console.log("  {studentTabIndex}", studentTabIndex)

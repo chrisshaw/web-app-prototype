@@ -59,7 +59,7 @@ class MultiSelectField extends Component {
     // function called when list items are selected
     handleChange(e, i, values) {
         let lastElem = values.length;
-                 console.log("values", values[lastElem-1]._id)
+        console.log("values", values[lastElem-1]._id)
         //  console.log("values._id", values._id)
         // make sure a full word supplied is in list
         if (values[lastElem-1] !== []){
@@ -72,15 +72,15 @@ class MultiSelectField extends Component {
             } else {
                 helper.updateSelected(values[lastElem-1], this.props.queryitem, this.props.dispatch);
             }
-            // either way recenter list if necessary
-            let currentMenuPosition = this.props.list.indexOf(values[lastElem-1]);
-            // needed to handle long lists like the one for standards
-            if ((currentMenuPosition > 5) && (this.props.list.length > 10)){
-                this.setState({
-                    menuStart: currentMenuPosition - 4,
-                    menuEnd: currentMenuPosition + 5
-                })
-            }
+            // // either way recenter list if necessary
+            // let currentMenuPosition = this.props.list.indexOf(values[lastElem-1]);
+            // // needed to handle long lists like the one for standards
+            // if ((currentMenuPosition > 5) && (this.props.list.length > 10)){
+            //     this.setState({
+            //         menuStart: currentMenuPosition - 1,
+            //         menuEnd: currentMenuPosition + 9
+            //     })
+            // }
         }
     }
 
@@ -98,6 +98,18 @@ class MultiSelectField extends Component {
             onKeyUp={() => this.handleMenuChange(name)}
         />           
     )))
+// to show that more values exist but still to allow scrolling
+    if (this.props.list.length-1 > this.state.menuEnd) {       
+        items.push( 
+                <MenuItem
+                    insetChildren={true}
+                    primaryText={'...'}
+                    onMouseOver={() => this.handleMenuChange(this.props.list[this.state.menuEnd-1])}
+                    onKeyDown={() => this.handleMenuChange(this.props.list[this.state.menuEnd-1])}
+                    onKeyUp={() => this.handleMenuChange(this.props.list[this.state.menuEnd-1])}
+                />           
+            )
+    }
     return items
    }
 
@@ -135,8 +147,7 @@ class MultiSelectField extends Component {
         hintText={this.props.hint}
         onChange={this.handleChange}
         fullWidth={true}
-        maxHeight={200}
-        disableAutoFocus={true}
+        maxHeight={250}
       >
         {this.menuItems(values)}
       </SelectField>

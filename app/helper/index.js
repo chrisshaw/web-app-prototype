@@ -202,7 +202,7 @@ var helpers = {
         }
         dispatch(actions.updatePathList("", true, true));
         return axios.post('/api/path/project', queryObj).then(function(response) {
-            // console.log("output from file", response.data)
+            console.log("output from file", response.data)
             dispatch(actions.updatePathList(response.data, false, false));
             return;
          }).catch((error) => {
