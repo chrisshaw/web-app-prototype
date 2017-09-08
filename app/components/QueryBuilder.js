@@ -71,8 +71,6 @@ class QueryBuilder extends Component{
                 onTouchTap={this.handleClose}
             />
             ];
-
-            console.log("initial disabled: ", this.props)
         var styles = {
             dialog : {
                 width: '50vw',

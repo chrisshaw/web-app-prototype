@@ -75,7 +75,6 @@ class Main extends Component{
        helper.logout(this.props.dispatch, this.props.router);
     }
     handleClose(){ 
-
         // clear local and server error messages
         if (this.props.error) helper.setErrorMsg(this.props);
         // local validation

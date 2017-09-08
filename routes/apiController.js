@@ -483,8 +483,52 @@ module.exports = function(app){
     //     // })
     // })
     
-    // using post as passing object - probably not ideal
-    app.post('/api/path/project', function (req, res){
+    // comment this bit out for fiona-branch-1 dev and testing
+    // app.post('/api/path/project', function (req, res){
+    //     validateUser(req, res, "buildPath")
+    //     .then( response => {
+    //         // intialise
+    //         // some pre-processing
+    //         console.log(
+    //             "The request body is",
+    //             "\n",
+    //             req.body
+    //         );
+    //         const reqBody = req.body;
+    //         const userKey = response.userkey;
+    //         const queryObject = {};
+    //         if ( reqBody.courses && reqBody.courses.length > 0 ) queryObject.courses = reqBody.courses.map( course => course._key);
+    //         if ( reqBody.grades && reqBody.grades.length > 0 ) queryObject.grades = reqBody.grades.map( grade => grade.name.toString().toLowerCase() );
+    //         if ( reqBody.subjects && reqBody.subjects.length > 0 ) queryObject.subjects = reqBody.subjects.map( subject => subject.name.toLowerCase() );
+    //         if ( reqBody.standards && reqBody.standards.length > 0 ) queryObject.standards = reqBody.standards.map( standard => standard.name.toLowerCase() );
+    //         if ( reqBody.topics && reqBody.topics.length > 0 ) queryObject.topics = reqBody.topics.map( topic => topic.name.toLowerCase() );
+    //         Object.keys(queryObject).forEach( key => console.log(key, ':', queryObject[key]));
+
+    //         console.log('Constructing query string');
+    //         const strRequest = constructQueryParams(queryObject);
+    //         const pathBuilderService = db.route('path');
+    //         console.log('Query string:', `/${userKey}/build${strRequest}`);
+    //         pathBuilderService.get(`/${userKey}/build${strRequest}`)
+    //         .then( response => {
+    //             console.log("Response??",'\n',response.body._documents);
+    //             res
+    //                 .status(200)
+    //                 .json(response.body._documents)
+    //         })
+    //         .catch( error => {
+    //             console.log(Date.now() + " Error (Getting paths from Database):", '\n', error );
+    //             res.json();
+    //         })
+    //     })
+    //     .catch((error) => {
+    //         console.log(Date.now() + " Authentication Error");
+    //         console.log(error);
+    //         res.json({success: false, error: "No Permissions to View Paths"})
+    //     });
+    // });
+
+// this is just for my testing
+     app.post('/api/path/project', function (req, res){
         validateUser(req, res, "buildPath")
         .then( response => {
             // intialise
@@ -519,6 +563,21 @@ module.exports = function(app){
                 console.log(Date.now() + " Error (Getting paths from Database):", '\n', error );
                 res.json();
             })
+            // TEST DEVELOPMENT
+            // Just send a file back
+            // let results = require('./results.js');
+            // res
+            //     .status(200)
+            //     .json(results)
+            // this file simulates actual data
+            // the results are sent back an an array of the format:
+            // [ { projectPath: [], studentsOnPath: [ 'auth_users/6796387' ] },
+            // { projectPath: [ [Object], [Object] ],
+            //      studentsOnPath: [ 'auth_users/6796383' ] },
+            //  { projectPath: [ [Object] ],
+            //      studentsOnPath: [ 'auth_users/6796385' ] } ]
+            //  the client expects an array of objects and this may need to be adjusted depending on what is actually sent from the database
+            // console.log(results)
         })
         .catch((error) => {
             console.log(Date.now() + " Authentication Error");
@@ -526,6 +585,8 @@ module.exports = function(app){
             res.json({success: false, error: "No Permissions to View Paths"})
         });
     });
+
+
 
     const constructQueryParams = queryObject => {
         return Object.keys(queryObject).reduce( (queryString, key, i, keys) => {
@@ -1045,7 +1106,7 @@ module.exports = function(app){
             res.json();
         })            
     })
-
+    
     app.get('/fa/:username', function(req, res){
         let username = req.params.username;
         // covers replaced with focusesOn
@@ -1073,6 +1134,26 @@ module.exports = function(app){
         })  
 
     })
+
+    app.post('/api/fa/names', function(req, res){
+        let fa = req.body;
+        // covers replaced with focusesOn
+        // check this query!!!
+        let query = aql`for item in ${fa}
+        for f in focusAreas
+        filter f._id == item._id
+        return {name: f.name, _id: f._id, _key: f._key}`;
+    //  console.log(query)
+        db.query(query)
+        .then(cursor => { 
+            console.log("FA", cursor._result);
+            res.json({success: true, focusAreas: cursor._result});
+        }).catch(error => {
+            console.log(Date.now() + " Error (Get FA from Database):", error);
+            res.json({success: false});
+        })  
+    })
+
     app.use(function(req, res){
         db.get()
         .then(response => {

@@ -51,26 +51,49 @@ const statusInitialState = {
     success: false,
     successMsg: ""
 }
+// function updateSelected(action, state, list, selectedlist){
+//         // decrease groups list and increase selected
+//     let newObj = {};
+//     let newGroups = state[list].filter((group) => {                  
+//         if (group.name === action.item){
+//             newObj = group;
+//             return false;
+//             }
+//             return true;
+//         });
+//     if (newObj !== {}){
+//         // if new Obj is not empty make changes
+//         if (!state[selectedlist]) {
+//             // initially when array is empty do this
+//             return Object.assign({[selectedlist]: []},state, {[selectedlist]:  [newObj],  [list]: newGroups});    
+//         } 
+//         else {     
+//             // after there is at least one item do this
+//             return Object.assign({[selectedlist]: []},state, {[selectedlist]:  [...state[selectedlist], newObj], [list]: newGroups});    
+//         }
+//     } 
+// }
 function updateSelected(action, state, list, selectedlist){
         // decrease groups list and increase selected
-    let newObj = {};
-    let newGroups = state[list].filter((group) => {                  
-        if (group.name === action.item){
-            newObj = group;
-            return false;
-            }
-            return true;
-        });
-    if (newObj !== {}){
+    // let newObj = {};
+    // let newGroups = state[list].filter((group) => {                  
+    //     if (group.name === action.item){
+    //         newObj = group;
+    //         return false;
+    //         }
+    //         return true;
+    //     });
+    // if (newObj !== {}){
         // if new Obj is not empty make changes
         if (!state[selectedlist]) {
             // initially when array is empty do this
-            return Object.assign({[selectedlist]: []},state, {[selectedlist]:  [newObj],  [list]: newGroups});    
-        } else {     
+            return Object.assign({[selectedlist]: []},state, {[selectedlist]:  [action.item]});    
+        } 
+        else {     
             // after there is at least one item do this
-            return Object.assign({[selectedlist]: []},state, {[selectedlist]:  [...state[selectedlist], newObj], [list]: newGroups});    
+            return Object.assign({[selectedlist]: []},state, {[selectedlist]:  [...state[selectedlist], action.item]});    
         }
-    } 
+    // } 
 }
 
 function updateQueryList(action, state, list, selectedlist) {
@@ -88,10 +111,10 @@ function updateQueryList(action, state, list, selectedlist) {
         // in case of corrupt data 
         if (newObj !== -1){
             // update
-            return Object.assign({},state, {[selectedlist]: newGroups, [list]: [... state[list], newObj] }); 
+            return Object.assign({},state, {[selectedlist]: newGroups }); 
         } else {
             // no change
-            return Object.assign({},state, {[selectedlist]: state[selectedlist], [list]: state[list] }); 
+            return Object.assign({},state, {[selectedlist]: state[selectedlist] }); 
         }
     } else if ((action.reset === true) &&  (action.delete === false)){
         // console.log("in action.reset true", state.gradelist)
@@ -99,7 +122,7 @@ function updateQueryList(action, state, list, selectedlist) {
     } else if ((action.reset === false ) &&  (action.delete === false)) {
         // if not a reset action and there are no  items in the selected list
         // send back all grades
-        console.log("state.selectedgradelist", state[selectedlist])
+        // console.log("state.selectedgradelist", state[selectedlist])
         if (state[selectedlist]){
             return Object.assign({}, state, {[list]:  state[list]}); 
         } else {

@@ -61,6 +61,14 @@ body {
     margin-top: 7px;
     float: left;
 }
+.student-chip-float {
+    display: inline-flex;
+    flex: 1 1 0;
+}
+.results-layout {
+    margin-left: -50px;
+    width: 120%;
+}
 .left-nav{
    margin-left: 50px;
    margin-bottom: 30px;
@@ -256,6 +264,10 @@ display: block
      /* border: dashed red 1px;  */
      color: red;
      font-size: 30px;
+}
+.chip-style {
+    display: flex;
+    flex-wrap: wrap;
 }
 .no-path-message {
     padding: 30px;
