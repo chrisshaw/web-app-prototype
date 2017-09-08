@@ -197,114 +197,13 @@ class GroupTabs extends React.Component {
         return true;
       } 
   }
-  // ondragstart(e){
-    // var canvas = document.createElement('canvas');
-    // var context = canvas.getContext('2d');
-
-    // canvas.width = 100;
-    // canvas.height = 200;
-
-    // // context.fillStyle = '#333333';
-    // // context.fisllRect(0, 0, canvas.width, canvas.height);
-
-    // // context.fillStyle = '#999999';
-    // // context.font = 'bold 13px Arial';
-    // // context.fillText('DRAGGING...', 5, 15);
-
-    // // context.drawImage(img,10,10);
-    // console.log("e.target.id", e.target.id)
-    // var srcDiv =  ReactDOM.findDOMNode(this.refs[e.target.id]);
-    // // convert node to string
-    // var tmpNode = document.createElement( "div" );
-    // tmpNode.appendChild( srcDiv.cloneNode( true ) );
-    // var str = tmpNode.innerHTML;
-    // tmpNode = node = null; // prevent memory leaks in IE
-//     // return str;
-// console.log("srcDiv", srcDiv)
-
-// var data = 'data:image/svg+xml;charset=UTF-8,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200">' +
-//            '<foreignObject width="100%" height="100%">' +
-//             str  +
-//            '</foreignObject>' +
-//            '</svg>';
-//     // console.log("data", data)
-//     // var DOMURL = window.URL || window.webkitURL || window;
-
-//     var img = new Image();
-    // var svg = new Blob([data], {type: 'image/svg+html'});
-    // var url = DOMURL.createObjectURL(svg);
-    // console.log(url)
-    // img.onload = function() {
-    //   context.drawImage(img, 100, 100);
-    //   // DOMURL.revokeObjectURL(url);
-    // }
-    // img.src = data;
-    // img.width='100';
-    // console.log("img", img)
-  //   e.dataTransfer.setData('text', e.target.id ); 
-  //   e.dataTransfer.effectAllowed = 'move';
-  //   // e.dataTransfer.setDragImage(img, 0, 0);
-  //   // document.body.append(canvas);
-  //   e.target.classList.add('changeColor');
-
-  //   return false;
-  // }
-  // ondragover(e) {  
-  //   e.preventDefault && e.preventDefault();
-  //   e.dataTransfer.dropEffect = 'move';
-  //   // var dropNode = ReactDOM.findDOMNode(this.drop);
-  //   // e.target.classList.add('over');
-  //   // e.target.classList.add('dragelem');
-  //   console.log("Drag over");
-  //   return false;
-  // }
-  // ondragenter(e) {
-  //   e.preventDefault && e.preventDefault();
-  //   // e.target.classList.remove('hide');
-  //   e.target.classList.add('dragelem');
-  //    console.log("Drag enter");
-  //   // e.target.classList.add('dragelem');
-  //   // e.target.style.opacity = '0.4';
-  //   // e.target.style.background = 'grey';
-  //   // e.target.classList.add('over');
-  // }
-  // ondragleave(e) {
-  //   e.preventDefault && e.preventDefault();
-  //   e.target.classList.remove('dragelem');
-  //   // e.target.classList.add('hide');
-  //   // e.target.classList.remove('over');  // this / e.target is previous target element.
-  //   // e.target.style.opacity = '1';
-  //   // dropNode.style.color = 'black';
-  //    return false;
-  // }
-  
-  // ondragend(e) {  
-  //   e.preventDefault && e.preventDefault();
-  //   // e.target.classList.add('dragelem');
-  //   // e.target.style.backgroundColor = "red";
-  //   // dropHint.classList.add('hide');
-  //   e.target.classList.remove('changeColor');
-  //   // e.target.classList.remove('over');
-  //   console.log("Drag end");
-  //   return false;
-  // }
-  // ondrop(e) {
-  //     e.preventDefault && e.preventDefault();
-  //     e.target.classList.remove('dragelem');
-  //     let data = e.dataTransfer.getData('text');
-  //     var dragNode = ReactDOM.findDOMNode(this.refs[data]);
-  //     helper.dragPath(e.target.id, dragNode.id, this.props);
-  //     return false;
-  // }
-  renderFA(tabindex, component,studentPathPosition, studentName ) {
-    // console.log("state.value", this.state.value)
+  renderFA(tabindex, component, studentPathPosition ) {
     // for each student there is a max path length that should be rendered for performance reasons
     // this is set in component.props.falist[tabindex] - this is used for mapping the fa results array
     // projects will not be counted in this number
     let maxVisibleFA = component.props.falist[tabindex];
     let faCounter = 0;  // this will be used to keep track of how many fa have been rendered so we dont go over maxVisibibleFA
     let projCounter = 0;
-      // not needed?? can use projCounter
     return component.props.paths[tabindex].projectPath.map(function(project, index) {
       let projPosition = projCounter;
       let idCounter = 0;
@@ -314,29 +213,31 @@ class GroupTabs extends React.Component {
       if (project.fa.length > 0){
         faComponents = project.fa.slice(0, maxVisibleFA).map(function(fa, index) {
         faCounter++;  // increase for each fa iteration
-          if (fa.nextStd) {
-              let count = 0;  // instead of using index which is unstable
-              var nextStandards = fa.nextStd.map((standard, indexNextStd) => {
-              count++;
-              return   <Col key={component.props.paths[tabindex].studentsOnPath[0].toString()+'nextStd'+count.toString()} className="chip-float"><div className="chip">
-                          {standard.toUpperCase()}
+
+        // ****removed for now as there are no standards information in the focusArea table or in the path resultsset
+          // if (fa.nextStd) {
+          //     let count = 0;  // instead of using index which is unstable
+          //     var nextStandards = fa.nextStd.map((standard, indexNextStd) => {
+          //     count++;
+          //     return   <Col key={component.props.paths[tabindex].studentsOnPath[0].toString()+'nextStd'+count.toString()} className="chip-float"><div className="chip">
+          //                 {standard.toUpperCase()}
                         
-                        </div>
-                        </Col>
-            });
-          }
-          if (fa.currentStd) {
-            let count = 0;  // instead of using index which is unstable
-            var currentStandards = fa.currentStd.map((standard, indexCurrentStandards) => {
-                count++;
-                return   <Col key={component.props.paths[tabindex].studentsOnPath[0].toString()+'currentStd'+count.toString()} className="chip-float"><div className="chip">
-                    {standard.toUpperCase()}
-                        </div>
-                      </Col>
-            });
-          }
+          //               </div>
+          //               </Col>
+          //   });
+          // }
+          // if (fa.currentStd) {
+          //   let count = 0;  // instead of using index which is unstable
+          //   var currentStandards = fa.currentStd.map((standard, indexCurrentStandards) => {
+          //       count++;
+          //       return   <Col key={component.props.paths[tabindex].studentsOnPath[0].toString()+'currentStd'+count.toString()} className="chip-float"><div className="chip">
+          //           {standard.toUpperCase()}
+          //               </div>
+          //             </Col>
+          //   });
+          // }
           let faPosition =  idCounter;   
-          let changeButtons = (<div><Col className="text-center" md={3} xs={3}>          
+          let changeButtons = (<div><Col className="text-center" md={3} xs={3}>         
                       <FlatButton containerElement='label' label="Add"   onTouchTap={(e) => component.handleAdd(studentPathPosition, projPosition, faPosition)}/>  
                       </Col> 
                     <Col className="text-center" md={3} xs={3}>
@@ -368,23 +269,23 @@ class GroupTabs extends React.Component {
                       </Col>
                   </Row>
                   <hr />
-                  <Row >
+                  {/* <Row >
                     <Col className="chip-float">
                       <div className="chip">                    
                         {fa.subject.toUpperCase()}      
                       </div>
                     </Col>
                       {currentStandards}
-                  </Row>
-                  <Row>
-                    { (index === fa.length-1) ? "": <div className="chip-float-text">Connected To</div>}
+                  </Row> */}
+                  {/* <Row>
+                     { (index === fa.length-1) ? "": <div className="chip-float-text">Connected To</div>}
                     <Col  className="chip-float">
                       <div className="chip">
                         {fa.nextFA}
                       </div>
                     </Col> 
-                    {nextStandards}
-                </Row>
+                     {nextStandards}  
+                </Row> */}
                 </div>
               </Col>
             </Row>
@@ -394,7 +295,7 @@ class GroupTabs extends React.Component {
                 {changeButtons}                    
             </Col>
           </Row>
-          </div>
+        </div>
 
         return (<div ref={index}> 
           {dragItem}
@@ -420,22 +321,16 @@ class GroupTabs extends React.Component {
       } else {
         faComponents = <div ><p key={component.props.paths[tabindex].studentsOnPath[0].toString() + "NoPaths"} className="no-paths-message"> No focus areas found for this project. Please requery using different filters.</p></div>
       }
-
       projCounter ++;
       return <div> 
               {maxVisibleFA > 0  ? 
                <Row className="text-center">
               <br />
                <Col md={12}><div ref={studentPathPosition+'/'+projPosition}  id={studentPathPosition+'/'+projPosition}><h4>{project.name} </h4></div><hr /></Col>     
-             </Row> : ""} 
-            
-              {faComponents}
-              
+             </Row> : ""}             
+              {faComponents}            
             </div>
-
     })
-
-
   }
   addRows(){
     let index =this.state.value;
@@ -457,54 +352,70 @@ class GroupTabs extends React.Component {
       var tabindex = this.state.value;
       var component = this;    
       let studentPathPosition = tabindex;
-      //******* need to rearrange this if loop at bit - it's v messy */
       if ((this.props.paths.length > 0)) {
-           
-        // if ((this.props.paths[tabindex]) && (this.props.paths[tabindex].fa.length > 0)) {
-          // console.log("this.props.paths[tabindex].projectPath.length",this.props.paths[tabindex].projectPath.length)
-        if ((this.props.paths[tabindex]) && (this.props.paths[tabindex].projectPath.length !== 0)) {
-          
-          // there will be may Focus Areas returned for each pathway / group
-          var studentName= component.props.paths[tabindex].student.first + " " + component.props.paths[tabindex].student.last;
-          // rename projectComponent
-          var faComponents = component.renderFA(tabindex, component, studentPathPosition, studentName );       
-        } else {
-          // if student has no paths -- add paths to a project - enhancement later??
-          var faComponents = <div><p  key={tabindex + "NoProjects"} className="no-paths-message"> No Projects found. Please change search filters and try again.</p></div>
-        }
+        if ((this.props.paths[tabindex]) && (this.props.paths[tabindex].projectPath.length !== 0)) {    
+        // there will be may Focus Areas returned for each pathway / group
+        // var studentName= "... " + component.props.paths[tabindex].studentsOnPath.length + " students";
+        // var studentNumber = component.props.paths[tabindex].studentsOnPath.length + " students";
+        // rename projectComponent
+        var faComponents = component.renderFA(tabindex, component, studentPathPosition);       
+      } else {
+        // if student has no paths -- add paths to a project - enhancement later??
+        var faComponents = <div><p  key={tabindex + "NoProjects"} className="no-paths-message"> No Projects found. Please change search filters and try again.</p></div>
+      }
+      var resultsComponents  = component.props.paths.slice(this.state.showTabStart, this.state.showTabEnd).map(function(result, index) {
+      let studentTabIndex = component.state.showTabStart + index;
+      var studentNumber = result.studentsOnPath.length + " students";
+      //map students --- this is id but when we have names we can replace
+      var studentData = result.studentsOnPath.map(function(studentname, index) {
+             let studentnames = 
+                    <Col className="text-center">
+                      <div className="chip">                    
+                           {studentname}
+                      </div>
+                    </Col>
+                 
+             return  <div className="student-chip-float"> {studentnames} </div>
 
-        var resultsComponents  = component.props.paths.slice(this.state.showTabStart, this.state.showTabEnd).map(function(result, index) {
-        let studentTabIndex = component.state.showTabStart + index;
-        // console.log("  {studentTabIndex}", studentTabIndex)
-
-        /// ****************need to determine what should be visible on tab.....
-        return <Tab  ref={tabindex} onActive={component.handleActive}  key={studentTabIndex} label={result.student.first + ' ' + result.student.last } value={studentTabIndex} buttonStyle={{color: "#808080", whiteSpace: "normal"}}>            
-                    {faComponents}
-             </Tab>
-        })             
-      } 
+      })
+      return <Tab ref={tabindex} onActive={component.handleActive}  key={studentTabIndex} label={studentNumber} value={studentTabIndex} buttonStyle={{color: "#808080", whiteSpace: "normal"}}>            
+                  <br />
+                 <Row className="text-center">{studentData} </Row>
+                 <br />
+                 <Row className="results-layout">{faComponents} </Row>
+                 
+            </Tab>
+      })             
+    } 
 
       
     return <div key={ 0 + "Path Results"}>
     {((this.props.paths) && (this.props.paths.length > 0)) ? (<div className="text-center"> 
       <Row>
-       <Col className="text-center" md={2} xs={2}>
+       <Col className="text-center" md={1} xs={1}>
         <IconButton iconStyle={styles.iconButton}   onTouchTap={() => component.handleMoveLeft()}  iconStyle={{height: 58}} style={{maxWidth: 100}} tooltip="Move Left"><LeftIcon /></IconButton>
       </Col>
-      <Col className="text-center" md={8} xs={8}></Col>
-      <Col className="text-center" md={2} xs={2}>
+      <Col className="text-center" md={10} xs={10}><Tabs inkBarStyle={{background: '#A35FE3'}}
+        initialSelectedIndex={0}
+        value={this.state.value}
+        onChange={(value) => this.handleChange(value, 0)}
+      >     
+         {resultsComponents}
+          {this.state.value}  
+      </Tabs></Col>
+      <Col className="text-center" md={1} xs={1}>
           <IconButton iconStyle={styles.iconButton}  onTouchTap={() => component.handleMoveRight()}  iconStyle={{height: 58}} style={{maxWidth: 100}} tooltip="Move Right"><RightIcon /></IconButton>
       </Col> 
       </Row>
-    </div>) : ""}
-    <Tabs inkBarStyle={{background: '#A35FE3'}}
+    </div>) : <Tabs inkBarStyle={{background: '#A35FE3'}}
         initialSelectedIndex={0}
         value={this.state.value}
         onChange={(value) => this.handleChange(value, 0)}
       >     
           {resultsComponents}   
           {this.state.value}  
-      </Tabs>
+      </Tabs>}
+    
     </div>
   
   }

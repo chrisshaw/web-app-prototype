@@ -202,8 +202,37 @@ var helpers = {
         }
         dispatch(actions.updatePathList("", true, true));
         return axios.post('/api/path/project', queryObj).then(function(response) {
-            console.log("output from file", response.data)
-            dispatch(actions.updatePathList(response.data, false, false));
+            // need to back fill this data for fa name etc
+            // **  WARNING: this is a hacky and slow way to do this......**
+            // will just do by fa one by one....can do other way later if liked as im certain there are better ways like a matching algorithm but time is limited now on my last day
+            // nested for loops are slow - this is an expensive calc as we will need 2  * 3 = 6 for loops each of order n3 (n-cubed)
+            // easiest way by far is to return this fa name data with the original query results so we dont have to do the below.....could do quickly after the paths are found as an add on
+            let faArr = [];
+            for (var i = 0; i < response.data.length ; i++){
+                for (var j = 0; j < response.data[i].projectPath.length; j++){
+                    for (var k = 0; k < response.data[i].projectPath[j].fa.length; k++){
+                        console.log("what is fa[k]", response.data[i].projectPath[j]["fa"][k]);
+                        faArr.push({_id: response.data[i].projectPath[j]["fa"][k]})
+                    }
+                }
+            }
+            // post the ids to the db to get names back then add them to the results set before sending paths to the store
+            // this is expensive calc as we will need 2  * 3 = 6 for loops each of order n3 (n-cubed)
+            return axios.post('/api/fa/names', faArr).then(function(results) {
+                // ** the order of the results matters it should match the query order ******//
+                    for (var i = 0; i < response.data.length ; i++){
+                        for (var j = 0; j < response.data[i].projectPath.length; j++){
+                            for (var k = 0; k < response.data[i].projectPath[j].fa.length; k++){
+                                // grab the id of the fa and augment the path results
+                                response.data[i].projectPath[j].fa[k] = results.data.focusAreas[0]
+                                // remove top value each time
+                                results.data.focusAreas.shift()
+                            }
+                        }
+                    }
+                // send the augmented path data to the store
+                dispatch(actions.updatePathList(response.data, false, false));
+            })
             return;
          }).catch((error) => {
             // send message to client...needs work
@@ -253,49 +282,37 @@ var helpers = {
     setSuccessMsg(props){
         props.dispatch(actions.setSuccess(false, ""))
     },
-    // dragPath(newPosition, draggedId, props) {
-    //     // change to use studentPathPosotin per removeFA
-    //     var oldArr =  draggedId.split('|');  // student key [0], fa key [1],  student position [2], proj position [3], fa position[4],
-    //     var newArr = newPosition.split('|');  // student position [0], proj position [1], fa position[2],
-    //     let studentPathPosition = oldArr[2];  // should be same as for newArr
-    //     let oldProject = oldArr[3];
-    //     let oldFa = oldArr[4];
-    //     let newProject = newArr[1];
-    //     let newFa = newArr[2];
-    //     // use the path position data to add the moved focus area newFa into the relevena position and remove from old position
-    //     props.paths[studentPathPosition].projects[newProject].fa.splice(newFa, 0,  props.paths[studentPathPosition].projects[oldProject].fa.splice(oldFa, 1)[0]);
-    //     props.dispatch(actions.updatePathList(props.paths, false, false )); 
-    //     // helpers.parseFa(props.paths[studentPathPosition]);    
-    // },
     moveFaUp(studentPosition, projPosition, faPosition, props){
+        console.log("move Up studentPosition, projPosition, faPosition",  studentPosition, projPosition, faPosition)
         // this is the UP arrow on the Focus Area - moves one position up so that means down a position in the array
         if (faPosition > 0){
-            props.paths[studentPosition].projects[projPosition].fa.splice(faPosition-1, 0,  props.paths[studentPosition].projects[projPosition].fa.splice(faPosition, 1)[0]);
+            props.paths[studentPosition].projectPath[projPosition].fa.splice(faPosition-1, 0,  props.paths[studentPosition].projectPath[projPosition].fa.splice(faPosition, 1)[0]);
             props.dispatch(actions.updatePathList(props.paths, false, false )); 
         }
     },
     moveFaDown(studentPosition, projPosition, faPosition, props){  
+         console.log("move down studentPosition, projPosition, faPosition",  studentPosition, projPosition, faPosition)
         // this is the DOWN arrow on the Focus Area - moves one position down - that means up a position in the array
-        if (faPosition < props.paths[studentPosition].projects[projPosition].fa.length-1){
-            props.paths[studentPosition].projects[projPosition].fa.splice(faPosition+1, 0,  props.paths[studentPosition].projects[projPosition].fa.splice(faPosition, 1)[0]);
+        if (faPosition < props.paths[studentPosition].projectPath[projPosition].fa.length-1){
+            props.paths[studentPosition].projectPath[projPosition].fa.splice(faPosition+1, 0,  props.paths[studentPosition].projectPath[projPosition].fa.splice(faPosition, 1)[0]);
             props.dispatch(actions.updatePathList(props.paths, false, false )); 
         }  
     },
     removeFA(studentPathPosition,projPosition, idCounter, studentKey, faKey, props){
-       // do quick check to make sure the correct fa is being removed
-       if ((props.paths[studentPathPosition].student._key === studentKey) && (faKey === props.paths[studentPathPosition].projects[projPosition].fa[idCounter]._key)){
+       // removed: do quick check to make sure the correct fa is being removed
+    //    if ((props.paths[studentPathPosition].student._key === studentKey) && (faKey === props.paths[studentPathPosition].projects[projPosition].fa[idCounter]._key)){
             // remove 1 FA at array position idCounter
-            props.paths[studentPathPosition].projects[projPosition].fa.splice(idCounter, 1);
+            props.paths[studentPathPosition].projectPath[projPosition].fa.splice(idCounter, 1);
             // do some processing to get nextFA and nextStd
             // helpers.parseFa(props.paths[studentPathPosition]);    
             props.dispatch(actions.updatePathList( props.paths, false, false ));  
-       }
+    //    }
    
     },
     removeProject(studentPathPosition, projPosition, props){
         // remove empty project 
         console.log("in here", studentPathPosition, projPosition)
-        props.paths[studentPathPosition].projects.splice(projPosition, 1);
+        props.paths[studentPathPosition].projectPath.splice(projPosition, 1);
         // do some processing to get nextFA and nextStd
         // helpers.parseFa(props.paths[studentPathPosition]);    
         props.dispatch(actions.updatePathList(props.paths, false, false ));  
@@ -304,13 +321,10 @@ var helpers = {
     addFA(studentPathPosition, projPosition, idCounter, studentKey, faKey, addFAKey, props){
        // do quick check to make sure the correct fa is being removed
        let addAfterKey = 0;
-       if ((faKey) && (props.paths[studentPathPosition].projects[projPosition].fa.length > 0)){
-           console.log(studentPathPosition, projPosition, idCounter)
-                       console.log("props.paths[studentPathPosition].projects[projPosition].fa[idCounter]", props.paths[studentPathPosition].projects[projPosition].fa[idCounter])
-
-            addAfterKey = props.paths[studentPathPosition].projects[projPosition].fa[idCounter]._key;
+       if ((faKey) && (props.paths[studentPathPosition].projectPath[projPosition].fa.length > 0)){
+            addAfterKey = props.paths[studentPathPosition].projectPath[projPosition].fa[idCounter]._key;
        } 
-       if ((props.paths[studentPathPosition].student._key === studentKey) && (faKey === addAfterKey)){
+    //    if ((props.paths[studentPathPosition].student._key === studentKey) && (faKey === addAfterKey)){
             // remove 1 FA at array position idCounter
             // for now it jst adds a copy
             // get fa details from databsae
@@ -319,7 +333,7 @@ var helpers = {
             // console.log("response fa", response.data.fa[0])
             if (response.data.success){
                 // response.data == fa details
-                props.paths[studentPathPosition].projects[projPosition].fa.splice(idCounter+1, 0, response.data.fa[0]);
+                props.paths[studentPathPosition].projectPath[projPosition].fa.splice(idCounter+1, 0, response.data.fa[0]);
                 // do some processing to get nextFA and nextStd
                 // helpers.parseFa(props.paths[studentPathPosition]);
                 props.dispatch(actions.updatePathList( props.paths, false, false )); 
@@ -334,16 +348,13 @@ var helpers = {
             console.log(error)
         })  
            
-       }
+    //    }
    
     },
     getUserFA(username, dispatch){
-
         return axios.get('/fa/'+username).then(function(response) {
-            // console.log("focus area ******", response.data)
             if (response.data.success){
                 dispatch(actions.focusAreas(response.data.fa))
-                // props.dispatch(actions.updatePathList( props.paths, false, false )); 
             } else {
                 // send error message
             }   
@@ -355,44 +366,6 @@ var helpers = {
 
 
     },
-    // parseFa(result){
-    //     // console.log("result.fa.length", result.fa.length)
-    //     for (var i = 0; i < result.fa.length; i++){
-    //         // console.log("result.fa.length-1", result.fa.length-1)
-    //         if ( i < result.fa.length-1) {
-    //             result.fa[i].nextFA = result.fa[i+1]['Focus Area']
-    //         } else {
-    //             result.fa[i].nextFA = [];  // if 
-    //         }
-    //         // console.log(" result.fa[i].nextFA ",  result.fa[i].nextFA )
-    //         result.fa[i]['currentStd'] = [];
-    //         result.fa[i]['nextStd']= [];
-    //         if (i < result.fa.length-1){  
-    //             for (var j = 0; j <  result.fa[i+1].standardConnections.length; j++){
-    //                 // save the first one
-    //                 if ((j === 0)){
-    //                     result.fa[i].nextStd.push(result.fa[i+1].standardConnections[j]);
-    //                 }
-    //                 // don't save duplicates
-    //                 else if ((j > 0 ) && (result.fa[i+1].standardConnections[j-1] !== result.fa[i+1].standardConnections[j] )){
-    //                     result.fa[i].nextStd.push(result.fa[i+1].standardConnections[j]);
-    //                 }  
-    //             }
-    //         }  else {
-    //             result.fa[i].nextStd = [];  // if 
-    //         }
-
-    //         // de-dup current fa std connections
-    //         for (var k = 0; k < result.fa[i].standardConnections.length; k++){
-    //             if ((k === 0)){
-    //                 result.fa[i]['currentStd'].push(result.fa[i].standardConnections[k]);
-    //             }
-    //             else if ((k > 0 ) && (result.fa[i].standardConnections[k-1] !== result.fa[i].standardConnections[k] )){
-    //             result.fa[i]['currentStd'].push(result.fa[i].standardConnections[k]);
-    //             }                 
-    //         }
-    //     }
-    // },
     parseFa(result){
         // parse for current student
         // for each project
@@ -507,14 +480,6 @@ var helpers = {
     addRows(index, newvalue, dispatch){
         dispatch(actions.showMoreRows(index, newvalue ));
     },
-    // getUserPerms(dispatch) {
-    //     return axios.get('/api/perms/user').then(function(response) {
-    //         // send results to redux store for use by SignUp component
-    //         dispatch(actions.getPerms(response.data));
-    //         return;
-    //     }) 
-
-    // },
     loginUser(email, password, dispatch, router){      
         // capture data in object
         let userObj = { 
@@ -616,7 +581,5 @@ var helpers = {
         router.push('/login');
      }
  };
-
-
 // We export the helpers function (which contains getGithubInfo)
 module.exports = helpers;

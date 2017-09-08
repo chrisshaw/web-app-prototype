@@ -76,6 +76,7 @@ class MultiSelectField extends Component {
     let items = [];
     items.push(this.props.list.slice(this.state.menuStart, this.state.menuEnd).map((name) => (   
         <MenuItem
+            key={name._id}
             insetChildren={true}
             checked={values && values.indexOf(name) > -1}
             value={name}
@@ -90,6 +91,7 @@ class MultiSelectField extends Component {
         let dummyvalue = { _id: -1, name: "dummy"}     
         items.push( 
                 <MenuItem
+                    key={dummyvalue._id}
                     insetChildren={true}
                     value={dummyvalue}
                     primaryText={'... use ⬆️ ⬇️ keys to navigate list'}

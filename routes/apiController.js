@@ -1075,7 +1075,7 @@ module.exports = function(app){
             res.json();
         })            
     })
-
+    
     app.get('/fa/:username', function(req, res){
         let username = req.params.username;
         // covers replaced with focusesOn
@@ -1103,6 +1103,26 @@ module.exports = function(app){
         })  
 
     })
+
+    app.post('/api/fa/names', function(req, res){
+        let fa = req.body;
+        // covers replaced with focusesOn
+        // check this query!!!
+        let query = aql`for item in ${fa}
+        for f in focusAreas
+        filter f._id == item._id
+        return {name: f.name, _id: f._id, _key: f._key}`;
+    //  console.log(query)
+        db.query(query)
+        .then(cursor => { 
+            console.log("FA", cursor._result);
+            res.json({success: true, focusAreas: cursor._result});
+        }).catch(error => {
+            console.log(Date.now() + " Error (Get FA from Database):", error);
+            res.json({success: false});
+        })  
+    })
+
     app.use(function(req, res){
         db.get()
         .then(response => {
