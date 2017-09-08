@@ -59,28 +59,15 @@ class MultiSelectField extends Component {
     // function called when list items are selected
     handleChange(e, i, values) {
         let lastElem = values.length;
-        console.log("values", values[lastElem-1]._id)
-        //  console.log("values._id", values._id)
         // make sure a full word supplied is in list
-        if (values[lastElem-1] !== []){
+        if ((values[lastElem-1] !== []) && (values[lastElem-1]._id !== -1 )) {
             // verify if to be added or removed   
-           console.log("this.props.selectedlist", this.props.selectedlist)
             if (this.props.selectedlist && this.props.selectedlist.length > 0 && this.props.selectedlist.indexOf(values[lastElem-1]) !== -1){
-                 console.log("this.props.selectedlist.indexOf(values)", this.props.selectedlist.indexOf(values[lastElem-1]))
                 // remove it       
                 helper.removeChip(values[lastElem-1]._id, this.props.queryitem, this.props.dispatch);
             } else {
                 helper.updateSelected(values[lastElem-1], this.props.queryitem, this.props.dispatch);
             }
-            // // either way recenter list if necessary
-            // let currentMenuPosition = this.props.list.indexOf(values[lastElem-1]);
-            // // needed to handle long lists like the one for standards
-            // if ((currentMenuPosition > 5) && (this.props.list.length > 10)){
-            //     this.setState({
-            //         menuStart: currentMenuPosition - 1,
-            //         menuEnd: currentMenuPosition + 9
-            //     })
-            // }
         }
     }
 
@@ -99,11 +86,13 @@ class MultiSelectField extends Component {
         />           
     )))
 // to show that more values exist but still to allow scrolling
-    if (this.props.list.length-1 > this.state.menuEnd) {       
+    if (this.props.list.length-1 > this.state.menuEnd) {  
+        let dummyvalue = { _id: -1, name: "dummy"}     
         items.push( 
                 <MenuItem
                     insetChildren={true}
-                    primaryText={'...'}
+                    value={dummyvalue}
+                    primaryText={'... use ⬆️ ⬇️ keys to navigate list'}
                     onMouseOver={() => this.handleMenuChange(this.props.list[this.state.menuEnd-1])}
                     onKeyDown={() => this.handleMenuChange(this.props.list[this.state.menuEnd-1])}
                     onKeyUp={() => this.handleMenuChange(this.props.list[this.state.menuEnd-1])}
