@@ -208,7 +208,6 @@ var helpers = {
             // nested for loops are slow - this is an expensive calc as we will need 2  * 3 = 6 for loops each of order n3 (n-cubed)
             // easiest way by far is to return this fa name data with the original query results so we dont have to do the below.....could do quickly after the paths are found as an add on
             let faArr = [];
-            const faArr = response.data.
             for (var i = 0; i < response.data.length ; i++){
                 for (var j = 0; j < response.data[i].projectPath.length; j++){
                     for (var k = 0; k < response.data[i].projectPath[j].fa.length; k++){
