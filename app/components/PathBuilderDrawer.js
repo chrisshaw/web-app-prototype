@@ -24,8 +24,8 @@ class PathBuilderDrawer extends Component{
                     <Drawer
                         containerClassName="drawer-small-screen"
                         docked={true}
-                        width={'41%'}
-                        style={style.drawer}               
+                        width={'35%'}
+                        style={style.drawer}            
                     >     
                         <PathAppNav />   
                         <Row>

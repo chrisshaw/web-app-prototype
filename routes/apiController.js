@@ -132,74 +132,6 @@ module.exports = function(app){
         });
     }
 
-   function parseFa(result) { 
-        // for each student
-        for (var p = 0; p < result.length; p++){
-            // for each project
-            for (var l = 0; l < result[p].projects.length; l++){
-                // for each fa  
-                for (var i = 0; i < result[p].projects[l].fa.length; i++){
-                    if ( i < result[p].projects[l].fa.length-1) {
-                        result[p].projects[l].fa[i].nextFA = result[p].projects[l].fa[i+1].name
-                    } else {
-                        // if there is another project 
-                        if ((result[p].projects.length-1 > l ) && (result[p].projects[l+1].fa.length > 0)){
-                            // moves to next project and the first fa in that project if one exists
-                            result[p].projects[l].fa[i].nextFA = result[p].projects[l+1].fa[0].name;
-                            console.log("result[p].projects[l].fa[i].nextFA", result[p].projects[l].fa[i].nextFA)
-                        } else {
-                            result[p].projects[l].fa[i].nextFA = [];  
-                        }
-                    }
-                    // console.log(" result[p].projects[l].fa[i].nextFA ",  result[p].projects[l].fa[i].nextFA )
-                    result[p].projects[l].fa[i]['currentStd'] = [];
-                    result[p].projects[l].fa[i]['nextStd']= [];
-                    // next standards
-                    if (i < result[p].projects[l].fa.length-1){  
-                        console.log("result[p].projects[l].fa[i+1].", result[p].projects[l].fa[i+1]);
-                        for (var j = 0; j < result[p].projects[l].fa[i+1].standardConnections.length; j++){
-                            // save the first one
-                            if ((j === 0)){
-                                result[p].projects[l].fa[i].nextStd.push(result[p].projects[l].fa[i+1].standardConnections[j]);
-                            }
-                            // don't save duplicates
-                            else if ((j > 0 ) && (result[p].projects[l].fa[i+1].standardConnections[j-1] !== result[p].projects[l].fa[i+1].standardConnections[j] )){
-                                result[p].projects[l].fa[i].nextStd.push(result[p].projects[l].fa[i+1].standardConnections[j]);
-                            }  
-                        }
-                    }  else {
-                         // result[p].projects[k].fa[i].nextFA = [];  
-                        if ((result[p].projects.length-1 > l ) && (result[p].projects[l+1].fa.length > 0)){
-                            // moves to next project and the first fa in that project if one exists
-                            for (var j = 0; j < result[p].projects[l+1].fa[0].standardConnections.length; j++){
-                                if ((j === 0)){
-                                    result[p].projects[l].fa[i].nextStd.push(result[p].projects[l+1].fa[0].standardConnections[j]);
-                                }
-                                // don't save duplicates
-                                else if ((j > 0 ) && (result[p].projects[l+1].fa[0].standardConnections[j-1] !== result[p].projects[l+1].fa[0].standardConnections[j] )){
-                                    result[p].projects[l].fa[i].nextStd.push(result[p].projects[l+1].fa[0].standardConnections[j]);
-                                }
-                            }
-                        } else {
-                           result[p].projects[l].fa[i].nextStd = [];  // if 
-                        }
-                    }
-
-                    // de-dup current fa std connections
-                    for (var k = 0; k < result[p].projects[l].fa[i].standardConnections.length; k++){
-                        if ((k === 0)){
-                            result[p].projects[l].fa[i]['currentStd'].push(result[p].projects[l].fa[i].standardConnections[k]);
-                        }
-                        else if ((k > 0 ) && (result[p].projects[l].fa[i].standardConnections[k-1] !== result[p].projects[l].fa[i].standardConnections[k] )){
-                        result[p].projects[l].fa[i]['currentStd'].push(result[p].projects[l].fa[i].standardConnections[k]);
-                        }                 
-                    }
-                }
-            }
-        }
-        return result;
-    }
-
     app.post('/password' , function(req, res, next){
         // validate user is logged in
         validateUser(req, res, "").then((response) =>{
@@ -505,21 +437,6 @@ module.exports = function(app){
                 console.log(Date.now() + " Error (Getting paths from Database):", '\n', error );
                 res.json();
             })
-            // TEST DEVELOPMENT
-            // Just send a file back
-            // let results = require('./results.js');
-            // res
-            //     .status(200)
-            //     .json(results)
-            // this file simulates actual data
-            // the results are sent back an an array of the format:
-            // [ { projectPath: [], studentsOnPath: [ 'auth_users/6796387' ] },
-            // { projectPath: [ [Object], [Object] ],
-            //      studentsOnPath: [ 'auth_users/6796383' ] },
-            //  { projectPath: [ [Object] ],
-            //      studentsOnPath: [ 'auth_users/6796385' ] } ]
-            //  the client expects an array of objects and this may need to be adjusted depending on what is actually sent from the database
-            // console.log(results)
         })
         .catch((error) => {
             console.log(Date.now() + " Authentication Error");
