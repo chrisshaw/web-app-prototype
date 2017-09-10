@@ -201,40 +201,12 @@ var helpers = {
             role: role
         }
         dispatch(actions.updatePathList("", true, true));
-        return axios.post('/api/path/project', queryObj).then(function(response) {
-            // need to back fill this data for fa name etc
-            // **  WARNING: this is a hacky and slow way to do this......**
-            // will just do by fa one by one....can do other way later if liked as im certain there are better ways like a matching algorithm but time is limited now on my last day
-            // nested for loops are slow - this is an expensive calc as we will need 2  * 3 = 6 for loops each of order n3 (n-cubed)
-            // easiest way by far is to return this fa name data with the original query results so we dont have to do the below.....could do quickly after the paths are found as an add on
-            let faArr = [];
-            for (var i = 0; i < response.data.length ; i++){
-                for (var j = 0; j < response.data[i].projectPath.length; j++){
-                    for (var k = 0; k < response.data[i].projectPath[j].fa.length; k++){
-                        console.log("what is fa[k]", response.data[i].projectPath[j]["fa"][k]);
-                        faArr.push({_id: response.data[i].projectPath[j]["fa"][k]})
-                    }
-                }
-            }
+        return axios.post('/api/path/project', queryObj).then( function(response) {
+            dispatch(actions.updatePathList(response.data, false, false));            
+        }
             // post the ids to the db to get names back then add them to the results set before sending paths to the store
             // this is expensive calc as we will need 2  * 3 = 6 for loops each of order n3 (n-cubed)
-            return axios.post('/api/fa/names', faArr).then(function(results) {
-                // ** the order of the results matters it should match the query order ******//
-                    for (var i = 0; i < response.data.length ; i++){
-                        for (var j = 0; j < response.data[i].projectPath.length; j++){
-                            for (var k = 0; k < response.data[i].projectPath[j].fa.length; k++){
-                                // grab the id of the fa and augment the path results
-                                response.data[i].projectPath[j].fa[k] = results.data.focusAreas[0]
-                                // remove top value each time
-                                results.data.focusAreas.shift()
-                            }
-                        }
-                    }
-                // send the augmented path data to the store
-                dispatch(actions.updatePathList(response.data, false, false));
-            })
-            return;
-         }).catch((error) => {
+        ).catch((error) => {
             // send message to client...needs work
             console.log("this is an error", error);
         })  
@@ -351,8 +323,8 @@ var helpers = {
     //    }
    
     },
-    getUserFA(username, dispatch){
-        return axios.get('/fa/'+username).then(function(response) {
+    getUserFA(uid, dispatch){
+        return axios.get(`/api/user/${uid}/focusAreas`).then(function(response) {
             if (response.data.success){
                 dispatch(actions.focusAreas(response.data.fa))
             } else {
@@ -362,73 +334,7 @@ var helpers = {
         }).catch((error) => {
             // send message to client...needs work
             console.log(error)
-        })  
-
-
-    },
-    parseFa(result){
-        // parse for current student
-        // for each project
-        for (var l = 0; l < result.projects.length; l++){
-            //for each focus area
-            for (var i = 0; i < result.projects[l].fa.length; i++){
-                // if there are more focus areas then get the next
-                if ( i < result.projects[l].fa.length-1) {
-                    result.projects[l].fa[i].nextFA = result.projects[l].fa[i+1]['Focus Area']
-                } else {
-                    // if there are no more focus areas for the current project
-                    // if there is another project  for this student path - point to the first fa of the next project
-                    if ((result.projects.length-1 > l ) && (result.projects[l+1].fa.length > 0)){
-                        // moves to next project and the first fa in that project if one exists
-                        result.projects[l].fa[i].nextFA = result.projects[l+1].fa[0]['Focus Area'];
-                    } else {
-                        result.projects[l].fa[i].nextFA = [];  
-                    }
-                }
-                result.projects[l].fa[i]['currentStd'] = [];
-                result.projects[l].fa[i]['nextStd']= [];
-                // next standards
-                if (i < result.projects[l].fa.length-1){  
-                    for (var j = 0; j < result.projects[l].fa[i+1].standardConnections.length; j++){
-                        // save the first one
-                        if ((j === 0)){
-                            result.projects[l].fa[i].nextStd.push(result.projects[l].fa[i+1].standardConnections[j]);
-                        }
-                        // don't save duplicates
-                        else if ((j > 0 ) && (result.projects[l].fa[i+1].standardConnections[j-1] !== result.projects[l].fa[i+1].standardConnections[j] )){
-                            result.projects[l].fa[i].nextStd.push(result.projects[l].fa[i+1].standardConnections[j]);
-                        }  
-                    }
-                }  else {
-                    // if there are no more focus areas for the current project
-                    // if there is another project  for this student path - point to the standards of first fa of the next project
-                    if ((result.projects.length-1 > l) && (result.projects[l+1].fa.length > 0)){
-                        // moves to next project and the first fa in that project if one exists
-                        for (var j = 0; j <  result.projects[l+1].fa[0].standardConnections.length; j++){
-                             if ((j === 0)){
-                                    result.projects[l].fa[i].nextStd.push(result.projects[l+1].fa[0].standardConnections[j]);
-                                }
-                                // don't save duplicates
-                                else if ((j > 0 ) && (result.projects[l+1].fa[0].standardConnections[j-1] !== result.projects[l+1].fa[0].standardConnections[j] )){
-                                    result.projects[l].fa[i].nextStd.push(result.projects[l+1].fa[0].standardConnections[j]);
-                                }
-                        }
-                    } else {
-                        result.projects[l].fa[i].nextStd = [];  // if 
-                    }
-                }
-
-                // de-dup current fa std connections
-                for (var k = 0; k < result.projects[l].fa[i].standardConnections.length; k++){
-                    if ((k === 0)){
-                        result.projects[l].fa[i]['currentStd'].push(result.projects[l].fa[i].standardConnections[k]);
-                    }
-                    else if ((k > 0 ) && (result.projects[l].fa[i].standardConnections[k-1] !== result.projects[l].fa[i].standardConnections[k] )){
-                    result.projects[l].fa[i]['currentStd'].push(result.projects[l].fa[i].standardConnections[k]);
-                    }                 
-                }
-            }
-        }
+        })
     },
     removeChip(id, queryitem, dispatch){
         if  (queryitem === "Topics") {

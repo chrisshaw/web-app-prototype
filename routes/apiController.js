@@ -828,7 +828,29 @@ module.exports = function(app){
             res.json();
         }) 
 
-     })
+    })
+
+    app.get(`/api/user/:uid/focusAreas`, function(req, res){
+        const uid = req.params.uid;
+
+        let query = aql`
+            for focusArea
+            in 2 outbound ${uid}
+            hasCourse, focusesOn
+            return KEEP(focusArea, '_id', '_key', 'name')
+        `;
+    //  console.log(query)
+        db.query(query)
+        .then(cursor => { 
+            // console.log("FA", cursor._result);
+            res.json({success: true, fa: cursor._result});
+        }).catch(error => {
+            console.log(Date.now() + " Error (Get FA from Database):", error);
+            res.json({success: false});
+        })  
+
+    })
+
     app.get('/api/fa/:faKey', function(req, res){
         let faKey = req.params.faKey;
         // let faKey = parseInt(req.params.faKey);
@@ -909,13 +931,13 @@ module.exports = function(app){
         // only teachers or students will have mappings in hasCourses table
         // role will be needed in paths.....role = student should only see their own courses not other students
         let query = aql`
-          let userid = (UNIQUE(for u in auth_users filter u.username == ${username} return u._id))
-          let queryCourses = (for c in outbound userid[0] hasCourse return c._id)
-          for c in courses
-            filter length(queryCourses) > 0 ? c._id in queryCourses : true
-            filter c.ownerIsBaseCurriculum != true
-            SORT c.name asc
-            RETURN {_key: c._key, _id: c._id, name: c.name, grade: c.grade}
+            let userid = (UNIQUE(for u in auth_users filter u.username == ${username} return u._id))
+            let queryCourses = (for c in outbound userid[0] hasCourse return c._id)
+            for c in courses
+                filter length(queryCourses) > 0 ? c._id in queryCourses : true
+                filter c.ownerIsBaseCurriculum != true
+                SORT c.name asc
+                RETURN {_key: c._key, _id: c._id, name: c.name, grade: c.grade}
             `;
         // let query = aql`
         //   let userid = (UNIQUE(for c in outbound userid[0] hasCourse return {_key: c._key, _id: c._id, name: c.name, grade: c.grade}))`
@@ -964,53 +986,6 @@ module.exports = function(app){
             console.log(Date.now() + " Error (Get Courses from Database):", error);
             res.json();
         })            
-    })
-    
-    app.get('/fa/:username', function(req, res){
-        let username = req.params.username;
-        // covers replaced with focusesOn
-        // check this query!!!
-        let query = aql`
-        let userid = (for u in auth_users filter u.username == ${username} return u._id)
-        let queryCourses = (for c in outbound userid[0] hasCourse return c._key)
-        let fa_key = (for c in courses
-            filter length(queryCourses) > 0 ? c._key in queryCourses : true
-                for fa in
-                outbound c
-                focusesOn
-                return fa._key)
-        for f in focusAreas 
-        filter f._key in fa_key
-        return {_key: f._key, name: f.name}`;
-    //  console.log(query)
-        db.query(query)
-        .then(cursor => { 
-            // console.log("FA", cursor._result);
-            res.json({success: true, fa: cursor._result});
-        }).catch(error => {
-            console.log(Date.now() + " Error (Get FA from Database):", error);
-            res.json({success: false});
-        })  
-
-    })
-
-    app.post('/api/fa/names', function(req, res){
-        let fa = req.body;
-        // covers replaced with focusesOn
-        // check this query!!!
-        let query = aql`for item in ${fa}
-        for f in focusAreas
-        filter f._id == item._id
-        return {name: f.name, _id: f._id, _key: f._key}`;
-    //  console.log(query)
-        db.query(query)
-        .then(cursor => { 
-            console.log("FA", cursor._result);
-            res.json({success: true, focusAreas: cursor._result});
-        }).catch(error => {
-            console.log(Date.now() + " Error (Get FA from Database):", error);
-            res.json({success: false});
-        })  
     })
 
     app.use(function(req, res){
