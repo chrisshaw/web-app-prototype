@@ -428,7 +428,6 @@ module.exports = function(app){
             console.log('Query string:', `/${userKey}/build${strRequest}`);
             pathBuilderService.get(`/${userKey}/build${strRequest}`)
             .then( response => {
-                console.log("Response",'\n',response.body);
                 res
                     .status(200)
                     .json(response.body)

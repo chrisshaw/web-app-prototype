@@ -214,28 +214,6 @@ class GroupTabs extends React.Component {
         faComponents = project.fa.slice(0, maxVisibleFA).map(function(fa, index) {
         faCounter++;  // increase for each fa iteration
 
-        // ****removed for now as there are no standards information in the focusArea table or in the path resultsset
-          // if (fa.nextStd) {
-          //     let count = 0;  // instead of using index which is unstable
-          //     var nextStandards = fa.nextStd.map((standard, indexNextStd) => {
-          //     count++;
-          //     return   <Col key={component.props.paths[tabindex].studentsOnPath[0].toString()+'nextStd'+count.toString()} className="chip-float"><div className="chip">
-          //                 {standard.toUpperCase()}
-                        
-          //               </div>
-          //               </Col>
-          //   });
-          // }
-          // if (fa.currentStd) {
-          //   let count = 0;  // instead of using index which is unstable
-          //   var currentStandards = fa.currentStd.map((standard, indexCurrentStandards) => {
-          //       count++;
-          //       return   <Col key={component.props.paths[tabindex].studentsOnPath[0].toString()+'currentStd'+count.toString()} className="chip-float"><div className="chip">
-          //           {standard.toUpperCase()}
-          //               </div>
-          //             </Col>
-          //   });
-          // }
           let faPosition =  idCounter;   
           let changeButtons = (<div><Col className="text-center" md={3} xs={3}>         
                       <FlatButton containerElement='label' label="Add"   onTouchTap={(e) => component.handleAdd(studentPathPosition, projPosition, faPosition)}/>  
@@ -256,36 +234,20 @@ class GroupTabs extends React.Component {
                       <FlatButton containerElement='label' label="Close"   onTouchTap={() => component.handleClose(studentPathPosition, projPosition, faPosition)}/>
                       </Col> </div>);
           idCounter++;
-          let dragItem = <div ref={component.props.paths[tabindex].studentsOnPath[0].toString()+'|'+fa._key.toString()+'|'+studentPathPosition+'|'+projPosition+'|'+faPosition} id={component.props.paths[tabindex].studentsOnPath[0].toString()+'|'+fa._key.toString()+'|'+studentPathPosition+'|'+projPosition+'|'+faPosition} key={component.props.paths[tabindex].studentsOnPath[0].toString()+'|'+fa._key.toString()+'|'+studentPathPosition+'|'+projPosition+'|'+faPosition}  className="fa-wrapper path">
+          
+          let dragItem = <div
+                            ref={[component.props.paths[tabindex].studentsOnPath[0], fa._id, studentPathPosition, projPosition, faPosition].join('|')}
+                            id={[component.props.paths[tabindex].studentsOnPath[0], fa._id, studentPathPosition, projPosition, faPosition].join('|')}
+                            key={[component.props.paths[tabindex].studentsOnPath[0], fa._id, studentPathPosition, projPosition, faPosition].join('|')}
+                            className="fa-wrapper path"
+                            >
 
           <Row className="fa-tab-view-rows" >
               <Col md={12}><div style={styles.slide}>    
                   <Row >
-                      <Col  md={3} xs={12}>
-                        <h3  className='fa-headings'>Focus Area</h3>
-                      </Col>
-                      <Col  md={9} xs={12}>
-                        <p  className='fa-headings-span'>{fa.name.toString()}</p>
-                      </Col>
+                      <h3  className='fa-headings'>{fa.name}</h3>
                   </Row>
                   <hr />
-                  {/* <Row >
-                    <Col className="chip-float">
-                      <div className="chip">                    
-                        {fa.subject.toUpperCase()}      
-                      </div>
-                    </Col>
-                      {currentStandards}
-                  </Row> */}
-                  {/* <Row>
-                     { (index === fa.length-1) ? "": <div className="chip-float-text">Connected To</div>}
-                    <Col  className="chip-float">
-                      <div className="chip">
-                        {fa.nextFA}
-                      </div>
-                    </Col> 
-                     {nextStandards}  
-                </Row> */}
                 </div>
               </Col>
             </Row>
@@ -354,7 +316,7 @@ class GroupTabs extends React.Component {
       let studentPathPosition = tabindex;
       if ((this.props.paths.length > 0)) {
         if ((this.props.paths[tabindex]) && (this.props.paths[tabindex].projectPath.length !== 0)) {    
-        // there will be may Focus Areas returned for each pathway / group
+        // there will be may focus areas returned for each pathway / group
         // var studentName= "... " + component.props.paths[tabindex].studentsOnPath.length + " students";
         // var studentNumber = component.props.paths[tabindex].studentsOnPath.length + " students";
         // rename projectComponent
@@ -365,7 +327,9 @@ class GroupTabs extends React.Component {
       }
       var resultsComponents  = component.props.paths.slice(this.state.showTabStart, this.state.showTabEnd).map(function(result, index) {
       let studentTabIndex = component.state.showTabStart + index;
-      var studentNumber = result.studentsOnPath.length + " students";
+      const studentCount = result.studentsOnPath.length
+      const pluralizedLabel = studentCount > 1 ? " students" : " student"
+      var numberOfStudents = studentCount + ' ' + pluralizedLabel;
       //map students --- this is id but when we have names we can replace
       var studentData = result.studentsOnPath.map(function(studentname, index) {
              let studentnames = 
@@ -378,7 +342,7 @@ class GroupTabs extends React.Component {
              return  <div className="student-chip-float"> {studentnames} </div>
 
       })
-      return <Tab ref={tabindex} onActive={component.handleActive}  key={studentTabIndex} label={studentNumber} value={studentTabIndex} buttonStyle={{color: "#808080", whiteSpace: "normal"}}>            
+      return <Tab ref={tabindex} onActive={component.handleActive}  key={studentTabIndex} label={numberOfStudents} value={studentTabIndex} buttonStyle={{color: "#808080", whiteSpace: "normal"}}>            
                   <br />
                  <Row className="text-center">{studentData} </Row>
                  <br />

@@ -202,6 +202,7 @@ var helpers = {
         }
         dispatch(actions.updatePathList("", true, true));
         return axios.post('/api/path/project', queryObj).then( function(response) {
+            console.log(response.data);
             dispatch(actions.updatePathList(response.data, false, false));            
         }
             // post the ids to the db to get names back then add them to the results set before sending paths to the store

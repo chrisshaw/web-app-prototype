@@ -59,8 +59,8 @@ class QueryBuilder extends Component{
             console.log("this.props.selectedtopiclist", this.props.selectedtopiclist)
             helper.getPathProjectAll(myCourses,this.props.selectedgradelist, this.props.selectedstandardslist, this.props.selectedtopiclist, this.props.selectedsubjectcontentlist, this.props.role, this.props.dispatch); 
             // reset display settings
-            helper.addInitialRows("", this.props.dispatch); 
-        }  else {
+            helper.addInitialRows("", this.props.dispatch);
+        } else {
             this.setState({error: true , errorMsg:  "You have no COURSES set up in Sidekick, please contact your administrator."})
         }  
     }
