@@ -132,74 +132,6 @@ module.exports = function(app){
         });
     }
 
-   function parseFa(result) { 
-        // for each student
-        for (var p = 0; p < result.length; p++){
-            // for each project
-            for (var l = 0; l < result[p].projects.length; l++){
-                // for each fa  
-                for (var i = 0; i < result[p].projects[l].fa.length; i++){
-                    if ( i < result[p].projects[l].fa.length-1) {
-                        result[p].projects[l].fa[i].nextFA = result[p].projects[l].fa[i+1].name
-                    } else {
-                        // if there is another project 
-                        if ((result[p].projects.length-1 > l ) && (result[p].projects[l+1].fa.length > 0)){
-                            // moves to next project and the first fa in that project if one exists
-                            result[p].projects[l].fa[i].nextFA = result[p].projects[l+1].fa[0].name;
-                            console.log("result[p].projects[l].fa[i].nextFA", result[p].projects[l].fa[i].nextFA)
-                        } else {
-                            result[p].projects[l].fa[i].nextFA = [];  
-                        }
-                    }
-                    // console.log(" result[p].projects[l].fa[i].nextFA ",  result[p].projects[l].fa[i].nextFA )
-                    result[p].projects[l].fa[i]['currentStd'] = [];
-                    result[p].projects[l].fa[i]['nextStd']= [];
-                    // next standards
-                    if (i < result[p].projects[l].fa.length-1){  
-                        console.log("result[p].projects[l].fa[i+1].", result[p].projects[l].fa[i+1]);
-                        for (var j = 0; j < result[p].projects[l].fa[i+1].standardConnections.length; j++){
-                            // save the first one
-                            if ((j === 0)){
-                                result[p].projects[l].fa[i].nextStd.push(result[p].projects[l].fa[i+1].standardConnections[j]);
-                            }
-                            // don't save duplicates
-                            else if ((j > 0 ) && (result[p].projects[l].fa[i+1].standardConnections[j-1] !== result[p].projects[l].fa[i+1].standardConnections[j] )){
-                                result[p].projects[l].fa[i].nextStd.push(result[p].projects[l].fa[i+1].standardConnections[j]);
-                            }  
-                        }
-                    }  else {
-                         // result[p].projects[k].fa[i].nextFA = [];  
-                        if ((result[p].projects.length-1 > l ) && (result[p].projects[l+1].fa.length > 0)){
-                            // moves to next project and the first fa in that project if one exists
-                            for (var j = 0; j < result[p].projects[l+1].fa[0].standardConnections.length; j++){
-                                if ((j === 0)){
-                                    result[p].projects[l].fa[i].nextStd.push(result[p].projects[l+1].fa[0].standardConnections[j]);
-                                }
-                                // don't save duplicates
-                                else if ((j > 0 ) && (result[p].projects[l+1].fa[0].standardConnections[j-1] !== result[p].projects[l+1].fa[0].standardConnections[j] )){
-                                    result[p].projects[l].fa[i].nextStd.push(result[p].projects[l+1].fa[0].standardConnections[j]);
-                                }
-                            }
-                        } else {
-                           result[p].projects[l].fa[i].nextStd = [];  // if 
-                        }
-                    }
-
-                    // de-dup current fa std connections
-                    for (var k = 0; k < result[p].projects[l].fa[i].standardConnections.length; k++){
-                        if ((k === 0)){
-                            result[p].projects[l].fa[i]['currentStd'].push(result[p].projects[l].fa[i].standardConnections[k]);
-                        }
-                        else if ((k > 0 ) && (result[p].projects[l].fa[i].standardConnections[k-1] !== result[p].projects[l].fa[i].standardConnections[k] )){
-                        result[p].projects[l].fa[i]['currentStd'].push(result[p].projects[l].fa[i].standardConnections[k]);
-                        }                 
-                    }
-                }
-            }
-        }
-        return result;
-    }
-
     app.post('/password' , function(req, res, next){
         // validate user is logged in
         validateUser(req, res, "").then((response) =>{
@@ -468,23 +400,8 @@ module.exports = function(app){
             res.json({success: false, auth: false})
         })
     })
-
-   // for now this just returns a json
-    // app.post('/api/path/project', function (req, res){
-        
-    //     // validateUser(req, res, "buildPath").then((response) =>{
-    //         let path = require('../data/faPath.js'); 
-    //         console.log("in here.....");
-    //         let parsedPath = parseFa(path);
-    //         res.json({success: true, paths: parsedPath })
-    //     // }).catch((error) => {
-    //          console.log(Date.now() + " Authentication Error");
-    //          res.json({success: false, error: "No Permissions to View Paths"})
-    //     // })
-    // })
     
-    // using post as passing object - probably not ideal
-    app.post('/api/path/project', function (req, res){
+     app.post('/api/path/project', function (req, res){
         validateUser(req, res, "buildPath")
         .then( response => {
             // intialise
@@ -497,6 +414,7 @@ module.exports = function(app){
             const reqBody = req.body;
             const userKey = response.userkey;
             const queryObject = {};
+
             if ( reqBody.courses && reqBody.courses.length > 0 ) queryObject.courses = reqBody.courses.map( course => course._key );
             if ( reqBody.grades && reqBody.grades.length > 0 ) queryObject.grades = reqBody.grades.map( grade => grade.name.toString().toLowerCase() );
             if ( reqBody.subjects && reqBody.subjects.length > 0 ) queryObject.subjects = reqBody.subjects.map( subject => subject.name.toLowerCase() );
@@ -510,7 +428,6 @@ module.exports = function(app){
             console.log('Query string:', `/${userKey}/build${strRequest}`);
             pathBuilderService.get(`/${userKey}/build${strRequest}`)
             .then( response => {
-                console.log("Response",'\n',response.body);
                 res
                     .status(200)
                     .json(response.body)
@@ -526,6 +443,8 @@ module.exports = function(app){
             res.json({success: false, error: "No Permissions to View Paths"})
         });
     });
+
+
 
     const constructQueryParams = queryObject => {
         return Object.keys(queryObject).reduce( (queryString, key, i, keys) => {
@@ -908,7 +827,29 @@ module.exports = function(app){
             res.json();
         }) 
 
-     })
+    })
+
+    app.get(`/api/user/:uid/focusAreas`, function(req, res){
+        const uid = req.params.uid;
+
+        let query = aql`
+            for focusArea
+            in 2 outbound ${uid}
+            hasCourse, focusesOn
+            return KEEP(focusArea, '_id', '_key', 'name')
+        `;
+    //  console.log(query)
+        db.query(query)
+        .then(cursor => { 
+            // console.log("FA", cursor._result);
+            res.json({success: true, fa: cursor._result});
+        }).catch(error => {
+            console.log(Date.now() + " Error (Get FA from Database):", error);
+            res.json({success: false});
+        })  
+
+    })
+
     app.get('/api/fa/:faKey', function(req, res){
         let faKey = req.params.faKey;
         // let faKey = parseInt(req.params.faKey);
@@ -989,13 +930,13 @@ module.exports = function(app){
         // only teachers or students will have mappings in hasCourses table
         // role will be needed in paths.....role = student should only see their own courses not other students
         let query = aql`
-          let userid = (UNIQUE(for u in auth_users filter u.username == ${username} return u._id))
-          let queryCourses = (for c in outbound userid[0] hasCourse return c._id)
-          for c in courses
-            filter length(queryCourses) > 0 ? c._id in queryCourses : true
-            filter c.ownerIsBaseCurriculum != true
-            SORT c.name asc
-            RETURN {_key: c._key, _id: c._id, name: c.name, grade: c.grade}
+            let userid = (UNIQUE(for u in auth_users filter u.username == ${username} return u._id))
+            let queryCourses = (for c in outbound userid[0] hasCourse return c._id)
+            for c in courses
+                filter length(queryCourses) > 0 ? c._id in queryCourses : true
+                filter c.ownerIsBaseCurriculum != true
+                SORT c.name asc
+                RETURN {_key: c._key, _id: c._id, name: c.name, grade: c.grade}
             `;
         // let query = aql`
         //   let userid = (UNIQUE(for c in outbound userid[0] hasCourse return {_key: c._key, _id: c._id, name: c.name, grade: c.grade}))`
@@ -1046,33 +987,6 @@ module.exports = function(app){
         })            
     })
 
-    app.get('/fa/:username', function(req, res){
-        let username = req.params.username;
-        // covers replaced with focusesOn
-        // check this query!!!
-        let query = aql`
-        let userid = (for u in auth_users filter u.username == ${username} return u._id)
-        let queryCourses = (for c in outbound userid[0] hasCourse return c._key)
-        let fa_key = (for c in courses
-            filter length(queryCourses) > 0 ? c._key in queryCourses : true
-                for fa in
-                outbound c
-                focusesOn
-                return fa._key)
-        for f in focusAreas 
-        filter f._key in fa_key
-        return {_key: f._key, name: f.name}`;
-    //  console.log(query)
-        db.query(query)
-        .then(cursor => { 
-            // console.log("FA", cursor._result);
-            res.json({success: true, fa: cursor._result});
-        }).catch(error => {
-            console.log(Date.now() + " Error (Get FA from Database):", error);
-            res.json({success: false});
-        })  
-
-    })
     app.use(function(req, res){
         db.get()
         .then(response => {

@@ -6,7 +6,7 @@ import FlatButton from 'material-ui/FlatButton';
 import IconButton from 'material-ui/IconButton';
 import helper from '../helper';
 import {connect} from 'react-redux';
-import AutoCompleteField from './AutoCompleteField';
+import MultiSelectField from './MultiSelectField';
 import ResetIcon from "./ResetIcon";
 
 class SubjectContentSelection extends Component{
@@ -45,7 +45,7 @@ class SubjectContentSelection extends Component{
         if ( this.props.selectedsubjectcontentlist){
              var arrLength = this.props.selectedsubjectcontentlist.length;
         }    
-        let hintText = "Enter subject(s) e.g. english";
+        let hintText = "Select one or more subject(s) e.g. english, math";
         return(<div>
                     <Row>
                         <Col xs={10} md={10} >
@@ -57,7 +57,7 @@ class SubjectContentSelection extends Component{
                     </Row>
                     <Row>
                         <Col xs={12} md={12} >
-                            <AutoCompleteField hint={hintText} queryitem="Subjects" list={this.props.subjectcontentlist} selectedlist={this.props.selectedsubjectcontentlist} handleRequestDelete={this.handleRequestDelete}/>
+                            <MultiSelectField hint={hintText} queryitem="Subjects" list={this.props.subjectcontentlist} selectedlist={this.props.selectedsubjectcontentlist} handleRequestDelete={this.handleRequestDelete}/>
                         </Col>
                     </Row>
                 </div>

@@ -59,8 +59,8 @@ class QueryBuilder extends Component{
             console.log("this.props.selectedtopiclist", this.props.selectedtopiclist)
             helper.getPathProjectAll(myCourses,this.props.selectedgradelist, this.props.selectedstandardslist, this.props.selectedtopiclist, this.props.selectedsubjectcontentlist, this.props.role, this.props.dispatch); 
             // reset display settings
-            helper.addInitialRows("", this.props.dispatch); 
-        }  else {
+            helper.addInitialRows("", this.props.dispatch);
+        } else {
             this.setState({error: true , errorMsg:  "You have no COURSES set up in Sidekick, please contact your administrator."})
         }  
     }
@@ -71,8 +71,6 @@ class QueryBuilder extends Component{
                 onTouchTap={this.handleClose}
             />
             ];
-
-            console.log("initial disabled: ", this.props)
         var styles = {
             dialog : {
                 width: '50vw',
@@ -120,7 +118,7 @@ class QueryBuilder extends Component{
                 </Row>
                 <Row>
                     <Col xs={12} md={12} className="text-center" >            
-                        { (this.props.perms) && (this.props.perms.indexOf('publish') !== -1) ? <FlatButton containerElement='label' label="Start Updating Summit" disabled={this.props.disabled} onTouchTap={this.props.handleSend} /> : ""}
+                        { (this.props.perms) && (this.props.perms.indexOf('publish') !== -1) ? <FlatButton containerElement='label' label="Start Publishing to LMS" disabled={this.props.disabled} onTouchTap={this.props.handleSend} /> : ""}
                     </Col>
                 </Row>
             </div>

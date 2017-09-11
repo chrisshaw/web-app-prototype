@@ -1,4 +1,0 @@
-{"type":2300,"data":{"_id":"auth_permissions/3171432","_key":"3171432","_rev":"_VVIJVIy---","description":"users with this permission can email files for upload to Summit","name":"sendtosummit"}}
-{"type":2300,"data":{"_id":"auth_permissions/2836441","_key":"2836441","_rev":"_VVIJVIy--A","description":"This permission allows the holder to create new user accounts in the application.","name":"manageusers"}}
-{"type":2300,"data":{"_id":"auth_permissions/2836328","_key":"2836328","_rev":"_VVIJVIy--_","description":"This permission allows a user to upload students in a CSV and save them to the database.","name":"uploadstudents"}}
-{"type":2300,"data":{"_id":"auth_permissions/2836504","_key":"2836504","_rev":"_VVIJVIu---","description":"This permission allows users to build and view paths in the path builder.","name":"buildpath"}}

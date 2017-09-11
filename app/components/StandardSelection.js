@@ -6,7 +6,7 @@ import FlatButton from 'material-ui/FlatButton';
 import IconButton from 'material-ui/IconButton';
 import helper from '../helper';
 import {connect} from 'react-redux';
-import AutoCompleteField from './AutoCompleteField';
+import MultiSelectField from './MultiSelectField';
 import ResetIcon from "./ResetIcon";
 // import Github from 'material-ui/lib/svg-icons/custom/github';
 
@@ -60,7 +60,7 @@ class StandardsSelection extends Component{
              var arrLength = this.props.selectedstandardslist.length;
         }
         
-        let hintText = 'Enter standard(s)'
+        let hintText = 'Select one or more standard(s)'
         return(<div>
                     <Row>
                         <Col xs={10} md={10} >
@@ -72,7 +72,7 @@ class StandardsSelection extends Component{
                     </Row>
                     <Row>
                         <Col xs={12} md={12} >
-                            <AutoCompleteField hint={hintText} queryitem="Standards" list={this.props.standardslist} selectedlist={this.props.selectedstandardslist} handleRequestDelete={this.handleRequestDelete}/>
+                            <MultiSelectField hint={hintText} queryitem="Standards" list={this.props.standardslist} selectedlist={this.props.selectedstandardslist} handleRequestDelete={this.handleRequestDelete}/>
                         </Col>
                     </Row>
                 </div>

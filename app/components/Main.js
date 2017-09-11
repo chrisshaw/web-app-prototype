@@ -68,14 +68,13 @@ class Main extends Component{
         this.handleLogout = this.handleLogout.bind(this);
         this.handleClose = this.handleClose.bind(this);
         // get initial data
-        helper.getUserFA(this.props.username, this.props.dispatch);
+        helper.getUserFA(this.props.userId, this.props.dispatch);
         injectTapEventPlugin();
     }
     handleLogout(){
        helper.logout(this.props.dispatch, this.props.router);
     }
     handleClose(){ 
-
         // clear local and server error messages
         if (this.props.error) helper.setErrorMsg(this.props);
         // local validation
@@ -144,6 +143,7 @@ class Main extends Component{
 const mapStateToProps = (store) => {
     return {
         loggedin: store.authState.loggedin,
+        userId: store.authState.userId,
         username: store.authState.username,
         perms: store.authState.perms,
         role: store.authState.role,

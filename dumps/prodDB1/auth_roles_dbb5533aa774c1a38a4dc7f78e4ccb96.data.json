@@ -1,4 +1,0 @@
-{"type":2300,"data":{"_id":"auth_roles/2836152","_key":"2836152","_rev":"_VTVyMDO---","description":"Non-Admin user with view only permissions","name":"Student"}}
-{"type":2300,"data":{"_id":"auth_roles/2836253","_key":"2836253","_rev":"_VTLO6zO--_","description":"This role is for teachers who will need a limited amount of edit / create priviliges","name":"Teacher"}}
-{"type":2300,"data":{"_id":"auth_roles/2835928","_key":"2835928","_rev":"_VTLO6zO---","description":"External Administrative User e.g. Teacher with administrative priviliges","name":"Admin"}}
-{"type":2300,"data":{"_id":"auth_roles/2835986","_key":"2835986","_rev":"_VTLO6ui---","description":"Internal Administrative User e.g. Sales Person responsible for setting up accounts","name":"Internal"}}
