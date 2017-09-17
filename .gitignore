@@ -3,6 +3,7 @@ node_modules
 dumps
 data
 dbsettings.sh
+.vs_code
 
 
 # Elastic Beanstalk Files
