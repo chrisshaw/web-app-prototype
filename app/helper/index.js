@@ -86,7 +86,7 @@ var helpers = {
     //     })
     // },
     getGrades: function(reset, deleteGroup, dispatch){
-       var gradeArr = [{_id: 0, name: "6"}, {_id: 1, name: "7"},{_id: 2, name: "8"}, {_id: 3, name: "9"},{_id: 4, name: "10"}, {_id: 5, name: "11"}]
+       var gradeArr = [{_id: 0, name: "6"}, {_id: 1, name: "7"},{_id: 2, name: "8"}, {_id: 3, name: "9"},{_id: 4, name: "10"}, {_id: 5, name: "11"}, {_id: 6, name: "12"}]
        dispatch(actions.updateList(reset, deleteGroup, 0, 'UPDATE_GRADES', gradeArr));
     },
     getCourses: function(reset, deleteGroup, username, role, dispatch){
