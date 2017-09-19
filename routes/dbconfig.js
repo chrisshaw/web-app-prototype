@@ -11,6 +11,12 @@ const config = {
         dbPwd: process.env.DEV_DB_PWD,
         dbName: process.env.DEV_DB_NAME        
     },
+    TEST: {
+        dbHostPort: "http://" + process.env.TEST_DB_HOST_PORT,
+        dbUser: process.env.TEST_DB_USER,
+        dbPwd: process.env.TEST_DB_PWD,
+        dbName: process.env.TEST_DB_NAME
+    },
     LOCAL: {
         dbHostPort: "http://" + process.env.LOCAL_DB_HOST_PORT,
         dbUser: process.env.LOCAL_DB_USER,
