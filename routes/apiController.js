@@ -872,14 +872,11 @@ module.exports = function(app){
     })
     app.get('/api/topics/all', function(req, res){
         let query = aql`
-            let topics = UNIQUE(FLATTEN(
-                for p in projects
-                return p.topics
-            ))
-
-            for t in topics
-            sort t
-            return t
+            for p in projects
+            filter LENGTH(p.topics) > 0
+                for t in p.topics
+                collect topic = t
+                return topic
         `;
 
         db.query(query)
