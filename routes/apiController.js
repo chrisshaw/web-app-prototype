@@ -927,16 +927,16 @@ module.exports = function(app){
         // only teachers or students will have mappings in hasCourses table
         // role will be needed in paths.....role = student should only see their own courses not other students
         let query = aql`
-            let userid = (UNIQUE(for u in auth_users filter u.username == ${username} return u._id))
-            let queryCourses = (for c in outbound userid[0] hasCourse return c._id)
-            for c in courses
-                filter length(queryCourses) > 0 ? c._id in queryCourses : true
-                filter c.ownerIsBaseCurriculum != true
-                SORT c.name asc
-                RETURN {_key: c._key, _id: c._id, name: c.name, grade: c.grade}
-            `;
-        // let query = aql`
-        //   let userid = (UNIQUE(for c in outbound userid[0] hasCourse return {_key: c._key, _id: c._id, name: c.name, grade: c.grade}))`
+            let userid = FIRST(
+                for u in auth_users
+                filter u.username == ${username}
+                return u._id
+            )
+            for c
+            in outbound userid
+            hasCourse
+            return { _id: c._id, _key: c._key, name: CONCAT(c.name, " (", c.schoolName, ")"), grade: c.grade }
+        `;
         
         // console.log(query)
         db.query(query)
