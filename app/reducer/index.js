@@ -1,6 +1,10 @@
 import uuid from 'uuid';
 import {combineReducers } from 'redux';
 import update from 'immutability-helper';
+import studentsTabReducer from './studentsTab';
+import classReducer from './class';
+import teachersAndAdminsReducer from './teachersAndAdmins';
+import flashMessageReducer from './flashMessage';
 
 const intialstate = {
     //realised that intialstate wasnt workginas it was nesetd {initialstate} below
@@ -202,7 +206,7 @@ const authReducer = (state=loginintialstate, action) => {
     // console.log("loginintialstate", loginintialstate);
     switch(action.type){    
         case 'LOGGED_IN':
-            return Object.assign({},state, {loggedin: action.data.success, username: action.data.username, userId: action.data.id, perms: action.data.perms, role: action.data.role}); 
+            return Object.assign({},state, {loggedin: action.data.success, username: action.data.username, userId: action.data.id, perms: action.data.perms, role: action.data.role});
         case 'LOGIN_ERROR':
             return Object.assign({loginerror: false},state, {loginerror: action.loginerror, errormsg: action.errormsg }); 
         case 'GET_ROLES':
@@ -262,6 +266,10 @@ const appReducer = combineReducers({
     authState : authReducer,
     uploadState: uploadReducer,
     appState: appStatusReducer,
+    studentsTab: studentsTabReducer,
+    teachersAndAdmins: teachersAndAdminsReducer,
+    flashMessage: flashMessageReducer,
+    classState: classReducer,
 })
 // to handle clearing store on logout
 const reducers = (state, action) => {
