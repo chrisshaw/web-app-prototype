@@ -9,7 +9,7 @@ import Forbidden from "./components/Forbidden";
 import Password from "./components/Password";
 import validatePerms  from "./components/ValidatePerms";
 import PathBuilder from "./components/PathBuilder.js";
-import DataImportStudentCSV from "./components/DataImportStudentCSV.js";
+import AdminPanel from "./components/AdminPanel";
 import {Router, Route, hashHistory, browserHistory, IndexRoute} from "react-router";
 // import ValidatePermissions from "./components/ValidatePermissions.js";
 
@@ -21,7 +21,7 @@ var routes = (
             <IndexRoute auth='buildPath' component={validatePerms(PathBuilder)}/>
             <Route path='/manageusers' auth='createAccounts' component={validatePerms(SignUpTab)} />
             <Route path='/buildpath' auth='buildPath' component={validatePerms(PathBuilder)} /> 
-            <Route path='/uploadstudents'  auth='manageStudents' component={validatePerms(DataImportStudentCSV)} />
+            <Route path='/uploadstudents'  auth='manageStudents' component={validatePerms(AdminPanel)} />
             <Route path='/password' component={Password} />
             <Route path='/forbidden' component={Forbidden} />
             <Route path='/login' component={LoginTab} />

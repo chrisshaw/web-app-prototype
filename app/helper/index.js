@@ -1,5 +1,8 @@
 var axios = require("axios");
 import actions from '../actions';
+import { fetchStudentsList } from '../actions/studentsTab';
+import { fetchCoursesList } from '../actions/class';
+import { fetchTeachersAndAdmins } from '../actions/teachersAndAdmins';
 // import {connect} from 'react-redux';
 // import store from '../store';
 
@@ -400,6 +403,9 @@ var helpers = {
             // saves the role and permssions and user data
             // dispatch(actions.userPerms(response.data));
             dispatch(actions.userLogin(response.data));
+            dispatch(fetchStudentsList());
+            dispatch(fetchCoursesList());
+            dispatch(fetchTeachersAndAdmins());
             // captures error and sends any relevant message to UI
             dispatch(actions.userLoginError(!response.data.success, msg));
             // successful login route to default page

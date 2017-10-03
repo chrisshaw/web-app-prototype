@@ -984,6 +984,130 @@ module.exports = function(app){
         })            
     })
 
+    app.get('/api/students', function(req, res) {
+        const query = `for vertex, edge, path
+                        in 3 any @userId
+                        hasSection, outbound auth_hasRole
+                        filter IS_SAME_COLLECTION('auth_users', path.vertices[2])
+                        and IS_SAME_COLLECTION('auth_hasRole', path.edges[2])
+                        and PARSE_IDENTIFIER(path.edges[2]._to).key == 'student'
+                        and path.vertices[3] != null
+                        return distinct KEEP(path.vertices[2], '_id', '_key', 'username', 'first', 'last', 'grade', 'interests')`;
+
+        db.query(query, {userId: req.query.userId})
+          .then((cursor) => {
+            res.send(cursor._result);
+          })
+          .catch(() => {
+            res.sendStatus(500);
+          });
+    });
+
+    app.put('/api/student/interests', function(req, res) {
+      const query = `update @student._key with { 
+                        interests: @student.interests
+                    } in auth_users
+                    return NEW`;
+      req.body.interests = removeDuplicates(req.body.interests);
+
+      db.query(query, { student: req.body })
+        .then((cursor) => {
+          res.send(cursor._result[0]);
+        })
+        .catch(() => {
+          res.sendStatus(500);
+        });
+
+      function removeDuplicates(interestsObj) {
+          let result = {};
+          for (interestCategory in interestsObj) {
+              result[interestCategory] = interestsObj[interestCategory].filter((interest, index, interests) => interests.indexOf(interest) === index);
+          }
+          return result;
+      }
+    });
+
+    app.get('/api/teachers_and_admins', function(req, res) {
+        const query = `for v, e, path
+                        in 3 any @adminUserId
+                        atSchool, auth_hasRole
+                        filter IS_SAME_COLLECTION('auth_users', path.vertices[2])
+                        filter IS_SAME_COLLECTION('auth_hasRole', path.edges[2])
+                        filter PARSE_IDENTIFIER(v._id).key in ['teacher', 'admin']
+                        collect user = KEEP(path.vertices[2], 'first', 'last', 'username', '_id', '_key') into role = v._id
+                        let firstRole = FIRST(UNIQUE(role))
+                        return MERGE(user, { "role": firstRole })`;
+        db.query(query, { adminUserId: req.query.adminUserId })
+          .then((cursor) => {
+            res.send(cursor._result);
+          })
+          .catch(() => {
+            res.sendStatus(500);
+          })
+    });
+
+    app.put('/api/teachers_and_admins/role', function(req, res) {
+        const query = `for vertex, roleEdge
+                        in outbound @user
+                        auth_hasRole
+                        update roleEdge with { 
+                            _to: LOWER(@role),
+                            lastUpdated: DATE_NOW(),
+                            updatedBy: @currentUser
+                        } in auth_hasRole
+                        return NEW`;
+        db.query(query, {
+            user: req.body.teacherOrAdminId,
+            role: req.body.role,
+            currentUser: req.body.currentUserId,
+        })
+          .then(() => {
+            res.sendStatus(204);
+          })
+          .catch(() => {
+            res.sendStatus(500);
+          });
+    });
+
+    app.get('/api/course', function(req, res) {
+        const query = `for course, e, p
+                        in 2 outbound @userId
+                        hasSection, hasCourse
+                        filter p.vertices[2] != null
+                        return KEEP(course, "_key", "_id", "grade", "name", "subject", "interests")`;
+        db.query(query, { userId: req.query.userId })
+          .then((cursor) => {
+            res.send(cursor._result);
+          })
+          .catch(() => {
+            res.sendStatus(500);
+          });
+    });
+
+    app.put('/api/course/interests', function(req, res) {
+        const query = `update @course._key with { 
+                            interests: @course.interests
+                        } in courses
+                        return NEW`;
+        req.body.interests = removeDuplicates(req.body.interests);
+
+        db.query(query, { course: req.body })
+          .then((cursor) => {
+            res.send(cursor._result[0]);
+          })
+          .catch(() => {
+            res.sendStatus(500);
+          });
+
+        function removeDuplicates(interestsObj) {
+          let result = {};
+          for (interestCategory in interestsObj) {
+            result[interestCategory] = interestsObj[interestCategory].filter((interest, index, interests) => interests.indexOf(interest) === index);
+          }
+          return result;
+        }
+    });
+
     app.use(function(req, res){
         db.get()
         .then(response => {

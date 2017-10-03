@@ -21,7 +21,7 @@ const navBarTheme = getMuiTheme({
     accent1Color: "#40C83C",
     accent2Color: '#A35FE3',
     accent3Color: '#808080',
-    alternateTextColor: '#FFFFFF',
+    alternateTextColor: '#40C83C',
     disabledColor: '#E6E6E6',
   },
   appBar: {
@@ -34,9 +34,9 @@ const navBarTheme = getMuiTheme({
     color: '#808080',
   },
   drawer : {
-    position: 'fixed',
-    top: '430px',
-    width: '430px'
+    // position: 'fixed',
+    // top: '430px',
+    // width: '430px'
   },
   chip: {
       backgroundColor: '#A35FE3',
