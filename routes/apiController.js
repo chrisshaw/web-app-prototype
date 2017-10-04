@@ -933,8 +933,9 @@ module.exports = function(app){
                 return u._id
             )
             for c
-            in outbound userid
-            hasCourse
+            in 2 outbound userid
+            hasSection, hasCourse
+            filter IS_SAME_COLLECTION('courses', c)
             return { _id: c._id, _key: c._key, name: CONCAT(c.name, " (", c.schoolName, ")"), grade: c.grade }
         `;
         
