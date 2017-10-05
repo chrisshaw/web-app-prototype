@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js",
-    "dev": "webpack & node server",
+    "dev": "webpack & nodemon server",
     "build": "webpack --config webpack.config.js"
   },
   "repository": {
@@ -50,6 +50,7 @@
     "redux": "^3.6.0",
     "redux-persist": "^4.8.0",
     "redux-thunk": "^2.2.0",
+    "topsort": "^0.0.2",
     "uuid": "^3.1.0"
   },
   "devDependencies": {
