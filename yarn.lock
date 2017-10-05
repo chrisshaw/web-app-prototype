@@ -3570,6 +3570,10 @@ toposort@^1.0.0:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/toposort/-/toposort-1.0.3.tgz#f02cd8a74bd8be2fc0e98611c3bacb95a171869c"
 
+topsort@^0.0.2:
+  version "0.0.2"
+  resolved "https://registry.yarnpkg.com/topsort/-/topsort-0.0.2.tgz#2e5e0ee8a1439417f101d5b9b2d035e620263321"
+
 tough-cookie@~2.3.0:
   version "2.3.2"
   resolved "https://registry.yarnpkg.com/tough-cookie/-/tough-cookie-2.3.2.tgz#f081f76e4c85720e6c37a5faced737150d84072a"
