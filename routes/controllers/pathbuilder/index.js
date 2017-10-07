@@ -225,7 +225,7 @@ const getPath = async (student, project) => {
     const filteredStartSegments = await step5_filterAndEnrichWithBridges(startSegments, allStandards, student, maxSequenceDepth)
     const filteredCombinedSegments = step6_combineFilteredSegments(filteredGoalSegments, filteredStartSegments)
     const finalDestinations = step7_getFinalDestinations(filteredGoalSegments)
-    const collectionName = `s${student._key}p${project.topic.replace(' ', '')}`
+    const collectionName = `s${student._key}p${project.topic.replace(/ /g, '')}`
     const result = await arango.storeInCollection(filteredCombinedSegments, collectionName, true)
     try {
         const collection = await arango.getCollection(collectionName, true)
