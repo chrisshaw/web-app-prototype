@@ -198,6 +198,24 @@ module.exports = function(app){
         .then( response => {
             // intialise
             // some pre-processing
+
+            const constructQueryParams = queryObject => {
+                console.log(queryObject)
+                return Object.entries(queryObject).reduce( (queryString, [key, value], i, entries) => {
+                    if (i === 0) {
+                        queryString = '?'
+                    }
+                    if ( value instanceof Array ) {
+                        queryString += `${key}=${encodeURIComponent(value.join(','))}`
+                        if (i !== entries.length - 1) {
+                            queryString += '&';
+                        }                
+                    }
+                    return queryString;
+                }
+                , '');
+            };
+
             console.log(
                 "The request body is",
                 "\n",
@@ -216,32 +234,22 @@ module.exports = function(app){
             if ( reqBody.topics && reqBody.topics.length > 0 ) queryObject.topics = reqBody.topics.map( topic => topic.name.toLowerCase() );
             Object.keys(queryObject).forEach( key => console.log(key, ':', queryObject[key]));
 
-            // console.log('Constructing query string');
-            // const strRequest = constructQueryParams(queryObject);
-            // const pathBuilderService = db.route('path');
-            // console.log('Query string:', `/${userKey}/build${strRequest}`);
+            console.log('Constructing query string');
+            const strRequest = constructQueryParams(queryObject);
+            const encodedPath = `/${userKey}/build${strRequest}`
+            const pathBuilderService = db.route('path');
+            console.log('Query string:', encodedPath);
 
-            pathbuilder(queryObject)
+            pathBuilderService.get(encodedPath)
             .then( response => {
-                res.status(200)
-                .json(response)
+                res
+                    .status(200)
+                    .json(response.body)
             })
-            .catch( err => {
-                console.log(Date.now() + " Error (Getting paths from Database):", '\n', err );
-                res.status(500)
-                .json(err);                
+            .catch( error => {
+                console.log(Date.now() + " Error (Getting paths from Database):", '\n', error );
+                res.json();
             })
-
-            // pathBuilderService.get(`/${userKey}/build${strRequest}`)
-            // .then( response => {
-            //     res
-            //         .status(200)
-            //         .json(response.body)
-            // })
-            // .catch( error => {
-            //     console.log(Date.now() + " Error (Getting paths from Database):", '\n', error );
-            //     res.json();
-            // })
 
 
         })
@@ -251,22 +259,6 @@ module.exports = function(app){
             res.json({success: false, error: "No Permissions to View Paths"})
         });
     });
-
-    const constructQueryParams = queryObject => {
-        return Object.keys(queryObject).reduce( (queryString, key, i, keys) => {
-            if (i === 0) {
-                queryString = '?'
-            }
-            if ( queryObject[key].length > 0 ) {
-                queryString += key + '=' + queryObject[key].join(',');
-                if (i !== keys.length - 1) {
-                    queryString += '&';
-                }                
-            }
-            return queryString;
-        }
-        , '');
-    };
 
     function sendToSummitEmail(email, filePath) {
         // this part creates a reusable transporter using SMTP of gmail
