@@ -5,7 +5,6 @@ var path = require('path');
 var nodemailer = require("nodemailer");
 var fs = require('fs');
 const config = require('./dbconfig.js')[process.env.DB_MODE];
-const pathbuilder = require('./controllers/pathbuilder')
 
 module.exports = function(app){
     const db = arangojs(config.dbHostPort);
@@ -214,7 +213,7 @@ module.exports = function(app){
                     return queryString;
                 }
                 , '');
-            };
+            }
 
             console.log(
                 "The request body is",
