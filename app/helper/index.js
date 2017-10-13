@@ -93,36 +93,13 @@ var helpers = {
        dispatch(actions.updateList(reset, deleteGroup, 0, 'UPDATE_GRADES', gradeArr));
     },
     getCourses: function(reset, deleteGroup, username, role, dispatch){
-        /// parse array to a string for query.
-        // console.log("herloer get crs")
-        // helper.getCourses(false,false, "", this.props.role, this.props.dispatch); 
-        // dont need role here - should bring back a teacher or students courses - the query will pull these back if queryCourse !== [] elese it will bring all back
-        // let gradeString = "";
-        // if (grade.length !== 0) {
-        //     if (grade.length === 1){
-        //         gradeString = grade[0].name;
-        //     } else {
-        //         gradeString = grade[0].name;
-        //         for (var i = 1; i < grade.length; i++){
-                    
-        //             gradeString +=  ',' + grade[i].name;
-        //         }
-        //     }
-        // }
-        // teachers and students must return their own courses -- everyone else can see all
-        if ((role) && ((role.toUpperCase() === 'TEACHER') || (role.toUpperCase() === 'STUDENT'))){
-            return axios.get('/api/courses/teacher/student/'+username+'/').then(function(response) {
-                // send results to redux store for use by Results component
-                dispatch(actions.updateList(reset, deleteGroup, 0, 'UPDATE_COURSES', response.data));
-                return;
-            })
-        } else {
-            return axios.get('/api/courses/'+username+'/').then(function(response) {
-                // send results to redux store for use by Results component
-                dispatch(actions.updateList(reset, deleteGroup, 0, 'UPDATE_COURSES', response.data));
-                return;
-            })
-        }       
+        return axios
+                .get(`/api/user/${username}/courses/`)
+                .then(function(response) {
+                    // send results to redux store for use by Results component
+                    dispatch(actions.updateList(reset, deleteGroup, 0, 'UPDATE_COURSES', response.data));
+                    return;
+                })
     },
     getStandards: function(reset, deleteGroup, grade, dispatch){
         // console.log("herloer get std")
@@ -173,7 +150,7 @@ var helpers = {
         })   
     },
     getTopics(reset, deleteGroup, dispatch){
-        return axios.get('/api/topics/all').then(function(response) {
+        return axios.get('/api/topics/').then(function(response) {
             // send results to redux store for use by Results component
             /// need to put in an object with an id 
             var topicArr = [];

@@ -585,7 +585,7 @@ module.exports = function(app){
         }) 
 
     })
-    app.get('/api/topics/all', function(req, res){
+    app.get('/api/topics/', function(req, res){
         let query = aql`
             for p in projects
             filter LENGTH(p.topics) > 0
@@ -627,19 +627,9 @@ module.exports = function(app){
     })  
        
    // path for roles !== TEACHER or STUDENT - can likely combine but will leave for now
-    app.get('/api/courses/:username/', function(req, res){
-        let grades = req.params.grade;
-        let queryGrades = [];
-        if (grades) queryGrades = grades.split(',');
-        // console.log(req.body)
-        // wondering if we should get this from front end  or from db..
-        // let role = req.params.role;
+    app.get('/api/user/:username/courses/', function(req, res){
         let username = req.params.username;  
-        // console.log("username", username)
-        /// *********now filter based on user role!!
-        // dont need role here - should bring back a teacher or students courses - the query will pull these back if queryCourse !== [] elese it will bring all back
-        // only teachers or students will have mappings in hasCourses table
-        // role will be needed in paths.....role = student should only see their own courses not other students
+
         let query = aql`
             let userid = FIRST(
                 for u in auth_users
@@ -654,41 +644,6 @@ module.exports = function(app){
         `;
         
         // console.log(query)
-        db.query(query)
-        .then(cursor => { 
-            // console.log("Course", cursor._result);
-            res.json(cursor._result);
-        }).catch(error => {
-            console.log(Date.now() + " Error (Get Courses from Database):", error);
-            res.json();
-        })            
-    })
-   
-    // path for roles === TEACHER or STUDENT - can likely combine but will leave for now
-    app.get('/api/courses/teacher/student/:username/', function(req, res){
-        // let grades = req.params.grade;
-        // let queryGrades = [];
-        // if (grades) queryGrades = grades.split(',');
-        console.log(req.body)
-        // wondering if we should get this from front end  or from db..
-        // let role = req.params.role;
-        let username = req.params.username;  
-        // console.log("username", username)
-        /// *********now filter based on user role!!
-        // dont need role here - should bring back a teacher or students courses - the query will pull these back if queryCourse !== [] elese it will bring all back
-        // only teachers or students will have mappings in hasCourses table
-        // role will be needed in paths.....role = student should only see their own courses not other students
-        let query = aql`
-          let userid = (UNIQUE(for u in auth_users filter u.username == ${username} return u._id))
-          for c in outbound userid[0] hasCourse return {_key: c._key, _id: c._id, name: c.name, grade: c.grade}`
-        //   for c in courses
-        //     filter c._id in queryCourses 
-        //     filter c.ownerIsBaseCurriculum != true
-        //     return {_key: c._key_id: c._id, name: c.name, grade: c.grade}
-        //     `;
-        // // query=aql`for c in outbound ${username} hasCourse
-        // //     return {_key: c._key_id: c._id, name: c.name, grade: c.grade}`
-    //  console.log(query)
         db.query(query)
         .then(cursor => { 
             // console.log("Course", cursor._result);
