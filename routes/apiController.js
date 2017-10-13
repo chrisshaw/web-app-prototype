@@ -640,6 +640,7 @@ module.exports = function(app){
             in 2 outbound userid
             hasSection, hasCourse
             filter IS_SAME_COLLECTION('courses', c)
+            sort c.name
             return { _id: c._id, _key: c._key, name: CONCAT(c.name, " (", c.schoolName, ")"), grade: c.grade }
         `;
         
