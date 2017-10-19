@@ -54,13 +54,18 @@ const styles = {
   },
   dropDownMenu: {
     maxHeight: '250px',
-    width: '350px',
+    overflowY: 'auto',
   },
   dropDownList: {
-    width: '350px',
   },
   textField: {
-    width: '350px',
+    overflowX: 'hidden',
+  },
+  hintTextStyle: {
+    width: '100%',
+    whiteSpace: 'nowrap',
+    textOverflow: 'ellipsis',
+    overflowX: 'hidden',
   }
 };
 
@@ -86,6 +91,24 @@ class MultiSelectAutoCompleteField extends PureComponent {
     this.handleInputKeyDown = this.handleInputKeyDown.bind(this);
     this.handleMenuItemSelected = this.handleMenuItemSelected.bind(this);
     this.handleDeleteSelection = this.handleDeleteSelection.bind(this);
+  }
+
+  componentWillReceiveProps(nextProps) {
+    // Prevent an unneeded render
+    if (nextProps.startTime !== this.state.startTime) {
+      this.setState((prevState) => ({
+        nextCustomId: props.options.length,
+        menuItems: props.options.map(
+          function(option) {
+            return { "text" : option.name,
+                      "value" : (
+                        <MenuItem
+                        primaryText={option.name}
+                        insetChildren={true} />
+                      )};
+          }),
+      }));
+    }
   }
 
   handleInputChange(newValue, dataSource, params) {
@@ -230,11 +253,15 @@ class MultiSelectAutoCompleteField extends PureComponent {
                      style={styles.interestInput}
                      underlineStyle={styles.interestInputUnderline}
                      underlineFocusStyle={styles.interestInputUnderlineFocus}
-                     hintStyle={styles.interestInputHint}
+                     hintStyle={styles.hintTextStyle}
                      searchText={this.state.searchText}
                      listStyle={styles.dropDownList}
                      menuStyle={styles.dropDownMenu}
                      textFieldStyle={styles.textField}
+                     multiLine={false}
+                     fullWidth={true}
+                     anchorOrigin={{horizontal: 'left', vertical: 'bottom'}}
+                    targetOrigin={{horizontal: 'left', vertical: 'top'}}
           />
         </div>
       </div>
