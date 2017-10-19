@@ -55,6 +55,7 @@ const styles = {
   dropDownMenu: {
     maxHeight: '250px',
     overflowY: 'auto',
+    overflowX: 'hidden'
   },
   dropDownList: {
   },
@@ -81,6 +82,7 @@ class MultiSelectAutoCompleteField extends PureComponent {
           return { "text" : option.name,
                     "value" : (
                       <MenuItem
+                      className={'multi-select-auto-complete-field-menu-item'}
                       primaryText={option.name}
                       insetChildren={true} />
                     )};
