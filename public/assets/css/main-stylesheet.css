@@ -182,6 +182,8 @@ table {
     margin: 40px;
 }
 .multi-select-auto-complete-field-menu-item div div div {
+  /*This is a hacky selector, but it's currently the only way
+  material-ui will support text wrapping auto-complete suggestions*/
   text-overflow: ellipsis;
   overflow-x: hidden;
 }
