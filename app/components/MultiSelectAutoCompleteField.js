@@ -14,36 +14,30 @@ const BACKSPACE_KEY = 'Backspace';
 const COMMA_KEY = ',';
 
 const styles = {
-  interestsWrapper: {
+  selectedOptionsWrapper: {
     display: 'flex',
     flexWrap: 'wrap',
     alignItems: 'center',
   },
-  // categorySubheader: {
-  //   padding: null,
-  // },
-  interestChip: {
+  selectionChip: {
     margin: '4px 4px 4px 0',
     overflow: 'hidden',
   },
-  interestChipLabel: {
+  selectionChipLabel: {
     overflow: 'hidden',
     textOverflow: 'ellipsis',
   },
-  interestInput: {
+  inputStyle: {
     width: null,
     flexGrow: 1,
   },
-  interestInputHint: {
-    bottom: '10px',
-  },
-  interestInputUnderline: {
+  inputUnderline: {
     width: '3000px',
     bottom: '3px',
     left: '-1000px',
     right: '-1000px',
   },
-  interestInputUnderlineFocus: {
+  inputUnderlineFocus: {
     borderTop: 'rgb(244, 244, 244)',
     borderBottom: 'rgb(244, 244, 244)',
     borderLeft: 'rgb(244, 244, 244)',
@@ -56,8 +50,6 @@ const styles = {
     maxHeight: '250px',
     overflowY: 'auto',
     overflowX: 'hidden'
-  },
-  dropDownList: {
   },
   textField: {
     overflowX: 'hidden',
@@ -97,6 +89,18 @@ class MultiSelectAutoCompleteField extends PureComponent {
     this.handleDeleteSelection = this.handleDeleteSelection.bind(this);
   }
 
+  removeDuplicateOptions(options) {
+    var uniqueSet = new Set();
+    return options.filter(function(obj) {
+      var id = obj._id;
+      var isNewOption = !uniqueSet.has(id);
+      if (isNewOption) {
+        uniqueSet.add(id);
+      }
+      return isNewOption;
+    })
+  }
+
   componentWillReceiveProps(nextProps) {
     if (nextProps.options.length != this.props.options.length) {
       this.updateAvailableOptions(nextProps.options);
@@ -108,18 +112,6 @@ class MultiSelectAutoCompleteField extends PureComponent {
         }
       }
     }
-  }
-
-  removeDuplicateOptions(options) {
-    var uniqueSet = new Set();
-    return options.filter(function(obj) {
-      var id = obj._id;
-      var isNewOption = !uniqueSet.has(id);
-      if (isNewOption) {
-        uniqueSet.add(id);
-      }
-      return isNewOption;
-    })
   }
 
   updateAvailableOptions(newOptions) {
@@ -142,7 +134,26 @@ class MultiSelectAutoCompleteField extends PureComponent {
 
   handleInputChange(newValue, dataSource, params) {
     this.setState({ searchText: newValue });
-    console.log("input change: " + newValue);
+  }
+
+  handleInputKeyDown(event) {
+    const { key } = event;
+
+    if (key === ENTER_KEY || key === TAB_KEY || key === COMMA_KEY) {
+      event.preventDefault();
+
+      const searchText = this.state.searchText.trim();
+      var indexOfSelection = this.getMenuItemIndex(searchText);
+      if (indexOfSelection < 0) {
+        this.addChipForSelectedOption(indexOfSelection, false);
+      }
+
+      return;
+    }
+
+    if (key === BACKSPACE_KEY && this.state.searchText === '') {
+      this.handleDeleteSelection(this.props.selectedOptions.length - 1);
+    }
   }
 
   getMenuItemIndex(option) {
@@ -194,35 +205,12 @@ class MultiSelectAutoCompleteField extends PureComponent {
         searchText: ''
       }));
     }
-    console.log(this.state);
     return;
-  }
-
-  handleInputKeyDown(event) {
-    const { key } = event;
-
-    if (key === ENTER_KEY || key === TAB_KEY || key === COMMA_KEY) {
-      event.preventDefault();
-
-      const searchText = this.state.searchText.trim();
-      var indexOfSelection = this.getMenuItemIndex(searchText);
-      if (indexOfSelection < 0) {
-        this.addChipForSelectedOption(indexOfSelection, false);
-      }
-
-      return;
-    }
-
-    if (key === BACKSPACE_KEY && this.state.searchText === '') {
-      // const { category } = this.props;
-      this.handleDeleteSelection(/*category,*/ this.props.selectedOptions.length - 1);
-    }
   }
 
   handleDeleteSelection(indexOfSelection) {
     const { selectedOptions } = this.props;
     this.setState((prevState) => ({
-      // selectedOptions: prevState.selectedOptions.filter(function(selection) { if (selection != prevState.selectedOptions[indexOfSelection]) { return selection; } }),
       customSelections: prevState.customSelections.filter(function(selection) { if (selection != selectedOptions[indexOfSelection]) { return selection; } }),
       menuItems: prevState.menuItems.map(function(menuItem, index) {
         if (menuItem.text == selectedOptions[indexOfSelection].name) {
@@ -235,10 +223,7 @@ class MultiSelectAutoCompleteField extends PureComponent {
         return menuItem;
       }),
     }));
-    helper.removeChip(/*id*/this.props.selectedOptions[indexOfSelection]._id, this.props.queryItem, this.props.dispatch);
-    // onRemoveSelection(indexOfSelection);
-    // onDeleteInterest(category, indexOfSelection);
-    console.log(this.state);
+    helper.removeChip(this.props.selectedOptions[indexOfSelection]._id, this.props.queryItem, this.props.dispatch);
   }
 
   handleMenuItemSelected(chosenRequest, index) {
@@ -255,14 +240,13 @@ class MultiSelectAutoCompleteField extends PureComponent {
   }
 
   render() {
-    // const { selectedOptions } = this.props;
     return (
       <div style={styles.sectionWrapper}>
-        <div style={styles.interestsWrapper}>
+        <div style={styles.selectedOptionsWrapper}>
           {this.props.selectedOptions.map((selectedOption, index) => (
-            <Chip style={styles.interestChip}
-                  labelStyle={styles.interestChipLabel}
-                  onRequestDelete={() => { this.handleDeleteSelection(/*category,*/ index); }}
+            <Chip style={styles.selectionChip}
+                  labelStyle={styles.selectionChipLabel}
+                  onRequestDelete={() => { this.handleDeleteSelection(index); }}
                   key={index}
             >
               {selectedOption.name}
@@ -278,12 +262,11 @@ class MultiSelectAutoCompleteField extends PureComponent {
                     popoverProps={{canAutoPosition: true}}
                     openOnFocus={true}
                     filter={(searchText, key) => (searchText.trim() == '') || (key.indexOf(searchText) !== -1)}
-                    style={styles.interestInput}
-                    underlineStyle={styles.interestInputUnderline}
-                    underlineFocusStyle={styles.interestInputUnderlineFocus}
+                    style={styles.inputStyle}
+                    underlineStyle={styles.inputUnderline}
+                    underlineFocusStyle={styles.inputUnderlineFocus}
                     hintStyle={styles.hintTextStyle}
                     searchText={this.state.searchText}
-                    listStyle={styles.dropDownList}
                     menuStyle={styles.dropDownMenu}
                     textFieldStyle={styles.textField}
                     multiLine={false}
@@ -296,16 +279,12 @@ class MultiSelectAutoCompleteField extends PureComponent {
 }
 
 MultiSelectAutoCompleteField.propTypes = {
-  // category: PropTypes.string.isRequired,
   options: PropTypes.array.isRequired,
   selectedOptions: PropTypes.array.isRequired,
   queryItem: PropTypes.string.isRequired,
-  // onAddSelection: PropTypes.func.isRequired,
-  // onRemoveSelection: PropTypes.func.isRequired,
 };
 
 MultiSelectAutoCompleteField.defaultProps = {
-  // category: '',
   selectedOptions: [],
   options: [],
   queryItem: '',

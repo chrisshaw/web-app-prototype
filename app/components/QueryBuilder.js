@@ -24,10 +24,8 @@ class QueryBuilder extends Component{
         // this.handleSend = this.handleSend.bind(this);
         this.handleClose = this.handleClose.bind(this);
         // get initial data and set props
-        // this.loadData(props);
         helper.getGrades(false, false, props.dispatch);
         helper.getTopics(false, false, props.dispatch);
-        console.log("QueryBuilder props: " + props);
         helper.getCourses(false,false,  props.username, props.role, props.dispatch);
         helper.getSubjectContents(false, false, props.dispatch);
         helper.getStandards(false, false, "",props.dispatch);
@@ -52,7 +50,6 @@ class QueryBuilder extends Component{
         var selectedCourses = [];
         if (this.props.selectedcourselist) selectedCourses.push(this.props.selectedcourselist);
         // A user will have no courses if courselist + selectedcouselist is empty
-        console.log("this.props.courselist", this.props.courselist)
         if ((this.props.courselist.length > 0) || (selectedCourses.length > 0)){
             hasCourses = true;
             if (((this.props.role.toUpperCase() === "TEACHER") || (this.props.role.toUpperCase() === "STUDENT")) && (selectedCourses.length === 0)){
@@ -132,69 +129,69 @@ class QueryBuilder extends Component{
                   </Row>
                 </div>
                 <div>
-                            <Row>
-                                <Col xs={10} md={10} >
-                                    <p className="search-text chip-float"> who are enrolled in</p>
-                                </Col>
-                            </Row>
-                            <Row>
-                                <Col xs={12} md={12} >
-                                <MultiSelectAutoCompleteField
-                                  options={this.props.courselist}
-                                  selectedOptions={this.props.selectedcourselist}
-                                  queryItem="Courses"
-                                  hintText="Select one or more course(s) e.g. Biology"/>
-                                </Col>
-                            </Row>
-                        </div>
-                        <div>
-                                    <Row>
-                                        <Col xs={10} md={10} >
-                                            <p className="search-text chip-float">will explore topics</p>
-                                        </Col>
-                                    </Row>
-                                    <Row>
-                                        <Col xs={12} md={12} >
-                                            <MultiSelectAutoCompleteField
-                                              options={this.props.topiclist}
-                                              selectedOptions={this.props.selectedtopiclist}
-                                              queryItem="Topics"
-                                              hintText="Select one or more topic(s) e.g. immigration" />
-                                        </Col>
-                                    </Row>
-                                </div>
-                                <div>
-                                            <Row>
-                                                <Col xs={10} md={10} >
-                                                    <p className="search-text chip-float">while learning content in</p>
-                                                </Col>
-                                            </Row>
-                                            <Row>
-                                                <Col xs={12} md={12} >
-                                                <MultiSelectAutoCompleteField
-                                                options={this.props.subjectcontentlist}
-                                                selectedOptions={this.props.selectedsubjectcontentlist}
-                                                queryItem="Subjects"
-                                                hintText="Select one or more subject(s) e.g. english, math" />
-                                                </Col>
-                                            </Row>
-                                        </div>
-                                        <div>
-                                                    <Row>
-                                                        <Col xs={10} md={10} >
-                                                            <p className="search-text chip-float">that aligns to standards</p>
-                                                        </Col>
-                                                    </Row>
-                                                    <Row>
-                                                        <Col xs={12} md={12} >
-                                                        <MultiSelectAutoCompleteField
-                                                          options={this.props.standardslist}
-                                                          selectedOptions={this.props.selectedstandardslist}
-                                                          queryItem="Standards"
-                                                          hintText="Select one or more standard(s)" />
-                                                        </Col>
-                                                    </Row>
-                                                </div>
+                  <Row>
+                    <Col xs={10} md={10} >
+                      <p className="search-text chip-float"> who are enrolled in</p>
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col xs={12} md={12} >
+                      <MultiSelectAutoCompleteField
+                        options={this.props.courselist}
+                        selectedOptions={this.props.selectedcourselist}
+                        queryItem="Courses"
+                        hintText="Select one or more course(s) e.g. Biology"/>
+                    </Col>
+                  </Row>
+                </div>
+                <div>
+                  <Row>
+                    <Col xs={10} md={10} >
+                      <p className="search-text chip-float">will explore topics</p>
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col xs={12} md={12} >
+                      <MultiSelectAutoCompleteField
+                        options={this.props.topiclist}
+                        selectedOptions={this.props.selectedtopiclist}
+                        queryItem="Topics"
+                        hintText="Select one or more topic(s) e.g. immigration" />
+                    </Col>
+                  </Row>
+                </div>
+                <div>
+                  <Row>
+                    <Col xs={10} md={10} >
+                      <p className="search-text chip-float">while learning content in</p>
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col xs={12} md={12} >
+                      <MultiSelectAutoCompleteField
+                        options={this.props.subjectcontentlist}
+                        selectedOptions={this.props.selectedsubjectcontentlist}
+                        queryItem="Subjects"
+                        hintText="Select one or more subject(s) e.g. english, math" />
+                    </Col>
+                  </Row>
+                </div>
+                <div>
+                  <Row>
+                    <Col xs={10} md={10} >
+                      <p className="search-text chip-float">that aligns to standards</p>
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col xs={12} md={12} >
+                      <MultiSelectAutoCompleteField
+                        options={this.props.standardslist}
+                        selectedOptions={this.props.selectedstandardslist}
+                        queryItem="Standards"
+                        hintText="Select one or more standard(s)" />
+                    </Col>
+                  </Row>
+                </div>
                 <Row>
                     <Col xs={12} md={12} className="text-center" >
                         <FlatButton containerElement='label' label="Get Recommended Paths" onTouchTap={this.handleSubmitAll} />
