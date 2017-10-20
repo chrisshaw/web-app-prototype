@@ -5,7 +5,6 @@ var path = require('path');
 var nodemailer = require("nodemailer");
 var fs = require('fs');
 const config = require('./dbconfig.js')[process.env.DB_MODE];
-const pathbuilder = require('./controllers/pathbuilder')
 
 module.exports = function(app){
     const db = arangojs(config.dbHostPort);
@@ -198,6 +197,24 @@ module.exports = function(app){
         .then( response => {
             // intialise
             // some pre-processing
+
+            const constructQueryParams = queryObject => {
+                console.log(queryObject)
+                return Object.entries(queryObject).reduce( (queryString, [key, value], i, entries) => {
+                    if (i === 0) {
+                        queryString = '?'
+                    }
+                    if ( value instanceof Array ) {
+                        queryString += `${key}=${encodeURIComponent(value.join(','))}`
+                        if (i !== entries.length - 1) {
+                            queryString += '&';
+                        }                
+                    }
+                    return queryString;
+                }
+                , '');
+            }
+
             console.log(
                 "The request body is",
                 "\n",
@@ -216,32 +233,22 @@ module.exports = function(app){
             if ( reqBody.topics && reqBody.topics.length > 0 ) queryObject.topics = reqBody.topics.map( topic => topic.name.toLowerCase() );
             Object.keys(queryObject).forEach( key => console.log(key, ':', queryObject[key]));
 
-            // console.log('Constructing query string');
-            // const strRequest = constructQueryParams(queryObject);
-            // const pathBuilderService = db.route('path');
-            // console.log('Query string:', `/${userKey}/build${strRequest}`);
+            console.log('Constructing query string');
+            const strRequest = constructQueryParams(queryObject);
+            const encodedPath = `/${userKey}/build${strRequest}`
+            const pathBuilderService = db.route('path');
+            console.log('Query string:', encodedPath);
 
-            pathbuilder(queryObject)
+            pathBuilderService.get(encodedPath)
             .then( response => {
-                res.status(200)
-                .json(response)
+                res
+                    .status(200)
+                    .json(response.body)
             })
-            .catch( err => {
-                console.log(Date.now() + " Error (Getting paths from Database):", '\n', err );
-                res.status(500)
-                .json(err);                
+            .catch( error => {
+                console.log(Date.now() + " Error (Getting paths from Database):", '\n', error );
+                res.json();
             })
-
-            // pathBuilderService.get(`/${userKey}/build${strRequest}`)
-            // .then( response => {
-            //     res
-            //         .status(200)
-            //         .json(response.body)
-            // })
-            // .catch( error => {
-            //     console.log(Date.now() + " Error (Getting paths from Database):", '\n', error );
-            //     res.json();
-            // })
 
 
         })
@@ -251,22 +258,6 @@ module.exports = function(app){
             res.json({success: false, error: "No Permissions to View Paths"})
         });
     });
-
-    const constructQueryParams = queryObject => {
-        return Object.keys(queryObject).reduce( (queryString, key, i, keys) => {
-            if (i === 0) {
-                queryString = '?'
-            }
-            if ( queryObject[key].length > 0 ) {
-                queryString += key + '=' + queryObject[key].join(',');
-                if (i !== keys.length - 1) {
-                    queryString += '&';
-                }                
-            }
-            return queryString;
-        }
-        , '');
-    };
 
     function sendToSummitEmail(email, filePath) {
         // this part creates a reusable transporter using SMTP of gmail
@@ -594,7 +585,7 @@ module.exports = function(app){
         }) 
 
     })
-    app.get('/api/topics/all', function(req, res){
+    app.get('/api/topics/', function(req, res){
         let query = aql`
             for p in projects
             filter LENGTH(p.topics) > 0
@@ -636,19 +627,9 @@ module.exports = function(app){
     })  
        
    // path for roles !== TEACHER or STUDENT - can likely combine but will leave for now
-    app.get('/api/courses/:username/', function(req, res){
-        let grades = req.params.grade;
-        let queryGrades = [];
-        if (grades) queryGrades = grades.split(',');
-        // console.log(req.body)
-        // wondering if we should get this from front end  or from db..
-        // let role = req.params.role;
+    app.get('/api/user/:username/courses/', function(req, res){
         let username = req.params.username;  
-        // console.log("username", username)
-        /// *********now filter based on user role!!
-        // dont need role here - should bring back a teacher or students courses - the query will pull these back if queryCourse !== [] elese it will bring all back
-        // only teachers or students will have mappings in hasCourses table
-        // role will be needed in paths.....role = student should only see their own courses not other students
+
         let query = aql`
             let userid = FIRST(
                 for u in auth_users
@@ -659,45 +640,11 @@ module.exports = function(app){
             in 2 outbound userid
             hasSection, hasCourse
             filter IS_SAME_COLLECTION('courses', c)
+            sort c.name
             return { _id: c._id, _key: c._key, name: CONCAT(c.name, " (", c.schoolName, ")"), grade: c.grade }
         `;
         
         // console.log(query)
-        db.query(query)
-        .then(cursor => { 
-            // console.log("Course", cursor._result);
-            res.json(cursor._result);
-        }).catch(error => {
-            console.log(Date.now() + " Error (Get Courses from Database):", error);
-            res.json();
-        })            
-    })
-   
-    // path for roles === TEACHER or STUDENT - can likely combine but will leave for now
-    app.get('/api/courses/teacher/student/:username/', function(req, res){
-        // let grades = req.params.grade;
-        // let queryGrades = [];
-        // if (grades) queryGrades = grades.split(',');
-        console.log(req.body)
-        // wondering if we should get this from front end  or from db..
-        // let role = req.params.role;
-        let username = req.params.username;  
-        // console.log("username", username)
-        /// *********now filter based on user role!!
-        // dont need role here - should bring back a teacher or students courses - the query will pull these back if queryCourse !== [] elese it will bring all back
-        // only teachers or students will have mappings in hasCourses table
-        // role will be needed in paths.....role = student should only see their own courses not other students
-        let query = aql`
-          let userid = (UNIQUE(for u in auth_users filter u.username == ${username} return u._id))
-          for c in outbound userid[0] hasCourse return {_key: c._key, _id: c._id, name: c.name, grade: c.grade}`
-        //   for c in courses
-        //     filter c._id in queryCourses 
-        //     filter c.ownerIsBaseCurriculum != true
-        //     return {_key: c._key_id: c._id, name: c.name, grade: c.grade}
-        //     `;
-        // // query=aql`for c in outbound ${username} hasCourse
-        // //     return {_key: c._key_id: c._id, name: c.name, grade: c.grade}`
-    //  console.log(query)
         db.query(query)
         .then(cursor => { 
             // console.log("Course", cursor._result);

@@ -93,7 +93,7 @@ class Login extends Component{
                 </Row>
                 <Row>
                     <Col xs={12} md={12} className="text-center">
-                        <RaisedButton style={{margin: 10}} secondary={true} containerElement='label' onTouchTap={this.handleSubmit}  label="Login"/>
+                        <RaisedButton style={{margin: 10}} secondary={false} containerElement='label' onTouchTap={this.handleSubmit} label="Log In"/>
                     </Col>
                  
                 </Row>
