@@ -25,26 +25,18 @@ class QueryBuilder extends Component{
         this.handleClose = this.handleClose.bind(this);
         // get initial data and set props
         // this.loadData(props);
+        helper.getGrades(false, false, props.dispatch);
+        helper.getTopics(false, false, props.dispatch);
+        console.log("QueryBuilder props: " + props);
+        helper.getCourses(false,false,  props.username, props.role, props.dispatch);
+        helper.getSubjectContents(false, false, props.dispatch);
+        helper.getStandards(false, false, "",props.dispatch);
         var searchObj = {};
         this.state ={
             error: false,
             errorMsg: ""
         }
     }
-
-    componentWillMount() {
-      helper.getGrades(false, false, this.props.dispatch);
-      helper.getTopics(false, false, this.props.dispatch);
-      console.log("QueryBuilder props: " + this.props);
-      helper.getCourses(false,false,  this.props.username, this.props.role, this.props.dispatch);
-      helper.getSubjectContents(false, false, this.props.dispatch);
-      helper.getStandards(false, false, "",this.props.dispatch);
-    }
-
-    // componentWillMount() {
-    //   console.log("will mount");
-    //   helper.getCourses(false,false,  this.props.username, this.props.role, this.props.dispatch);
-    // }
 
     handleClose(){
         // local validation

@@ -73,6 +73,7 @@ const styles = {
 class MultiSelectAutoCompleteField extends PureComponent {
   constructor(props) {
     super(props);
+    console.log("Constructor: " + props.queryItem);
     this.state = {
       open: false,
       nextCustomId: props.options.length,
@@ -97,21 +98,32 @@ class MultiSelectAutoCompleteField extends PureComponent {
   }
 
   componentWillReceiveProps(nextProps) {
-    // Prevent an unneeded render
-    if (nextProps.startTime !== this.state.startTime) {
-      this.setState((prevState) => ({
-        nextCustomId: props.options.length,
-        menuItems: props.options.map(
-          function(option) {
-            return { "text" : option.name,
-                      "value" : (
-                        <MenuItem
-                        primaryText={option.name}
-                        insetChildren={true} />
-                      )};
-          }),
-      }));
+    if (nextProps.options.length != this.props.options.length) {
+      this.updateAvailableOptions(nextProps.options);
+    } else {
+      for (var i = 0; i < nextProps.options.length; i++) {
+        if (nextProps.options[i] !== this.props.options[i]) {
+          this.updateAvailableOptions(nextProps.options);
+          break;
+        }
+      }
     }
+  }
+
+  updateAvailableOptions(newOptions) {
+    var nextCustomId = newOptions.length > this.state.nextCustomId ? newOptions.length : this.state.nextCustomId;
+    this.setState((prevState) => ({
+      nextCustomId: nextCustomId,
+      menuItems: newOptions.map(
+        function(option) {
+          return { "text" : option.name,
+                    "value" : (
+                      <MenuItem
+                      primaryText={option.name}
+                      insetChildren={true} />
+                    )};
+        }),
+    }));
   }
 
   handleInputChange(newValue, dataSource, params) {
