@@ -74,6 +74,7 @@ class MultiSelectAutoCompleteField extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {
+      open: false,
       nextCustomId: props.options.length,
       customSelections: [],
       searchText: '',
@@ -130,6 +131,8 @@ class MultiSelectAutoCompleteField extends PureComponent {
   }
 
   addChipForSelectedOption(indexOfSelection) {
+    this.refs.autocomplete.focus();
+
     const searchText = this.state.searchText.trim();
     if (searchText == '') {
       return;
@@ -184,6 +187,9 @@ class MultiSelectAutoCompleteField extends PureComponent {
       const searchText = this.state.searchText.trim();
       var indexOfSelection = this.getMenuItemIndex(searchText);
       if (indexOfSelection < 0) {
+        this.setState((prevState) => ({
+          open: true,
+        }));
         this.addChipForSelectedOption(indexOfSelection);
       }
 
@@ -245,25 +251,25 @@ class MultiSelectAutoCompleteField extends PureComponent {
           ))}
           <AutoComplete
                     dataSource={this.state.menuItems}
-                    // dataSourceConfig={{text : 'option', value : 'value'}}
-           hintText={this.props.hintText}
-                     onUpdateInput={this.handleInputChange}
-                     onKeyDown={this.handleInputKeyDown}
-                     onNewRequest={this.handleMenuItemSelected}
-                     openOnFocus={true}
+                    ref="autocomplete"
+                    hintText={this.props.hintText}
+                    onUpdateInput={this.handleInputChange}
+                    onKeyDown={this.handleInputKeyDown}
+                    onNewRequest={this.handleMenuItemSelected}
+                    popoverProps={{canAutoPosition: true}}
+                    openOnFocus={true}
+                    open={this.state.open}
                     filter={(searchText, key) => (searchText.trim() == '') || (key.indexOf(searchText) !== -1)}
-                     style={styles.interestInput}
-                     underlineStyle={styles.interestInputUnderline}
-                     underlineFocusStyle={styles.interestInputUnderlineFocus}
-                     hintStyle={styles.hintTextStyle}
-                     searchText={this.state.searchText}
-                     listStyle={styles.dropDownList}
-                     menuStyle={styles.dropDownMenu}
-                     textFieldStyle={styles.textField}
-                     multiLine={false}
-                     fullWidth={true}
-                     anchorOrigin={{horizontal: 'left', vertical: 'bottom'}}
-                    targetOrigin={{horizontal: 'left', vertical: 'top'}}
+                    style={styles.interestInput}
+                    underlineStyle={styles.interestInputUnderline}
+                    underlineFocusStyle={styles.interestInputUnderlineFocus}
+                    hintStyle={styles.hintTextStyle}
+                    searchText={this.state.searchText}
+                    listStyle={styles.dropDownList}
+                    menuStyle={styles.dropDownMenu}
+                    textFieldStyle={styles.textField}
+                    multiLine={false}
+                    fullWidth={true}
           />
         </div>
       </div>
