@@ -73,13 +73,13 @@ const styles = {
 class MultiSelectAutoCompleteField extends PureComponent {
   constructor(props) {
     super(props);
-    console.log("Constructor: " + props.queryItem);
+    var uniqueOptions = this.removeDuplicateOptions(props.options);
     this.state = {
-      open: false,
-      nextCustomId: props.options.length,
+      uniqueOptions: uniqueOptions,
+      nextCustomId: uniqueOptions.length,
       customSelections: [],
       searchText: '',
-      menuItems: props.options.map(
+      menuItems: uniqueOptions.map(
         function(option) {
           return { "text" : option.name,
                     "value" : (
@@ -110,11 +110,25 @@ class MultiSelectAutoCompleteField extends PureComponent {
     }
   }
 
+  removeDuplicateOptions(options) {
+    var uniqueSet = new Set();
+    return options.filter(function(obj) {
+      var id = obj._id;
+      var isNewOption = !uniqueSet.has(id);
+      if (isNewOption) {
+        uniqueSet.add(id);
+      }
+      return isNewOption;
+    })
+  }
+
   updateAvailableOptions(newOptions) {
-    var nextCustomId = newOptions.length > this.state.nextCustomId ? newOptions.length : this.state.nextCustomId;
+    var uniqueNewOptions = this.removeDuplicateOptions(newOptions);
+    var nextCustomId = uniqueNewOptions.length > this.state.nextCustomId ? uniqueNewOptions.length : this.state.nextCustomId;
     this.setState((prevState) => ({
+      uniqueOptions: uniqueNewOptions,
       nextCustomId: nextCustomId,
-      menuItems: newOptions.map(
+      menuItems: uniqueNewOptions.map(
         function(option) {
           return { "text" : option.name,
                     "value" : (
@@ -142,7 +156,7 @@ class MultiSelectAutoCompleteField extends PureComponent {
     return -1; //not found
   }
 
-  addChipForSelectedOption(indexOfSelection) {
+  addChipForSelectedOption(indexOfSelection, optionSelectedFromList) {
     this.refs.autocomplete.focus();
 
     const searchText = this.state.searchText.trim();
@@ -150,20 +164,15 @@ class MultiSelectAutoCompleteField extends PureComponent {
       return;
     }
 
-    var optionAlreadySelected = this.props.selectedOptions.filter(function(obj) { return obj.name == searchText}).length > 0;// this.state.selectedOptions.filter(function(obj) { return obj.option == searchText }).length > 0;//
-    if (optionAlreadySelected) {
+    var optionAlreadySelected = this.props.selectedOptions.filter(function(obj) { return obj.name == searchText }).length > 0;
+    if (optionAlreadySelected && !optionSelectedFromList) {
       return;
     }
 
-    // this.props.onAddInterest(this.props.category, searchText);
-    // helper.updateSelected(searchText, this.props.queryItem, this.props.dispatch);
-    // this.props.onAddSelection(searchText);
-
     var suggestedOptionSelected = indexOfSelection > -1;
     if (suggestedOptionSelected) {
-      helper.updateSelected(this.props.options[indexOfSelection], this.props.queryItem, this.props.dispatch);
+      helper.updateSelected(this.state.uniqueOptions[indexOfSelection], this.props.queryItem, this.props.dispatch);
       this.setState((prevState) => ({
-        // selectedOptions: prevState.selectedOptions.concat({ "option" : searchText, "custom" : false }),
         menuItems: prevState.menuItems.map(function(menuItem, index) {
           if (index == indexOfSelection) {
             return { "text" : menuItem.text,
@@ -181,7 +190,6 @@ class MultiSelectAutoCompleteField extends PureComponent {
       helper.updateSelected({ _id: this.state.nextCustomId, name: searchText}, this.props.queryItem, this.props.dispatch);
       this.setState((prevState) => ({
         nextCustomId: prevState.nextCustomId + 1,
-        // selectedOptions: prevState.selectedOptions.concat(searchText),//{ "option" : searchText, "custom" : true }),
         customSelections: prevState.customSelections.concat(searchText),
         searchText: ''
       }));
@@ -199,10 +207,7 @@ class MultiSelectAutoCompleteField extends PureComponent {
       const searchText = this.state.searchText.trim();
       var indexOfSelection = this.getMenuItemIndex(searchText);
       if (indexOfSelection < 0) {
-        this.setState((prevState) => ({
-          open: true,
-        }));
-        this.addChipForSelectedOption(indexOfSelection);
+        this.addChipForSelectedOption(indexOfSelection, false);
       }
 
       return;
@@ -241,8 +246,10 @@ class MultiSelectAutoCompleteField extends PureComponent {
     if (indexOfSelection < 0) {
       indexOfSelection = this.getMenuItemIndex(chosenRequest)
     }
+
+    var optionSelectedFromList = (index != -1);
     if (indexOfSelection > -1) {
-      this.addChipForSelectedOption(indexOfSelection);
+      this.addChipForSelectedOption(indexOfSelection, optionSelectedFromList);
     }
     return;
   }
@@ -270,7 +277,6 @@ class MultiSelectAutoCompleteField extends PureComponent {
                     onNewRequest={this.handleMenuItemSelected}
                     popoverProps={{canAutoPosition: true}}
                     openOnFocus={true}
-                    open={this.state.open}
                     filter={(searchText, key) => (searchText.trim() == '') || (key.indexOf(searchText) !== -1)}
                     style={styles.interestInput}
                     underlineStyle={styles.interestInputUnderline}
