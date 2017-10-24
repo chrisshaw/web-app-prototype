@@ -151,35 +151,32 @@ module.exports = function(app){
         })
     })
     app.post('/signup' , function(req, res, next){
+        console.log('>> Starting signup. What is in the request:')
+        Object.entries(req.body).forEach( ([key, value]) => console.log(key, value))
         // verify user is valid and then that they have the right permissions
-        validateUser(req, res, "createAccounts").then((response) =>{
+        validateUser(req, res, "createAccounts")
+        .then( response => {
             // double check user perms on server side
             // if user has the required permission manageusers in their permissions array in
             // req.perms
             let userObj = req.body;
             // get perms and username of person doing the signup
             let username = response.username;
-            userObj.createdBy = username;
+            userObj.creator = username;
             // post/save data using foxx service for auth
             const foxxService = db.route('auth');
-            foxxService.post('/signup', userObj)
-            .then(function(response){
-                // create a user to role mapping.....
-                // get userid of person being the signed up
-                let userid = response.body.userid;
-                let role = req.body.role;    
-                let active = true;     // user will be allowed to login and have authData, dummy student users will be active = false and not have any authData
-                let query=aql`let userid = ${userid} 
-                                let role = (for a in auth_roles 
-                                    filter UPPER(a.name) == UPPER(${role})
-                                    return {_id: a._id})
-                        UPSERT { _from: ${userid} , _to: role[0]._id} INSERT { _from:  ${userid} , _to: role[0]._id, active: ${active}, dateCreated: DATE_NOW(), dateUpdated: null, createdBy:  ${username} , updatedBy: null } UPDATE {  dateUpdated: DATE_NOW(), updatedBy:  ${username} } IN auth_hasRole RETURN { doc: NEW, type: OLD ? 'update' : 'insert' }`     
-                db.query(query)
-                .then(cursor => {  
-                    res.json({success: true})
-                }).catch(error => {
-                    console.log(error);
-                    res.json({success: false, msg: error.response.body.errorMessage})
+            foxxService
+                .post('/create-account', userObj)
+                .then( response => {
+                    // create a user to role mapping.....
+                    // get userid of person being the signed up
+                    console.log('>>>>>> user signed up')
+                    Object.entries(response.body).forEach( ([key, value]) => console.log(key, value))
+                    res.status(200).json( {success: true, userId: response.userId } )
+                })
+                .catch(error => {
+                    console.log('!>>>>>> error in signing up: ' + error.toString());
+                    res.status(500).json( {success: false, msg: error.response.body.errorMessage} )
                 })
             })
             .catch(error => { 
@@ -190,7 +187,6 @@ module.exports = function(app){
                 res.json({success:false, auth: false, msg: error.response.body.errorMessage});
             })
         })
-    })
     
      app.post('/api/path/project', function (req, res){
         validateUser(req, res, "buildPath")
@@ -758,8 +754,8 @@ module.exports = function(app){
     app.put('/api/course/interests', function(req, res) {
         const query = `update @course._key with { 
                             interests: @course.interests
-                        } in courses
-                        return NEW`;
+                       } in courses
+                       return NEW`;
         req.body.interests = removeDuplicates(req.body.interests);
 
         db.query(query, { course: req.body })
