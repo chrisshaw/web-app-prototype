@@ -71,14 +71,6 @@ class QueryBuilder extends Component{
                 onTouchTap={this.handleClose}
             />
             ];
-        var styles = {
-            dialog : {
-                width: '50vw',
-                position: 'absolute',
-                left: '50vw',
-                zIndex: 1500,
-            }
-        }
     
         var component = this;
         return(<div className="drawer-wrapper">
@@ -91,20 +83,20 @@ class QueryBuilder extends Component{
                     </Col>
                 </Row>
                 <Row>
-                <Col xs={12} md={12} >
-                    { (this.state.error ) ?  <Dialog
-                        bodyStyle={{fontSize: 13}}
-                        titleStyle={{fontSize: 14, fontWeight: 'bold'}}
-                        title="PathBuilder Error"
-                        actions={actions}
-                        style={{zIndex: 2000,fontSize: 12, height: 300}}
-                        modal={false}
-                        open= {this.state.error}
-                        onRequestClose={this.handleClose}
-                        >
-                     { this.state.errorMsg }
-                        </Dialog> : " "}
-                </Col>
+                    <Col xs={12} md={12} >
+                        { (this.state.error ) ?  <Dialog
+                            bodyStyle={{fontSize: 13}}
+                            titleStyle={{fontSize: 14, fontWeight: 'bold'}}
+                            title="PathBuilder Error"
+                            actions={actions}
+                            style={{zIndex: 2000,fontSize: 12, height: 300}}
+                            modal={false}
+                            open= {this.state.error}
+                            onRequestClose={this.handleClose}
+                            >
+                        { this.state.errorMsg }
+                            </Dialog> : " "}
+                    </Col>
                 </Row>
                 <GradeSelection selectedgradelist={this.props.selectedgradelist}/>
                 <CourseSelection selectedcourselist={this.props.selectedcourselist} role={this.props.role} username={this.props.username}/>
@@ -116,11 +108,11 @@ class QueryBuilder extends Component{
                         <FlatButton containerElement='label' label="Get Recommended Paths" onTouchTap={this.handleSubmitAll} />
                     </Col>
                 </Row>
-                <Row>
+                {/* <Row>
                     <Col xs={12} md={12} className="text-center" >            
                         { (this.props.perms) && (this.props.perms.indexOf('publish') !== -1) ? <FlatButton containerElement='label' label="Start Publishing to LMS" disabled={this.props.disabled} onTouchTap={this.props.handleSend} /> : ""}
                     </Col>
-                </Row>
+                </Row> */}
             </div>
         )
     }

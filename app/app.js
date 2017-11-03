@@ -13,8 +13,13 @@ import darkBaseTheme from 'material-ui/styles/baseThemes/darkBaseTheme';
 
 
 // // This file should not need to be changed
-ReactDOM.render(<MuiThemeProvider><Provider store={configureStore()}>
-{routes}
-</Provider></MuiThemeProvider>, document.getElementById("app"));
+ReactDOM.render(
+    <MuiThemeProvider>
+        <Provider store={configureStore()}>
+            {routes}
+        </Provider>
+    </MuiThemeProvider>,
+    document.getElementById("app")
+);
 
 

@@ -36,19 +36,21 @@ const Small = (props) => (
     targetOrigin={{horizontal: 'right', vertical: 'top'}}
     anchorOrigin={{horizontal: 'right', vertical: 'top'}}
   >
-     { (props.perms.indexOf("buildPath") !== -1) ?  (<MenuItem  containerElement={<Link to="/buildpath"/>} primaryText="Build Paths" />) : ''}
+    { (props.perms.indexOf("buildPath") !== -1) ?  (<MenuItem  containerElement={<Link to="/buildpath"/>} primaryText="Build Paths" />) : ''}
     { (props.perms.indexOf("manageStudents") !== -1) ?  (<MenuItem  primaryText="Set Up" containerElement='label'  containerElement={<Link to="/uploadstudents"/>} />) : ''}
     { (props.perms.indexOf("createAccounts") !== -1) ?  (<MenuItem  primaryText="Create Accounts"  containerElement={<Link to="/manageusers"/>} />) : ''}
     <MenuItem   primaryText="Logout" onTouchTap={props.handleLogout} />
   </IconMenu>
 );
 
-const Normal = (props) => (<div className="menu-on-normal-screen">
-                     { (props.perms.indexOf("buildPath") !== -1) ?  (<FlatButton  labelStyle={{lineHeight: 4}} style={{ borderTop: 'solid 1px #E6E6E6',borderLeft: 'solid 1px #E6E6E6', borderRight: 'solid 1px #E6E6E6',maxWidth: 170, fontSize: 12, height: 50, flex: 'center', borderRadius: 0}} containerElement={<Link to="/buildpath"/>} label="Build Paths" />) : ''} 
-                     { (props.perms.indexOf("manageStudents") !== -1) ?  (<FlatButton  labelStyle={{lineHeight: 4}} style={{borderTop: 'solid 1px #E6E6E6',borderLeft: 'solid 1px #E6E6E6', borderRight: 'solid 1px #E6E6E6', maxWidth: 170, fontSize: 12, height: 50, flex: 'center', borderRadius: 0}} containerElement='label' label="Set Up"  containerElement={<Link to="/uploadstudents"/>} />) : ''} 
-                     { (props.perms.indexOf("createAccounts") !== -1) ?  (<FlatButton  labelStyle={{lineHeight: 4}} style={{borderTop: 'solid 1px #E6E6E6',borderLeft: 'solid 1px #E6E6E6', borderRight: 'solid 1px #E6E6E6', maxWidth: 170, fontSize: 12, height: 50, flex: 'center', borderRadius: 0}} containerElement='label' label="Create Accounts"  containerElement={<Link to="/manageusers"/>} />) : ''} 
-                      <IconButton  onTouchTap={props.handleLogout}  iconStyle={{height: 48}} style={{maxWidth: 100, alignSelf: 'center'}} ><LogoutIcon /></IconButton>
-                      </div>);
+const Normal = (props) => (
+    <div className="menu-on-normal-screen">
+        { (props.perms.indexOf("buildPath") !== -1) ?  (<FlatButton  labelStyle={{lineHeight: 4}} style={{ borderTop: 'solid 1px #E6E6E6',borderLeft: 'solid 1px #E6E6E6', borderRight: 'solid 1px #E6E6E6',maxWidth: 170, fontSize: 12, height: 50, flex: 'center', borderRadius: 0}} containerElement={<Link to="/buildpath"/>} label="Build Paths" />) : ''} 
+        { (props.perms.indexOf("manageStudents") !== -1) ?  (<FlatButton  labelStyle={{lineHeight: 4}} style={{borderTop: 'solid 1px #E6E6E6',borderLeft: 'solid 1px #E6E6E6', borderRight: 'solid 1px #E6E6E6', maxWidth: 170, fontSize: 12, height: 50, flex: 'center', borderRadius: 0}} containerElement='label' label="Set Up"  containerElement={<Link to="/uploadstudents"/>} />) : ''} 
+        { (props.perms.indexOf("createAccounts") !== -1) ?  (<FlatButton  labelStyle={{lineHeight: 4}} style={{borderTop: 'solid 1px #E6E6E6',borderLeft: 'solid 1px #E6E6E6', borderRight: 'solid 1px #E6E6E6', maxWidth: 170, fontSize: 12, height: 50, flex: 'center', borderRadius: 0}} containerElement='label' label="Create Accounts"  containerElement={<Link to="/manageusers"/>} />) : ''} 
+        <IconButton  onTouchTap={props.handleLogout}  iconStyle={{height: 48}} style={{maxWidth: 100, alignSelf: 'center'}} ><LogoutIcon /></IconButton>
+    </div>)
+;
 
 class AppNav extends Component {
     constructor(props){
@@ -56,18 +58,19 @@ class AppNav extends Component {
     }
     render(){
       // console.log("perms", this.props.perms)
-       return (<div>
-                  <AppBar
-                      className={this.props.loggedin ? "sticky-navbar sticky-navbar-loggedin" : "sticky-navbar"}
-                      title={(((this.props.pathname === '/buildpath') ||(this.props.pathname === '/')) && (this.props.loggedin)) ? "" : (<div><span><img src="./public/assets/img/sidekick.png" className="logo" alt="Sidekick" /></span></div>)}
-                      titleStyle={styles.title}
-                      iconStyleRight={{order: 4, marginTop: 0, marginLeft: 0, display: "flex"}}
-                      iconStyleLeft={{display: 'none'}}
-                      iconElementRight={<div>{this.props.loggedin && this.props.perms ? 
-                      (<div><Small {...this.props} /><Normal {...this.props}/></div>) : (<div className="placeholder"></div>) } </div>}
-                    />     
-           
-                </div>)
+        return (
+            <header>
+                <AppBar
+                    className={this.props.loggedin ? "sticky-navbar sticky-navbar-loggedin" : "sticky-navbar"}
+                    title={(((this.props.pathname === '/buildpath') ||(this.props.pathname === '/')) && (this.props.loggedin)) ? "" : (<div><span><img src="./public/assets/img/sidekick.png" className="logo" alt="Sidekick" /></span></div>)}
+                    titleStyle={styles.title}
+                    iconStyleRight={{order: 4, marginTop: 0, marginLeft: 0, display: "flex"}}
+                    iconStyleLeft={{display: 'none'}}
+                    iconElementRight={<div>{this.props.loggedin && this.props.perms ? 
+                    (<div><Small {...this.props} /><Normal {...this.props}/></div>) : (<div className="placeholder"></div>) } </div>}
+                />
+            </header>
+        )
     }
 };
 export default connect()(AppNav); 

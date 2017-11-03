@@ -15,18 +15,16 @@ import Chip from 'material-ui/Chip';
 
 var styles = {
     chip: {
-    margin: 7,
+        margin: 7,
     },
     wrapper: {
-    display: 'flex',
-    flexWrap: 'wrap',
+        display: 'flex',
+        flexWrap: 'wrap',
     },
     auto: {
         fontSize: 14,
     }
 };
-
-
 
 class MultiSelectField extends Component {
 

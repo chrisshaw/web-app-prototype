@@ -29,7 +29,7 @@ class AdminPanel extends PureComponent {
   render() {
     const { isFlashMessageShowing, flashMessage } = this.props;
     return (
-      <div style={styles.wrapper}>
+      <div id="admin-table" style={styles.wrapper}>
         <Tabs>
           {this.isAdmin() && <Tab label="Teacher & Administrators">
             <TeachersTab/>

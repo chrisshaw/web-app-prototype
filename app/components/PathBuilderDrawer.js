@@ -12,28 +12,17 @@ class PathBuilderDrawer extends Component{
         super(props);
     }
     render() {
-        const style = {
-            drawer: {
-                zIndex: 2000,
-                position: 'fixed',
-                height: '100vh',
-            }
-        }
-        return (
-                <div>              
-                    <Drawer
-                        containerClassName="drawer-small-screen"
-                        docked={true}
-                        width={'35%'}
-                        style={style.drawer}            
-                    >     
-                        <PathAppNav />   
-                        <Row>
-                            <QueryBuilder handleSend={this.props.handleSend}/>
-                        </Row>                  
-                    </Drawer>
-                </div>
-                )
+        return (      
+            <Drawer
+                width={'30%'}
+                docked={true}       
+            >     
+                <PathAppNav />   
+                <Row>
+                    <QueryBuilder handleSend={this.props.handleSend}/>
+                </Row>                  
+            </Drawer>
+        )
     }
    }
 

@@ -9,11 +9,6 @@ import GroupTabs from './GroupTabs';
 
 
 const style = {
-    drawer: {
-        zIndex: 100,
-        position: 'fixed',
-        top: '300px'
-    },
     span: {
         color: '#FFFFFF',
     
@@ -26,11 +21,17 @@ const style = {
 
     },
     paper: {
-        width: '100%',
+        // width: '100%',
         textAlign: 'center',
         overflow: 'auto'
     }
 }
+
+const Loader = () => (
+    <div className="loader-container">
+        <div className="text-center loader"></div>
+    </div>
+)
 
 class PathBuilder extends Component{
    constructor(props) {
@@ -42,27 +43,25 @@ class PathBuilder extends Component{
         // used by the "send to Sidekick" button in QueryBuilder
         helper.sendToSidekick(this.props)   
     }
-    render(){
-        return(
-            <div>
-                <PathBuilderDrawer handleClose={this.handleClose} handleSend={this.handleSend} />
-                <Row>   
-                    <Col lg={5} md={5} sm={5} xs={5}/>       
-                    <Col lg={7} md={7} sm={7} xs={7} >      
-                       <Paper style={style.paper} zDepth={0}>
-                        {this.props.searching ? (<div>
-        
-                            <div className="loader-location">
-                            <div className="loader-text">Searching...</div>
-                            <br />
-                            <div className="text-center loader"></div></div>
-                            </div>) : (<GroupTabs falist={this.props.falist} selectedfa={this.props.selectedfa} fa={this.props.fa} username={this.props.username}  paths={this.props.paths} changed={this.props.changed} />)}
-
-                                                
-                        </Paper>        
-                    </Col>
-                </Row>
-            </div>
+    render() {
+        return (
+            <main id="pathbuilder">
+                <PathBuilderDrawer id="query-area" handleClose={this.handleClose} handleSend={this.handleSend} /> 
+                <Paper id="path-area" style={style.paper} zDepth={0}>
+                    {this.props.searching ? (
+                        <Loader />
+                    ) : (
+                        <GroupTabs
+                            falist={this.props.falist}
+                            selectedfa={this.props.selectedfa}
+                            fa={this.props.fa}
+                            username={this.props.username}
+                            paths={this.props.paths}
+                            changed={this.props.changed}
+                        />
+                    )}                     
+                </Paper>        
+            </main>
         )
     }
 }
