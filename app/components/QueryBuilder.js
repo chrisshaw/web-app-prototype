@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import {Grid, Row, Col} from 'react-bootstrap';
-import PathBuilderDrawer from './PathBuilderDrawer.js';
+// import PathBuilderDrawer from './PathBuilderDrawer.js';
 import RaisedButton from 'material-ui/RaisedButton';
 import FlatButton from 'material-ui/FlatButton';
 import IconButton from 'material-ui/IconButton';
@@ -73,31 +73,24 @@ class QueryBuilder extends Component{
             ];
     
         var component = this;
-        return(<div className="drawer-wrapper">
-                <Row>
-                    <Col xs={12} md={12} >
-                        <div className="query-builder-wrapper">
-                        <h3> Build Path </h3>
-                        <p> Enter grade and other filter criteria below, then submit to get reccommended paths. </p> 
-                        </div>
-                    </Col>
-                </Row>
-                <Row>
-                    <Col xs={12} md={12} >
-                        { (this.state.error ) ?  <Dialog
-                            bodyStyle={{fontSize: 13}}
-                            titleStyle={{fontSize: 14, fontWeight: 'bold'}}
-                            title="PathBuilder Error"
-                            actions={actions}
-                            style={{zIndex: 2000,fontSize: 12, height: 300}}
-                            modal={false}
-                            open= {this.state.error}
-                            onRequestClose={this.handleClose}
-                            >
-                        { this.state.errorMsg }
-                            </Dialog> : " "}
-                    </Col>
-                </Row>
+        return (
+            <div className="drawer-wrapper">
+                <div className="query-builder-wrapper">
+                    <h3> Build Path </h3>
+                    <p> Enter grade and other filter criteria below, then submit to get reccommended paths. </p> 
+                </div>
+                { (this.state.error ) ?  <Dialog
+                    bodyStyle={{fontSize: 13}}
+                    titleStyle={{fontSize: 14, fontWeight: 'bold'}}
+                    title="PathBuilder Error"
+                    actions={actions}
+                    style={{zIndex: 2000,fontSize: 12, height: 300}}
+                    modal={false}
+                    open= {this.state.error}
+                    onRequestClose={this.handleClose}
+                    >
+                { this.state.errorMsg }
+                    </Dialog> : " "}
                 <GradeSelection selectedgradelist={this.props.selectedgradelist}/>
                 <CourseSelection selectedcourselist={this.props.selectedcourselist} role={this.props.role} username={this.props.username}/>
                 <TopicSelection selectedtopiclist={this.props.selectedtopiclist}/>
@@ -110,7 +103,7 @@ class QueryBuilder extends Component{
                 </Row>
                 {/* <Row>
                     <Col xs={12} md={12} className="text-center" >            
-                        { (this.props.perms) && (this.props.perms.indexOf('publish') !== -1) ? <FlatButton containerElement='label' label="Start Publishing to LMS" disabled={this.props.disabled} onTouchTap={this.props.handleSend} /> : ""}
+                        { (this.props.permissions) && (this.props.permissions.indexOf('publish') !== -1) ? <FlatButton containerElement='label' label="Start Publishing to LMS" disabled={this.props.disabled} onTouchTap={this.props.handleSend} /> : ""}
                     </Col>
                 </Row> */}
             </div>
@@ -130,7 +123,7 @@ const mapStateToProps = (store) => {
         role: store.authState.role,
         username: store.authState.username,
         disabled: store.mainState.disabled,
-        perms:  store.authState.perms,
+        permissions:  store.authState.permissions,
     }
 }
 

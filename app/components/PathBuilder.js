@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import {Grid, Row, Col} from 'react-bootstrap';
-import PathBuilderDrawer from './PathBuilderDrawer.js';
+import QueryBuilder from './QueryBuilder.js';
 import RaisedButton from 'material-ui/RaisedButton';
 import helper from '../helper';
 import {connect } from 'react-redux';
@@ -33,6 +33,12 @@ const Loader = () => (
     </div>
 )
 
+const PathBuilderDrawer = props => (
+    <Paper zDepth={3}>     
+        <QueryBuilder {...props}/>
+    </Paper>
+)
+
 class PathBuilder extends Component{
    constructor(props) {
         super(props);
@@ -46,7 +52,10 @@ class PathBuilder extends Component{
     render() {
         return (
             <main id="pathbuilder">
-                <PathBuilderDrawer id="query-area" handleClose={this.handleClose} handleSend={this.handleSend} /> 
+                <PathBuilderDrawer
+                    id="query-area"
+                    handleSend={this.handleSend}
+                /> 
                 <Paper id="path-area" style={style.paper} zDepth={0}>
                     {this.props.searching ? (
                         <Loader />
@@ -66,7 +75,7 @@ class PathBuilder extends Component{
     }
 }
 
-// *** NB: the HOC in validate perms injects {...props} which include router props and the loggedin prop
+// *** NB: the HOC in validate permissions injects {...props} which include router props and the loggedIn prop
 const mapStateToProps = (store,ownProps) => {
     return {
         paths: store.mainState.paths,

@@ -6,11 +6,11 @@ userLogin: (data) => {
     data
   }
 },
-userLoginError: (loginerror, errormsg) => {
+userLoginError: (loginError, errorMsg) => {
   return {
     type: 'LOGIN_ERROR',
-    loginerror,
-    errormsg
+    loginError,
+    errorMsg
   }
 },
 userSignUp: (signupok) => {
@@ -19,11 +19,11 @@ userSignUp: (signupok) => {
     signupok
   }
 },  
-signUpFields: (signupfields) => {
-  // console.log(signupfields);
+signUpFields: (signupFields) => {
+  // console.log(signupFields);
    return {
      type: 'SIGN_UP_FIELDS',
-     signupfields
+     signupFields
    }
 },
 userLogout: () => {

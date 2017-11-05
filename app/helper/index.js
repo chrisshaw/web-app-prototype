@@ -37,8 +37,8 @@ var helpers = {
                 };    
                 return axios.post('/csv/file', postObj).then(function(response){
                     // console.log("response", response.data);
-                    //  added perms check res.json({success: false, auth: false})
-                    // handle no perms error auth == false too
+                    //  added permissions check res.json({success: false, auth: false})
+                    // handle no permissions error auth == false too
                     dispatch(actions.viewUploadedCSVData(response.data.results, response.data.error))          
                 }).catch((error) => {
                 // send message to client...needs work
@@ -65,7 +65,7 @@ var helpers = {
                 // this will clear the data from the upload Page after saving....
                 // by settting csvdata to ""
                 dispatch(actions.viewUploadedCSVData(""));
-                // ***handle no perms error response.data.auth == false too
+                // ***handle no permissions error response.data.auth == false too
                 // success or catchure - return mesage to client this.props.dataupload = boolean
                 component.dataUploadStatus(response.data.success, response.data.error, dispatch);
                 return;               
@@ -426,7 +426,7 @@ var helpers = {
                 data: userObj
         }).then(function(response) {  
             // captures error and sends any relevant message to UI
-            // handle no perms error auth == false 
+            // handle no permissions error auth == false 
             // console.log("response.data", response.data)
             dispatch(actions.userSignUp(response.data.success));
             dispatch(actions.userLoginError(!response.data.success, response.data.msg));
@@ -465,7 +465,7 @@ var helpers = {
     logout(dispatch, router){
         // send to api for auth
         // set logged in to false
-        dispatch(actions.userLogin({loggedin: false, username: null, perms: [], role: null}));
+        dispatch(actions.userLogin({loggedIn: false, username: null, permissions: [], role: null}));
         // clear redux store and reset
         dispatch(actions.userLogout());
         router.push('/login');

@@ -1,0 +1,14 @@
+.mainContainer {
+    display: grid;
+    grid-template-columns: auto;
+    grid-template-rows: [top] 8fr [navbar-end] 92fr [bottom];
+    grid-template-areas:
+        "navbar"
+        "content";
+    align-items: stretch;
+}
+
+.mainContainerHeader {
+    grid-area: navbar;
+    display: flex;
+}

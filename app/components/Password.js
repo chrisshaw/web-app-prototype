@@ -30,13 +30,13 @@ class Password extends Component{
     }
     handleClose(){ 
         // // clear local and server error messages
-        if (this.props.loginerror) helper.loginError(false, "", this.props.dispatch);
+        if (this.props.loginError) helper.loginError(false, "", this.props.dispatch);
         // local validation
         if (this.state.error) this.setState({error: false, errorMsg: ""});
     }
 //  componentWillReceiveProps(nextProps) {
     //     // reset state unless there is an error - in that case the current and next props will differ
-    //     if (nextProps.loginerror === this.props.loginerror) {
+    //     if (nextProps.loginError === this.props.loginError) {
     //         this.setState({
     //                 password : '',
     //                 error: false, 
@@ -95,7 +95,7 @@ class Password extends Component{
                         >
                         { this.state.errorMsg }
                         </Dialog> : " "}
-                        { (this.props.loginerror )  ?  <Dialog
+                        { (this.props.loginError )  ?  <Dialog
                         bodyStyle={{fontSize: 13}}
                         titleStyle={{fontSize: 14, fontWeight: 'bold'}}
                         title="Sign Up Error"
@@ -105,7 +105,7 @@ class Password extends Component{
                         open= {true}
                         onRequestClose={this.handleClose}
                         >
-                        { this.props.errormsg  }
+                        { this.props.errorMsg  }
                         </Dialog> : " "}
                         <label htmlFor="inputPassword" className="sr-only">Password</label>
                         <input value={this.state.password} onChange={(e)=>this.handleChange(e)} id="password" type="password" className="form-control auth-input" placeholder="Password" minLength="8"
@@ -139,8 +139,8 @@ class Password extends Component{
 
 const mapStateToProps = (store) => {
     return {
-        loginerror: store.authState.loginerror,
-        errormsg: store.authState.errormsg,
+        loginError: store.authState.loginError,
+        errorMsg: store.authState.errorMsg,
 
        
     }

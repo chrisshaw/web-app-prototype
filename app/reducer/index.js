@@ -1,12 +1,12 @@
 import uuid from 'uuid';
-import {combineReducers } from 'redux';
+import { combineReducers } from 'redux';
 import update from 'immutability-helper';
 import studentsTabReducer from './studentsTab';
 import classReducer from './class';
 import teachersAndAdminsReducer from './teachersAndAdmins';
 import flashMessageReducer from './flashMessage';
 
-const intialstate = {
+const intialState = {
     //realised that intialstate wasnt workginas it was nesetd {initialstate} below
     //commmented out any arrays for now but will go back later and fix
 //   toggledrawer: false,
@@ -39,50 +39,29 @@ const intialstate = {
   changed: 0,
 }
 
-const loginintialstate = {
-  loginerror: false,
-  signupfields:   {
+const loginInitialState = {
+    loggedIn: false,
+    permissions: [],
+    loginError: false,
+    signupFields: {
         email: '', 
         password : '', 
         first: '',
         last: '',
         company: '',
         verify: '', 
-        selectedrole:  'Please Select a Role',
+        selectedRole: 'Please Select a Role',
         description: '',
         error: false, 
         errorMsg: ""
     }
 }
-const datainitialstate = {
-    dataupload: "",
-}
+
 const statusInitialState = {
     success: false,
     successMsg: ""
 }
-// function updateSelected(action, state, list, selectedlist){
-//         // decrease groups list and increase selected
-//     let newObj = {};
-//     let newGroups = state[list].filter((group) => {                  
-//         if (group.name === action.item){
-//             newObj = group;
-//             return false;
-//             }
-//             return true;
-//         });
-//     if (newObj !== {}){
-//         // if new Obj is not empty make changes
-//         if (!state[selectedlist]) {
-//             // initially when array is empty do this
-//             return Object.assign({[selectedlist]: []},state, {[selectedlist]:  [newObj],  [list]: newGroups});    
-//         } 
-//         else {     
-//             // after there is at least one item do this
-//             return Object.assign({[selectedlist]: []},state, {[selectedlist]:  [...state[selectedlist], newObj], [list]: newGroups});    
-//         }
-//     } 
-// }
+
 function updateSelected(action, state, list, selectedlist){
         // decrease groups list and increase selected
     // let newObj = {};
@@ -94,15 +73,15 @@ function updateSelected(action, state, list, selectedlist){
     //         return true;
     //     });
     // if (newObj !== {}){
-        // if new Obj is not empty make changes
-        if (!state[selectedlist]) {
-            // initially when array is empty do this
-            return Object.assign({[selectedlist]: []},state, {[selectedlist]:  [action.item]});    
-        } 
-        else {     
-            // after there is at least one item do this
-            return Object.assign({[selectedlist]: []},state, {[selectedlist]:  [...state[selectedlist], action.item]});    
-        }
+    // if new Obj is not empty make changes
+    if (!state[selectedlist]) {
+        // initially when array is empty do this
+        return Object.assign({[selectedlist]: []}, state, {[selectedlist]: [action.item]});    
+    } 
+    else {     
+        // after there is at least one item do this
+        return Object.assign({[selectedlist]: []}, state, {[selectedlist]: [...state[selectedlist], action.item]});    
+    }
     // } 
 }
 
@@ -126,14 +105,14 @@ function updateQueryList(action, state, list, selectedlist) {
             // no change
             return Object.assign({},state, {[selectedlist]: state[selectedlist] }); 
         }
-    } else if ((action.reset === true) &&  (action.delete === false)){
+    } else if ((action.reset === true) &&  (action.delete === false)) {
         // console.log("in action.reset true", state.gradelist)
         return Object.assign({},state, {[list]: action.list, [selectedlist]: []});   
     } else if ((action.reset === false ) &&  (action.delete === false)) {
         // if not a reset action and there are no  items in the selected list
         // send back all grades
         // console.log("state.selectedgradelist", state[selectedlist])
-        if (state[selectedlist]){
+        if (state[selectedlist]) {
             return Object.assign({}, state, {[list]:  state[list]}); 
         } else {
             return Object.assign({}, state, {[list]: action.list}); 
@@ -142,7 +121,7 @@ function updateQueryList(action, state, list, selectedlist) {
 }
             
 //  The below are required and map to the components dispatcher
-const mainReducer = (state=intialstate, action) => {
+const mainReducer = (state = intialState, action) => {
     
     switch(action.type){    
         // case 'GET_FA':
@@ -222,62 +201,59 @@ const mainReducer = (state=intialstate, action) => {
             // saves to selected list for query and in chips
             return updateSelected(action, state, 'standardslist', 'selectedstandardslist');  
         case 'SHOW_INITIAL_ROWS': 
-            return Object.assign({},state, {falist: action.falist})
-         case 'SHOW_MORE_ROWS': 
-            return Object.assign({},state, {falist: update(state.falist,{ 
-                  [action.index]: {$set: action.newvalue}
-                })
-            })
+            return Object.assign({}, state, { falist: action.falist })
+        case 'SHOW_MORE_ROWS': 
+            return Object.assign(
+                {},
+                state,
+                { falist: update(
+                    state.falist,
+                    { 
+                        [action.index]: {$set: action.newvalue}
+                    }
+                )}
+            )
     };        
     return state;
 }
 
-const authReducer = (state=loginintialstate, action) => {
-    // console.log("loginintialstate", loginintialstate);
+const authReducer = (state = loginInitialState, action) => {
+
     switch(action.type){    
         case 'LOGGED_IN':
-            return Object.assign({},state, {loggedin: action.data.success, username: action.data.username, userId: action.data.id, perms: action.data.perms, role: action.data.role});
+            return Object.assign( {}, state, {
+                loggedIn: action.data.success,
+                username: action.data.username,
+                userId: action.data.id,
+                permissions: action.data.permissions,
+                role: action.data.role
+            });
         case 'LOGIN_ERROR':
-            return Object.assign({loginerror: false},state, {loginerror: action.loginerror, errormsg: action.errormsg }); 
+            return Object.assign( { loginError: false }, state, { loginError: action.loginError, errorMsg: action.errorMsg }); 
         case 'GET_ROLES':
-            return Object.assign({},state, {roles: action.roles});
+            return Object.assign( {}, state, { roles: action.roles } );
         case 'SIGN_UP_STATUS':
-            return Object.assign({signupok: false},state, {signupok: action.signupok, statusmsg: action.statusmsg }); 
+            return Object.assign( { signupOk: false }, state, { signupOk: action.signupOk, statusMsg: action.statusMsg }); 
         case 'SIGN_UP_FIELDS':
-            return Object.assign(  {
-                signupfields:  {
-                        email: '', 
-                        password : '', 
-                        first: '',
-                        last: '',
-                        school: '',
-                        verify: '', 
-                        selectedrole:  'Please Select a Role',
-                        description: '',
-                        error: false, 
-                        errorMsg: ""}
-            },state, {signupfields: action.signupfields }); 
+            return Object.assign( {
+                signupFields:  {
+                    email: '', 
+                    password : '', 
+                    first: '',
+                    last: '',
+                    school: '',
+                    verify: '', 
+                    selectedRole:  'Please Select a Role',
+                    description: '',
+                    error: false, 
+                    errorMsg: ""
+                }
+            }, state, { signupFields: action.signupFields }
+        );
+        
         // case 'USER_PERMS':
-        //     return Object.assign({perms: []},state, {});
+        //     return Object.assign({permissions: []},state, {});
  };      
-    return state;
-}
-
-const uploadReducer = (state=datainitialstate, action) => {
-    switch(action.type){  
-        case 'VIEW_CSV_DATA':
-            if (action.uploaderror) {
-                return Object.assign({},state, {csvdata: action.csvdata, uploaderror: action.uploaderror}); 
-            } else {
-                return Object.assign({},state, {csvdata: action.csvdata, uploaderror: ""}); 
-            }
-        case 'CSV_SAVED':
-            if (action.saveerror) {
-                return Object.assign({},state, {datasaved: action.datasaved, saveerror: action.saveerror}); 
-            } else {
-                return Object.assign({},state, {datasaved: action.datasaved, saveerror: ""}); 
-            }
-    };      
     return state;
 }
 
@@ -294,7 +270,6 @@ const appStatusReducer = (state=statusInitialState, action) => {
 const appReducer = combineReducers({
     mainState : mainReducer,
     authState : authReducer,
-    uploadState: uploadReducer,
     appState: appStatusReducer,
     studentsTab: studentsTabReducer,
     teachersAndAdmins: teachersAndAdminsReducer,

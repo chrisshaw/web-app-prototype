@@ -12,22 +12,22 @@ export default function(WrappedComponent){
         // react router uses it
         // this.props.router.path is passed but Router so can use this but all examples use context
         componentWillMount() {
-            if(!this.props.loggedin) { 
+            if(!this.props.loggedIn) { 
                 // send to login screen
                 this.props.router.push('/login')
-            } else if (this.props.perms.indexOf(this.props.route.auth) === -1 ){
-                // if not this path is not in your perms list then get forbidden message
+            } else if (this.props.permissions.indexOf(this.props.route.auth) === -1 ){
+                // if not this path is not in your permissions list then get forbidden message
                 // console.log('forbidden');
                 this.props.router.push('/forbidden');
             }
 
         }
         componentWillUpdate(nextProps) {
-            if(!nextProps.loggedin) {
+            if(!nextProps.loggedIn) {
                 // send to login screen
                 this.props.router.push('/login')
-            }  else if (this.props.perms.indexOf(this.props.route.auth) === -1 ){
-                // if not this path is not in your perms list then get forbidden message
+            }  else if (this.props.permissions.indexOf(this.props.route.auth) === -1 ){
+                // if not this path is not in your permissions list then get forbidden message
                 console.log('forbidden');
                 this.props.router.push('/forbidden');
             }
@@ -43,8 +43,8 @@ export default function(WrappedComponent){
     // we need as it also injects login state to container components like BuildPath
     function mapStateToProps(store) {
         return {
-            loggedin: store.authState.loggedin,
-            perms: store.authState.perms,
+            loggedIn: store.authState.loggedIn,
+            permissions: store.authState.permissions,
         }
     }
 

@@ -1,6 +1,7 @@
 html,
 body,
-#app {
+#app,
+#main-container {
     height: 100%;
     min-height: 100%;
 }
@@ -13,14 +14,6 @@ body {
     margin: 0;
 }
 
-.logo  {
-    width: 250px;
-}
-
-.drawer-logo {
-    width: 250px;
-}
-
 .sticky-navbar  {
     top: 0;
     z-index: 1000;
@@ -30,7 +23,7 @@ body {
     flex-direction: row;
     flex-wrap: wrap;
     justify-content: center;
-    align-items: center;
+    align-items: stretch;
     flex: 1 1 auto !important;
 }
 
@@ -60,11 +53,6 @@ body {
     margin-right:  0px;
     margin-top: 0px;
     margin-bottom: 10px;
-}
-
-.drawer-wrapper {
-    margin-top: 75px;
-    margin-bottom: 100px;
 }
 
 .icon-marigin {

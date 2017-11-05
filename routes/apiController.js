@@ -53,7 +53,7 @@ module.exports = function(app){
                     // console.log(authPerm)
                     // console.log(permissions)
                     // console.log("((authPerm !== '' ) && (permissions.indexOf(authPerm) !== -1))", ((authPerm !== '' ) && (permissions.indexOf(authPerm) !== -1)));
-                    if ((authPerm !== '' ) && (permissions.indexOf(authPerm) !== -1)) {
+                    if ((authPerm !== '' ) && (permissions.includes(authPerm) !== -1)) {
                         // console.log('cool, permissions checked out');
                         resolve({success:true, userid: userId, username: username, userkey: userKey });
                     } else if (authPerm === '' ) {
@@ -64,7 +64,7 @@ module.exports = function(app){
                         reject();
                     }          
                 }).catch(error => {
-                    console.log(Date.now() + " Error (Get Perms from Database):");
+                    console.log(Date.now() + " Error (Get permissions from Database):");
                     reject();
                 }); 
             }).catch(error => {
@@ -113,12 +113,14 @@ module.exports = function(app){
 
     app.post('/login' , function(req, res, next){
         const foxxService = db.route('auth');
+        console.log(req.body)
         foxxService.post('/login', req.body)
-        .then(response => {
+        .then( response => {
+            console.log(response)
             res.setHeader("Set-Cookie",  'x-foxxsessid='+response.headers['x-foxxsessid']);
             return response.body;
         }).then(response => {
-            // get user role and perms
+            // get user role and permissions
             let userId = response.userid;
             let chgPwd = response.chgPwd;
             let username = response.username;
@@ -127,8 +129,8 @@ module.exports = function(app){
                 for v, e, p
                 in 2 outbound ${userId}
                 auth_hasRole, auth_hasPermission
-                collect role = p.vertices[1]._key into perms = p.vertices[2]._key
-                return { "role": role, "perms": perms }
+                collect role = p.vertices[1]._key into permissions = p.vertices[2]._key
+                return { "role": role, "permissions": permissions }
             `;
             db.query(query)
             .then(cursor => {  
@@ -137,9 +139,9 @@ module.exports = function(app){
                 // admin created users must change password on first login
                 const result = cursor._result;
                 // console.log(result);
-                res.json({success:true, id: userId, username: username, role: result[0].role, perms: result[0].perms, chgPwd: chgPwd});
+                res.json({success:true, id: userId, username: username, role: result[0].role, permissions: result[0].permissions, chgPwd: chgPwd});
             }).catch(error => {
-                console.log(Date.now() + " Error (Get Perms from Database):", error);
+                console.log(Date.now() + " Error (Get permissions from Database):", error);
                 res.json();
             }) 
         }).catch(error => {
@@ -147,7 +149,7 @@ module.exports = function(app){
             console.log(Date.now() + " Error (Login):", error.response.body.errorMessage);
             // send basic success: false
             // send error to client for handling
-            res.json({success:false});
+            res.json( { success: false } );
         })
     })
     app.post('/signup' , function(req, res, next){
@@ -156,11 +158,11 @@ module.exports = function(app){
         // verify user is valid and then that they have the right permissions
         validateUser(req, res, "createAccounts")
         .then( response => {
-            // double check user perms on server side
+            // double check user permissions on server side
             // if user has the required permission manageusers in their permissions array in
-            // req.perms
+            // req.permissions
             let userObj = req.body;
-            // get perms and username of person doing the signup
+            // get permissions and username of person doing the signup
             let username = response.username;
             userObj.creator = username;
             // post/save data using foxx service for auth
@@ -939,7 +941,7 @@ module.exports = function(app){
     }
 
     app.post('/summit', function(req,res){
-        // sendtosummit is the required permission for this path
+        // publish is the required permission for this path
         validateUser(req, res, "publish").then((response) =>{
             // first save the data then send to summit
             saveNewPath(req.body, response.username).then((summitArr) => {
