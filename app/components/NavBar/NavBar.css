@@ -1,14 +1,17 @@
+.appbar {
+    background-color: white !important;
+}
+
 .navbar {
     display: flex;
     flex-flow: row nowrap;
     align-items: stretch;
+}
+
+.justifyCenter {
+    justify-content: center;
+}
+
+.justifySpread {
     justify-content: space-between; /* There's only 2 things on the line, so "evenly spaced" is all empty space. This pushes things to the left and right. */
-}
-
-.hidden {
-    display: none;
-}
-
-.nav-buttons {
-    justify-self: end;
 }

@@ -4,7 +4,6 @@ import {Grid, Row, Col} from 'react-bootstrap';
 import RaisedButton from 'material-ui/RaisedButton';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
-import muiThemeable from 'material-ui/styles/muiThemeable';
 import helper from '../helper';
 import { signUpFields } from '../actions';
 

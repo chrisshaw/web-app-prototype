@@ -5,8 +5,7 @@ import {Grid, Row, Col} from 'react-bootstrap';
 import SignUp from './SignUp';
 // import {browserHistory} from "react-router";
 import {connect} from 'react-redux';
-// import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-// import getMuiTheme from 'material-ui/styles/getMuiTheme';
+
 // import { push } from 'react-router-redux';
 
 

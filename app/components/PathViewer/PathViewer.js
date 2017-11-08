@@ -4,14 +4,10 @@ import ReactDOM from "react-dom";
 import SwipeableViews from 'react-swipeable-views';
 import uuid from 'uuid';
 import {Grid, Row, Col} from 'react-bootstrap';
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import getMuiTheme from 'material-ui/styles/getMuiTheme';
-import {connect} from 'react-redux';
-import { bindActionCreators } from 'redux';
-import helper from '../helper';
+
+import { connect } from 'react-redux';
+import helper from '../../helper';
 import Dialog from 'material-ui/Dialog';
-// need to move to next versoin of material ui but until then will use import { Tabs, Tab } from 'material-ui-scrollable-tabs/Tabs';
-// import { Tabs, Tab } from 'material-ui-scrollable-tabs/Tabs';
 import {Tabs, Tab} from 'material-ui/Tabs';
 import Chip from 'material-ui/Chip';
 import FlatButton from 'material-ui/FlatButton';
@@ -21,6 +17,7 @@ import UpIcon from './UpIcon.js';
 import DownIcon from './DownIcon.js';
 import RightIcon from './RightIcon.js';
 import LeftIcon from './LeftIcon.js';
+
 import {
   red500,
   grey500,
@@ -64,16 +61,17 @@ const styles = {
   },
 };
 
-class GroupTabs extends React.Component {
+// MUI-NEXT MIGRATION
+import Button from 'mui-next/Button'
+import AutoCompleteFA from '../AutoCompleteFA.js';
+import IconButton from 'mui-next/IconButton'
+import Icon from 'mui-next/Icon'
+
+
+class PathViewer extends React.Component {
   constructor(props) {
     super(props);
     this.handleActive = this.handleActive.bind(this);
-    // this.ondragstart = this.ondragstart.bind(this);
-    // this.ondragend = this.ondragend.bind(this);
-    // this.ondragover = this.ondragover.bind(this);
-    // this.ondragenter = this.ondragenter.bind(this);
-    // this.ondragleave = this.ondragleave.bind(this);
-    // this.ondrop = this.ondrop.bind(this);
     this.handleAdd = this.handleAdd.bind(this);
     this.handleDelete = this.handleDelete.bind(this);
     this.handleClose = this.handleClose.bind(this);
@@ -89,7 +87,9 @@ class GroupTabs extends React.Component {
     this.handleViewRelatedProjects = this.handleViewRelatedProjects.bind(this);
     this.handleCloseRelatedProjectsDrawer = this.handleCloseRelatedProjectsDrawer.bind(this);
     // get FAlist for current user
-    this.state = {
+  }
+  
+  state = {
       value: 0,
       showModal: false,
       showDiv: "",
@@ -98,23 +98,23 @@ class GroupTabs extends React.Component {
       isFocusAreaDrawerOpen: false,
       currentFocusArea: {},
       isRelatedProjectsDrawerOpen: false,
-    };
+  };
 
-    this.relevance = {
+  relevance = {
       'Supporting Concept': {
-        label: 'Bridge',
-        color: grey500,
+          label: 'Bridge',
+          color: grey500,
       },
       'Relevant': {
-        label: 'Relevant',
-        color: null,
+          label: 'Relevant',
+          color: null,
       },
       'Highly Relevant': {
-        label: 'Highly Relevant',
-        color: greenA700,
+          label: 'Highly Relevant',
+          color: greenA700,
       },
-    };
-  }  
+  }
+  
   handleMoveUp(moveStudentPosition, moveProjPosition, moveFaPosition){
     // console.log("Moved Up", moveStudentPosition, moveProjPosition, moveFaPosition)
     helper.moveFaUp(moveStudentPosition, moveProjPosition, moveFaPosition, this.props)
@@ -273,30 +273,9 @@ class GroupTabs extends React.Component {
         faCounter++;  // increase for each fa iteration
 
           let faPosition =  idCounter;   
-          let changeButtons = (
-            <div style={{display: 'flex', justifyContent: 'space-between'}}>
-              <FlatButton containerElement="label" label="View Details" onTouchTap={() => {this.handleViewDetails(fa)}}/>
-              <FlatButton containerElement='label' label="Add"   onTouchTap={(e) => component.handleAdd(studentPathPosition, projPosition, faPosition)}/>
-              <FlatButton containerElement='label' label="Remove"  onTouchTap={() => component.handleDelete(studentPathPosition, component.props.paths[tabindex].studentsOnPath[0].name, fa._key, projPosition, faPosition)} />
-              <IconButton iconStyle={styles.iconButton} onTouchTap={() => component.handleMoveUp(studentPathPosition, projPosition, faPosition)}  iconStyle={{height: 48}} style={{maxWidth: 100}}  tooltip="Move Up"><UpIcon /></IconButton>
-              <IconButton iconStyle={styles.iconButton}  onTouchTap={() => component.handleMoveDown(studentPathPosition, projPosition, faPosition)}  iconStyle={{height: 48}} style={{maxWidth: 100}} tooltip="Move Down"><DownIcon /></IconButton>
-            </div>
-          );
-          let saveFAButton = (<div><Col className="text-center" md={12} xs={6}>          
-                      <FlatButton containerElement='label' label="Add FA"   disabled={component.props.selectedfa ? false: true}  onTouchTap={() => component.handleAddFA(studentPathPosition, component.props.paths[tabindex].studentsOnPath[0].name, fa._key, projPosition, faPosition)}/>
-                      </Col> </div>);
-          let closeDivButton = (<div><Col className="text-center" md={12} xs={6}>          
-                      <FlatButton containerElement='label' label="Close"   onTouchTap={() => component.handleClose(studentPathPosition, projPosition, faPosition)}/>
-                      </Col> </div>);
-          idCounter++;
-          
-          let dragItem = <div
-                            ref={[component.props.paths[tabindex].studentsOnPath[0].name, fa._id, studentPathPosition, projPosition, faPosition].join('|')}
-                            id={[component.props.paths[tabindex].studentsOnPath[0].name, fa._id, studentPathPosition, projPosition, faPosition].join('|')}
-                            key={[component.props.paths[tabindex].studentsOnPath[0].name, fa._id, studentPathPosition, projPosition, faPosition].join('|')}
-                            className="fa-wrapper path"
-                            >
 
+          idCounter++;
+          <div>
           <Row className="fa-tab-view-rows" >
             <Col md={12}>
               <div style={styles.slide}>
@@ -490,17 +469,17 @@ const mapStateToProps = (state) => ({
 });
 
 const mapDispatchToProps = (dispatch) => {
-  const bindedActions = bindActionCreators({
+  const boundActions = bindActionCreators({
     selectFocusArea,
     selectPath,
   }, dispatch);
-  return {dispatch, ...bindedActions};
+  return {dispatch, ...boundActions};
 };
 
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(GroupTabs);
+)(PathViewer);
 
 
   

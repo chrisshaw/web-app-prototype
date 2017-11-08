@@ -218,7 +218,7 @@ async@^1.5.2:
   version "1.5.2"
   resolved "https://registry.yarnpkg.com/async/-/async-1.5.2.tgz#ec6a61ae56480c0c3cb241c95618e20892f9672a"
 
-async@^2.0.1, async@^2.1.2:
+async@^2.0.1, async@^2.1.2, async@^2.4.1:
   version "2.5.0"
   resolved "https://registry.yarnpkg.com/async/-/async-2.5.0.tgz#843190fd6b7357a0b9e1c956edddd5ec8462b54d"
   dependencies:
@@ -1307,7 +1307,7 @@ clap@^1.0.9:
   dependencies:
     chalk "^1.1.3"
 
-classnames@^2.2.5:
+classnames@^2.1.2, classnames@^2.2.5:
   version "2.2.5"
   resolved "https://registry.yarnpkg.com/classnames/-/classnames-2.2.5.tgz#fb3801d453467649ef3603c7d61a02bd129bde6d"
 
@@ -1671,6 +1671,10 @@ dashdash@^1.12.0:
   dependencies:
     assert-plus "^1.0.0"
 
+date-arithmetic@^3.1.0:
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/date-arithmetic/-/date-arithmetic-3.1.0.tgz#1fcd03dbd504b9dbee2b9078c85a5f1c7d3cc2d3"
+
 date-now@^0.1.4:
   version "0.1.4"
   resolved "https://registry.yarnpkg.com/date-now/-/date-now-0.1.4.tgz#eaf439fd4d4848ad74e5cc7dbef200672b9e345b"
@@ -1804,7 +1808,7 @@ dom-converter@~0.1:
   dependencies:
     utila "~0.3"
 
-dom-helpers@^3.2.0, dom-helpers@^3.2.1:
+dom-helpers@^3.0.0, dom-helpers@^3.2.0, dom-helpers@^3.2.1:
   version "3.2.1"
   resolved "https://registry.yarnpkg.com/dom-helpers/-/dom-helpers-3.2.1.tgz#3203e07fed217bd1f424b019735582fc37b2825a"
 
@@ -2157,6 +2161,15 @@ extglob@^0.3.1:
   dependencies:
     is-extglob "^1.0.0"
 
+extract-text-webpack-plugin@^3.0.2:
+  version "3.0.2"
+  resolved "https://registry.yarnpkg.com/extract-text-webpack-plugin/-/extract-text-webpack-plugin-3.0.2.tgz#5f043eaa02f9750a9258b78c0a6e0dc1408fb2f7"
+  dependencies:
+    async "^2.4.1"
+    loader-utils "^1.1.0"
+    schema-utils "^0.3.0"
+    webpack-sources "^1.0.1"
+
 extsprintf@1.3.0, extsprintf@^1.2.0:
   version "1.3.0"
   resolved "https://registry.yarnpkg.com/extsprintf/-/extsprintf-1.3.0.tgz#96918440e3041a7a414f8c52e3c574eb3c3e1e05"
@@ -2196,6 +2209,13 @@ fbjs@^0.8.1, fbjs@^0.8.16, fbjs@^0.8.4, fbjs@^0.8.6, fbjs@^0.8.9:
     promise "^7.1.1"
     setimmediate "^1.0.5"
     ua-parser-js "^0.7.9"
+
+file-loader@^1.1.5:
+  version "1.1.5"
+  resolved "https://registry.yarnpkg.com/file-loader/-/file-loader-1.1.5.tgz#91c25b6b6fbe56dae99f10a425fd64933b5c9daa"
+  dependencies:
+    loader-utils "^1.0.2"
+    schema-utils "^0.3.0"
 
 file-type@^4.3.0:
   version "4.4.0"
@@ -3396,7 +3416,7 @@ mime-types@^2.1.12, mime-types@^2.1.15, mime-types@~2.1.15, mime-types@~2.1.16, 
   dependencies:
     mime-db "~1.30.0"
 
-mime@1.4.1, mime@^1.3.4:
+mime@1.4.1, mime@^1.3.4, mime@^1.4.1:
   version "1.4.1"
   resolved "https://registry.yarnpkg.com/mime/-/mime-1.4.1.tgz#121f9ebc49e3766f311a76e1fa1c8003c4b03aa6"
 
@@ -4236,7 +4256,7 @@ promise@^7.1.1:
   dependencies:
     asap "~2.0.3"
 
-prop-types@^15.5.10, prop-types@^15.5.4, prop-types@^15.5.6, prop-types@^15.5.7, prop-types@^15.5.8, prop-types@^15.6.0:
+prop-types@^15.5.10, prop-types@^15.5.4, prop-types@^15.5.6, prop-types@^15.5.7, prop-types@^15.5.8, prop-types@^15.5.9, prop-types@^15.6.0:
   version "15.6.0"
   resolved "https://registry.yarnpkg.com/prop-types/-/prop-types-15.6.0.tgz#ceaf083022fc46b4a35f69e13ef75aed0d639856"
   dependencies:
@@ -4426,6 +4446,12 @@ react-chips@^0.6.1:
     react-autosuggest "^9.0.1"
     react-themeable "^1.1.0"
 
+react-component-managers@^3.0.2:
+  version "3.0.2"
+  resolved "https://registry.yarnpkg.com/react-component-managers/-/react-component-managers-3.0.2.tgz#33fb1eb83e769455eaaafae1e5b6ed603ff9380f"
+  dependencies:
+    prop-types "^15.5.9"
+
 react-dom@^15.4.2:
   version "15.6.2"
   resolved "https://registry.yarnpkg.com/react-dom/-/react-dom-15.6.2.tgz#41cfadf693b757faf2708443a1d1fd5a02bef730"
@@ -4588,7 +4614,7 @@ react-transition-group@^1.2.0, react-transition-group@^1.2.1:
     prop-types "^15.5.6"
     warning "^3.0.0"
 
-react-transition-group@^2.2.1:
+react-transition-group@^2.2.0, react-transition-group@^2.2.1:
   version "2.2.1"
   resolved "https://registry.yarnpkg.com/react-transition-group/-/react-transition-group-2.2.1.tgz#e9fb677b79e6455fd391b03823afe84849df4a10"
   dependencies:
@@ -4598,6 +4624,22 @@ react-transition-group@^2.2.1:
     loose-envify "^1.3.1"
     prop-types "^15.5.8"
     warning "^3.0.0"
+
+react-widgets@^4.1.1:
+  version "4.1.1"
+  resolved "https://registry.yarnpkg.com/react-widgets/-/react-widgets-4.1.1.tgz#6d94e96f2595639677d348639aac1026abf56bae"
+  dependencies:
+    classnames "^2.1.2"
+    date-arithmetic "^3.1.0"
+    dom-helpers "^3.0.0"
+    invariant "^2.1.0"
+    loose-envify "^1.2.0"
+    react-component-managers "^3.0.2"
+    react-prop-types "^0.4.0"
+    react-transition-group "^2.2.0"
+    spy-on-component "^1.0.2"
+    uncontrollable "^4.0.0"
+    warning "^2.0.0"
 
 react@^15.4.2, react@^15.5.4:
   version "15.6.2"
@@ -5191,6 +5233,10 @@ sprintf-js@~1.0.2:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/sprintf-js/-/sprintf-js-1.0.3.tgz#04e6926f662895354f3dd015203633b857297e2c"
 
+spy-on-component@^1.0.2:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/spy-on-component/-/spy-on-component-1.0.2.tgz#be02b9118f0d7d60d33a2de50fc9634cb057aa3f"
+
 sshpk@^1.7.0:
   version "1.13.1"
   resolved "https://registry.yarnpkg.com/sshpk/-/sshpk-1.13.1.tgz#512df6da6287144316dc4c18fe1cf1d940739be3"
@@ -5491,7 +5537,7 @@ uid-safe@~2.1.5:
   dependencies:
     random-bytes "~1.0.0"
 
-uncontrollable@^4.0.1:
+uncontrollable@^4.0.0, uncontrollable@^4.0.1:
   version "4.1.0"
   resolved "https://registry.yarnpkg.com/uncontrollable/-/uncontrollable-4.1.0.tgz#e0358291252e1865222d90939b19f2f49f81c1a9"
   dependencies:
@@ -5518,6 +5564,14 @@ unpipe@1.0.0, unpipe@~1.0.0:
 upper-case@^1.1.1:
   version "1.1.3"
   resolved "https://registry.yarnpkg.com/upper-case/-/upper-case-1.1.3.tgz#f6b4501c2ec4cdd26ba78be7222961de77621598"
+
+url-loader@^0.6.2:
+  version "0.6.2"
+  resolved "https://registry.yarnpkg.com/url-loader/-/url-loader-0.6.2.tgz#a007a7109620e9d988d14bce677a1decb9a993f7"
+  dependencies:
+    loader-utils "^1.0.2"
+    mime "^1.4.1"
+    schema-utils "^0.3.0"
 
 url-parse@1.0.x:
   version "1.0.5"
@@ -5610,6 +5664,12 @@ vm-browserify@0.0.4:
 vow@^0.4.9:
   version "0.4.17"
   resolved "https://registry.yarnpkg.com/vow/-/vow-0.4.17.tgz#b16e08fae58c52f3ebc6875f2441b26a92682904"
+
+warning@^2.0.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/warning/-/warning-2.1.0.tgz#21220d9c63afc77a8c92111e011af705ce0c6901"
+  dependencies:
+    loose-envify "^1.0.0"
 
 warning@^3.0.0:
   version "3.0.0"

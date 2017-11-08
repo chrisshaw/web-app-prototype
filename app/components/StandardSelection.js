@@ -6,7 +6,6 @@ import IconButton from 'material-ui/IconButton';
 import helper from '../helper';
 import {connect} from 'react-redux';
 import MultiSelectField from './MultiSelectField';
-import ResetIcon from "./ResetIcon";
 // import Github from 'material-ui/lib/svg-icons/custom/github';
 
 class StandardsSelection extends Component{
@@ -64,10 +63,7 @@ class StandardsSelection extends Component{
                     <Row>
                         <Col xs={10} md={10} >
                             <p className="search-text chip-float">that aligns to standards</p>
-                        </Col>
-                        <Col xs={2} md={2} >
-                            <div className="reset-button text-center" onTouchTap={this.handleReset} ><ResetIcon className="reset-icon" /> Reset</div>        
-                        </Col>                    
+                        </Col>      
                     </Row>
                     <Row>
                         <Col xs={12} md={12} >

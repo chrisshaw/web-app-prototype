@@ -394,7 +394,7 @@ var helpers = {
                 router.push('/password');
                 // console.log('router', router);
             } else {
-                router.push('/buildpath');
+                router.push('/build-path');
             }
            
             return;

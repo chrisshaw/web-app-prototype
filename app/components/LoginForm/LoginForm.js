@@ -3,7 +3,6 @@ import {connect } from 'react-redux';
 import Button from 'mui-next/Button'
 import TextField from 'mui-next/TextField'
 import Typography from 'mui-next/Typography'
-import muiThemeable from 'material-ui/styles/muiThemeable';
 import helper from '../../helper';
 import Style from './LoginForm.css'
 import Logo from '../Logo/Logo'
@@ -73,6 +72,7 @@ class LoginForm extends Component{
                 <Button
                     raised
                     onClick={this.handleSubmit}
+                    color="primary"
                 >
                     <Typography type="button">
                         Log In

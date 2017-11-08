@@ -1,13 +1,9 @@
 import React from 'react';
-import {Tabs, Tab} from 'material-ui/Tabs';
 // import SwipeableViews from 'react-swipeable-views';
-import {Grid, Row, Col} from 'react-bootstrap';
 import LoginForm from '../LoginForm/LoginForm';
 // import {browserHistory} from "react-router";
-import {connect} from 'react-redux';
+import { connect } from 'react-redux';
 import Style from './Login.css'
-// import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-// import getMuiTheme from 'material-ui/styles/getMuiTheme';
 // import { push } from 'react-router-redux';
 
 

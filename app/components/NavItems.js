@@ -1,7 +1,5 @@
 import React, { Component } from 'react'
 import Tabs, {Tab} from 'mui-next/Tabs'
-import IconButton from 'mui-next/IconButton'
-import ExitToApp from 'material-ui-icons/ExitToApp'
 import { Link } from 'react-router';
 
 
@@ -21,6 +19,7 @@ class NavItems extends Component {
             <Tabs
                 value={this.state.value}
                 onChange={this.handleChange}
+                indicatorColor="primary"
             >
                 { props.permissions && props.permissions.includes("buildPath") ? (
                     <Tab
@@ -46,12 +45,6 @@ class NavItems extends Component {
                         to="create-account"
                     />
                  ) : ''} 
-                { <IconButton
-                    aria-label="Log out"
-                    onTouchTap={props.handleLogout}
-                >
-                    <ExitToApp />
-                </IconButton> }
             </Tabs>
         )
     }

@@ -6,7 +6,6 @@ import IconButton from 'material-ui/IconButton';
 import helper from '../helper';
 import {connect} from 'react-redux';
 import MultiSelectField from './MultiSelectField';
-import ResetIcon from "./ResetIcon";
 
 class TopicSelection extends Component{
    constructor(props) {
@@ -32,10 +31,7 @@ class TopicSelection extends Component{
                     <Row>
                         <Col xs={10} md={10} >
                             <p className="search-text chip-float">will explore topics</p>
-                        </Col>
-                        <Col xs={2} md={2} >
-                            <div className="reset-button text-center" onTouchTap={this.handleReset} ><ResetIcon className="reset-icon" /> Reset</div>        
-                        </Col>                    
+                        </Col>         
                     </Row>
                     <Row>
                         <Col xs={12} md={12} >

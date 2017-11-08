@@ -8,13 +8,10 @@ import Login from "./components/Login/Login";
 import Forbidden from "./components/Forbidden";
 import Password from "./components/Password";
 import validatePerms  from "./components/ValidatePerms";
-import PathBuilder from "./components/PathBuilder";
+import PathBuilder from "./components/PathBuilder/PathBuilder";
 import AdminPanel from "./components/AdminPanel";
 import {Router, Route, hashHistory, browserHistory, IndexRoute} from "react-router";
-// import ValidatePermissions from "./components/ValidatePermissions.js";
 
-// i have added an auth prop to each route to indicate what perm item is needed to view
-// this currently matches the route name but does not need to as long as it matches a perm in the db auth_perms table
 var routes = (
     <Router history={browserHistory}>
         <Route path='/' component={Main} > 

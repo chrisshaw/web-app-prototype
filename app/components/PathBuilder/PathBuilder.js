@@ -1,31 +1,10 @@
 import React, { Component } from 'react';
-import {Grid, Row, Col} from 'react-bootstrap';
-import QueryBuilder from './QueryBuilder.js';
-import RaisedButton from 'material-ui/RaisedButton';
-import helper from '../helper';
+import QueryBuilder from '../QueryBuilder/QueryBuilder';
+import helper from '../../helper';
 import {connect } from 'react-redux';
-import Paper from 'material-ui/Paper';
-import GroupTabs from './GroupTabs';
-
-
-const style = {
-    span: {
-        color: '#FFFFFF',
-    
-    },
-    button: {
-        marginTop: 12,
-        marginBottom: 12,
-        fontColor: '#FFFFFF',
-        mariginLeft: '10px'
-
-    },
-    paper: {
-        // width: '100%',
-        textAlign: 'center',
-        overflow: 'auto'
-    }
-}
+import Paper from 'mui-next/Paper';
+import PathViewer from '../PathViewer/PathViewer';
+import Style from './PathBuilder.css'
 
 const Loader = () => (
     <div className="loader-container">
@@ -34,7 +13,7 @@ const Loader = () => (
 )
 
 const PathBuilderDrawer = props => (
-    <Paper zDepth={3}>     
+    <Paper elevation={3}>     
         <QueryBuilder {...props}/>
     </Paper>
 )
@@ -56,11 +35,11 @@ class PathBuilder extends Component{
                     id="query-area"
                     handleSend={this.handleSend}
                 /> 
-                <Paper id="path-area" style={style.paper} zDepth={0}>
+                <Paper id="path-area" className={Style.centered} elevation={0}>
                     {this.props.searching ? (
                         <Loader />
                     ) : (
-                        <GroupTabs
+                        <PathViewer
                             falist={this.props.falist}
                             selectedfa={this.props.selectedfa}
                             fa={this.props.fa}
@@ -68,7 +47,7 @@ class PathBuilder extends Component{
                             paths={this.props.paths}
                             changed={this.props.changed}
                         />
-                    )}                     
+                    )}
                 </Paper>        
             </main>
         )
@@ -76,7 +55,7 @@ class PathBuilder extends Component{
 }
 
 // *** NB: the HOC in validate permissions injects {...props} which include router props and the loggedIn prop
-const mapStateToProps = (store,ownProps) => {
+const mapStateToProps = (store, ownProps) => {
     return {
         paths: store.mainState.paths,
         searching: store.mainState.searching,

@@ -6,7 +6,6 @@ import IconButton from 'material-ui/IconButton';
 import helper from '../helper';
 import {connect} from 'react-redux';
 import MultiSelectField from './MultiSelectField.js';
-import ResetIcon from "./ResetIcon";
 
 class GradeSelection extends Component{
    constructor(props) {
@@ -21,21 +20,7 @@ class GradeSelection extends Component{
         //     showGroups: false, 
         // }
     }
-    // handleRequestDelete(id) {
-    //     helper.removeGroup(id, this.props.dispatch);
-    // }
-
-    // componentWillMount(){
-    //     helper.getGrades(this.props.dispatch);     
-    // }
-    handleReset() {
-        // reset chips and grouplist
-        helper.getGrades(true, false, this.props.dispatch); 
-    }
-    // handleShowGroups() {
-    //     // toggle between true and false
-    //     this.setState({showGroups: !this.state.showGroups})
-    // }
+ 
     render(){
         if ( this.props.selectedgradelist){
              var arrLength = this.props.selectedgradelist.length;
@@ -46,9 +31,6 @@ class GradeSelection extends Component{
                         <Col xs={10} md={10} >
                             <p className="search-text chip-float"> Students in grades</p>
                         </Col>
-                        <Col xs={2} md={2} >
-                            <div className="reset-button text-center" onTouchTap={this.handleReset} ><ResetIcon className="reset-icon" /> Reset</div>        
-                        </Col>                    
                     </Row>
                     <Row>
                         <Col xs={12} md={12} >

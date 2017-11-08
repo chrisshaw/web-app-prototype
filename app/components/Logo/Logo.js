@@ -13,11 +13,13 @@ const Logo = props => {
     }
 
     return (
-        <img
-            className={`${Style.brandSpacing} ${sizeClass}`}
-            src="./public/assets/img/sidekick.png"
-            alt="Sidekick"
-        />
+        <div>
+            <img
+                className={`${Style.brandSpacing} ${sizeClass}`}
+                src='./public/assets/img/logo-symmetrical.svg'
+                alt="Sidekick"
+            />
+        </div>
     )
 }
 

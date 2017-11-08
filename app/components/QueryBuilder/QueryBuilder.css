@@ -1,0 +1,9 @@
+.queryContainer {
+    display: flex;
+    flex-flow: column nowrap;
+    padding: 8%;
+}
+
+.button {
+    align-self: center;
+}
