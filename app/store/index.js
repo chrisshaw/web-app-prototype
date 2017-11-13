@@ -1,7 +1,7 @@
 import { createStore, applyMiddleware, compose } from 'redux';
 import thunkMiddleware from 'redux-thunk';
 import {persistStore, autoRehydrate} from 'redux-persist';
-import reducer from '../reducer';
+import reducer from '../reducers';
 import { fetchStudentsList } from '../actions/studentsTab';
 import { composeWithDevTools } from 'redux-devtools-extension'
 

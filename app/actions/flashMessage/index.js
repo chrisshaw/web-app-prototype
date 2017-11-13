@@ -3,7 +3,7 @@ import {
   HIDE_MESSAGE,
 } from './actionTypes';
 
-const HIDE_MESSAGE_TIMEOUT = 2000;
+const CONST_HIDE_MESSAGE_TIMEOUT = 4500;
 
 const hideMessage = () => ({
   type: HIDE_MESSAGE,
@@ -16,5 +16,5 @@ export const showMessage = (message) => (dispatch) => {
   });
   setTimeout(() => {
     dispatch(hideMessage());
-  }, HIDE_MESSAGE_TIMEOUT);
+  }, CONST_HIDE_MESSAGE_TIMEOUT);
 };

@@ -805,217 +805,6 @@ module.exports = function(app){
         })
     }
 
-    function createInstructions(data){
-        console.log("data", data)
-        let studentArr = [];
-        for (var s = 0; s < data.length; s++ ){
-            let studentObj = {};   
-            let grade = 'dummygrade';
-            // console.log("grade"grade)
-            studentObj.name =  data[s].student.first + ' ' + data[s].student.last ;
-            studentObj.grade =  "dummy data" + s;  // this is dummy data
-            // for each project
-            let projArr = [];
-            console.log("s", s)
-            for (var j = 0; j < data[s].projects.length; j++){
-                let projObj = {};
-                projObj.name =  data[s].projects[j].name;   
-                // for each fa
-                let faArr = [];
-                 for (var i = 0; i <  data[s].projects[j].fa.length; i++){
-                    let faObj = {}
-                    faObj.course =  data[s].projects[j].fa[i].course;
-                    faObj.position = data[s].projects[j].fa[i].courseSequence;
-                    faObj.faProjSeq = data[s].projects[j].fa[i].name + '(' + data[s].projects[j].fa[i].projectSequence +')';
-                    faArr.push(faObj);          
-                }
-                projObj.fa = faArr; 
-                projArr.push(projObj);             
-             }
-             studentObj.project = projArr;
-             studentArr.push(studentObj)
-         } 
-        return studentArr; 
-    }
-    function saveNewPath(data, username) {
-        // save path to data base then after this send mail to sidekick for upload
-        return new Promise((resolve, reject) => {
-            var studentArr = [];
-            var newPathArr = [];
-            // var summitArr = []
-            // get latest ids
-            // for each student
-            // var instructionCounter = 0;
-            for (var s = 0; s < data.length; s++ ){
-                // for each project
-                let studentObj = {_id: data[s].student._id}
-                let projectsArr=[];
-                for (var j = 0; j < data[s].projects.length; j++){
-                    // prepare data for saving to db
-                    let faArr=[];
-                    // for each focus area
-                    for (var i = 0; i <  data[s].projects[j].fa.length; i++){
-                        // instructionCounter++;
-                        let faObj = {
-                            _id:   data[s].projects[j].fa[i]._id,
-                            _key:  data[s].projects[j].fa[i]._key,
-                            sequence: i+1
-                        }
-                        faArr.push(faObj);
-                        // for send to summit email
-                        // var instruction = 'Instruction ' + instructionCounter + ': Course: ' + data[s].projects[j].fa[i].course + ' -->  Project : ' + data[s].projects[j].name + ' --> INCLUDE --> Focus Area: ' + data[s].projects[j].fa[i].name + ' --> POSITION --> ' + data[s].projects[j].fa[i].courseSequence + ' --> UPDATE --> Title: ' + data[s].projects[j].fa[i].name + '(' + data[s].projects[j].fa[i].projectSequence +')';   
-                    } 
-
-                    if (faArr.length > 0 ){
-                        let projectsObj={ name: data[s].projects[j].name, fa: faArr, sequence: j+1}
-                        projectsArr.push(projectsObj);
-                    }      
-                }
-                // don't save empty paths
-                if (projectsArr.length !== 0){     
-                    studentObj.path = projectsArr;
-                    studentObj.active = true;
-                    studentObj.createdDate = Date.now();
-                    studentObj.createdBy = username;
-                    studentObj.updatedDate = null;
-                    studentObj.updatedBy = null;
-                    studentArr.push(studentObj)
-                }
-
-            }
-            
-            // rewrote update logic for  tran 
-            if ( studentArr.length > 0 ){       
-                const action = String(function (studentArr, username) {
-                    // This code will be executed inside ArangoDB!
-                    const db = require('@arangodb').db;
-                    const aql = require('@arangodb').aql;
-                    // get oldpath ids and store for use below
-                    let getOldPath = aql`for s in ${params.studentArr}
-                        let cpArr = (for c in outbound s onPath return c._id)
-                        for cp in currentPath
-                            filter cp._id in cpArr
-                            filter cp.active == true
-                        return { sid: s._id, previd: cp._id}`;
-                    params.prevPathIdArr = db._query(getOldPath).toArray();
-                    // insert the new path and store the new ids
-                    let insertNewPath = aql`for s in ${params.studentArr}
-                        INSERT s IN currentPath return {_from: s._id, _to: NEW._id}`;
-                    params.newPathIdArr = db._query(insertNewPath).toArray();  
-                    // insert newPathIdArr into onPath edge
-                    let insertonPathEdgeQuery = aql`for e in ${params.newPathIdArr} INSERT {_from: e._from, _to: e._to} IN onPath return NEW`;
-                    db._query(insertonPathEdgeQuery);
-                    // insert from: oldpathid to: newpathid into UpdateTo
-                    let insertUpdatedToEdgeQuery = aql`for old in ${params.prevPathIdArr}
-                        for new in ${params.newPathIdArr} 
-                        filter old.sid == new._from
-                        INSERT {_from: old.previd, _to: new._to} IN updatedTo return NEW`;           
-                    let insertUpdatedToEdgeResult = db._query(insertUpdatedToEdgeQuery);
-                    // set to old path to inactive 
-                    let updateToInactiveQuery = aql`for e in ${params.prevPathIdArr}
-                        for c in currentPath
-                            filter c._id == e.previd
-                            UPDATE c with {active: false, updatedDate:  DATE_NOW(), updatedBy:"TEST" }
-                        IN currentPath return NEW`;
-                    let updateToInactiveResult = db._query(updateToInactiveQuery);    
-                    return;
-                })
-
-
-                db.transaction({read: ['currentPath', 'onPath'], write: ['currentPath', 'onPath', 'updatedTo']},
-                action,
-                {studentArr: studentArr, user: username, prevPathIdArr:[], newPathIdArr: [] })
-                .then(() => {
-                    // all goodnow send to summit
-                    // let summitArr = createInstructions(data);   
-                    resolve(createInstructions(data));
-                }).catch((error)=>{
-                    console.log(error);
-                    reject(error);
-                })
-            } else {
-                // let summitArr = ;   
-                resolve(createInstructions(data)); // what to resolve?
-            }
-        })
-    }
-
-    app.post('/summit', function(req,res){
-        // publish is the required permission for this path
-        validateUser(req, res, "publish").then((response) =>{
-            // first save the data then send to summit
-            saveNewPath(req.body, response.username).then((summitArr) => {
-                // Waiting for updated query srted by query topic === Project
-                // waiting for confirmation where to send this data
-                // create file
-                console.log("summitArr", summitArr)
-                if (summitArr.length !== 0 ){
-                    // don't send to Summit Email if no data
-                    var user =  response.username.split('@');
-                    var fileName = __dirname + '/../public/assets/files/sendToSidekick_' + user[0] +'.'+ Date.now() + '.txt';
-                    var file = fs.createWriteStream(fileName);
-                    file.on('error', function(err) { 
-                        console.log(err)
-                        // return error msg
-                        res.json({success: false, error: "Problem creating file"})
-                    });
-
-                    // // loop through summit array and write it out
-                    // for (var u = 0 ; u < summitArr.length; u++){
-                    //     summitArr
-                    // }
-
-
-                    summitArr.forEach(function(v) { 
-                        // loop through summit array and write it out
-                        // for (var u = 0 ; u < v.length; u++){
-                            file.write("GRADE: " +v.grade + '\n');
-                            file.write("STUDENT:"  + v.name + '\n');
-                            for (var u = 0; u < v.project.length; u++){
-                                file.write('PROJECT: ' + v.project[u].name + '\n');
-                                // console.log(v.project[u].fa)
-                                for (var w = 0; w < v.project[u].fa.length; w++){
-                                   file.write('COURSE: ' + v.project[u].fa[w].course + '\n');
-                                //    file.write('POSITION: ' + v.project[u].fa[w].position + '\n');
-                                   file.write("TITLE: " + v.project[u].fa[w].faProjSeq + '\n');
-                                }
-                                
-                            }
-                            file.write("***************"  + '\n');
-                        // }
-                        // file.write(v + '\n');
-                    });
-                    file.end();
-                    // send as attachment to email
-                    // var adminEmail = "paths@sidekick.education, fiona.hegarty@icloud.com";
-                    var adminEmail = "fiona.hegarty@icloud.com";
-                    // need to pass file path
-                    sendToSummitEmail(adminEmail, fileName).then((fileName) => {
-                        // delete file - cant do here! gets delte
-                        fs.unlinkSync(fileName);
-                        // send OK msg the browser sending emails....res.sendStatus(200)
-                        res.json({success: true, successMsg: "Data successfully sent to Summit."});
-                    }).catch((error) => {
-                        console.log(error);
-                        //send error status code?
-                        res.json({success: false,  errorMsg:  "There was a problem sending data, please contact support."});
-                    })
-                } else {
-                     res.json({success: false,   errorMsg: "There was a problem sending data, please contact support."}); // catch error to say no data!!
-                }
-            }).catch((error) => {
-                console.log(error);
-                res.json({success: false, errorMsg:  "There was a problem sending data, please contact support."})
-            })
-
-        }).catch((error) => {
-            // User validation error
-            console.log(error);
-            //send error status code?
-            res.json({success: false, successMsg: error})
-        })
-    })
-
     app.get('/api/roles/all', function(req, res){
         // get roles from database
         let query = aql`
@@ -1033,7 +822,42 @@ module.exports = function(app){
 
     })
 
-    app.get(`/api/user/:uid/focusAreas`, function(req, res){
+    app.get('/api/pathbuilder/:userKey/options', async (req, res, next) => {
+        const userKey = req.params.userKey
+
+        try {
+            const query = aql`
+            for v, e, p
+            in 5 outbound ${`auth_users/${userKey}`}
+            hasSection, hasCourse, focusesOn, any alignsTo
+            filter IS_SAME_COLLECTION('sections', p.vertices[1])
+                and IS_SAME_COLLECTION('courses', p.vertices[2])
+                and IS_SAME_COLLECTION('focusAreas', p.vertices[3])
+                and IS_SAME_COLLECTION('standards', p.vertices[4])
+                and IS_SAME_COLLECTION('projects', p.vertices[5])
+                and p.vertices[*] none == null
+                and p.vertices[5].topics != null
+                for t in p.vertices[5].topics
+                collect course = KEEP(p.vertices[2], '_key', 'name'),
+                    subject = p.vertices[3].subject,
+                    standard = p.vertices[4]._key,
+                    topic = t
+                return {
+                    'course': course,
+                    'subject': subject,
+                    'standard': standard,
+                    'topic': topic
+                }
+            `
+            const cursor = await db.query(query)
+            const options = await cursor.all
+            res.json( { optionTable: options } )
+        } catch (err) {
+            next(err)
+        }
+    })
+
+    app.get(`/api/user/:uid/focusAreas`, async (req, res, next) => {
         const uid = req.params.uid;
 
         let query = aql`
@@ -1042,16 +866,13 @@ module.exports = function(app){
             hasCourse, focusesOn
             return KEEP(focusArea, '_id', '_key', 'name')
         `;
-    //  console.log(query)
-        db.query(query)
-        .then(cursor => { 
-            // console.log("FA", cursor._result);
-            res.json({success: true, fa: cursor._result});
-        }).catch(error => {
-            console.log(Date.now() + " Error (Get FA from Database):", error);
-            res.json({success: false});
-        })  
-
+        try {
+            const cursor = await db.query(query)
+            const result = await cursor.all
+            res.json({ success: true, fa: result })
+        } catch (err) {
+            next(err)
+        }
     })
 
     app.get('/api/fa/:faKey', function(req, res){

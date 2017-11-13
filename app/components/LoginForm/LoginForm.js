@@ -83,7 +83,6 @@ class LoginForm extends Component{
     }
 }
 
-
 const mapStateToProps = (store) => {
     return {
         loggedIn: store.authState.loggedIn,

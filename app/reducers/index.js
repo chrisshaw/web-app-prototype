@@ -5,39 +5,7 @@ import studentsTabReducer from './studentsTab';
 import classReducer from './class';
 import teachersAndAdminsReducer from './teachersAndAdmins';
 import flashMessageReducer from './flashMessage';
-
-const intialState = {
-    //realised that intialstate wasnt workginas it was nesetd {initialstate} below
-    //commmented out any arrays for now but will go back later and fix
-//   toggledrawer: false,
-//   grouplist: [],
-//   standardslist: [],
-//   subjectcontentlist: [],
-//   topiclist: [],
-//   courselist: [],
-//   gradelist: [],
-//   grouptabs: [],
-//   selectedsubjectcontentlist: [],
-//   selectedstandardslist: [],
-//   selectedgrouplist: [],
-//   selectedcourselist: [],
-//   selectedgradelist: [],
-//   selectedtopiclist: [],
-//   initialSearchTerms: [],
-  falist: {},
-  currentFocusArea: {},
-  isFocusAreaInfoFetching: false,
-  focusAreaInfoError: {},
-  currentPathRelatedProjects: {},
-  isRelatedProjectsFetching: false,
-  relatedProjectsError: {},
-  pathsrendered: false,
-  pathbuilderview: false,
-  paths: [],
-  disabled: true,
-  searching: false,  
-  changed: 0,
-}
+import pathbuilderReducer from './pathbuilder'
 
 const loginInitialState = {
     loggedIn: false,
@@ -275,6 +243,7 @@ const appReducer = combineReducers({
     teachersAndAdmins: teachersAndAdminsReducer,
     flashMessage: flashMessageReducer,
     classState: classReducer,
+    pathbuilderState: pathbuilderReducer
 })
 // to handle clearing store on logout
 const reducers = (state, action) => {

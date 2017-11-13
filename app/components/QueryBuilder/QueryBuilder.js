@@ -9,24 +9,10 @@ import Style from './QueryBuilder.css'
  var pathArr = [];
 
 class QueryBuilder extends Component{
-   constructor(props) {
-        super(props);
-        this.handleSubmitAll = this.handleSubmitAll.bind(this);
-        // this.handleSend = this.handleSend.bind(this);
-        this.handleClose = this.handleClose.bind(this);
-        // get initial data and set props
-        var searchObj = {};
-        this.state ={
-            error: false, 
-            errorMsg: ""
-        }
-    }
-    handleClose(){ 
-        // local validation
-        this.setState({error: false, errorMsg: ""});
-    }
+
+    state = {}
  
-    handleSubmitAll() {
+    handleSubmitAll = () => {
         // clear message
         // array to store new paths
         pathArr = [];
@@ -56,9 +42,8 @@ class QueryBuilder extends Component{
             this.setState({error: true , errorMsg:  "You have no COURSES set up in Sidekick, please contact your administrator."})
         }  
     }
+
     render(){
-    
-        var component = this;
         return (
             <div className={Style.queryContainer}>
                 <Typography type="display1">

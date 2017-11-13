@@ -1,0 +1,5 @@
+export const LOGGED_IN = 'LOGGED_IN'
+export const LOGIN_ERROR = 'LOGIN_ERROR'
+export const GET_ROLES = 'GET_ROLES'
+export const SIGN_UP_STATUS = 'SIGN_UP_STATUS'
+export const SIGN_UP_FIELDS = 'SIGN_UP_FIELDS'

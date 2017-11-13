@@ -21,30 +21,30 @@ class NavItems extends Component {
                 onChange={this.handleChange}
                 indicatorColor="primary"
             >
-                { props.permissions && props.permissions.includes("buildPath") ? (
+                { props.permissions && props.permissions.includes("buildPath") && (
                     <Tab
                         label="Build Paths"
                         value="buildPath"
                         component={Link}
                         to="/build-path"
                     />
-                 ) : null} 
-                { props.permissions && props.permissions.includes("manageStudents") ? (
+                 )} 
+                { props.permissions && props.permissions.includes("manageStudents") && (
                     <Tab
                         label="Set Up"
                         value="setup"
                         component={Link}
                         to="/setup"
                     />
-                 ) : null} 
-                { props.permissions && props.permissions.includes("createAccounts") ? (
+                 )}
+                { props.permissions && props.permissions.includes("createAccounts") && (
                     <Tab
                         label="Create Account"
                         value="createAccount"
                         component={Link}
                         to="create-account"
                     />
-                 ) : ''} 
+                 )} 
             </Tabs>
         )
     }

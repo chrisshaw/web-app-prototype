@@ -127,7 +127,6 @@ userLogout: () => {
     }
   },
   setSuccess: (success, successMsg) => {
-    console.log("being called")
     return {
       type: "SET_SUCCESS_STATUS",
       success,
