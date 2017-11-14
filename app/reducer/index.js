@@ -25,6 +25,9 @@ const intialstate = {
 //   selectedtopiclist: [],
 //   initialSearchTerms: [],
   falist: {},
+  currentFocusArea: {},
+  isFocusAreaInfoFetching: false,
+  focusAreaInfoError: {},
   pathsrendered: false,
   pathbuilderview: false,
   paths: [],
@@ -150,7 +153,19 @@ const mainReducer = (state=intialstate, action) => {
         case 'GET_FA':
             return Object.assign({},state, {fa: action.fa}); 
         case 'SELECTED_FA':
-            return Object.assign({},state, {selectedfa: action.selectedfa}); 
+            return Object.assign({},state, {selectedfa: action.selectedfa});
+        case 'REQUEST_FOCUS_AREA_INFO':
+          return Object.assign({}, state, { isFocusAreaInfoFetching: true });
+        case 'SUCCESS_FOCUS_AREA_INFO':
+          return Object.assign({}, state, {
+            isFocusAreaInfoFetching: false,
+            currentFocusArea: action.focusArea,
+          });
+        case 'ERROR_FOCUS_AREA_INFO':
+          return Object.assign({}, state, {
+            isFocusAreaInfoFetching: false,
+            focusAreaInfoError: action.error,
+          });
         case 'UPDATE_PATHS':
             // react not seeing changes to path array after reorder for dnd
             // a hack i know but trying to force update for dnd re-render...so i use a counter that will change on every path array update

@@ -7,6 +7,7 @@ import {Grid, Row, Col} from 'react-bootstrap';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import {connect} from 'react-redux';
+import { bindActionCreators } from 'redux';
 import helper from '../helper';
 import Dialog from 'material-ui/Dialog';
 // need to move to next versoin of material ui but until then will use import { Tabs, Tab } from 'material-ui-scrollable-tabs/Tabs';
@@ -23,6 +24,8 @@ import LeftIcon from './LeftIcon.js';
 import {blue500, red500, greenA200} from 'material-ui/styles/colors';
 import SvgIcon from 'material-ui/SvgIcon';
 import FocusAreaDrawer from './FocusAreaDrawer';
+
+import { selectFocusArea } from '../actions/focusAreas';
 
 const iconStyles = {
   marginRight: 24,
@@ -180,10 +183,8 @@ class GroupTabs extends React.Component {
   }
 
   handleViewDetails(focusArea) {
-    this.setState({
-      isDrawerOpen: true,
-      currentFocusArea: focusArea,
-    });
+    this.props.selectFocusArea(focusArea);
+    this.setState({ isDrawerOpen: true });
   }
 
   handleCloseFocusAreaDrawer() {
@@ -396,7 +397,8 @@ class GroupTabs extends React.Component {
       </Tabs>}
 
       <FocusAreaDrawer open={this.state.isDrawerOpen}
-                       focusArea={this.state.currentFocusArea}
+                       focusArea={this.props.currentFocusArea}
+                       isFocusAreaFetching={this.props.isFocusAreaInfoFetching}
                        onCloseClick={this.handleCloseFocusAreaDrawer}
       />
 
@@ -405,8 +407,22 @@ class GroupTabs extends React.Component {
   }
 }
 
+const mapStateToProps = (state) => ({
+  currentFocusArea: state.mainState.currentFocusArea,
+  isFocusAreaInfoFetching: state.mainState.isFocusAreaInfoFetching,
+});
 
-export default connect()(GroupTabs);
+const mapDispatchToProps = (dispatch) => {
+  const bindedActions = bindActionCreators({
+    selectFocusArea,
+  }, dispatch);
+  return {dispatch, ...bindedActions};
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(GroupTabs);
 
 
   
