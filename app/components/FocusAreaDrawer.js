@@ -5,6 +5,7 @@ import IconButton from 'material-ui/IconButton';
 import NavigationClose from 'material-ui/svg-icons/navigation/close';
 import FocusAreaDetailsSection from './FocusAreaDetailsSection';
 import RelatedProjectsContent from './RelatedProjectsContent';
+import RelatedFocusAreasContent from './RelatedFocusAreasContent';
 
 const styles = {
   container: {
@@ -39,6 +40,10 @@ const FocusAreaDrawer = ({ open, focusArea, isFocusAreaFetching, onCloseClick })
       <div style={styles.container}>
         <FocusAreaDetailsSection header="Related Standards">
           <RelatedProjectsContent items={focusArea.standards.map(standard => standard._key)} />
+        </FocusAreaDetailsSection>
+
+        <FocusAreaDetailsSection header="Related Focus Areas">
+          <RelatedFocusAreasContent items={focusArea.focusAreas}/>
         </FocusAreaDetailsSection>
       </div>
     }
