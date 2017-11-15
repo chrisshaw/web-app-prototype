@@ -13,7 +13,7 @@ import Dialog from 'material-ui/Dialog';
 // need to move to next versoin of material ui but until then will use import { Tabs, Tab } from 'material-ui-scrollable-tabs/Tabs';
 // import { Tabs, Tab } from 'material-ui-scrollable-tabs/Tabs';
 import {Tabs, Tab} from 'material-ui/Tabs';
-
+import Chip from 'material-ui/Chip';
 import FlatButton from 'material-ui/FlatButton';
 import IconButton from 'material-ui/IconButton';
 import AutoCompleteFA from './AutoCompleteFA.js';
@@ -21,7 +21,12 @@ import UpIcon from './UpIcon.js';
 import DownIcon from './DownIcon.js';
 import RightIcon from './RightIcon.js';
 import LeftIcon from './LeftIcon.js';
-import {blue500, red500, greenA200} from 'material-ui/styles/colors';
+import {
+  red500,
+  grey500,
+  purpleA400,
+  greenA700,
+} from 'material-ui/styles/colors';
 import SvgIcon from 'material-ui/SvgIcon';
 import FocusAreaDrawer from './FocusAreaDrawer';
 
@@ -46,10 +51,17 @@ const styles = {
     overflowX: 'none',
   },
   wrapper: {
-      display: 'flex',
-      flexWrap: 'wrap',
-    },
-}
+    display: 'flex',
+    flexWrap: 'wrap',
+  },
+  focusAreaHeader: {
+    display: 'inline-block',
+  },
+  focusAreaRelevanceLabel: {
+    display: 'inline-block',
+    margin: '0 0 7px 12px',
+  },
+};
 
 class GroupTabs extends React.Component {
   constructor(props) {
@@ -82,6 +94,21 @@ class GroupTabs extends React.Component {
       showTabEnd: 4,// used to scroll thru tabs
       isDrawerOpen: false,
       currentFocusArea: {},
+    };
+
+    this.relevance = {
+      'Supporting Concept': {
+        label: 'Bridge',
+        color: grey500,
+      },
+      'Relevant': {
+        label: 'Relevant',
+        color: purpleA400,
+      },
+      'Highly Relevant': {
+        label: 'Highly Relevant',
+        color: greenA700,
+      },
     };
   }  
   handleMoveUp(moveStudentPosition, moveProjPosition, moveFaPosition){
@@ -258,14 +285,22 @@ class GroupTabs extends React.Component {
                             >
 
           <Row className="fa-tab-view-rows" >
-              <Col md={12}><div style={styles.slide}>    
-                  <Row >
-                      <h3  className='fa-headings'>{fa.name}</h3>
-                  </Row>
-                  <hr />
-                </div>
-              </Col>
-            </Row>
+            <Col md={12}>
+              <div style={styles.slide}>
+                <Row >
+                  <h3 className='fa-headings' style={styles.focusAreaHeader}>{fa.name}</h3>
+                  {fa.relevance && this.relevance[fa.relevance] &&
+                    <Chip style={styles.focusAreaRelevanceLabel}
+                          backgroundColor={this.relevance[fa.relevance].color}
+                    >
+                      {this.relevance[fa.relevance].label}
+                    </Chip>
+                  }
+                </Row>
+                <hr />
+              </div>
+            </Col>
+          </Row>
             <br /><hr />
           <Row className="fa-tab-view-rows">
             <Col md={12}>
