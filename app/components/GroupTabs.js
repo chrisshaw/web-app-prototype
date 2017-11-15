@@ -400,6 +400,7 @@ class GroupTabs extends React.Component {
                        focusArea={this.props.currentFocusArea}
                        isFocusAreaFetching={this.props.isFocusAreaInfoFetching}
                        onCloseClick={this.handleCloseFocusAreaDrawer}
+                       paths={this.props.paths}
       />
 
     </div>
@@ -410,6 +411,7 @@ class GroupTabs extends React.Component {
 const mapStateToProps = (state) => ({
   currentFocusArea: state.mainState.currentFocusArea,
   isFocusAreaInfoFetching: state.mainState.isFocusAreaInfoFetching,
+  paths: state.mainState.paths,
 });
 
 const mapDispatchToProps = (dispatch) => {

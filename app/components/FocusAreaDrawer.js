@@ -6,6 +6,7 @@ import NavigationClose from 'material-ui/svg-icons/navigation/close';
 import FocusAreaDetailsSection from './FocusAreaDetailsSection';
 import RelatedProjectsContent from './RelatedProjectsContent';
 import RelatedFocusAreasContent from './RelatedFocusAreasContent';
+import PotentialTeacherContent from './PotentialTeacherContent';
 
 const styles = {
   container: {
@@ -19,7 +20,25 @@ const styles = {
   },
 };
 
-const FocusAreaDrawer = ({ open, focusArea, isFocusAreaFetching, onCloseClick }) => (
+function getPotentialTeachers(focusArea, paths) {
+  let potentialTeachers = [];
+  for (let path of paths) {
+    for (let studentOnPath of path.studentsOnPath) {
+      for (let masteredFocusArea of studentOnPath.masteredFocusAreas) {
+        if (masteredFocusArea._id === focusArea._id) {
+          potentialTeachers.push({
+            _id: studentOnPath._id,
+            name: studentOnPath.name,
+            lastUpdated: masteredFocusArea.lastUpdated,
+          });
+        }
+      }
+    }
+  }
+  return potentialTeachers;
+}
+
+const FocusAreaDrawer = ({ open, focusArea, isFocusAreaFetching, onCloseClick, paths }) => (
   <Drawer open={open}
           openSecondary={true}
           width={'35%'}
@@ -43,7 +62,11 @@ const FocusAreaDrawer = ({ open, focusArea, isFocusAreaFetching, onCloseClick })
         </FocusAreaDetailsSection>
 
         <FocusAreaDetailsSection header="Related Focus Areas">
-          <RelatedFocusAreasContent items={focusArea.focusAreas}/>
+          <RelatedFocusAreasContent items={focusArea.focusAreas} />
+        </FocusAreaDetailsSection>
+
+        <FocusAreaDetailsSection header="Potential Peer Teacher">
+          <PotentialTeacherContent items={getPotentialTeachers(focusArea, paths)} />
         </FocusAreaDetailsSection>
       </div>
     }
