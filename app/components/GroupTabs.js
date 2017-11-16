@@ -28,8 +28,10 @@ import {
 } from 'material-ui/styles/colors';
 import SvgIcon from 'material-ui/SvgIcon';
 import FocusAreaDrawer from './FocusAreaDrawer';
+import RelatedProjectsDrawer from './RelatedProjectsDrawer';
 
 import { selectFocusArea } from '../actions/focusAreas';
+import { selectPath } from '../actions/relatedProjects';
 
 const iconStyles = {
   marginRight: 24,
@@ -84,6 +86,8 @@ class GroupTabs extends React.Component {
     this.handleMoveDown = this.handleMoveDown.bind(this);
     this.handleViewDetails = this.handleViewDetails.bind(this);
     this.handleCloseFocusAreaDrawer = this.handleCloseFocusAreaDrawer.bind(this);
+    this.handleViewRelatedProjects = this.handleViewRelatedProjects.bind(this);
+    this.handleCloseRelatedProjectsDrawer = this.handleCloseRelatedProjectsDrawer.bind(this);
     // get FAlist for current user
     this.state = {
       value: 0,
@@ -91,8 +95,9 @@ class GroupTabs extends React.Component {
       showDiv: "",
       showTabStart: 0,  // used to scroll thru tabs
       showTabEnd: 4,// used to scroll thru tabs
-      isDrawerOpen: false,
+      isFocusAreaDrawerOpen: false,
       currentFocusArea: {},
+      isRelatedProjectsDrawerOpen: false,
     };
 
     this.relevance = {
@@ -210,11 +215,20 @@ class GroupTabs extends React.Component {
 
   handleViewDetails(focusArea) {
     this.props.selectFocusArea(focusArea);
-    this.setState({ isDrawerOpen: true });
+    this.setState({ isFocusAreaDrawerOpen: true });
   }
 
   handleCloseFocusAreaDrawer() {
-    this.setState({ isDrawerOpen: false });
+    this.setState({ isFocusAreaDrawerOpen: false });
+  }
+
+  handleViewRelatedProjects(pathName) {
+    this.props.selectPath(pathName);
+    this.setState({ isRelatedProjectsDrawerOpen: true });
+  }
+
+  handleCloseRelatedProjectsDrawer() {
+    this.setState({ isRelatedProjectsDrawerOpen: false });
   }
 
   componentWillMount(){
@@ -336,11 +350,30 @@ class GroupTabs extends React.Component {
       return <div> 
               {maxVisibleFA > 0  ? 
                <Row className="text-center">
-              <br />
-               <Col md={12}><div ref={studentPathPosition+'/'+projPosition}  id={studentPathPosition+'/'+projPosition}><h4>{project.name} </h4></div><hr /></Col>     
-             </Row> : ""}             
-              {faComponents}            
-            </div>
+                <br />
+                 <Col md={12}>
+                   <div ref={studentPathPosition+'/'+projPosition}
+                        id={studentPathPosition+'/'+projPosition}
+                        style={{
+                          position: 'relative',
+                        }}
+                   >
+                     <h4>{project.name}</h4>
+                     <FlatButton containerElement="label"
+                                 label="View Related Projects"
+                                 onTouchTap={() => {this.handleViewRelatedProjects(project.name)}}
+                                 style={{
+                                   position: 'absolute',
+                                   top: '-8px',
+                                   right: 0,
+                                 }}
+                     />
+                   </div>
+                   <hr />
+                 </Col>
+               </Row> : ""}
+                {faComponents}
+              </div>
     })
   }
   addRows(){
@@ -430,11 +463,17 @@ class GroupTabs extends React.Component {
           {this.state.value}  
       </Tabs>}
 
-      <FocusAreaDrawer open={this.state.isDrawerOpen}
+      <FocusAreaDrawer open={this.state.isFocusAreaDrawerOpen}
                        focusArea={this.props.currentFocusArea}
                        isFocusAreaFetching={this.props.isFocusAreaInfoFetching}
                        onCloseClick={this.handleCloseFocusAreaDrawer}
                        paths={this.props.paths}
+      />
+
+      <RelatedProjectsDrawer open={this.state.isRelatedProjectsDrawerOpen}
+                             relatedProjects={this.props.currentPathRelatedProjects}
+                             isRelatedProjectsFetching={this.props.isRelatedProjectsFetching}
+                             onCloseClick={this.handleCloseRelatedProjectsDrawer}
       />
 
     </div>
@@ -446,11 +485,14 @@ const mapStateToProps = (state) => ({
   currentFocusArea: state.mainState.currentFocusArea,
   isFocusAreaInfoFetching: state.mainState.isFocusAreaInfoFetching,
   paths: state.mainState.paths,
+  currentPathRelatedProjects: state.mainState.currentPathRelatedProjects,
+  isRelatedProjectsFetching: state.mainState.isRelatedProjectsFetching,
 });
 
 const mapDispatchToProps = (dispatch) => {
   const bindedActions = bindActionCreators({
     selectFocusArea,
+    selectPath,
   }, dispatch);
   return {dispatch, ...bindedActions};
 };
