@@ -24,7 +24,6 @@ import LeftIcon from './LeftIcon.js';
 import {
   red500,
   grey500,
-  purpleA400,
   greenA700,
 } from 'material-ui/styles/colors';
 import SvgIcon from 'material-ui/SvgIcon';
@@ -103,7 +102,7 @@ class GroupTabs extends React.Component {
       },
       'Relevant': {
         label: 'Relevant',
-        color: purpleA400,
+        color: null,
       },
       'Highly Relevant': {
         label: 'Highly Relevant',
