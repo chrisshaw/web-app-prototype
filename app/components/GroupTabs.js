@@ -7,12 +7,13 @@ import {Grid, Row, Col} from 'react-bootstrap';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import {connect} from 'react-redux';
+import { bindActionCreators } from 'redux';
 import helper from '../helper';
 import Dialog from 'material-ui/Dialog';
 // need to move to next versoin of material ui but until then will use import { Tabs, Tab } from 'material-ui-scrollable-tabs/Tabs';
 // import { Tabs, Tab } from 'material-ui-scrollable-tabs/Tabs';
 import {Tabs, Tab} from 'material-ui/Tabs';
-
+import Chip from 'material-ui/Chip';
 import FlatButton from 'material-ui/FlatButton';
 import IconButton from 'material-ui/IconButton';
 import AutoCompleteFA from './AutoCompleteFA.js';
@@ -20,8 +21,17 @@ import UpIcon from './UpIcon.js';
 import DownIcon from './DownIcon.js';
 import RightIcon from './RightIcon.js';
 import LeftIcon from './LeftIcon.js';
-import {blue500, red500, greenA200} from 'material-ui/styles/colors';
+import {
+  red500,
+  grey500,
+  greenA700,
+} from 'material-ui/styles/colors';
 import SvgIcon from 'material-ui/SvgIcon';
+import FocusAreaDrawer from './FocusAreaDrawer';
+import RelatedProjectsDrawer from './RelatedProjectsDrawer';
+
+import { selectFocusArea } from '../actions/focusAreas';
+import { selectPath } from '../actions/relatedProjects';
 
 const iconStyles = {
   marginRight: 24,
@@ -42,10 +52,17 @@ const styles = {
     overflowX: 'none',
   },
   wrapper: {
-      display: 'flex',
-      flexWrap: 'wrap',
-    },
-}
+    display: 'flex',
+    flexWrap: 'wrap',
+  },
+  focusAreaHeader: {
+    display: 'inline-block',
+  },
+  focusAreaRelevanceLabel: {
+    display: 'inline-block',
+    margin: '0 0 7px 12px',
+  },
+};
 
 class GroupTabs extends React.Component {
   constructor(props) {
@@ -67,6 +84,10 @@ class GroupTabs extends React.Component {
     this.handleRemoveProject = this.handleRemoveProject.bind(this);
     this.handleMoveUp = this.handleMoveUp.bind(this);
     this.handleMoveDown = this.handleMoveDown.bind(this);
+    this.handleViewDetails = this.handleViewDetails.bind(this);
+    this.handleCloseFocusAreaDrawer = this.handleCloseFocusAreaDrawer.bind(this);
+    this.handleViewRelatedProjects = this.handleViewRelatedProjects.bind(this);
+    this.handleCloseRelatedProjectsDrawer = this.handleCloseRelatedProjectsDrawer.bind(this);
     // get FAlist for current user
     this.state = {
       value: 0,
@@ -74,6 +95,24 @@ class GroupTabs extends React.Component {
       showDiv: "",
       showTabStart: 0,  // used to scroll thru tabs
       showTabEnd: 4,// used to scroll thru tabs
+      isFocusAreaDrawerOpen: false,
+      currentFocusArea: {},
+      isRelatedProjectsDrawerOpen: false,
+    };
+
+    this.relevance = {
+      'Supporting Concept': {
+        label: 'Bridge',
+        color: grey500,
+      },
+      'Relevant': {
+        label: 'Relevant',
+        color: null,
+      },
+      'Highly Relevant': {
+        label: 'Highly Relevant',
+        color: greenA700,
+      },
     };
   }  
   handleMoveUp(moveStudentPosition, moveProjPosition, moveFaPosition){
@@ -173,6 +212,25 @@ class GroupTabs extends React.Component {
    this.refs[data].scrollIntoView(true);
     // projectNode.scrollIntoView();  // experimental, alignToTop = true
   }
+
+  handleViewDetails(focusArea) {
+    this.props.selectFocusArea(focusArea);
+    this.setState({ isFocusAreaDrawerOpen: true });
+  }
+
+  handleCloseFocusAreaDrawer() {
+    this.setState({ isFocusAreaDrawerOpen: false });
+  }
+
+  handleViewRelatedProjects(pathName) {
+    this.props.selectPath(pathName);
+    this.setState({ isRelatedProjectsDrawerOpen: true });
+  }
+
+  handleCloseRelatedProjectsDrawer() {
+    this.setState({ isRelatedProjectsDrawerOpen: false });
+  }
+
   componentWillMount(){
     let maxVisibleFA = {};
     // set intial visible FA number, 20
@@ -204,31 +262,28 @@ class GroupTabs extends React.Component {
     let maxVisibleFA = component.props.falist[tabindex];
     let faCounter = 0;  // this will be used to keep track of how many fa have been rendered so we dont go over maxVisibibleFA
     let projCounter = 0;
-    return component.props.paths[tabindex].projectPath.map(function(project, index) {
+    return component.props.paths[tabindex].projectPath.map((project, index) => {
       let projPosition = projCounter;
       let idCounter = 0;
       maxVisibleFA -= faCounter; // reduce by the number in faCounter on each iteration, initially 0
       // slice allows only the portion of the array from 0 to our max counter maxVisibleFA to be rendered
       let faComponents = "";
       if (project.fa.length > 0){
-        faComponents = project.fa.slice(0, maxVisibleFA).map(function(fa, index) {
+        faComponents = project.fa.slice(0, maxVisibleFA).map((fa, index) => {
         faCounter++;  // increase for each fa iteration
 
           let faPosition =  idCounter;   
-          let changeButtons = (<div><Col className="text-center" md={3} xs={3}>         
-                      <FlatButton containerElement='label' label="Add"   onTouchTap={(e) => component.handleAdd(studentPathPosition, projPosition, faPosition)}/>  
-                      </Col> 
-                    <Col className="text-center" md={3} xs={3}>
-                      <FlatButton containerElement='label' label="Remove"  onTouchTap={() => component.handleDelete(studentPathPosition, component.props.paths[tabindex].studentsOnPath[0], fa._key, projPosition, faPosition)} />                         
-                    </Col>
-                    <Col className="text-center" md={3} xs={3}>
-                        <IconButton iconStyle={styles.iconButton} onTouchTap={() => component.handleMoveUp(studentPathPosition, projPosition, faPosition)}  iconStyle={{height: 48}} style={{maxWidth: 100}}  tooltip="Move Up"><UpIcon /></IconButton> 
-                    </Col>
-                    <Col className="text-center" md={3} xs={3}>
-                      <IconButton iconStyle={styles.iconButton}  onTouchTap={() => component.handleMoveDown(studentPathPosition, projPosition, faPosition)}  iconStyle={{height: 48}} style={{maxWidth: 100}} tooltip="Move Down"><DownIcon /></IconButton>
-                    </Col></div>);
+          let changeButtons = (
+            <div style={{display: 'flex', justifyContent: 'space-between'}}>
+              <FlatButton containerElement="label" label="View Details" onTouchTap={() => {this.handleViewDetails(fa)}}/>
+              <FlatButton containerElement='label' label="Add"   onTouchTap={(e) => component.handleAdd(studentPathPosition, projPosition, faPosition)}/>
+              <FlatButton containerElement='label' label="Remove"  onTouchTap={() => component.handleDelete(studentPathPosition, component.props.paths[tabindex].studentsOnPath[0].name, fa._key, projPosition, faPosition)} />
+              <IconButton iconStyle={styles.iconButton} onTouchTap={() => component.handleMoveUp(studentPathPosition, projPosition, faPosition)}  iconStyle={{height: 48}} style={{maxWidth: 100}}  tooltip="Move Up"><UpIcon /></IconButton>
+              <IconButton iconStyle={styles.iconButton}  onTouchTap={() => component.handleMoveDown(studentPathPosition, projPosition, faPosition)}  iconStyle={{height: 48}} style={{maxWidth: 100}} tooltip="Move Down"><DownIcon /></IconButton>
+            </div>
+          );
           let saveFAButton = (<div><Col className="text-center" md={12} xs={6}>          
-                      <FlatButton containerElement='label' label="Add FA"   disabled={component.props.selectedfa ? false: true}  onTouchTap={() => component.handleAddFA(studentPathPosition, component.props.paths[tabindex].studentsOnPath[0], fa._key, projPosition, faPosition)}/>
+                      <FlatButton containerElement='label' label="Add FA"   disabled={component.props.selectedfa ? false: true}  onTouchTap={() => component.handleAddFA(studentPathPosition, component.props.paths[tabindex].studentsOnPath[0].name, fa._key, projPosition, faPosition)}/>
                       </Col> </div>);
           let closeDivButton = (<div><Col className="text-center" md={12} xs={6}>          
                       <FlatButton containerElement='label' label="Close"   onTouchTap={() => component.handleClose(studentPathPosition, projPosition, faPosition)}/>
@@ -236,21 +291,29 @@ class GroupTabs extends React.Component {
           idCounter++;
           
           let dragItem = <div
-                            ref={[component.props.paths[tabindex].studentsOnPath[0], fa._id, studentPathPosition, projPosition, faPosition].join('|')}
-                            id={[component.props.paths[tabindex].studentsOnPath[0], fa._id, studentPathPosition, projPosition, faPosition].join('|')}
-                            key={[component.props.paths[tabindex].studentsOnPath[0], fa._id, studentPathPosition, projPosition, faPosition].join('|')}
+                            ref={[component.props.paths[tabindex].studentsOnPath[0].name, fa._id, studentPathPosition, projPosition, faPosition].join('|')}
+                            id={[component.props.paths[tabindex].studentsOnPath[0].name, fa._id, studentPathPosition, projPosition, faPosition].join('|')}
+                            key={[component.props.paths[tabindex].studentsOnPath[0].name, fa._id, studentPathPosition, projPosition, faPosition].join('|')}
                             className="fa-wrapper path"
                             >
 
           <Row className="fa-tab-view-rows" >
-              <Col md={12}><div style={styles.slide}>    
-                  <Row >
-                      <h3  className='fa-headings'>{fa.name}</h3>
-                  </Row>
-                  <hr />
-                </div>
-              </Col>
-            </Row>
+            <Col md={12}>
+              <div style={styles.slide}>
+                <Row >
+                  <h3 className='fa-headings' style={styles.focusAreaHeader}>{fa.name}</h3>
+                  {fa.relevance && this.relevance[fa.relevance] &&
+                    <Chip style={styles.focusAreaRelevanceLabel}
+                          backgroundColor={this.relevance[fa.relevance].color}
+                    >
+                      {this.relevance[fa.relevance].label}
+                    </Chip>
+                  }
+                </Row>
+                <hr />
+              </div>
+            </Col>
+          </Row>
             <br /><hr />
           <Row className="fa-tab-view-rows">
             <Col md={12}>
@@ -281,17 +344,36 @@ class GroupTabs extends React.Component {
         }) 
       // }
       } else {
-        faComponents = <div ><p key={component.props.paths[tabindex].studentsOnPath[0].toString() + "NoPaths"} className="no-paths-message"> No focus areas found for this project. Please requery using different filters.</p></div>
+        faComponents = <div ><p key={component.props.paths[tabindex].studentsOnPath[0].name.toString() + "NoPaths"} className="no-paths-message"> No focus areas found for this project. Please requery using different filters.</p></div>
       }
       projCounter ++;
       return <div> 
               {maxVisibleFA > 0  ? 
                <Row className="text-center">
-              <br />
-               <Col md={12}><div ref={studentPathPosition+'/'+projPosition}  id={studentPathPosition+'/'+projPosition}><h4>{project.name} </h4></div><hr /></Col>     
-             </Row> : ""}             
-              {faComponents}            
-            </div>
+                <br />
+                 <Col md={12}>
+                   <div ref={studentPathPosition+'/'+projPosition}
+                        id={studentPathPosition+'/'+projPosition}
+                        style={{
+                          position: 'relative',
+                        }}
+                   >
+                     <h4>{project.name}</h4>
+                     <FlatButton containerElement="label"
+                                 label="View Related Projects"
+                                 onTouchTap={() => {this.handleViewRelatedProjects(project.name)}}
+                                 style={{
+                                   position: 'absolute',
+                                   top: '-8px',
+                                   right: 0,
+                                 }}
+                     />
+                   </div>
+                   <hr />
+                 </Col>
+               </Row> : ""}
+                {faComponents}
+              </div>
     })
   }
   addRows(){
@@ -331,7 +413,8 @@ class GroupTabs extends React.Component {
       const pluralizedLabel = studentCount > 1 ? " students" : " student"
       var numberOfStudents = studentCount + ' ' + pluralizedLabel;
       //map students --- this is id but when we have names we can replace
-      var studentData = result.studentsOnPath.map(function(studentname, index) {
+      var studentData = result.studentsOnPath.map(function(student, index) {
+        const studentname = student.name;
              let studentnames = 
                     <Col className="text-center">
                       <div className="chip">                    
@@ -379,14 +462,45 @@ class GroupTabs extends React.Component {
           {resultsComponents}   
           {this.state.value}  
       </Tabs>}
-    
+
+      <FocusAreaDrawer open={this.state.isFocusAreaDrawerOpen}
+                       focusArea={this.props.currentFocusArea}
+                       isFocusAreaFetching={this.props.isFocusAreaInfoFetching}
+                       onCloseClick={this.handleCloseFocusAreaDrawer}
+                       paths={this.props.paths}
+      />
+
+      <RelatedProjectsDrawer open={this.state.isRelatedProjectsDrawerOpen}
+                             relatedProjects={this.props.currentPathRelatedProjects}
+                             isRelatedProjectsFetching={this.props.isRelatedProjectsFetching}
+                             onCloseClick={this.handleCloseRelatedProjectsDrawer}
+      />
+
     </div>
   
   }
 }
 
+const mapStateToProps = (state) => ({
+  currentFocusArea: state.mainState.currentFocusArea,
+  isFocusAreaInfoFetching: state.mainState.isFocusAreaInfoFetching,
+  paths: state.mainState.paths,
+  currentPathRelatedProjects: state.mainState.currentPathRelatedProjects,
+  isRelatedProjectsFetching: state.mainState.isRelatedProjectsFetching,
+});
 
-export default connect()(GroupTabs);
+const mapDispatchToProps = (dispatch) => {
+  const bindedActions = bindActionCreators({
+    selectFocusArea,
+    selectPath,
+  }, dispatch);
+  return {dispatch, ...bindedActions};
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(GroupTabs);
 
 
   
