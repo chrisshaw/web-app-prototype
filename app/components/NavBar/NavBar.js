@@ -10,7 +10,6 @@ import { connect } from 'react-redux';
 
 class NavBar extends Component {
     render(){
-        console.log(this.props.permissions, this.props.loggedIn)
         return (
             <AppBar position="static" className={Style.appbar}>
                 <Toolbar disableGutters className={`${Style.navbar} ${Style.justifyCenter}`}>
@@ -40,7 +39,7 @@ const mapStateToProps = store => ({
     permissions: store.authState.permissions
 })
 
-export default connect()(NavBar); 
+export default connect(mapStateToProps)(NavBar); 
 
 
 

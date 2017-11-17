@@ -17,13 +17,6 @@ class Main extends Component{
        helper.logout(this.props.dispatch, this.props.router);
     }
     
-    handleClose = () => { 
-        // clear local and server error messages
-        if (this.props.error) helper.setErrorMsg(this.props);
-        // local validation
-        if (this.props.success) helper.setSuccessMsg(this.props);
-    }
-    
     render(){
          return (
             <div id="main-container" className={Style.mainContainer}>  
@@ -48,11 +41,7 @@ const mapStateToProps = (store) => {
         userId: store.authState.userId,
         username: store.authState.username,
         permissions: store.authState.permissions,
-        role: store.authState.role,
-        success: store.appState.success,
-        successMsg: store.appState.successMsg,
-        error: store.appState.error,
-        errorMsg: store.appState.errorMsg,
+        role: store.authState.role
     }
 }
 export default connect(mapStateToProps)(Main);

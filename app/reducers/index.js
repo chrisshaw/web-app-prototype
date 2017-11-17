@@ -5,7 +5,20 @@ import studentsTabReducer from './studentsTab';
 import classReducer from './class';
 import teachersAndAdminsReducer from './teachersAndAdmins';
 import flashMessageReducer from './flashMessage';
-import pathbuilderReducer from './pathbuilder'
+import queryBuilderReducer, {
+    getPotentialCourses,
+    getPotentialStandards,
+    getPotentialTopics,
+    getPotentialSubjects,
+    getSelectedCourses,
+    getSelectedStandards,
+    getSelectedSubjects,
+    getSelectedTopics
+} from './querybuilder'
+
+const mainInitialState = {
+    a: 'b'
+}
 
 const loginInitialState = {
     loggedIn: false,
@@ -89,7 +102,7 @@ function updateQueryList(action, state, list, selectedlist) {
 }
             
 //  The below are required and map to the components dispatcher
-const mainReducer = (state = intialState, action) => {
+const mainReducer = (state = mainInitialState, action) => {
     
     switch(action.type){    
         // case 'GET_FA':
@@ -185,6 +198,15 @@ const mainReducer = (state = intialState, action) => {
     return state;
 }
 
+export const globalGetPotentialCourses = state => getPotentialCourses(state.queryBuilder)
+export const globalGetPotentialTopics = state => getPotentialTopics(state.queryBuilder)
+export const globalGetPotentialSubjects = state => getPotentialSubjects(state.queryBuilder)
+export const globalGetPotentialStandards = state => getPotentialStandards(state.queryBuilder)
+export const globalGetSelectedCourses = state => getSelectedCourses(state.queryBuilder)
+export const globalGetSelectedTopics = state => getSelectedTopics(state.queryBuilder)
+export const globalGetSelectedSubjects = state => getSelectedSubjects(state.queryBuilder)
+export const globalGetSelectedStandards = state => getSelectedStandards(state.queryBuilder)
+
 const authReducer = (state = loginInitialState, action) => {
 
     switch(action.type){    
@@ -243,14 +265,13 @@ const appReducer = combineReducers({
     teachersAndAdmins: teachersAndAdminsReducer,
     flashMessage: flashMessageReducer,
     classState: classReducer,
-    pathbuilderState: pathbuilderReducer
+    queryBuilder: queryBuilderReducer
 })
 // to handle clearing store on logout
-const reducers = (state, action) => {
+export default (state, action) => {
   if (action.type === 'USER_LOGOUT') {
     state = undefined
   }
   return appReducer(state, action)
 }
-export default reducers;
 

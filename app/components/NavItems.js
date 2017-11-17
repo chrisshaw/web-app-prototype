@@ -10,7 +10,6 @@ class NavItems extends Component {
 
     handleChange = (event, value) => {
         this.setState( { value } )
-
     }
 
     render() {

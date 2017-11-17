@@ -823,7 +823,9 @@ module.exports = function(app){
     })
 
     app.get('/api/pathbuilder/:userKey/options', async (req, res, next) => {
+        
         const userKey = req.params.userKey
+        console.log(`>>> Options endpoint hit for ${userKey}.`)
 
         try {
             const query = aql`
@@ -850,7 +852,7 @@ module.exports = function(app){
                 }
             `
             const cursor = await db.query(query)
-            const options = await cursor.all
+            const options = await cursor.all()
             res.json( { optionTable: options } )
         } catch (err) {
             next(err)

@@ -22,51 +22,6 @@ var helpers = {
         }
         return "";
     },
-
-    getGrades: function(reset, deleteGroup, dispatch){
-       var gradeArr = [{_id: 0, name: "6"}, {_id: 1, name: "7"},{_id: 2, name: "8"}, {_id: 3, name: "9"},{_id: 4, name: "10"}, {_id: 5, name: "11"}, {_id: 6, name: "12"}]
-       dispatch(actions.updateList(reset, deleteGroup, 0, 'UPDATE_GRADES', gradeArr));
-    },
-    getCourses: function(reset, deleteGroup, username, role, dispatch){
-        return axios
-                .get(`/api/user/${username}/courses/`)
-                .then(function(response) {
-                    // send results to redux store for use by Results component
-                    dispatch(actions.updateList(reset, deleteGroup, 0, 'UPDATE_COURSES', response.data));
-                    return;
-                })
-    },
-    getStandards: function(reset, deleteGroup, grade, dispatch){
-        // console.log("herloer get std")
-        /// parse array to a string for query.
-        // remove grade!!!!!!
-        let gradeString = "";
-        if (grade.length > 0) {
-            if (grade.length === 1){
-                gradeString = grade[0].name;
-            } else {
-                gradeString = grade[0].name;
-                for (var i = 1; i < grade.length; i++){
-                    gradeString +=  ',' + grade[i].name;
-                }
-            }
-        }
-        return axios.get('/api/standards/'+gradeString).then(function(response) {
-                // send results to redux store for use by Results component
-                /// need to put in an object with an id
-                //  console.log("standards" ,response.data)
-                var standardsArr = [];
-                for (var i = 0; i < response.data[0].length; i++){
-                    standardsArr.push({ _id: i, name: response.data[0][i]})
-                }
-                // id is not 0 so we can safely use as placeholder
-                dispatch(actions.updateList(reset, deleteGroup, 0, 'UPDATE_STANDARDS', standardsArr))
-                return;
-            }).catch((error) => {
-                // send message to client...needs work
-                console.log(error)
-            })
-    },
     saveSelectedFA(e, dispatch){
         // need name and id
        dispatch(actions.selectedFA(e));
@@ -83,27 +38,6 @@ var helpers = {
             // send message to client...needs work
             console.log(error)
         })   
-    },
-    getTopics(reset, deleteGroup, dispatch){
-        return axios.get('/api/topics/').then(function(response) {
-            // send results to redux store for use by Results component
-            /// need to put in an object with an id 
-            var topicArr = [];
-            for (var i = 0; i < response.data.length; i++){
-                // console.log("topics i", response.data[i])
-                topicArr.push({ _id: i, name: response.data[i].toLowerCase()})
-            }
-            dispatch(actions.updateList(reset, deleteGroup, 0, 'UPDATE_TOPICS', topicArr))  
-            return;
-        }).catch((error) => {
-            // send message to client...needs work
-            console.log(error)
-        })   
-    },
-
-    getSubjectContents(reset, deleteGroup, dispatch){
-        var subjectArr = [{_id: 0, name: "english"}, {_id: 1, name: "math"}, {_id: 2, name: "science"}, {_id: 3, name: "social studies"}]
-        dispatch(actions.updateList(reset, deleteGroup, 0, 'UPDATE_SUBJECTS', subjectArr))
     },
     // this path is for new query based on project
     getPathProjectAll(courses, grades, standards, topics, subjects, role, dispatch){

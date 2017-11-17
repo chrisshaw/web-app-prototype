@@ -8,32 +8,15 @@ import Typography from 'mui-next/Typography'
 import Style from './InputSection.css'
 
 class InputSection extends Component {
-    state = {
-        value: [],
-        options: []
-    }
 
-    // function called when list items are selected
-    handleChange = (e, i, values) => {
-        let lastElem = values.length;
-        // make sure a full word supplied is in list
-        if ((values[lastElem-1] !== []) && (values[lastElem-1]._id !== -1 )) {
-            // verify if to be added or removed   
-            if (this.props.selectedlist && this.props.selectedlist.length > 0 && this.props.selectedlist.indexOf(values[lastElem-1]) !== -1){
-                // remove it       
-                helper.removeChip(values[lastElem-1]._id, this.props.queryitem, this.props.dispatch);
-            } else {
-                helper.updateSelected(values[lastElem-1], this.props.queryitem, this.props.dispatch);
-            }
-        }
-    }
-
-        handleRequestDelete = id => {
-        // filter list based on id
-        helper.removeChip(id, this.props.queryitem, this.props.dispatch);
+    handlChange = (v, e) => {
+        console.log('e', e)
+        console.log('v', v)
+        this.props.changeHandler(e.dataItem)
     }
 
     render() {
+        const { placeholder, value, data, ...theRest } = this.props
         return (
             <div className={Style.spacing}>
                 <Typography
@@ -43,11 +26,11 @@ class InputSection extends Component {
                     {this.props.header}
                 </Typography>
                 <Multiselect
-                    placeholder={this.props.placeholder}
-                    value={this.props.value}
-                    data={this.props.data}
-                    valueField="id"
-                    textField="name"
+                    placeholder={placeholder}
+                    value={value}
+                    data={data}
+                    onChange={this.handlChange}
+                    {...theRest}
                     filter="contains"
                 />
             </div>
@@ -55,4 +38,4 @@ class InputSection extends Component {
     }
 }
 
-export default connect()(InputSection);
+export default InputSection;

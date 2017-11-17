@@ -14,26 +14,17 @@ const Loader = () => (
 
 const PathBuilderDrawer = props => (
     <Paper elevation={3}>     
-        <QueryBuilder {...props}/>
+        <QueryBuilder />
     </Paper>
 )
 
 class PathBuilder extends Component{
-   constructor(props) {
-        super(props);
-        // this.handleClose = this.handleClose.bind(this);
-        this.handleSend = this.handleSend.bind(this);
-    }
-    handleSend() {
-        // used by the "send to Sidekick" button in QueryBuilder
-        helper.sendToSidekick(this.props)   
-    }
+
     render() {
         return (
             <main id="pathbuilder">
                 <PathBuilderDrawer
                     id="query-area"
-                    handleSend={this.handleSend}
                 /> 
                 <Paper id="path-area" className={Style.centered} elevation={0}>
                     {this.props.searching ? (

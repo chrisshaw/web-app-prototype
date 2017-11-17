@@ -4,7 +4,7 @@ const api = axios.create({
     baseURL: '/api/'
 })
 
-export default callApi = (method, url, params) => {
+export default (method, url, params) => {
     if (method.toUpperCase() === 'GET') {
         return api.get(url, { params })
     } else if (['POST','PUT'].includes(method.toUpperCase())) {
