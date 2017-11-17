@@ -105,17 +105,30 @@ const reduceToUniqueObjects = (allOptions, propName) => {
     }, [] )
 }
 
-export const getCourseOptions = state => reduceToUniqueObjects(state.optionsTable, 'course')
-export const getTopicOptions = state => Array.from(new Set(state.optionsTable.map( option => option.topic )))
-export const getSubjectOptions = state => Array.from(new Set(state.optionsTable.map( option => option.subject )))
-export const getStandardsOptions = state => Array.from(new Set(state.optionsTable.map( option => option.standard )))
-
+export const getSelected = state => state.selected
 export const getSelectedCourses = state => state.selected.courses
 export const getSelectedTopics = state => state.selected.topics
 export const getSelectedSubjects = state => state.selected.subjects
 export const getSelectedStandards = state => state.selected.standards
 
-export const getPotentialCourses = state => getCourseOptions(state).filter( option => !state.selected.courses.includes(option._key) )
-export const getPotentialTopics = state => getTopicOptions(state).filter( option => !state.selected.topics.includes(option) )
-export const getPotentialSubjects = state => getSubjectOptions(state).filter( option => !state.selected.subjects.includes(option) )
-export const getPotentialStandards = state => getStandardsOptions(state).filter( option => !state.selected.standards.includes(option) )
+export const getFilteredOptionsTable = (state, optionList) => {
+    const selected = getSelected(state)
+    return state.optionsTable.filter( row => Object.entries(selected).every( ([key, values]) => {
+        if (!values.length || key === optionList) return true
+        if (key === 'courses') {
+            return values.some( object => checkObjectEquality(object, row[key]) )
+        } else {
+            return values.includes(row[key])
+        }
+    } ) )
+}
+
+export const getCourseOptions = state => reduceToUniqueObjects(getFilteredOptionsTable(state, 'courses'), 'courses')
+export const getTopicOptions = state => Array.from(new Set(getFilteredOptionsTable(state, 'topics').map( option => option.topics )))
+export const getSubjectOptions = state => Array.from(new Set(getFilteredOptionsTable(state, 'subjects').map( option => option.subjects )))
+export const getStandardsOptions = state => Array.from(new Set(getFilteredOptionsTable(state, 'standards').map( option => option.standards )))
+
+export const getPotentialCourses = state => getCourseOptions(state).filter( option => !state.selected.courses.includes(option._key) ).sort()
+export const getPotentialTopics = state => getTopicOptions(state).filter( option => !state.selected.topics.includes(option) ).sort()
+export const getPotentialSubjects = state => getSubjectOptions(state).filter( option => !state.selected.subjects.includes(option) ).sort()
+export const getPotentialStandards = state => getStandardsOptions(state).filter( option => !state.selected.standards.includes(option) ).sort()

@@ -843,10 +843,10 @@ module.exports = function(app){
                     standard = p.vertices[4]._key,
                     topic = t
                 return {
-                    'course': course,
-                    'subject': subject,
-                    'standard': standard,
-                    'topic': topic
+                    'courses': course,
+                    'subjects': subject,
+                    'standards': standard,
+                    'topics': topic
                 }
             `
             const cursor = await db.query(query)
