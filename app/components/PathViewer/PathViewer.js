@@ -3,18 +3,8 @@ import ReactDOM from "react-dom";
 // From https://github.com/oliviertassinari/react-swipeable-views
 import SwipeableViews from 'react-swipeable-views';
 import uuid from 'uuid';
-import {Grid, Row, Col} from 'react-bootstrap';
-
+import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux';
-import helper from '../../helper';
-import Dialog from 'material-ui/Dialog';
-import FlatButton from 'material-ui/FlatButton';
-import IconButton from 'material-ui/IconButton';
-import AutoCompleteFA from './AutoCompleteFA.js';
-import UpIcon from './UpIcon.js';
-import DownIcon from './DownIcon.js';
-import RightIcon from './RightIcon.js';
-import LeftIcon from './LeftIcon.js';
 
 import {
   red500,
@@ -22,11 +12,11 @@ import {
   greenA700,
 } from 'material-ui/styles/colors';
 import SvgIcon from 'material-ui/SvgIcon';
-import FocusAreaDrawer from './FocusAreaDrawer';
-import RelatedProjectsDrawer from './RelatedProjectsDrawer';
+import FocusAreaDrawer from '../FocusAreaDrawer';
+import RelatedProjectsDrawer from '../RelatedProjectsDrawer';
 
-import { selectFocusArea } from '../actions/focusAreas';
-import { selectPath } from '../actions/relatedProjects';
+import { selectFocusArea } from '../../actions/focusAreas';
+import { selectPath } from '../../actions/relatedProjects';
 
 const iconStyles = {
   marginRight: 24,
@@ -61,10 +51,6 @@ const styles = {
 
 // MUI-NEXT MIGRATION
 import Button from 'mui-next/Button'
-import AutoCompleteFA from '../AutoCompleteFA.js';
-
-
-// *** MUI-NEXT MIGRATION
 import Tabs, { Tab } from 'mui-next/Tabs'
 import IconButton from 'mui-next/IconButton'
 import Icon from 'mui-next/Icon'
@@ -99,7 +85,7 @@ class PathViewer extends React.Component {
 
     render() {
         return (
-            <div>
+            // <div>
                 <Tabs
                     value={this.state.value}
                     onChange={this.handleChange}
@@ -112,7 +98,7 @@ class PathViewer extends React.Component {
                         label="Value 1"
                     />
                 </Tabs>
-                <FocusAreaDrawer open={this.state.isFocusAreaDrawerOpen}
+                /* <FocusAreaDrawer open={this.state.isFocusAreaDrawerOpen}
                     focusArea={this.props.currentFocusArea}
                     isFocusAreaFetching={this.props.isFocusAreaInfoFetching}
                     onCloseClick={this.handleCloseFocusAreaDrawer}
@@ -123,7 +109,7 @@ class PathViewer extends React.Component {
                             isRelatedProjectsFetching={this.props.isRelatedProjectsFetching}
                             onCloseClick={this.handleCloseRelatedProjectsDrawer}
                 />
-            </div>
+            </div> */
         )
     }
 }

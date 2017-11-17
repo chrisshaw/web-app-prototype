@@ -3,6 +3,7 @@ import { combineReducers } from 'redux';
 import update from 'immutability-helper';
 import studentsTabReducer from './studentsTab';
 import classReducer from './class';
+import authReducer from './auth'
 import teachersAndAdminsReducer from './teachersAndAdmins';
 import flashMessageReducer from './flashMessage';
 import queryBuilderReducer, {
@@ -20,95 +21,15 @@ const mainInitialState = {
     a: 'b'
 }
 
-const loginInitialState = {
-    loggedIn: false,
-    permissions: [],
-    loginError: false,
-    signupFields: {
-        email: '', 
-        password : '', 
-        first: '',
-        last: '',
-        company: '',
-        verify: '', 
-        selectedRole: 'Please Select a Role',
-        description: '',
-        error: false, 
-        errorMsg: ""
-    }
-}
-
 const statusInitialState = {
     success: false,
     successMsg: ""
-}
-
-function updateSelected(action, state, list, selectedlist){
-        // decrease groups list and increase selected
-    // let newObj = {};
-    // let newGroups = state[list].filter((group) => {                  
-    //     if (group.name === action.item){
-    //         newObj = group;
-    //         return false;
-    //         }
-    //         return true;
-    //     });
-    // if (newObj !== {}){
-    // if new Obj is not empty make changes
-    if (!state[selectedlist]) {
-        // initially when array is empty do this
-        return Object.assign({[selectedlist]: []}, state, {[selectedlist]: [action.item]});    
-    } 
-    else {     
-        // after there is at least one item do this
-        return Object.assign({[selectedlist]: []}, state, {[selectedlist]: [...state[selectedlist], action.item]});    
-    }
-    // } 
-}
-
-function updateQueryList(action, state, list, selectedlist) {
-    let newObj = -1;
-    if (action.delete) {
-        // use filter here to remove deleted group
-        // remove from selectedgrouplist and add back to grouplist
-        var newGroups = state[selectedlist].filter((group) => {      
-            if (group._id === action.id){      
-                newObj = group;
-                return false;
-            }
-            return true;
-        });    
-        // in case of corrupt data 
-        if (newObj !== -1){
-            // update
-            return Object.assign({},state, {[selectedlist]: newGroups }); 
-        } else {
-            // no change
-            return Object.assign({},state, {[selectedlist]: state[selectedlist] }); 
-        }
-    } else if ((action.reset === true) &&  (action.delete === false)) {
-        // console.log("in action.reset true", state.gradelist)
-        return Object.assign({},state, {[list]: action.list, [selectedlist]: []});   
-    } else if ((action.reset === false ) &&  (action.delete === false)) {
-        // if not a reset action and there are no  items in the selected list
-        // send back all grades
-        // console.log("state.selectedgradelist", state[selectedlist])
-        if (state[selectedlist]) {
-            return Object.assign({}, state, {[list]:  state[list]}); 
-        } else {
-            return Object.assign({}, state, {[list]: action.list}); 
-        }
-    } 
 }
             
 //  The below are required and map to the components dispatcher
 const mainReducer = (state = mainInitialState, action) => {
     
     switch(action.type){    
-        // case 'GET_FA':
-        //     return Object.assign({},state, {focusArea: action.focusArea});
-        // case 'SELECTED_FA':
-        //     return Object.assign({},state, {selectedFocusArea: action.selectedFocusArea});
         case 'BUILD_VIEW':
             return Object.assign({},state, {pathbuilderview: action.pathbuilderview}); 
         case 'ADD_FA_TO_PATH':
@@ -141,59 +62,6 @@ const mainReducer = (state = mainInitialState, action) => {
             isRelatedProjectsFetching: false,
             relatedProjectsError: action.error,
         });
-        case 'UPDATE_PATHS':
-            // react not seeing changes to path array after reorder for dnd
-            // a hack i know but trying to force update for dnd re-render...so i use a counter that will change on every path array update
-            // will revisit to improve for now it works!
-            // console.log("changed", state.changed)
-            return Object.assign({disabled: true},state, {paths: action.paths, searching: action.searching, disabled: action.disabled, changed: state.changed + 1});
-        case 'UPDATE_GRADES':
-            //pulls for display in autopopulate dropdown to selected list for query
-           return updateQueryList(action, state, 'gradelist', 'selectedgradelist');
-            // otherwise just return state
-        case 'UPDATE_COURSES':  
-            //pulls for display in autopopulate dropdown to selected list for query
-            return updateQueryList(action, state, 'courselist', 'selectedcourselist');
-         case 'UPDATE_TOPICS':
-            //pulls for display in autopopulate dropdown to selected list for query
-            return updateQueryList(action, state, 'topiclist', 'selectedtopiclist');
-        case 'UPDATE_SUBJECTS':
-            //pulls for display in autopopulate dropdown to selected list for query
-            return updateQueryList(action, state, 'subjectcontentlist', 'selectedsubjectcontentlist');
-        case 'UPDATE_STANDARDS':
-            //pulls for display in autopopulate dropdown to selected list for query
-             return updateQueryList(action, state, 'standardslist', 'selectedstandardslist'); 
-        case 'UPDATE_SELECTED_GRADES':
-            // saves to selected list for query and in chips
-            return updateSelected(action, state, 'gradelist', 'selectedgradelist');       
-        case 'UPDATE_SELECTED_COURSES':
-            // saves to selected list for query and in chips
-            return updateSelected(action, state, 'courselist', 'selectedcourselist');   
-        case 'UPDATE_SELECTED_GROUPS':
-            // saves to selected list for query and in chips
-            return updateSelected(action, state, 'grouplist', 'selectedgrouplist'); 
-        case 'UPDATE_SELECTED_SUBJECTS':
-            // saves to selected list for query and in chips
-            return updateSelected(action, state, 'subjectcontentlist', 'selectedsubjectcontentlist'); 
-        case 'UPDATE_SELECTED_TOPICS':
-            // saves to selected list for query and in chips
-            return updateSelected(action, state, 'topiclist', 'selectedtopiclist'); 
-        case 'UPDATE_SELECTED_STANDARDS':
-            // saves to selected list for query and in chips
-            return updateSelected(action, state, 'standardslist', 'selectedstandardslist');  
-        case 'SHOW_INITIAL_ROWS': 
-            return Object.assign({}, state, { falist: action.falist })
-        case 'SHOW_MORE_ROWS': 
-            return Object.assign(
-                {},
-                state,
-                { falist: update(
-                    state.falist,
-                    { 
-                        [action.index]: {$set: action.newvalue}
-                    }
-                )}
-            )
     };        
     return state;
 }
@@ -206,46 +74,6 @@ export const globalGetSelectedCourses = state => getSelectedCourses(state.queryB
 export const globalGetSelectedTopics = state => getSelectedTopics(state.queryBuilder)
 export const globalGetSelectedSubjects = state => getSelectedSubjects(state.queryBuilder)
 export const globalGetSelectedStandards = state => getSelectedStandards(state.queryBuilder)
-
-const authReducer = (state = loginInitialState, action) => {
-
-    switch(action.type){    
-        case 'LOGGED_IN':
-            return Object.assign( {}, state, {
-                loggedIn: action.data.success,
-                username: action.data.username,
-                userId: action.data.id,
-                permissions: action.data.permissions,
-                role: action.data.role
-            });
-        case 'LOGIN_ERROR':
-            return Object.assign( { loginError: false }, state, { loginError: action.loginError, errorMsg: action.errorMsg }); 
-        case 'GET_ROLES':
-            return Object.assign( {}, state, { roles: action.roles } );
-        case 'SIGN_UP_STATUS':
-            return Object.assign( { signupOk: false }, state, { signupOk: action.signupOk, statusMsg: action.statusMsg }); 
-        case 'SIGN_UP_FIELDS':
-            return Object.assign( {
-                signupFields:  {
-                    email: '', 
-                    password : '', 
-                    first: '',
-                    last: '',
-                    school: '',
-                    verify: '', 
-                    selectedRole:  'Please Select a Role',
-                    description: '',
-                    error: false, 
-                    errorMsg: ""
-                }
-            }, state, { signupFields: action.signupFields }
-        );
-        
-        // case 'USER_PERMS':
-        //     return Object.assign({permissions: []},state, {});
- };      
-    return state;
-}
 
 const appStatusReducer = (state=statusInitialState, action) => {
     switch(action.type){  

@@ -19,11 +19,11 @@ import {
 
 import {
     tryFetchOptionsTableForQueryBuilder,
-    selectGradeInQueryBuilder,
-    selectCourseInQueryBuilder,
-    selectTopicInQueryBuilder,
-    selectSubjectInQueryBuilder,
-    selectStandardInQueryBuilder
+    updateGradeInQueryBuilder,
+    updateCourseInQueryBuilder,
+    updateTopicInQueryBuilder,
+    updateSubjectInQueryBuilder,
+    updateStandardInQueryBuilder
  } from '../../actions/pathbuilder/querybuilderActionCreators'
 
 class QueryBuilder extends Component{
@@ -47,14 +47,14 @@ class QueryBuilder extends Component{
                     placeholder="9, 10, 11, 12..."
                     value={this.props.selectedGrades}
                     data={this.props.potentialGrades}
-                    changeHandler={this.props.selectGradeInQueryBuilder}
+                    changeHandler={this.props.updateGradeInQueryBuilder}
                 /> */}
                 <InputSection
                     header="enrolled in courses"
                     placeholder="Biology, English 10, U.S. History..."
                     value={this.props.selectedCourses}
                     data={this.props.potentialCourses}
-                    changeHandler={this.props.selectCourseInQueryBuilder}
+                    changeHandler={this.props.updateCourseInQueryBuilder}
                     valueField="_key"
                     textField="name"
                 />
@@ -63,21 +63,21 @@ class QueryBuilder extends Component{
                     placeholder="social justice, genetics, investing..."
                     value={this.props.selectedTopics}
                     data={this.props.potentialTopics}     
-                    changeHandler={this.props.selectTopicInQueryBuilder}             
+                    changeHandler={this.props.updateTopicInQueryBuilder}             
                 />
                 <InputSection
                     header="while learning in subjects"
                     placeholder="math, science, english..."
                     value={this.props.selectedSubjects}
                     data={this.props.potentialSubjects}
-                    changeHandler={this.props.selectSubjectInQueryBuilder}
+                    changeHandler={this.props.updateSubjectInQueryBuilder}
                 />
                 <InputSection
                     header="that aligns to standards"
                     placeholder="CCSS-ELA, CCSS-Math, NGSS..."
                     value={this.props.selectedStandards}
                     data={this.props.potentialStandards}
-                    changeHandler={this.props.selectStandardInQueryBuilder}
+                    changeHandler={this.props.updateStandardInQueryBuilder}
                 />           
                 <Button
                     color="primary"
@@ -122,10 +122,9 @@ export default connect(
     mapStateToProps,
     {
         tryFetchOptionsTableForQueryBuilder,
-        selectGradeInQueryBuilder,
-        selectCourseInQueryBuilder,
-        selectTopicInQueryBuilder,
-        selectSubjectInQueryBuilder,
-        selectStandardInQueryBuilder
+        updateGradeInQueryBuilder,
+        updateCourseInQueryBuilder,
+        updateTopicInQueryBuilder,
+        updateSubjectInQueryBuilder,
+        updateStandardInQueryBuilder
     })(QueryBuilder);
-

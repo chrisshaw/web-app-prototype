@@ -10,9 +10,8 @@ import Style from './InputSection.css'
 class InputSection extends Component {
 
     handlChange = (v, e) => {
-        console.log('e', e)
-        console.log('v', v)
-        this.props.changeHandler(e.dataItem)
+        const { action, dataItem, ...rest } = e
+        this.props.changeHandler({ action, dataItem })
     }
 
     render() {

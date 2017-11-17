@@ -1,4 +1,4 @@
-import { LOGGED_IN, LOGIN_ERROR, GET_ROLES, SIGN_UP_STATUS, SIGN_UP_FIELDS } from '../actions/login/actionTypes';
+import { LOGGED_IN, LOGIN_ERROR, GET_ROLES, SIGN_UP_STATUS, SIGN_UP_FIELDS } from '../actions/auth/actionTypes';
 
 const initialState = {
     loggedIn: false,

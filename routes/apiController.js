@@ -113,10 +113,8 @@ module.exports = function(app){
 
     app.post('/login' , function(req, res, next){
         const foxxService = db.route('auth');
-        console.log(req.body)
         foxxService.post('/login', req.body)
         .then( response => {
-            console.log(response)
             res.setHeader("Set-Cookie",  'x-foxxsessid='+response.headers['x-foxxsessid']);
             return response.body;
         }).then(response => {

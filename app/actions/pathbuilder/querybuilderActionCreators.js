@@ -11,7 +11,12 @@ import {
     QUERYBUILDER_SELECT_COURSE,
     QUERYBUILDER_SELECT_TOPIC,
     QUERYBUILDER_SELECT_SUBJECT,
-    QUERYBUILDER_SELECT_STANDARD
+    QUERYBUILDER_SELECT_STANDARD,
+    QUERYBUILDER_REMOVE_GRADE,
+    QUERYBUILDER_REMOVE_COURSE,
+    QUERYBUILDER_REMOVE_TOPIC,
+    QUERYBUILDER_REMOVE_SUBJECT,
+    QUERYBUILDER_REMOVE_STANDARD
 } from './actionTypes'
 
 export const fetchOptionsTableForQueryBuilder = userKey => ({
@@ -51,25 +56,100 @@ export const selectGradeInQueryBuilder = grade => ({
     payload: { value: grade }
 })
 
+export const removeGradeInQueryBuilder = grade => ({
+    type: QUERYBUILDER_REMOVE_GRADE,
+    payload: { value: grade }
+})
+
+export const updateGradeInQueryBuilder = ({ action, dataItem: grade }) => dispatch => {
+    if (action === 'insert') {
+        dispatch(selectGradeInQueryBuilder(grade))
+    } else if (action === 'remove') {
+        dispatch(removeGradeInQueryBuilder(grade))
+    } else {
+        throw new Error(`We got an event from a React Widget that we don't know how to handle`)
+    }
+}
+
 export const selectCourseInQueryBuilder = course => ({
     type: QUERYBUILDER_SELECT_COURSE,
     payload: { value: course }
 })
+
+export const removeCourseInQueryBuilder = course => ({
+    type: QUERYBUILDER_REMOVE_COURSE,
+    payload: { value: course }
+})
+
+export const updateCourseInQueryBuilder = ({ action, dataItem: course }) => dispatch => {
+    if (action === 'insert') {
+        dispatch(selectCourseInQueryBuilder(course))
+    } else if (action === 'remove') {
+        dispatch(removeCourseInQueryBuilder(course))
+    } else {
+        throw new Error(`We got an event from a React Widget that we don't know how to handle`)
+    }
+}
 
 export const selectTopicInQueryBuilder = topic => ({
     type: QUERYBUILDER_SELECT_TOPIC,
     payload: { value: topic }
 })
 
+export const removeTopicInQueryBuilder = topic => ({
+    type: QUERYBUILDER_REMOVE_TOPIC,
+    payload: { value: topic }
+})
+
+export const updateTopicInQueryBuilder = ({ action, dataItem: topic }) => dispatch => {
+    if (action === 'insert') {
+        dispatch(selectTopicInQueryBuilder(topic))
+    } else if (action === 'remove') {
+        dispatch(removeTopicInQueryBuilder(topic))
+    } else {
+        throw new Error(`We got an event from a React Widget that we don't know how to handle`)
+    }
+}
+
 export const selectSubjectInQueryBuilder = subject => ({
     type: QUERYBUILDER_SELECT_SUBJECT,
     payload: { value: subject }
 })
 
+export const removeSubjectInQueryBuilder = subject => ({
+    type: QUERYBUILDER_REMOVE_SUBJECT,
+    payload: { value: subject }
+})
+
+export const updateSubjectInQueryBuilder = ({ action, dataItem: subject }) => dispatch => {
+    if (action === 'insert') {
+        dispatch(selectSubjectInQueryBuilder(subject))
+    } else if (action === 'remove') {
+        dispatch(removeSubjectInQueryBuilder(subject))
+    } else {
+        throw new Error(`We got an event from a React Widget that we don't know how to handle`)
+    }
+}
+
 export const selectStandardInQueryBuilder = standard => ({
     type: QUERYBUILDER_SELECT_STANDARD,
     payload: { value: standard }
 })
+
+export const removeStandardInQueryBuilder = standard => ({
+    type: QUERYBUILDER_REMOVE_STANDARD,
+    payload: { value: standard }
+})
+
+export const updateStandardInQueryBuilder = ({ action, dataItem: standard }) => dispatch => {
+    if (action === 'insert') {
+        dispatch(selectStandardInQueryBuilder(standard))
+    } else if (action === 'remove') {
+        dispatch(removeStandardInQueryBuilder(standard))
+    } else {
+        throw new Error(`We got an event from a React Widget that we don't know how to handle`)
+    }
+}
 
 export const showPathsFromQueryBuilder = paths => ({
     type: QUERYBUILDER_SHOW_PATHS,

@@ -10,6 +10,11 @@ import {
     QUERYBUILDER_SELECT_TOPIC,
     QUERYBUILDER_SELECT_SUBJECT,
     QUERYBUILDER_SELECT_STANDARD,
+    QUERYBUILDER_REMOVE_GRADE,
+    QUERYBUILDER_REMOVE_COURSE,
+    QUERYBUILDER_REMOVE_TOPIC,
+    QUERYBUILDER_REMOVE_SUBJECT,
+    QUERYBUILDER_REMOVE_STANDARD,
 } from '../actions/pathbuilder/actionTypes'
 
 /*
@@ -54,14 +59,24 @@ export const selectedReducer = (state = initialSelectedState, action) => {
     switch (action.type) {
         case QUERYBUILDER_SELECT_GRADE:
             return { ...state, grades: [...state.grades, action.payload.value] }
+        case QUERYBUILDER_REMOVE_GRADE:
+            return { ...state, grades: state.grades.filter( grade => grade !== action.payload.value ) }
         case QUERYBUILDER_SELECT_COURSE:
             return { ...state, courses: [...state.courses, action.payload.value] }
+        case QUERYBUILDER_REMOVE_COURSE:
+            return { ...state, courses: state.courses.filter( course => !checkObjectEquality(course, action.payload.value) ) }
         case QUERYBUILDER_SELECT_TOPIC:
             return { ...state, topics: [...state.topics, action.payload.value] }
+        case QUERYBUILDER_REMOVE_TOPIC:
+            return { ...state, topics: state.topics.filter( topic => topic !== action.payload.value ) }
         case QUERYBUILDER_SELECT_SUBJECT:
             return { ...state, subjects: [...state.subjects, action.payload.value] }
+        case QUERYBUILDER_REMOVE_SUBJECT:
+            return { ...state, subjects: state.subjects.filter( subject => subject !== action.payload.value ) }
         case QUERYBUILDER_SELECT_STANDARD:
             return { ...state, standards: [...state.standards, action.payload.value] }
+        case QUERYBUILDER_REMOVE_STANDARD:
+            return { ...state, standards: state.standards.filter( standard => standard !== action.payload.value ) }
         default:
             return state
     }
