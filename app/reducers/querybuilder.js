@@ -48,6 +48,7 @@ export const optionsTableReducer = (state = initialOptionsState, action) => {
 }
 
 const initialSelectedState = {
+    students: [],
     grades: [],
     courses: [],
     topics: [],
@@ -88,7 +89,6 @@ export default combineReducers({
     selected: selectedReducer
 })
 
-
 /*
 
 SELECTORS
@@ -105,7 +105,9 @@ const reduceToUniqueObjects = (allOptions, propName) => {
     }, [] )
 }
 
+export const getOptionsTable = state => state.optionsTable
 export const getSelected = state => state.selected
+export const getSelectedGrades = state => state.selected.grades
 export const getSelectedCourses = state => state.selected.courses
 export const getSelectedTopics = state => state.selected.topics
 export const getSelectedSubjects = state => state.selected.subjects
@@ -113,9 +115,9 @@ export const getSelectedStandards = state => state.selected.standards
 
 export const getFilteredOptionsTable = (state, optionList) => {
     const selected = getSelected(state)
-    return state.optionsTable.filter( row => Object.entries(selected).every( ([key, values]) => {
+    return getOptionsTable(state).filter( row => Object.entries(selected).every( ([key, values]) => {
         if (!values.length || key === optionList) return true
-        if (key === 'courses') {
+        if ( ['courses', 'students'].includes(key) ) {
             return values.some( object => checkObjectEquality(object, row[key]) )
         } else {
             return values.includes(row[key])
@@ -123,12 +125,15 @@ export const getFilteredOptionsTable = (state, optionList) => {
     } ) )
 }
 
+export const getGradeOptions = state => Array.from(new Set(getFilteredOptionsTable(state, 'grades').map( option => option.grades )))
 export const getCourseOptions = state => reduceToUniqueObjects(getFilteredOptionsTable(state, 'courses'), 'courses')
 export const getTopicOptions = state => Array.from(new Set(getFilteredOptionsTable(state, 'topics').map( option => option.topics )))
 export const getSubjectOptions = state => Array.from(new Set(getFilteredOptionsTable(state, 'subjects').map( option => option.subjects )))
 export const getStandardsOptions = state => Array.from(new Set(getFilteredOptionsTable(state, 'standards').map( option => option.standards )))
+export const getChosenStudents = state => reduceToUniqueObjects(getFilteredOptionsTable(state, 'students'), 'students')
 
-export const getPotentialCourses = state => getCourseOptions(state).filter( option => !state.selected.courses.includes(option._key) ).sort()
-export const getPotentialTopics = state => getTopicOptions(state).filter( option => !state.selected.topics.includes(option) ).sort()
-export const getPotentialSubjects = state => getSubjectOptions(state).filter( option => !state.selected.subjects.includes(option) ).sort()
-export const getPotentialStandards = state => getStandardsOptions(state).filter( option => !state.selected.standards.includes(option) ).sort()
+export const getPotentialGrades = state => getGradeOptions(state).filter( option => !getSelectedGrades(state).includes(option)).sort( (a, b) => a - b )
+export const getPotentialCourses = state => getCourseOptions(state).filter( option => !getSelectedCourses(state).includes(option._key) ).sort()
+export const getPotentialTopics = state => getTopicOptions(state).filter( option => !getSelectedTopics(state).includes(option) ).sort( (a, b) => a.toLowerCase().localeCompare(b.toLowerCase()) )
+export const getPotentialSubjects = state => getSubjectOptions(state).filter( option => !getSelectedSubjects(state).includes(option) ).sort()
+export const getPotentialStandards = state => getStandardsOptions(state).filter( option => !getSelectedStandards(state).includes(option) ).sort()

@@ -7,14 +7,17 @@ import Typography from 'mui-next/Typography'
 import Style from './QueryBuilder.css'
 
 import {
+    globalGetPotentialGrades,
     globalGetSelectedCourses,
     globalGetPotentialCourses,
     globalGetSelectedTopics,
     globalGetPotentialTopics,
+    globalGetSelectedGrades,
     globalGetSelectedSubjects,
     globalGetPotentialSubjects,
     globalGetSelectedStandards,
-    globalGetPotentialStandards
+    globalGetPotentialStandards,
+    globalGetChosenStudents
 } from '../../reducers/index'
 
 import {
@@ -42,13 +45,13 @@ class QueryBuilder extends Component{
                 <Typography type="display1">
                     Build Paths
                 </Typography>
-                {/* <InputSection
+                <InputSection
                     header="For my students in grades"
                     placeholder="9, 10, 11, 12..."
                     value={this.props.selectedGrades}
                     data={this.props.potentialGrades}
                     changeHandler={this.props.updateGradeInQueryBuilder}
-                /> */}
+                />
                 <InputSection
                     header="enrolled in courses"
                     placeholder="Biology, English 10, U.S. History..."
@@ -101,8 +104,8 @@ class QueryBuilder extends Component{
 
 const mapStateToProps = (store) => {
     return {
-        // selectedGrades: store.pathbuilder.getSelectedGrades,
-        // potentialGrades: store.pathbuilder.getPotentialGrades,
+        selectedGrades: globalGetSelectedGrades(store),
+        potentialGrades: globalGetPotentialGrades(store),
         selectedCourses: globalGetSelectedCourses(store),
         potentialCourses: globalGetPotentialCourses(store),
         selectedTopics: globalGetSelectedTopics(store),
@@ -111,6 +114,7 @@ const mapStateToProps = (store) => {
         potentialSubjects: globalGetPotentialSubjects(store),
         selectedStandards: globalGetSelectedStandards(store),
         potentialStandards: globalGetPotentialStandards(store),
+        chosenStudents: globalGetChosenStudents(store),
         role: store.authState.role,
         username: store.authState.username,
         permissions:  store.authState.permissions,

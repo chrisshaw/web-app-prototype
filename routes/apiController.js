@@ -827,27 +827,46 @@ module.exports = function(app){
 
         try {
             const query = aql`
-            for v, e, p
-            in 5 outbound ${`auth_users/${userKey}`}
-            hasSection, hasCourse, focusesOn, any alignsTo
-            filter IS_SAME_COLLECTION('sections', p.vertices[1])
-                and IS_SAME_COLLECTION('courses', p.vertices[2])
-                and IS_SAME_COLLECTION('focusAreas', p.vertices[3])
-                and IS_SAME_COLLECTION('standards', p.vertices[4])
-                and IS_SAME_COLLECTION('projects', p.vertices[5])
-                and p.vertices[*] none == null
-                and p.vertices[5].topics != null
-                for t in p.vertices[5].topics
-                collect course = KEEP(p.vertices[2], '_key', 'name'),
-                    subject = p.vertices[3].subject,
-                    standard = p.vertices[4]._key,
-                    topic = t
-                return {
-                    'courses': course,
-                    'subjects': subject,
-                    'standards': standard,
-                    'topics': topic
-                }
+            let sources = MERGE(
+                for v, e, p
+                in 1..3 any ${`auth_users/${userKey}`}
+                hasSection, auth_hasRole
+                filter IS_SAME_COLLECTION('sections', p.vertices[1])
+                    and IS_SAME_COLLECTION('auth_users', p.vertices[2])
+                    and IS_SAME_COLLECTION('auth_roles', p.vertices[3])
+                    and PARSE_IDENTIFIER(p.vertices[3]._id).key == 'student'
+                    for t in [p.vertices[1], p.vertices[2]]
+                    collect type = PARSE_IDENTIFIER(t._id).collection into items = t
+                    return { [type]: UNIQUE(items) }
+            )
+            
+            for s in sources.auth_users
+                for v, e, p
+                in 5 outbound s
+                hasSection, hasCourse, focusesOn, any alignsTo
+                filter IS_SAME_COLLECTION('sections', p.vertices[1])
+                    and p.vertices[1] in sources.sections
+                    and IS_SAME_COLLECTION('courses', p.vertices[2])
+                    and IS_SAME_COLLECTION('focusAreas', p.vertices[3])
+                    and IS_SAME_COLLECTION('standards', p.vertices[4])
+                    and IS_SAME_COLLECTION('projects', p.vertices[5])
+                    and p.vertices[*] none == null
+                    and p.vertices[5].topics != null
+                    for t in p.vertices[5].topics
+                    collect student = KEEP(p.vertices[0], '_key', 'first', 'last', 'grade'),
+                        grade = p.vertices[0].grade,
+                        course = KEEP(p.vertices[2], '_key', 'name'),
+                        subject = p.vertices[3].subject,
+                        standard = p.vertices[4]._key,
+                        topic = t
+                    return {
+                        'students': student,
+                        'grades': grade,
+                        'courses': course,
+                        'subjects': subject,
+                        'standards': standard,
+                        'topics': topic
+                    }
             `
             const cursor = await db.query(query)
             const options = await cursor.all()
