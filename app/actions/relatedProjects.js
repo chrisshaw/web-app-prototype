@@ -1,5 +1,11 @@
+import {
+    REQUEST_PATH_RELATED_PROJECTS,
+    SUCCESS_PATH_RELATED_PROJECTS,
+    ERROR_PATH_RELATED_PROJECTS
+} from './pathbuilder/actionTypes'
+
 export const selectPath = (pathName) => (dispatch) => {
-  dispatch(requestPathRelatedProjects());
+  dispatch(requestPathRelatedProjects(pathName));
 
   return fetch('/api/path/related_projects/' + pathName)
     .then((response) => {
@@ -16,16 +22,17 @@ export const selectPath = (pathName) => (dispatch) => {
     });
 };
 
-export const requestPathRelatedProjects = () => ({
-  type: 'REQUEST_PATH_RELATED_PROJECTS',
+export const requestPathRelatedProjects = (topic) => ({
+  type: REQUEST_PATH_RELATED_PROJECTS,
+  topic
 });
 
 export const successPathRelatedProjects = (relatedProjects) => ({
-  type: 'SUCCESS_PATH_RELATED_PROJECTS',
+  type: SUCCESS_PATH_RELATED_PROJECTS,
   relatedProjects,
 });
 
 export const errorPathRelatedProjects = (error) => ({
-  type: 'ERROR_PATH_RELATED_PROJECTS',
+  type: ERROR_PATH_RELATED_PROJECTS,
   error,
 });

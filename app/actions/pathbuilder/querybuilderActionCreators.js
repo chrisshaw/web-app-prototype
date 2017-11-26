@@ -151,14 +151,14 @@ export const updateStandardInQueryBuilder = ({ action, dataItem: standard }) => 
     }
 }
 
-export const showPathsFromQueryBuilder = paths => ({
-    type: QUERYBUILDER_SHOW_PATHS,
-    payload: { paths }
-})
-
 export const fetchPathsWithQueryBuilder = query => ({
     type: QUERYBUILDER_FETCH_PATHS,
     payload: { query }
+})
+
+export const showPathsFromQueryBuilder = paths => ({
+    type: QUERYBUILDER_SHOW_PATHS,
+    payload: { paths }
 })
 
 export const fetchPathsWithQueryBuilderFailed = err => ({
@@ -170,7 +170,6 @@ export const tryFetchPathsWithQueryBuilder = query => async dispatch => {
     dispatch(fetchPathsWithQueryBuilder(query))
     try {
         const pathResponse = await callApi('post', 'path/project', query)
-        console.log(pathResponse)
         // Once we see the data, we can see what error handling we need.
         if (true) {
             const paths = pathResponse.data

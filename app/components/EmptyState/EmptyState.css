@@ -1,0 +1,4 @@
+.emptyStateContainer {
+    display: flex;
+    flex-direction: column;
+}

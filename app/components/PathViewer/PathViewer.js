@@ -12,127 +12,85 @@ import {
   greenA700,
 } from 'material-ui/styles/colors';
 import SvgIcon from 'material-ui/SvgIcon';
-import FocusAreaDrawer from '../FocusAreaDrawer';
-import RelatedProjectsDrawer from '../RelatedProjectsDrawer';
-
-import { selectFocusArea } from '../../actions/focusAreas';
-import { selectPath } from '../../actions/relatedProjects';
-
-const iconStyles = {
-  marginRight: 24,
-  fill: 'red500'
-};
-const styles = {
-  iconButton : {
-    disabledTextColor: '#808080'
-  },
-  headline: {
-    fontSize: 24,
-    paddingTop: 16,
-    marginBottom: 12,
-    fontWeight: 400,
-  },
-  slide: {
-    textAlign: 'left',
-    overflowX: 'none',
-  },
-  wrapper: {
-    display: 'flex',
-    flexWrap: 'wrap',
-  },
-  focusAreaHeader: {
-    display: 'inline-block',
-  },
-  focusAreaRelevanceLabel: {
-    display: 'inline-block',
-    margin: '0 0 7px 12px',
-  },
-};
+import PathList from '../PathList/PathList'
 
 // MUI-NEXT MIGRATION
+import Paper from 'mui-next/Paper'
 import Button from 'mui-next/Button'
 import Tabs, { Tab } from 'mui-next/Tabs'
 import IconButton from 'mui-next/IconButton'
 import Icon from 'mui-next/Icon'
+import Chip from 'mui-next/Chip'
 
+import ChipList from '../ChipList/ChipList'
+import Loader from '../Loader/Loader'
+import EmptyState from '../EmptyState/EmptyState'
+import Style from './PathViewer.css'
+
+import { globalGetLoaderState, globalGetPathCount, globalGetStudentGroups, globalGetCurrentStudentGroup, globalGetPathIndex } from '../../reducers'
+
+import {
+    changeCurrentPathInPathViewer
+} from '../../actions/pathbuilder/pathviewerActionCreators'
 
 class PathViewer extends React.Component {
-    state = {
-        value: 0
-    }
-
-    handleViewDetails(focusArea) {
-        this.props.selectFocusArea(focusArea);
-        this.setState({ isFocusAreaDrawerOpen: true });
-    }
-
-    handleCloseFocusAreaDrawer() {
-        this.setState({ isFocusAreaDrawerOpen: false });
-    }
-
-    handleViewRelatedProjects(pathName) {
-        this.props.selectPath(pathName);
-        this.setState({ isRelatedProjectsDrawerOpen: true });
-    }
-
-    handleCloseRelatedProjectsDrawer() {
-        this.setState({ isRelatedProjectsDrawerOpen: false });
-    }
 
     handleChange = (event, value) => {
-        this.setState( { value } )
+        this.props.changeCurrentPathInPathViewer(value)
+    }
+
+    renderStudentPathTab = (studentGroup, i) => {
+        const count = studentGroup.length
+        return (
+            <Tab key={i} label={`${count} Student${count > 1 ? 's' : ''}`}/>
+        )
     }
 
     render() {
+        const { className, ...others } = this.props
+        let content = null
+
+        if (this.props.isLoading) {
+            content = <Loader {...this.props} />
+        } else if (this.props.pathCount) {
+            content = [
+                <div key="pathData" className={Style.pathData}>
+                    <Tabs
+                        value={this.props.pathIndex}
+                        onChange={this.handleChange}
+                        indicatorColor="primary"
+                        scrollable
+                    >
+                        {this.props.studentGroups.map(this.renderStudentPathTab)}
+                    </Tabs>
+                    <ChipList items={this.props.currentStudentGroup} align='center'/>
+                </div>,
+                <PathList key="pathList" />
+            ]
+        } else {
+            content = <EmptyState state="noPaths" {...this.props} />
+        }
         return (
-            // <div>
-                <Tabs
-                    value={this.state.value}
-                    onChange={this.handleChange}
-                    indicatorColor="primary"
-                >
-                    <Tab
-                        label="Value 0"
-                    />
-                    <Tab
-                        label="Value 1"
-                    />
-                </Tabs>
-                /* <FocusAreaDrawer open={this.state.isFocusAreaDrawerOpen}
-                    focusArea={this.props.currentFocusArea}
-                    isFocusAreaFetching={this.props.isFocusAreaInfoFetching}
-                    onCloseClick={this.handleCloseFocusAreaDrawer}
-                    paths={this.props.paths}
-                />
-                <RelatedProjectsDrawer open={this.state.isRelatedProjectsDrawerOpen}
-                            relatedProjects={this.props.currentPathRelatedProjects}
-                            isRelatedProjectsFetching={this.props.isRelatedProjectsFetching}
-                            onCloseClick={this.handleCloseRelatedProjectsDrawer}
-                />
-            </div> */
+            <section className={`${className} ${Style.pathviewer}`}>
+                {content}
+            </section>
         )
     }
 }
 
 const mapStateToProps = (state) => ({
-  currentFocusArea: state.mainState.currentFocusArea,
-  isFocusAreaInfoFetching: state.mainState.isFocusAreaInfoFetching,
-  paths: state.mainState.paths,
-  currentPathRelatedProjects: state.mainState.currentPathRelatedProjects,
-  isRelatedProjectsFetching: state.mainState.isRelatedProjectsFetching,
+    isLoading: globalGetLoaderState(state),
+    pathCount: globalGetPathCount(state),
+    pathIndex: globalGetPathIndex(state),
+    studentGroups: globalGetStudentGroups(state),
+    currentStudentGroup: globalGetCurrentStudentGroup(state)
 });
-
-const mapDispatchToProps = (dispatch) => {
-  const boundActions = bindActionCreators({
-      selectFocusArea,
-      selectPath,
-  }, dispatch);
-  return {dispatch, ...boundActions};
-};
 
 export default connect(
   mapStateToProps,
-  mapDispatchToProps
+  {
+      changeCurrentPathInPathViewer
+  }
 )(PathViewer);
 
 

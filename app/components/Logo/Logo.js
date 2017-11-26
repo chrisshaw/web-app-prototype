@@ -13,9 +13,9 @@ const Logo = props => {
     }
 
     return (
-        <div>
+        <div className={`${Style.brand} ${props.upper && Style.brandTopSpacing} ${props.middle && Style.brandTopSpacing} ${props.middle && Style.brandBottomSpacing} ${props.lower && Style.brandBottomSpacing}`}>
             <img
-                className={`${Style.brandSpacing} ${sizeClass}`}
+                className={sizeClass}
                 src='./public/assets/img/logo-symmetrical.svg'
                 alt="Sidekick"
             />

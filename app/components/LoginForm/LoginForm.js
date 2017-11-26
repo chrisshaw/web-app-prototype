@@ -50,7 +50,7 @@ class LoginForm extends Component{
     render(){
         return ( 
             <div className={Style.loginForm}>
-                <Logo />
+                <Logo middle />
                 <TextField
                     id="email"
                     label="Email"
@@ -74,9 +74,7 @@ class LoginForm extends Component{
                     onClick={this.handleSubmit}
                     color="primary"
                 >
-                    <Typography type="button">
-                        Log In
-                    </Typography>
+                    Log In
                 </Button>
             </div>
         )

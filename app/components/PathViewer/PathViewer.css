@@ -1,0 +1,10 @@
+.pathviewer {
+    padding-top: 2rem;
+    padding-left: 5%;
+    padding-right: 5%;
+    transition: all 195ms cubic-bezier(0.4, 0, 0.6, 1) 0ms;
+}
+
+.pathData {
+    padding-left: calc(100% * 2 / 13);
+}

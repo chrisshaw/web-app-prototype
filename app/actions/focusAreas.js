@@ -1,8 +1,14 @@
+import {
+    REQUEST_FOCUS_AREA_INFO,
+    SUCCESS_FOCUS_AREA_INFO,
+    ERROR_FOCUS_AREA_INFO
+} from './pathbuilder/actionTypes'
+
 export const selectFocusArea = (focusArea) => (dispatch) => {
   dispatch(requestFocusAreaInfo());
-  const focusAreaId = focusArea._id.split('/')[1];
+  const focusAreaKey = focusArea.split('/')[1];
 
-  return fetch('/api/path/focus_area_details/' + focusAreaId)
+  return fetch('/api/path/focus_area_details/' + focusAreaKey)
     .then((response) => {
       if (!response.ok) {
         throw new Error('Failed when trying to get focus area details');
@@ -10,7 +16,7 @@ export const selectFocusArea = (focusArea) => (dispatch) => {
       return response.json();
     })
     .then((focusAreaInfo) => {
-      dispatch(successFocusAreaInfo(Object.assign({}, focusArea, focusAreaInfo)));
+      dispatch(successFocusAreaInfo(focusAreaInfo));
     })
     .catch((error) => {
       dispatch(errorFocusAreaInfo(error));
@@ -18,15 +24,15 @@ export const selectFocusArea = (focusArea) => (dispatch) => {
 };
 
 export const requestFocusAreaInfo = () => ({
-  type: 'REQUEST_FOCUS_AREA_INFO',
+  type: REQUEST_FOCUS_AREA_INFO,
 });
 
 export const successFocusAreaInfo = (focusArea) => ({
-  type: 'SUCCESS_FOCUS_AREA_INFO',
+  type: SUCCESS_FOCUS_AREA_INFO,
   focusArea,
 });
 
 export const errorFocusAreaInfo = (error) => ({
-  type: 'ERROR_FOCUS_AREA_INFO',
+  type: ERROR_FOCUS_AREA_INFO,
   error,
 });

@@ -4,16 +4,19 @@ import helper from '../../helper';
 import {connect } from 'react-redux';
 import Paper from 'mui-next/Paper';
 import PathViewer from '../PathViewer/PathViewer';
-import Style from './PathBuilder.css'
+import Style from './Pathbuilder.css'
+import DetailDrawer from '../DetailDrawer/DetailDrawer'
 
-const Loader = () => (
-    <div className="loader-container">
-        <div className="text-center loader"></div>
-    </div>
-)
+import {
+    globalGetFocusAreaLoaderStatus,
+    globalGetRelatedProjectsLoaderStatus,
+    globalGetFocusArea,
+    globalGetRelatedProjects,
+    globalGetPathCount
+} from '../../reducers'
 
 const PathBuilderDrawer = props => (
-    <Paper elevation={3}>     
+    <Paper elevation={3} {...props} >     
         <QueryBuilder />
     </Paper>
 )
@@ -21,42 +24,37 @@ const PathBuilderDrawer = props => (
 class PathBuilder extends Component{
 
     render() {
+        const {
+            isFocusAreaFetching,
+            isRelatedProjectsFetching,
+            currentFocusArea,
+            currentPathRelatedProjects,
+            ...props
+        } = this.props
+
+        const isLoading = isFocusAreaFetching || isRelatedProjectsFetching
+        const openDrawer = isLoading || currentFocusArea !== null || currentPathRelatedProjects !== null
+
         return (
-            <main id="pathbuilder">
-                <PathBuilderDrawer
-                    id="query-area"
-                /> 
-                <Paper id="path-area" className={Style.centered} elevation={0}>
-                    {this.props.searching ? (
-                        <Loader />
-                    ) : (
-                        <PathViewer
-                            falist={this.props.falist}
-                            selectedfa={this.props.selectedfa}
-                            fa={this.props.fa}
-                            username={this.props.username}
-                            paths={this.props.paths}
-                            changed={this.props.changed}
-                        />
-                    )}
-                </Paper>        
+            <main className={Style.pathbuilder}>
+                <PathBuilderDrawer className={Style.queryArea}/> 
+                <PathViewer className={`${Style.pathArea} ${openDrawer && Style.withDetails}`}/>
+                {props.pathCount > 0 && <DetailDrawer className={Style.detailArea} open={openDrawer} loading={isLoading} />}
             </main>
         )
     }
 }
 
-// *** NB: the HOC in validate permissions injects {...props} which include router props and the loggedIn prop
-const mapStateToProps = (store, ownProps) => {
-    return {
-        paths: store.mainState.paths,
-        searching: store.mainState.searching,
-        changed: store.mainState.changed,
-        fa: store.mainState.fa,
-        selectedfa: store.mainState.selectedfa,
-        falist: store.mainState.falist
-    }
-}
+const mapStateToProps = state => ({
+    pathCount: globalGetPathCount(state),
+    currentFocusArea: globalGetFocusArea(state),
+    isFocusAreaInfoFetching: globalGetFocusAreaLoaderStatus(state),
+    currentPathRelatedProjects: globalGetRelatedProjects(state),
+    isRelatedProjectsFetching: globalGetRelatedProjectsLoaderStatus(state)
+})
 
-export default connect(mapStateToProps)(PathBuilder);
+export default connect(
+    mapStateToProps
+)(PathBuilder);
 
 

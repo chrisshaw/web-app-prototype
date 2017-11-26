@@ -140,14 +140,14 @@ module.exports = function(app){
                 res.json({success:true, id: userId, username: username, role: result[0].role, permissions: result[0].permissions, chgPwd: chgPwd});
             }).catch(error => {
                 console.log(Date.now() + " Error (Get permissions from Database):", error);
-                res.json();
+                next(error)
             }) 
         }).catch(error => {
             // can send error to logs?
             console.log(Date.now() + " Error (Login):", error.response.body.errorMessage);
             // send basic success: false
             // send error to client for handling
-            res.json( { success: false } );
+            next(error)
         })
     })
     app.post('/signup' , function(req, res, next){
@@ -189,70 +189,75 @@ module.exports = function(app){
         })
 
     app.get('/api/path/focus_area_details/:id', function(req, res) {
-      const query = `let parents = FIRST(
-                          for c, e, p
-                          in 2 inbound @focusAreaId
-                          focusesOn, hasCourse
-                          return distinct {
-                              course: KEEP(p.vertices[1], '_id', 'name'),
-                              school: p.vertices[2]._id
-                          }
-                      )
-                      
-                      let focusAreas = (
-                          for f, e, p
-                          in 4 inbound @focusAreaId
-                          any alignsTo, focusesOn, hasCourse
-                          filter p.vertices[4] != null
-                              and IS_SAME_COLLECTION('courses', p.vertices[3])
-                              and IS_SAME_COLLECTION('schools', p.vertices[4])
-                              and p.vertices[4]._id == parents.school
-                          return distinct {
-                              // school: p.vertices[4]._id, // useful for debugging, not required in response
-                              course: p.vertices[3].name,
-                              _id: p.vertices[2]._id,
-                              _key: p.vertices[2]._key,
-                              name: p.vertices[2].name
-                          }
-                      )
-                      
-                      let standards = (
-                          for s
-                          in outbound @focusAreaId
-                          alignsTo
-                          filter IS_SAME_COLLECTION('standards', s)
-                              and s != null
-                          return distinct KEEP(s, '_id', '_key')
-                      )
-                      
-                      let projects = (
-                          for p
-                          in 2 any @focusAreaId
-                          alignsTo
-                          filter IS_SAME_COLLECTION('projects', p)
-                              and p != null
-                          return distinct {
-                              _id: p._id,
-                              _key: p._key,
-                              name: p.name,
-                              link: p.link,
-                              drivingQuestion: p.details.drivingQuestion
-                          }
-                      )
-                      
-                      return {
-                          // 'parents': parents, // useful for debugging, not required in response
-                          'focusAreas': focusAreas,
-                          'standards': standards,
-                          'projects': projects
-                      }`;
+        const focusAreaId = `focusAreas/${req.params.id}`
+        console.log(focusAreaId)
+        const query = aql`let parents = FIRST(
+                            for c, e, p
+                            in 2 inbound ${focusAreaId}
+                            focusesOn, hasCourse
+                            return distinct {
+                                course: KEEP(p.vertices[1], '_id', 'name'),
+                                school: p.vertices[2]._id
+                            }
+                        )
+                        
+                        let focusAreas = (
+                            for f, e, p
+                            in 4 inbound ${focusAreaId}
+                            any alignsTo, focusesOn, hasCourse
+                            filter p.vertices[4] != null
+                                and IS_SAME_COLLECTION('courses', p.vertices[3])
+                                and IS_SAME_COLLECTION('schools', p.vertices[4])
+                                and p.vertices[4]._id == parents.school
+                            return distinct {
+                                // school: p.vertices[4]._id, // useful for debugging, not required in response
+                                course: p.vertices[3].name,
+                                _id: p.vertices[2]._id,
+                                _key: p.vertices[2]._key,
+                                name: p.vertices[2].name
+                            }
+                        )
+                        
+                        let standards = (
+                            for s
+                            in outbound ${focusAreaId}
+                            alignsTo
+                            filter IS_SAME_COLLECTION('standards', s)
+                                and s != null
+                            return distinct KEEP(s, '_id', '_key')
+                        )
+                        
+                        let projects = (
+                            for p
+                            in 2 any ${focusAreaId}
+                            alignsTo
+                            filter IS_SAME_COLLECTION('projects', p)
+                                and p != null
+                            return distinct {
+                                _id: p._id,
+                                _key: p._key,
+                                name: p.name,
+                                link: p.link,
+                                drivingQuestion: p.details.drivingQuestion
+                            }
+                        )
 
-      db.query(query, { focusAreaId: `focusAreas/${req.params.id}` })
-        .then((cursor) => {
-          res.send(cursor._result[0]);
+                        let focusArea = DOCUMENT(${focusAreaId})
+
+                        return {
+                            'focusArea': focusArea,
+                            'focusAreas': focusAreas,
+                            'standards': standards,
+                            'projects': projects
+                        }`;
+
+      db.query(query)
+        .then((cursor) => cursor.all())
+        .then((result) => {
+          res.send(result);
         })
-        .catch(() => {
-          res.sendStatus(500);
+        .catch((error) => {
+          next(error)
         });
     });
 
@@ -272,11 +277,9 @@ module.exports = function(app){
       });
   });
     
-     app.post('/api/path/project', function (req, res){
+     app.post('/api/path/project', (req, res, next) => {
         validateUser(req, res, "buildPath")
         .then( response => {
-            // intialise
-            // some pre-processing
 
             const constructQueryParams = queryObject => {
                 console.log(queryObject)
@@ -302,15 +305,13 @@ module.exports = function(app){
             );
             const reqBody = req.body;
             const userKey = response.userkey;
-            const queryObject = {
-                userKey: userKey
-            };
+            const queryObject = { userKey }
 
             if ( reqBody.courses && reqBody.courses.length > 0 ) queryObject.courses = reqBody.courses.map( course => course._key );
-            if ( reqBody.grades && reqBody.grades.length > 0 ) queryObject.grades = reqBody.grades.map( grade => grade.name.toString().toLowerCase() );
-            if ( reqBody.subjects && reqBody.subjects.length > 0 ) queryObject.subjects = reqBody.subjects.map( subject => subject.name.toLowerCase() );
-            if ( reqBody.standards && reqBody.standards.length > 0 ) queryObject.standards = reqBody.standards.map( standard => standard.name.toLowerCase() );
-            if ( reqBody.topics && reqBody.topics.length > 0 ) queryObject.topics = reqBody.topics.map( topic => topic.name.toLowerCase() );
+            if ( reqBody.grades && reqBody.grades.length > 0 ) queryObject.grades = reqBody.grades.map( grade => grade.toString().toLowerCase() );
+            if ( reqBody.subjects && reqBody.subjects.length > 0 ) queryObject.subjects = reqBody.subjects.map( subject => subject.toLowerCase() );
+            if ( reqBody.standards && reqBody.standards.length > 0 ) queryObject.standards = reqBody.standards.map( standard => standard.toLowerCase() );
+            if ( reqBody.topics && reqBody.topics.length > 0 ) queryObject.topics = reqBody.topics.map( topic => topic.toLowerCase() );
             Object.keys(queryObject).forEach( key => console.log(key, ':', queryObject[key]));
 
             console.log('Constructing query string');
@@ -319,430 +320,22 @@ module.exports = function(app){
             const pathBuilderService = db.route('path');
             console.log('Query string:', encodedPath);
 
-            pathBuilderService.get(encodedPath)
-            .then( response => {
-                res
-                    .status(200)
-                    .json([
-                      {
-                        "projectPath": [
-                          {
-                            "name": "ad campaigns",
-                            "fa": [
-                              {
-                                "_id": "focusAreas/1098756",
-                                "name": "Angle Relationships",
-                                "relevance": "Supporting Concept"
-                              },
-                              {
-                                "_id": "focusAreas/1098780",
-                                "name": "Proportional Relationships",
-                                "relevance": "Relevant"
-                              },
-                              {
-                                "_id": "focusAreas/863138",
-                                "name": "Proportional Relationships",
-                                "relevance": "Highly Relevant"
-                              },
-                              {
-                                "_id": "focusAreas/1098789",
-                                "name": "Linear Relationships",
-                                "relevance": "Relevant"
-                              },
-                              {
-                                "_id": "focusAreas/870420",
-                                "name": "Linear Relationships",
-                                "relevance": "Relevant"
-                              }
-                            ]
-                          }
-                        ],
-                        "studentsOnPath": [
-                          {
-                            "_id": "auth_users/15928421",
-                            "name": "Demo Student3",
-                            "masteredFocusAreas": [
-                              {
-                                "_id": "focusAreas/1038575",
-                                "lastUpdated": 1510121133208
-                              }
-                            ]
-                          }
-                        ]
-                      },
-                      {
-                        "projectPath": [
-                          {
-                            "name": "activism",
-                            "fa": [
-                              {
-                                "_id": "focusAreas/863297",
-                                "name": "Angle Relationships"
-                              },
-                              {
-                                "_id": "focusAreas/863138",
-                                "name": "Proportional Relationships"
-                              },
-                              {
-                                "_id": "focusAreas/1098780",
-                                "name": "Proportional Relationships"
-                              },
-                              {
-                                "_id": "focusAreas/870420",
-                                "name": "Linear Relationships"
-                              },
-                              {
-                                "_id": "focusAreas/1098789",
-                                "name": "Linear Relationships"
-                              },
-                              {
-                                "_id": "focusAreas/870431",
-                                "name": "Interpreting Expressions"
-                              },
-                              {
-                                "_id": "focusAreas/862716",
-                                "name": "Sequences as Functions"
-                              },
-                              {
-                                "_id": "focusAreas/862699",
-                                "name": "Linear, Quadratic, Exponential Review"
-                              },
-                              {
-                                "_id": "focusAreas/862691",
-                                "name": "Linear Equations in Two Variables"
-                              },
-                              {
-                                "_id": "focusAreas/862673",
-                                "name": "Exponential Functions"
-                              },
-                              {
-                                "_id": "focusAreas/1085493",
-                                "name": "Linear, Quadratic, Exponential Review"
-                              },
-                              {
-                                "_id": "focusAreas/1046477",
-                                "name": "Sequences as Functions"
-                              },
-                              {
-                                "_id": "focusAreas/1046471",
-                                "name": "Linear Equations in Two Variables"
-                              },
-                              {
-                                "_id": "focusAreas/1046461",
-                                "name": "Exponential Functions"
-                              }
-                            ]
-                          },
-                          {
-                            "name": "advertising",
-                            "fa": [
-                              {
-                                "_id": "focusAreas/862699",
-                                "name": "Linear, Quadratic, Exponential Review"
-                              },
-                              {
-                                "_id": "focusAreas/862691",
-                                "name": "Linear Equations in Two Variables"
-                              },
-                              {
-                                "_id": "focusAreas/862673",
-                                "name": "Exponential Functions"
-                              },
-                              {
-                                "_id": "focusAreas/862651",
-                                "name": "Quadratics in Multiple Representations"
-                              },
-                              {
-                                "_id": "focusAreas/1093556",
-                                "name": "Quadratics in Multiple Representations"
-                              },
-                              {
-                                "_id": "focusAreas/1085493",
-                                "name": "Linear, Quadratic, Exponential Review"
-                              },
-                              {
-                                "_id": "focusAreas/1046471",
-                                "name": "Linear Equations in Two Variables"
-                              },
-                              {
-                                "_id": "focusAreas/1046461",
-                                "name": "Exponential Functions"
-                              },
-                              {
-                                "_id": "focusAreas/863251",
-                                "name": "One-variable Equations & Inequalities"
-                              },
-                              {
-                                "_id": "focusAreas/862755",
-                                "name": "Rational & Radical Equations"
-                              },
-                              {
-                                "_id": "focusAreas/862629",
-                                "name": "Solve Quadratic Equations"
-                              },
-                              {
-                                "_id": "focusAreas/1093554",
-                                "name": "Solve Quadratic Equations"
-                              },
-                              {
-                                "_id": "focusAreas/1085515",
-                                "name": "Rational & Radical Equations"
-                              },
-                              {
-                                "_id": "focusAreas/1046488",
-                                "name": "One-variable Equations & Inequalities"
-                              },
-                              {
-                                "_id": "focusAreas/870431",
-                                "name": "Interpreting Expressions"
-                              },
-                              {
-                                "_id": "focusAreas/863270",
-                                "name": "Arithmetic & Geometric Sequences"
-                              },
-                              {
-                                "_id": "focusAreas/862699",
-                                "name": "Linear, Quadratic, Exponential Review"
-                              },
-                              {
-                                "_id": "focusAreas/862683",
-                                "name": "Exponential Functions 2"
-                              },
-                              {
-                                "_id": "focusAreas/862674",
-                                "name": "Linear Equations in Two Variables 2"
-                              },
-                              {
-                                "_id": "focusAreas/862651",
-                                "name": "Quadratics in Multiple Representations"
-                              },
-                              {
-                                "_id": "focusAreas/862627",
-                                "name": "Quadratic Expressions"
-                              },
-                              {
-                                "_id": "focusAreas/1093556",
-                                "name": "Quadratics in Multiple Representations"
-                              },
-                              {
-                                "_id": "focusAreas/1093552",
-                                "name": "Quadratic Expressions"
-                              },
-                              {
-                                "_id": "focusAreas/1085493",
-                                "name": "Linear, Quadratic, Exponential Review"
-                              },
-                              {
-                                "_id": "focusAreas/1046492",
-                                "name": "Arithmetic & Geometric Sequences"
-                              },
-                              {
-                                "_id": "focusAreas/1046465",
-                                "name": "Exponential Functions 2"
-                              },
-                              {
-                                "_id": "focusAreas/1046463",
-                                "name": "Linear Equations in Two Variables 2"
-                              },
-                              {
-                                "_id": "focusAreas/862880",
-                                "name": "Univariate Data"
-                              },
-                              {
-                                "_id": "focusAreas/1046479",
-                                "name": "Univariate Data"
-                              },
-                              {
-                                "_id": "focusAreas/862880",
-                                "name": "Univariate Data"
-                              },
-                              {
-                                "_id": "focusAreas/1046479",
-                                "name": "Univariate Data"
-                              },
-                              {
-                                "_id": "focusAreas/862880",
-                                "name": "Univariate Data"
-                              },
-                              {
-                                "_id": "focusAreas/1046479",
-                                "name": "Univariate Data"
-                              }
-                            ]
-                          }
-                        ],
-                        "studentsOnPath": [
-                          {
-                            "_id": "auth_users/15928380",
-                            "name": "Demo Student2",
-                            "masteredFocusAreas": [
-                              {
-                                "_id": "focusAreas/863297",
-                                "lastUpdated": 1510121133208
-                              }
-                            ]
-                          }
-                        ]
-                      },
-                      {
-                        "projectPath": [
-                          {
-                            "name": "activism",
-                            "fa": [
-                              {
-                                "_id": "focusAreas/870422",
-                                "name": "Congruence"
-                              },
-                              {
-                                "_id": "focusAreas/862672",
-                                "name": "Rigid Motions"
-                              },
-                              {
-                                "_id": "focusAreas/1046494",
-                                "name": "Congruence"
-                              },
-                              {
-                                "_id": "focusAreas/1046459",
-                                "name": "Rigid Motions"
-                              },
-                              {
-                                "_id": "focusAreas/863248",
-                                "name": "Describing Univariate Data"
-                              },
-                              {
-                                "_id": "focusAreas/862880",
-                                "name": "Univariate Data"
-                              },
-                              {
-                                "_id": "focusAreas/1046479",
-                                "name": "Univariate Data"
-                              }
-                            ]
-                          },
-                          {
-                            "name": "advertising",
-                            "fa": [
-                              {
-                                "_id": "focusAreas/862672",
-                                "name": "Rigid Motions"
-                              },
-                              {
-                                "_id": "focusAreas/1046459",
-                                "name": "Rigid Motions"
-                              },
-                              {
-                                "_id": "focusAreas/862672",
-                                "name": "Rigid Motions"
-                              },
-                              {
-                                "_id": "focusAreas/1046459",
-                                "name": "Rigid Motions"
-                              },
-                              {
-                                "_id": "focusAreas/863292",
-                                "name": "Similarity"
-                              },
-                              {
-                                "_id": "focusAreas/1101693",
-                                "name": "Similarity"
-                              },
-                              {
-                                "_id": "focusAreas/863292",
-                                "name": "Similarity"
-                              },
-                              {
-                                "_id": "focusAreas/1101693",
-                                "name": "Similarity"
-                              },
-                              {
-                                "_id": "focusAreas/870422",
-                                "name": "Congruence"
-                              },
-                              {
-                                "_id": "focusAreas/1046494",
-                                "name": "Congruence"
-                              },
-                              {
-                                "_id": "focusAreas/870422",
-                                "name": "Congruence"
-                              },
-                              {
-                                "_id": "focusAreas/862672",
-                                "name": "Rigid Motions"
-                              },
-                              {
-                                "_id": "focusAreas/1046494",
-                                "name": "Congruence"
-                              },
-                              {
-                                "_id": "focusAreas/1046459",
-                                "name": "Rigid Motions"
-                              },
-                              {
-                                "_id": "focusAreas/862880",
-                                "name": "Univariate Data"
-                              },
-                              {
-                                "_id": "focusAreas/1046479",
-                                "name": "Univariate Data"
-                              },
-                              {
-                                "_id": "focusAreas/863248",
-                                "name": "Describing Univariate Data"
-                              },
-                              {
-                                "_id": "focusAreas/862880",
-                                "name": "Univariate Data"
-                              },
-                              {
-                                "_id": "focusAreas/1046479",
-                                "name": "Univariate Data"
-                              },
-                              {
-                                "_id": "focusAreas/863248",
-                                "name": "Describing Univariate Data"
-                              },
-                              {
-                                "_id": "focusAreas/862880",
-                                "name": "Univariate Data"
-                              },
-                              {
-                                "_id": "focusAreas/1046479",
-                                "name": "Univariate Data"
-                              }
-                            ]
-                          }
-                        ],
-                        "studentsOnPath": [
-                          {
-                            "_id": "auth_users/330031",
-                            "name": "Demo Student1",
-                            "masteredFocusAreas": [
-                              {
-                                "_id": "focusAreas/1046466",
-                                "lastUpdated": 1510121133208
-                              },
-                              {
-                                "_id": "focusAreas/862672",
-                                "lastUpdated": 1510121133208
-                              }
-                            ]
-                          }
-                        ]
-                      }
-                    ])
-            })
-            .catch( error => {
-                console.log(Date.now() + " Error (Getting paths from Database):", '\n', error );
-                res.json();
-            })
+            pathBuilderService
+                .get(encodedPath)
+                .then( response => {
+                    res.status(200).json(response.body)
+                })
+                .catch( error => {
+                    console.log(Date.now() + " Error (Getting paths from Database):", '\n', error );
+                    next(error);
+                })
 
 
         })
-        .catch((error) => {
+        .catch( error => {
             console.log(Date.now() + " Authentication Error");
             console.log(error);
-            res.json({success: false, error: "No Permissions to View Paths"})
+            next(error)
         });
     });
 

@@ -11,9 +11,9 @@ import { connect } from 'react-redux';
 class NavBar extends Component {
     render(){
         return (
-            <AppBar position="static" className={Style.appbar}>
+            <AppBar position="static" color='default'>
                 <Toolbar disableGutters className={`${Style.navbar} ${Style.justifyCenter}`}>
-                    <Logo />
+                    <Logo upper />
                 </Toolbar>
                 <Toolbar className={`${Style.navbar} ${Style.justifySpread}`}>
                     <NavItems

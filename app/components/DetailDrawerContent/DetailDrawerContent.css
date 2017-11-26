@@ -1,0 +1,31 @@
+.detailDrawerContent {
+    padding: 3rem 8%;
+    /* position: sticky;
+    top: 2rem; */
+}
+
+.detailDrawerHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.close {
+    align-self: flex-start;
+}
+
+.detailSection {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+}
+
+.detailLineItem {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.relatedProject {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+}

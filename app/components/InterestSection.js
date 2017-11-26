@@ -63,15 +63,13 @@ class InterestSection extends PureComponent {
       passions: 'Personal Passions',
       humor: 'Things That Make You Laugh',
     };
-    this.handleInterestInputChange = this.handleInterestInputChange.bind(this);
-    this.handleInterestInputKeyDown = this.handleInterestInputKeyDown.bind(this);
   }
 
-  handleInterestInputChange(event, newValue) {
+  handleInterestInputChange = (event, newValue) => {
     this.setState({ interestInputVal: newValue });
   }
 
-  handleInterestInputKeyDown(event) {
+  handleInterestInputKeyDown = (event) => {
     const { key } = event;
     if (key === ENTER_KEY || key === TAB_KEY || key === COMMA_KEY) {
       event.preventDefault();

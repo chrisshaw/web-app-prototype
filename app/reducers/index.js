@@ -19,55 +19,23 @@ import queryBuilderReducer, {
     getSelectedTopics,
     getChosenStudents
 } from './querybuilder'
-
-const mainInitialState = {
-    a: 'b'
-}
-
-const statusInitialState = {
-    success: false,
-    successMsg: ""
-}
-            
-//  The below are required and map to the components dispatcher
-const mainReducer = (state = mainInitialState, action) => {
-    
-    switch(action.type){    
-        case 'BUILD_VIEW':
-            return Object.assign({},state, {pathbuilderview: action.pathbuilderview}); 
-        case 'ADD_FA_TO_PATH':
-            return Object.assign({},state, {fakey: action.fakey}); 
-        case 'GET_FA':
-            return Object.assign({},state, {fa: action.fa}); 
-        case 'SELECTED_FA':
-            return Object.assign({},state, {selectedfa: action.selectedfa});
-        case 'REQUEST_FOCUS_AREA_INFO':
-          return Object.assign({}, state, { isFocusAreaInfoFetching: true });
-        case 'SUCCESS_FOCUS_AREA_INFO':
-          return Object.assign({}, state, {
-            isFocusAreaInfoFetching: false,
-            currentFocusArea: action.focusArea,
-          });
-        case 'ERROR_FOCUS_AREA_INFO':
-          return Object.assign({}, state, {
-            isFocusAreaInfoFetching: false,
-            focusAreaInfoError: action.error,
-          });
-        case 'REQUEST_PATH_RELATED_PROJECTS':
-          return Object.assign({}, state, { isRelatedProjectsFetching: true });
-        case 'SUCCESS_PATH_RELATED_PROJECTS':
-          return Object.assign({}, state, {
-            isRelatedProjectsFetching: false,
-            currentPathRelatedProjects: action.relatedProjects,
-          });
-        case 'ERROR_PATH_RELATED_PROJECTS':
-          return Object.assign({}, state, {
-            isRelatedProjectsFetching: false,
-            relatedProjectsError: action.error,
-        });
-    };        
-    return state;
-}
+import pathViewerReducer, { 
+    getLoaderState,
+    getPathCount,
+    getCurrentPath,
+    getStudentGroups,
+    getCurrentStudentGroup,
+    getPathIndex,
+    getFocusAreaLoaderStatus,
+    getRelatedProjectsLoaderStatus,
+    getFocusArea,
+    getRelatedProjects,
+    getPaths,
+    getDetailType,
+    getPotentialPeerTeachers,
+    getTopic,
+    getDetailFocusArea
+ } from './pathviewer'
 
 export const globalGetPotentialGrades = state => getPotentialGrades(state.queryBuilder)
 export const globalGetPotentialCourses = state => getPotentialCourses(state.queryBuilder)
@@ -80,21 +48,25 @@ export const globalGetSelectedTopics = state => getSelectedTopics(state.queryBui
 export const globalGetSelectedSubjects = state => getSelectedSubjects(state.queryBuilder)
 export const globalGetSelectedStandards = state => getSelectedStandards(state.queryBuilder)
 export const globalGetChosenStudents = state => getChosenStudents(state.queryBuilder)
-
-const appStatusReducer = (state=statusInitialState, action) => {
-    switch(action.type){  
-        case 'SET_SUCCESS_STATUS':
-            return Object.assign({},state, {success: action.success, successMsg: action.successMsg});  
-         case 'SET_ERROR_STATUS':
-            return Object.assign({},state, {error: action.error, errorMsg: action.errorMsg});  
-    };      
-    return state;
-}
+export const globalGetLoaderState = state => getLoaderState(state.pathViewer)
+export const globalGetPathCount = state => getPathCount(state.pathViewer)
+export const globalGetPathIndex = state => getPathIndex(state.pathViewer)
+export const globalGetPaths = state => getPaths(state.pathViewer)
+export const globalGetCurrentPath = state => getCurrentPath(state.pathViewer)
+export const globalGetStudentGroups = state => getStudentGroups(state.pathViewer)
+export const globalGetCurrentStudentGroup = state => getCurrentStudentGroup(state.pathViewer)
+export const globalGetFocusAreaLoaderStatus = state => getFocusAreaLoaderStatus(state.pathViewer)
+export const globalGetRelatedProjectsLoaderStatus = state => getRelatedProjectsLoaderStatus(state.pathViewer)
+export const globalGetFocusArea = state => getFocusArea(state.pathViewer)
+export const globalGetDetailFocusArea =state => getDetailFocusArea(state.pathViewer)
+export const globalGetTopic = state => getTopic(state.pathViewer)
+export const globalGetRelatedProjects = state => getRelatedProjects(state.pathViewer)
+export const globalGetDetailType = state => getDetailType(state.pathViewer)
+export const globalGetPotentialPeerTeachers = state => getPotentialPeerTeachers(state.pathViewer)
 
 const appReducer = combineReducers({
-    mainState : mainReducer,
+    pathViewer: pathViewerReducer,
     authState : authReducer,
-    appState: appStatusReducer,
     studentsTab: studentsTabReducer,
     teachersAndAdmins: teachersAndAdminsReducer,
     flashMessage: flashMessageReducer,

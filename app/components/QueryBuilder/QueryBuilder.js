@@ -26,7 +26,8 @@ import {
     updateCourseInQueryBuilder,
     updateTopicInQueryBuilder,
     updateSubjectInQueryBuilder,
-    updateStandardInQueryBuilder
+    updateStandardInQueryBuilder,
+    tryFetchPathsWithQueryBuilder
  } from '../../actions/pathbuilder/querybuilderActionCreators'
 
 class QueryBuilder extends Component{
@@ -36,7 +37,14 @@ class QueryBuilder extends Component{
     }
 
     handleSubmit = () => {
-        console.log('I submitted')
+        const queryObject = {
+            grades: this.props.selectedGrades,
+            courses: this.props.selectedCourses,
+            topics: this.props.selectedTopics,
+            subjects: this.props.selectedSubjects,
+            standards: this.props.selectedStandards
+        }
+        this.props.tryFetchPathsWithQueryBuilder(queryObject)
     }
 
     render(){
@@ -54,7 +62,7 @@ class QueryBuilder extends Component{
                 />
                 <InputSection
                     header="enrolled in courses"
-                    placeholder="Biology, English 10, U.S. History..."
+                    placeholder="Biology, English 10..."
                     value={this.props.selectedCourses}
                     data={this.props.potentialCourses}
                     changeHandler={this.props.updateCourseInQueryBuilder}
@@ -63,21 +71,21 @@ class QueryBuilder extends Component{
                 />
                 <InputSection
                     header="will explore projects about"
-                    placeholder="social justice, genetics, investing..."
+                    placeholder="social justice, genetics..."
                     value={this.props.selectedTopics}
                     data={this.props.potentialTopics}     
                     changeHandler={this.props.updateTopicInQueryBuilder}             
                 />
                 <InputSection
                     header="while learning in subjects"
-                    placeholder="math, science, english..."
+                    placeholder="math, science..."
                     value={this.props.selectedSubjects}
                     data={this.props.potentialSubjects}
                     changeHandler={this.props.updateSubjectInQueryBuilder}
                 />
                 <InputSection
                     header="that aligns to standards"
-                    placeholder="CCSS-ELA, CCSS-Math, NGSS..."
+                    placeholder="CCSS-Math, NGSS..."
                     value={this.props.selectedStandards}
                     data={this.props.potentialStandards}
                     changeHandler={this.props.updateStandardInQueryBuilder}
@@ -130,5 +138,7 @@ export default connect(
         updateCourseInQueryBuilder,
         updateTopicInQueryBuilder,
         updateSubjectInQueryBuilder,
-        updateStandardInQueryBuilder
-    })(QueryBuilder);
+        updateStandardInQueryBuilder,
+        tryFetchPathsWithQueryBuilder
+    }
+)(QueryBuilder);
