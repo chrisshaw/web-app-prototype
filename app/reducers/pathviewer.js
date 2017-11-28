@@ -38,8 +38,9 @@ export const loaderReducer = (state = loaderInitialState, action) => {
 }
             
 const pathviewerInitialState = {
-    all: [],
-    current: 0,
+    orderedPathIds: [],
+    entities: {},
+    currentPathIndex: 0,
     focusAreaOptions: []
 }
 
@@ -47,10 +48,15 @@ export const pathViewerReducer = (state = pathviewerInitialState, action) => {
     
     switch(action.type){    
         case QUERYBUILDER_SHOW_PATHS:
-            return { ...state, all: action.payload.paths }
+            return {
+                ...state,
+                orderedPathIds: action.payload.paths.result,
+                entities: action.payload.paths.entities
+            }
         case PATHVIEWER_CHANGE_CURRENT_PATH:
-            return { ...state, current: action.payload.index }
+            return { ...state, currentPathIndex: action.payload.index }
         case PATHVIEWER_MOVE_UP_FOCUS_AREA:
+            
         case PATHVIEWER_MOVE_DOWN_FOCUS_AREA:
         case PATHVIEWER_REMOVE_FOCUS_AREA:
         case PATHVIEWER_FETCH_FOCUS_AREA_OPTIONS:
@@ -167,18 +173,32 @@ const daysSince = lastUpdated => {
 
 // Selectors
 export const getLoaderState = state => state.pathsLoading
-export const getPaths = state => state.paths.all
-export const getPathCount = state => getPaths(state).length
-export const getPathIndex = state => state.paths.current
-export const getCurrentPath = state => getPaths(state)[getPathIndex(state)].projectPath
+
+export const getPathCollection = state => state.paths.entities.paths
+export const getPathIds = state => state.paths.orderedPathIds
+export const getPathById = (state, id) => id && getPathCollection(state)[id]
+export const getPaths = state => getPathIds(state).map( pathId => getPathById(state, pathId) )
+export const getPathCount = state => getPathIds(state).length
+export const getPathIndex = state => state.paths.currentPathIndex
+export const getCurrentPath = state => {
+    const currentPathId = getPathIds(state)[getPathIndex(state)]
+    return getPathById(state, currentPathId)
+}
 export const getStudentGroups = state => getPaths(state).map( path => path.studentsOnPath.map( student => student.name ) )
-export const getCurrentStudentGroup = state => getStudentGroups(state)[getPathIndex(state)]
+export const getCurrentStudentGroup = state => getCurrentPath(state) && getCurrentPath(state).studentsOnPath.map( student => student.name )
+export const getCurrentProjects = state => getCurrentPath(state) && getCurrentPath(state).projectsOnPath
+export const getProjectCollection = state => state.paths.entities.projects
+export const getProjectById = (state, id) => getProjectCollection(state)[id]
+export const getPathProjects = state => getCurrentPath(state).pathProject.map( projectId => getProjectById(state, id) )
+
+export const getFocusAreaCollection = state => state.paths.entities.focusAreas
+export const getFocusAreaById = (state, id) => getFocusAreaCollection(state)[id]
 
 export const getDetailType = state => state.detailDrawer.detailType
 export const getFocusAreaLoaderStatus = state => state.detailDrawer.isFocusAreaInfoFetching
 export const getRelatedProjectsLoaderStatus = state => state.detailDrawer.isRelatedProjectsFetching
 export const getFocusArea = state => state.detailDrawer.currentFocusArea
-export const getDetailFocusArea = state => getFocusArea(state).focusArea
+export const getDetailFocusArea = state => getFocusArea(state) && getFocusArea(state).focusArea
 export const getTopic = state => state.detailDrawer.currentTopic
 export const getRelatedProjects = state => state.detailDrawer.currentPathRelatedProjects
 export const getPotentialPeerTeachers = state => findPotentialTeachers(getFocusArea(state), getPaths(state))

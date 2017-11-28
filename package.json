@@ -36,6 +36,7 @@
     "mongoose": "^4.9.1",
     "mui-next": "npm:material-ui@next",
     "nodemailer": "^4.0.1",
+    "normalizr": "^3.2.4",
     "prod": "^1.0.1",
     "prop-types": "^15.5.10",
     "react": "^15.4.2",

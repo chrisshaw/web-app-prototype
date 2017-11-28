@@ -34,7 +34,10 @@ import pathViewerReducer, {
     getDetailType,
     getPotentialPeerTeachers,
     getTopic,
-    getDetailFocusArea
+    getDetailFocusArea,
+    getProjectById,
+    getCurrentProjects,
+    getFocusAreaById
  } from './pathviewer'
 
 export const globalGetPotentialGrades = state => getPotentialGrades(state.queryBuilder)
@@ -63,6 +66,9 @@ export const globalGetTopic = state => getTopic(state.pathViewer)
 export const globalGetRelatedProjects = state => getRelatedProjects(state.pathViewer)
 export const globalGetDetailType = state => getDetailType(state.pathViewer)
 export const globalGetPotentialPeerTeachers = state => getPotentialPeerTeachers(state.pathViewer)
+export const globalGetProjectById = (state, id) => getProjectById(state.pathViewer, id)
+export const globalGetCurrentProjects = state => getCurrentProjects(state.pathViewer)
+export const globalGetFocusAreaById = (state, id) => getFocusAreaById(state.pathViewer, id)
 
 const appReducer = combineReducers({
     pathViewer: pathViewerReducer,

@@ -5,6 +5,9 @@ var path = require('path');
 var nodemailer = require("nodemailer");
 var fs = require('fs');
 const config = require('./dbconfig.js')[process.env.DB_MODE];
+const normalizr = require('normalizr')
+const normalize = normalizr.normalize
+const schema = require('../schemas/schemas.js')
 
 module.exports = function(app){
     const db = arangojs(config.dbHostPort);
@@ -302,7 +305,8 @@ module.exports = function(app){
                 "The request body is",
                 "\n",
                 req.body
-            );
+            )
+
             const reqBody = req.body;
             const userKey = response.userkey;
             const queryObject = { userKey }
@@ -323,7 +327,7 @@ module.exports = function(app){
             pathBuilderService
                 .get(encodedPath)
                 .then( response => {
-                    res.status(200).json(response.body)
+                    res.status(200).json(normalize(response.body, schema))
                 })
                 .catch( error => {
                     console.log(Date.now() + " Error (Getting paths from Database):", '\n', error );
@@ -338,63 +342,6 @@ module.exports = function(app){
             next(error)
         });
     });
-
-    function sendToSummitEmail(email, filePath) {
-        // this part creates a reusable transporter using SMTP of gmail
-        return new Promise((resolve, reject) => {
-            var emailAccountPassword = process.env.TEAM_EMAIL || 'C0ffeeCreamer34';
-            var transporter = nodemailer.createTransport({
-                service: 'gmail',
-                host: 'smtp.gmail.com',
-                port: 465,
-                secure: true, // use SSL
-                auth: {
-                    user: 'nerdzquiz@gmail.com',
-                    pass:  emailAccountPassword ///to be removed and changed
-                }
-            });
-
-            transporter.verify(function(error, success) {
-                if (error) {
-                    console.log(error);
-                    reject(error);
-                } else {
-                    console.log('Server is ready to take our messages');
-                }
-            });
-            // var server = process.env.EMAIL_FROM_SERVER || "http://localhost:8080"
-            // var link = server + "/forgot/"; //API TO RESET PASSWORD
-            var text = 'You are receiving this email because you are a Sidekick Admin responsible for uploading the attached data into Summit./n The Sidekick Team';
-            var html = '<br><div style="text-align: right; height:30; width:100"><img src="cid:unique@sidekick" height="42" width="42" alt="Sidekick"/></div><p>You are receiving this email because you are a Sidekick Admin responsible for uploading the attached data into Summit.</p><br><h4>The Sidekick Team</h4>';
-            // var html = '<br><br><p>You are receiving this email because you are a Sidekick Admin responsible for uploading the attached data into Summit.</p><br><h4>The Sidekick Team</h4>';
-    //         html: 'Embedded image: <img src="cid:unique@kreata.ee"/>',
-        // attachments: [
-            var imgPath = __dirname + '/../public/assets/img/sidekick.png';
-            var mailOptions = {
-                from: '" Sidekick Education " <nerdzquiz@gmail.com>',
-                to: email,
-                subject: 'Send to Summit',
-                text: text,
-                html: html,
-                attachments: [{
-                    path: filePath
-                },
-                {
-                    filename: 'sidekick.png',
-                    path:  imgPath,
-                    cid: 'unique@sidekick' //same cid value as in the html img src
-                }]
-            };
-            //send the email
-            transporter.sendMail(mailOptions, function(error, info) {
-                if (error) {
-                    console.log(error)
-                    reject(error)
-                }
-                resolve(filePath)
-            })
-        })
-    }
 
     app.get('/api/roles/all', function(req, res){
         // get roles from database
