@@ -39,31 +39,107 @@ export const loaderReducer = (state = loaderInitialState, action) => {
             
 const pathviewerInitialState = {
     orderedPathIds: [],
-    entities: {},
     currentPathIndex: 0,
-    focusAreaOptions: []
 }
 
-export const pathViewerReducer = (state = pathviewerInitialState, action) => {
-    
+export const pathListReducer = (state = pathviewerInitialState, action) => {
     switch(action.type){    
         case QUERYBUILDER_SHOW_PATHS:
             return {
                 ...state,
                 orderedPathIds: action.payload.paths.result,
-                entities: action.payload.paths.entities
+                // entities: action.payload.paths.entities
             }
         case PATHVIEWER_CHANGE_CURRENT_PATH:
             return { ...state, currentPathIndex: action.payload.index }
-        case PATHVIEWER_MOVE_UP_FOCUS_AREA:
-            
-        case PATHVIEWER_MOVE_DOWN_FOCUS_AREA:
+        default:
+            return state
+    }
+}
+
+const projectInitialState = {}
+
+export const projectReducer = (state = projectInitialState, action) => {
+    switch (action.type) {
+        case QUERYBUILDER_SHOW_PATHS:
+            return action.payload.paths.entities.projects
         case PATHVIEWER_REMOVE_FOCUS_AREA:
+            return {
+                ...state,
+                [action.payload.projectId]: {
+                    name: state[action.payload.projectId]['name'],
+                    fa: state[action.payload.projectId]['fa'].filter( (focusAreaId, i) => i !== action.payload.focusAreaIndex )
+                }
+            }
+        case PATHVIEWER_MOVE_UP_FOCUS_AREA:
+            const upNewList = state[action.payload.projectId]['fa'].slice()
+            const upFocusAreaId = upNewList.splice(action.payload.focusAreaIndex, 1)
+            upNewList.splice(action.payload.focusAreaIndex - 1, 0, upFocusAreaId)
+            return {
+                ...state,
+                [action.payload.projectId]: {
+                    name: state[action.payload.projectId]['name'],
+                    fa: upNewList
+                }
+            }
+        case PATHVIEWER_MOVE_DOWN_FOCUS_AREA:
+            const downNewList = state[action.payload.projectId]['fa'].slice()
+            const downFocusAreaId = downNewList.splice(action.payload.focusAreaIndex, 1)
+            downNewList.splice(action.payload.focusAreaIndex + 1, 0, downFocusAreaId)
+            return {
+                ...state,
+                [action.payload.projectId]: {
+                    name: state[action.payload.projectId]['name'],
+                    fa: downNewList
+                }
+            }        
+        case PATHVIEWER_ADD_FOCUS_AREA:
+        default:
+            return state
+    }
+
+}
+
+const pathsInitialState = {}
+
+const pathReducer = (state = pathsInitialState, action) => {
+    switch (action.type) {
+        case QUERYBUILDER_SHOW_PATHS:
+            return action.payload.paths.entities.paths
+        default:
+            return state
+    }
+}
+
+const focusAreaInitialState = {}
+
+const focusAreaReducer = (state = focusAreaInitialState, action) => {
+    switch (action.type) {
+        case QUERYBUILDER_SHOW_PATHS:
+            return action.payload.paths.entities.focusAreas
+        default:
+            return state
+    }
+}
+
+const entityReducer = combineReducers({
+    projects: projectReducer,
+    paths: pathReducer,
+    focusAreas: focusAreaReducer
+})
+
+const pathViewerReducer = combineReducers({
+    paths: pathListReducer,
+    entities: entityReducer,
+})
+
+const optionsInitialState = []
+
+const optionsReducer = (state = optionsInitialState, action) => {
+    switch (action.type) {
         case PATHVIEWER_FETCH_FOCUS_AREA_OPTIONS:
         case PATHVIEWER_LOAD_FOCUS_AREA_OPTIONS:
         case PATHVIEWER_FETCH_FOCUS_AREA_OPTIONS_FAILED:
-        case PATHVIEWER_ADD_FOCUS_AREA:
-        case PATHVIEWER_INSERT_FOCUS_AREA:
         default:
             return state
     }
@@ -135,8 +211,9 @@ export const detailReducer = (state = detailInitialState, action) => {
 
 export default combineReducers({
     pathsLoading: loaderReducer,
-    paths: pathViewerReducer,
-    detailDrawer: detailReducer
+    pathViewer: pathViewerReducer,
+    detailDrawer: detailReducer,
+    focusAreaOptions: optionsReducer
 })
 
 /*
@@ -174,12 +251,12 @@ const daysSince = lastUpdated => {
 // Selectors
 export const getLoaderState = state => state.pathsLoading
 
-export const getPathCollection = state => state.paths.entities.paths
-export const getPathIds = state => state.paths.orderedPathIds
+export const getPathCollection = state => state.pathViewer.entities.paths
+export const getPathIds = state => state.pathViewer.paths.orderedPathIds
 export const getPathById = (state, id) => id && getPathCollection(state)[id]
 export const getPaths = state => getPathIds(state).map( pathId => getPathById(state, pathId) )
 export const getPathCount = state => getPathIds(state).length
-export const getPathIndex = state => state.paths.currentPathIndex
+export const getPathIndex = state => state.pathViewer.paths.currentPathIndex
 export const getCurrentPath = state => {
     const currentPathId = getPathIds(state)[getPathIndex(state)]
     return getPathById(state, currentPathId)
@@ -187,11 +264,11 @@ export const getCurrentPath = state => {
 export const getStudentGroups = state => getPaths(state).map( path => path.studentsOnPath.map( student => student.name ) )
 export const getCurrentStudentGroup = state => getCurrentPath(state) && getCurrentPath(state).studentsOnPath.map( student => student.name )
 export const getCurrentProjects = state => getCurrentPath(state) && getCurrentPath(state).projectsOnPath
-export const getProjectCollection = state => state.paths.entities.projects
+export const getProjectCollection = state => state.pathViewer.entities.projects
 export const getProjectById = (state, id) => getProjectCollection(state)[id]
 export const getPathProjects = state => getCurrentPath(state).pathProject.map( projectId => getProjectById(state, id) )
 
-export const getFocusAreaCollection = state => state.paths.entities.focusAreas
+export const getFocusAreaCollection = state => state.pathViewer.entities.focusAreas
 export const getFocusAreaById = (state, id) => getFocusAreaCollection(state)[id]
 
 export const getDetailType = state => state.detailDrawer.detailType

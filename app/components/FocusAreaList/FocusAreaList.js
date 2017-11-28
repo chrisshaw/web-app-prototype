@@ -7,7 +7,9 @@ import SubjectIcon from '../SubjectIcon/SubjectIcon'
 
 import { selectFocusArea } from '../../actions/focusAreas'
 import {
-    
+    removeFocusAreaInPathViewer,
+    moveUpFocusAreaInPathViewer,
+    moveDownFocusAreaInPathViewer
 } from '../../actions/pathbuilder/pathviewerActionCreators'
 import { globalGetPathIndex } from '../../reducers/index';
 
@@ -15,13 +17,12 @@ export class FocusAreaList extends Component {
 
     // handleMoveUp
     handleMoveUp = index => () => {
-        const projectId = this.props.projectId
-
+        this.props.moveUpFocusAreaInPathViewer(this.props.projectId, index)
     }
 
     // handleMoveDown
     handleMoveDown = index => () => {
-
+        this.props.moveDownFocusAreaInPathViewer(this.props.projectId, index)
     }
 
     // handleAdd
@@ -31,7 +32,7 @@ export class FocusAreaList extends Component {
 
     // handleRemove
     handleRemove = index => () => {
-
+        this.props.removeFocusAreaInPathViewer(this.props.projectId, index)
     }
 
     // handleViewDetails
@@ -75,6 +76,9 @@ const mapStateToProps = (state, props) => ({
 export default connect(
     mapStateToProps,
     {
-        selectFocusArea
+        selectFocusArea,
+        removeFocusAreaInPathViewer,
+        moveUpFocusAreaInPathViewer,
+        moveDownFocusAreaInPathViewer,
     }
 )(FocusAreaList)

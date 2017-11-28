@@ -20,23 +20,33 @@ export const changeCurrentPathInPathViewer = index => ({
     payload: { index }
 })
 
-export const removeFocusAreaInPathViewer = handle => ({
+export const removeFocusAreaInPathViewer = (projectId, focusAreaIndex) => ({
     type: PATHVIEWER_REMOVE_FOCUS_AREA,
-    payload: { parsedHandle: parseHandle(handle) }
+    payload: { 
+        projectId,
+        focusAreaIndex
+    }
 })
 
 export const addFocusAreaInPathViewer = handle => ({
     type: PATHVIEWER_ADD_FOCUS_AREA,
-    payload: { parsedHandle: parseHandle(handle) }
-})
-export const moveUpFocusAreaInPathViewer = handle => ({
-    type: PATHVIEWER_MOVE_UP_FOCUS_AREA,
-    payload: { parsedHandle: parseHandle(handle) }
+    payload: {}
 })
 
-export const moveDownFocusAreaInPathViewer = handle => ({
+export const moveUpFocusAreaInPathViewer = (projectId, focusAreaIndex) => ({
+    type: PATHVIEWER_MOVE_UP_FOCUS_AREA,
+    payload: {
+        projectId,
+        focusAreaIndex
+    }
+})
+
+export const moveDownFocusAreaInPathViewer = (projectId, focusAreaIndex) => ({
     type: PATHVIEWER_MOVE_DOWN_FOCUS_AREA,
-    payload: { parsedHandle: parseHandle(handle) }
+    payload: {
+        projectId,
+        focusAreaIndex
+    }
 })
 
 export const closeDetailDrawerInPathViewer = () => ({
