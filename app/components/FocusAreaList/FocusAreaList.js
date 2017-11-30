@@ -27,8 +27,8 @@ export class FocusAreaList extends Component {
     }
 
     // handleAdd
-    handleAdd = index => () => {
-        this.props.addFocusAreaInPathViewer(this.props.projectId, index)
+    handleAdd = index => focusAreaId => {
+        this.props.addFocusAreaInPathViewer(this.props.projectId, index, focusAreaId)
     }
 
     // handleRemove
@@ -37,7 +37,7 @@ export class FocusAreaList extends Component {
     }
 
     // handleViewDetails
-    handleViewDetails = focusAreaId => this.props.selectFocusArea(focusAreaId)
+    handleViewDetails = relevantFocusAreaId => this.props.selectFocusArea(relevantFocusAreaId)
 
     renderFocusArea = (focusAreaId, i, focusAreas) => {
         const handle = `${this.props.handlePrefix}/${i}`
@@ -77,5 +77,6 @@ export default connect(
         removeFocusAreaInPathViewer,
         moveUpFocusAreaInPathViewer,
         moveDownFocusAreaInPathViewer,
+        addFocusAreaInPathViewer
     }
 )(FocusAreaList)

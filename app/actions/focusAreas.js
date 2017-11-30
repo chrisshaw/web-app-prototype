@@ -6,7 +6,7 @@ import {
 
 export const selectFocusArea = (focusArea) => (dispatch) => {
   dispatch(requestFocusAreaInfo());
-  const focusAreaKey = focusArea.split('/')[1];
+  const focusAreaKey = focusArea.split('/')[1].split('_').shift();
 
   return fetch('/api/path/focus_area_details/' + focusAreaKey)
     .then((response) => {

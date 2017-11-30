@@ -1,3 +1,13 @@
 .divider {
     display: flex;
+    margin: 0.5rem;
+    align-items: center;
+}
+
+.button {
+    flex: 0;
+}
+
+.card {
+    margin: 1.5rem;
 }

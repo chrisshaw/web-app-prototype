@@ -25,11 +25,12 @@ export const removeFocusAreaInPathViewer = (projectId, focusAreaIndex) => ({
     }
 })
 
-export const addFocusAreaInPathViewer = (projectId, focusAreaIndex) => ({
+export const addFocusAreaInPathViewer = (projectId, focusAreaIndex, focusAreaId) => ({
     type: PATHVIEWER_ADD_FOCUS_AREA,
     payload: {
         projectId,
-        focusAreaIndex
+        focusAreaIndex,
+        focusAreaId
     }
 })
 

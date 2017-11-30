@@ -51,7 +51,7 @@ export const FocusAreaIcon = props => {
 }
 
 export const FocusAreaIconButton = props => (
-    <Button onClick={props.clickHandler}>
+    <Button className={props.className} onClick={props.clickHandler}>
         {!props.disableIcon && <FocusAreaIcon icon={props.icon} className={Style.iconButton}/>}
         {props.icon}
     </Button>

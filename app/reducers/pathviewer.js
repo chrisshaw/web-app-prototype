@@ -93,6 +93,17 @@ export const projectReducer = (state = projectInitialState, action) => {
                 }
             }        
         case PATHVIEWER_ADD_FOCUS_AREA:
+            const addNewList = state[action.payload.projectId]['fa'].slice()
+            const addedFocusArea = action.payload.focusAreaId
+            const addedFocusAreaId = `${addedFocusArea}_Added`
+            addNewList.splice(action.payload.focusAreaIndex + 1, 0, addedFocusAreaId)
+            return {
+                ...state,
+                [action.payload.projectId]: {
+                    name: state[action.payload.projectId]['name'],
+                    fa: addNewList
+                }
+            }
         default:
             return state
     }
@@ -116,6 +127,17 @@ const relevanceReducer = (state = relevanceInitialState, action) => {
     switch (action.type) {
         case QUERYBUILDER_SHOW_PATHS:
             return action.payload.paths.entities.relevantFocusAreas
+        case PATHVIEWER_ADD_FOCUS_AREA:
+            const focusAreaId = action.payload.focusAreaId
+            const relevantFocusAreaId = `${focusAreaId}_Added`
+            const relevantFocusArea = {
+                _id: focusAreaId,
+                relevance: 'Added'
+            }
+            return {
+                ...state,
+                [relevantFocusAreaId]: relevantFocusArea
+            }
         default:
             return state
     }
@@ -299,7 +321,7 @@ export const getFocusAreaById = (state, id) => getFocusAreaCollection(state)[id]
 
 export const getFocusAreaOptionIds = state => state.focusAreaOptions
 export const getFocusAreaOptions = state => getFocusAreaOptionIds(state).map( focusAreaId => {
-    const { _id, name, subject, course, ...rest } = getFocusAreaById(state, focusAreaId)
+    const { _id, name, course, ...rest } = getFocusAreaById(state, focusAreaId)
     return { _id, name, course: getCourseName(state, course) }
 } )
 
