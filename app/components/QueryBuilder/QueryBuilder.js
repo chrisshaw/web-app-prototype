@@ -30,10 +30,15 @@ import {
     tryFetchPathsWithQueryBuilder
  } from '../../actions/pathbuilder/querybuilderActionCreators'
 
+ import {
+     tryFetchFocusAreaOptions
+ } from '../../actions/pathbuilder/pathviewerActionCreators'
+
 class QueryBuilder extends Component{
 
     componentDidMount = () => {
         this.props.tryFetchOptionsTableForQueryBuilder(this.props.userId.split('/').pop())
+        this.props.tryFetchFocusAreaOptions(this.props.userId.split('/').pop())
     }
 
     handleSubmit = () => {
@@ -139,6 +144,7 @@ export default connect(
         updateTopicInQueryBuilder,
         updateSubjectInQueryBuilder,
         updateStandardInQueryBuilder,
-        tryFetchPathsWithQueryBuilder
+        tryFetchPathsWithQueryBuilder,
+        tryFetchFocusAreaOptions
     }
 )(QueryBuilder);

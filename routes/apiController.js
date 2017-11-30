@@ -7,7 +7,8 @@ var fs = require('fs');
 const config = require('./dbconfig.js')[process.env.DB_MODE];
 const normalizr = require('normalizr')
 const normalize = normalizr.normalize
-const schema = require('../schemas/schemas.js')
+const pathSchema = require('../schemas/path.js')
+const entitySchema = require('../schemas/entities.js')
 
 module.exports = function(app){
     const db = arangojs(config.dbHostPort);
@@ -327,7 +328,8 @@ module.exports = function(app){
             pathBuilderService
                 .get(encodedPath)
                 .then( response => {
-                    res.status(200).json(normalize(response.body, schema))
+                    console.log(JSON.stringify(response.body))
+                    res.status(200).json(normalize(response.body, pathSchema))
                 })
                 .catch( error => {
                     console.log(Date.now() + " Error (Getting paths from Database):", '\n', error );
@@ -358,6 +360,31 @@ module.exports = function(app){
             res.json();
         }) 
 
+    })
+
+    app.get('/api/user/:userKey/entities', async (req, res, next) => {
+        const userKey = req.params.userKey
+        console.log(`>>> Focus Area and Course Data endpoint hit for ${userKey}`)
+
+        try {
+            const query = aql`
+                for v, e, p
+                in 3 outbound ${`auth_users/${userKey}`}
+                hasSection, hasCourse, focusesOn
+                filter IS_SAME_COLLECTION('courses', p.vertices[2])
+                    and IS_SAME_COLLECTION('focusAreas', p.vertices[3])
+                    and p.vertices[*] none == null
+                collect f = p.vertices[3] into c = p.vertices[2]
+                sort f.grade, f.subject, f.name
+                return MERGE(f, { course: FIRST(UNIQUE(c)) })            
+            `
+            const cursor = await db.query(query)
+            const details = await cursor.all()
+            const entities = normalize(details, entitySchema)
+            res.json( entities )
+        } catch (err) {
+            next(err)
+        }            
     })
 
     app.get('/api/pathbuilder/:userKey/options', async (req, res, next) => {

@@ -11,7 +11,6 @@ import {
     PATHVIEWER_FETCH_FOCUS_AREA_OPTIONS,
     PATHVIEWER_LOAD_FOCUS_AREA_OPTIONS,
     PATHVIEWER_FETCH_FOCUS_AREA_OPTIONS_FAILED,
-    PATHVIEWER_INSERT_FOCUS_AREA,
     REQUEST_FOCUS_AREA_INFO,
     SUCCESS_FOCUS_AREA_INFO,
     ERROR_FOCUS_AREA_INFO,
@@ -111,12 +110,34 @@ const pathReducer = (state = pathsInitialState, action) => {
     }
 }
 
+const relevanceInitialState = {}
+
+const relevanceReducer = (state = relevanceInitialState, action) => {
+    switch (action.type) {
+        case QUERYBUILDER_SHOW_PATHS:
+            return action.payload.paths.entities.relevantFocusAreas
+        default:
+            return state
+    }
+}
+
 const focusAreaInitialState = {}
 
 const focusAreaReducer = (state = focusAreaInitialState, action) => {
     switch (action.type) {
-        case QUERYBUILDER_SHOW_PATHS:
-            return action.payload.paths.entities.focusAreas
+        case PATHVIEWER_LOAD_FOCUS_AREA_OPTIONS:
+            return action.payload.data.entities.focusAreas
+        default:
+            return state
+    }
+}
+
+const courseInitialState = {}
+
+const courseReducer = (state = courseInitialState, action) => {
+    switch (action.type) {
+        case PATHVIEWER_LOAD_FOCUS_AREA_OPTIONS:
+            return action.payload.data.entities.courses
         default:
             return state
     }
@@ -125,7 +146,9 @@ const focusAreaReducer = (state = focusAreaInitialState, action) => {
 const entityReducer = combineReducers({
     projects: projectReducer,
     paths: pathReducer,
-    focusAreas: focusAreaReducer
+    relevantFocusAreas: relevanceReducer,
+    focusAreas: focusAreaReducer,
+    courses: courseReducer
 })
 
 const pathViewerReducer = combineReducers({
@@ -137,9 +160,8 @@ const optionsInitialState = []
 
 const optionsReducer = (state = optionsInitialState, action) => {
     switch (action.type) {
-        case PATHVIEWER_FETCH_FOCUS_AREA_OPTIONS:
         case PATHVIEWER_LOAD_FOCUS_AREA_OPTIONS:
-        case PATHVIEWER_FETCH_FOCUS_AREA_OPTIONS_FAILED:
+            return action.payload.data.result
         default:
             return state
     }
@@ -268,8 +290,26 @@ export const getProjectCollection = state => state.pathViewer.entities.projects
 export const getProjectById = (state, id) => getProjectCollection(state)[id]
 export const getPathProjects = state => getCurrentPath(state).pathProject.map( projectId => getProjectById(state, id) )
 
+export const getCourseCollection = state => state.pathViewer.entities.courses
+export const getCourseById = (state, id) => getCourseCollection(state)[id]
+export const getCourseName = (state, id) => getCourseById(state, id).name
+
 export const getFocusAreaCollection = state => state.pathViewer.entities.focusAreas
 export const getFocusAreaById = (state, id) => getFocusAreaCollection(state)[id]
+
+export const getFocusAreaOptionIds = state => state.focusAreaOptions
+export const getFocusAreaOptions = state => getFocusAreaOptionIds(state).map( focusAreaId => {
+    const { _id, name, subject, course, ...rest } = getFocusAreaById(state, focusAreaId)
+    return { _id, name, course: getCourseName(state, course) }
+} )
+
+export const getRelevantFocusAreaCollection = state => state.pathViewer.entities.relevantFocusAreas
+export const getRelevantFocusAreaById = (state, id) => getRelevantFocusAreaCollection(state)[id]
+export const getFocusAreaWithRelevanceById = (state, id) => {
+    const relevantFocusArea = getRelevantFocusAreaById(state, id)
+    const { _id, _key, name, subject, grade, course, ...rest } = getFocusAreaById(state, relevantFocusArea._id)
+    return { _id, _key, name, subject, grade, course: getCourseName(state, course), relevance: relevantFocusArea.relevance }
+}
 
 export const getDetailType = state => state.detailDrawer.detailType
 export const getFocusAreaLoaderStatus = state => state.detailDrawer.isFocusAreaInfoFetching

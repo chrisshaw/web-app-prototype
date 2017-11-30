@@ -4,16 +4,13 @@ import {
     PATHVIEWER_MOVE_DOWN_FOCUS_AREA,
     PATHVIEWER_ADD_FOCUS_AREA,
     PATHVIEWER_REMOVE_FOCUS_AREA,
-    PATHVIEWER_CLEAR_DETAILS
+    PATHVIEWER_CLEAR_DETAILS,
+    PATHVIEWER_FETCH_FOCUS_AREA_OPTIONS,
+    PATHVIEWER_LOAD_FOCUS_AREA_OPTIONS,
+    PATHVIEWER_FETCH_FOCUS_AREA_OPTIONS_FAILED
 } from './actionTypes'
 
-const parseHandlde = handle => {
-    const parsed = handle.split('/')
-    return {
-        project: parsed[0],
-        index: parsed[1]
-    }
-}
+import callApi from '../../helper/api'
 
 export const changeCurrentPathInPathViewer = index => ({
     type: PATHVIEWER_CHANGE_CURRENT_PATH,
@@ -28,9 +25,12 @@ export const removeFocusAreaInPathViewer = (projectId, focusAreaIndex) => ({
     }
 })
 
-export const addFocusAreaInPathViewer = handle => ({
+export const addFocusAreaInPathViewer = (projectId, focusAreaIndex) => ({
     type: PATHVIEWER_ADD_FOCUS_AREA,
-    payload: {}
+    payload: {
+        projectId,
+        focusAreaIndex
+    }
 })
 
 export const moveUpFocusAreaInPathViewer = (projectId, focusAreaIndex) => ({
@@ -52,3 +52,33 @@ export const moveDownFocusAreaInPathViewer = (projectId, focusAreaIndex) => ({
 export const closeDetailDrawerInPathViewer = () => ({
     type: PATHVIEWER_CLEAR_DETAILS
 })
+
+export const fetchFocusAreaOptions = userKey => ({
+    type: PATHVIEWER_FETCH_FOCUS_AREA_OPTIONS,
+    payload: { userKey }
+})
+
+export const loadFocusAreaOptions = data => ({
+    type: PATHVIEWER_LOAD_FOCUS_AREA_OPTIONS,
+    payload: { data }
+})
+
+export const fetchFocusAreaOptionsFailed = error => ({
+    type: PATHVIEWER_FETCH_FOCUS_AREA_OPTIONS_FAILED,
+    payload: { error }
+})
+
+export const tryFetchFocusAreaOptions = userKey => async dispatch => {
+    dispatch(fetchFocusAreaOptions(userKey))
+    try {
+        const entityResponse = await callApi('get', `user/${userKey}/entities`)
+        if (true) {
+            dispatch(loadFocusAreaOptions(entityResponse.data))
+        } else {
+            throw new Error('Something went wrong.')
+        } 
+    } catch (error) {
+        console.log(error)
+        dispatch(fetchFocusAreaOptionsFailed(error))
+    }
+}

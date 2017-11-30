@@ -37,8 +37,20 @@ import pathViewerReducer, {
     getDetailFocusArea,
     getProjectById,
     getCurrentProjects,
-    getFocusAreaById
+    getFocusAreaById,
+    getFocusAreaOptions,
+    getFocusAreaWithRelevanceById
  } from './pathviewer'
+
+ const appReducer = combineReducers({
+    pathViewer: pathViewerReducer,
+    authState : authReducer,
+    studentsTab: studentsTabReducer,
+    teachersAndAdmins: teachersAndAdminsReducer,
+    flashMessage: flashMessageReducer,
+    classState: classReducer,
+    queryBuilder: queryBuilderReducer
+})
 
 export const globalGetPotentialGrades = state => getPotentialGrades(state.queryBuilder)
 export const globalGetPotentialCourses = state => getPotentialCourses(state.queryBuilder)
@@ -69,16 +81,9 @@ export const globalGetPotentialPeerTeachers = state => getPotentialPeerTeachers(
 export const globalGetProjectById = (state, id) => getProjectById(state.pathViewer, id)
 export const globalGetCurrentProjects = state => getCurrentProjects(state.pathViewer)
 export const globalGetFocusAreaById = (state, id) => getFocusAreaById(state.pathViewer, id)
+export const globalGetFocusAreaOptions = state => getFocusAreaOptions(state.pathViewer)
+export const globalGetFocusAreaWithRelevanceById = (state, id) => getFocusAreaWithRelevanceById(state.pathViewer, id)
 
-const appReducer = combineReducers({
-    pathViewer: pathViewerReducer,
-    authState : authReducer,
-    studentsTab: studentsTabReducer,
-    teachersAndAdmins: teachersAndAdminsReducer,
-    flashMessage: flashMessageReducer,
-    classState: classReducer,
-    queryBuilder: queryBuilderReducer
-})
 // to handle clearing store on logout
 export default (state, action) => {
   if (action.type === 'USER_LOGOUT') {

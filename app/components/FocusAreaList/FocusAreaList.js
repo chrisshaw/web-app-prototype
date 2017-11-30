@@ -9,7 +9,8 @@ import { selectFocusArea } from '../../actions/focusAreas'
 import {
     removeFocusAreaInPathViewer,
     moveUpFocusAreaInPathViewer,
-    moveDownFocusAreaInPathViewer
+    moveDownFocusAreaInPathViewer,
+    addFocusAreaInPathViewer
 } from '../../actions/pathbuilder/pathviewerActionCreators'
 import { globalGetPathIndex } from '../../reducers/index';
 
@@ -27,7 +28,7 @@ export class FocusAreaList extends Component {
 
     // handleAdd
     handleAdd = index => () => {
-
+        this.props.addFocusAreaInPathViewer(this.props.projectId, index)
     }
 
     // handleRemove
@@ -47,15 +48,15 @@ export class FocusAreaList extends Component {
         if (i !== focusAreas.length - 1) actions = [...actions, { type: 'down', handler: this.handleMoveDown(i) }]
         actions = [
             ...actions,
-            // { type: 'add', handler: this.handleAdd(i) },
             { type: 'remove', handler: this.handleRemove(i) }
         ]
 
         return (
             <FocusArea
                 key={i}
-                focusAreaId={focusAreaId}
+                relevantFocusAreaId={focusAreaId}
                 actions={actions}
+                addHandler={this.handleAdd(i)}
             />
         )
     }
@@ -63,18 +64,14 @@ export class FocusAreaList extends Component {
     render() {
         return (
             <div className={this.props.className}>
-                {this.props.focusAreas.map(this.renderFocusArea)}
+                {this.props.relevantFocusAreas.map(this.renderFocusArea)}
             </div>
         )
     }
 }
 
-const mapStateToProps = (state, props) => ({
-    pathIndex: globalGetPathIndex(state),
-})
-
 export default connect(
-    mapStateToProps,
+    null,
     {
         selectFocusArea,
         removeFocusAreaInPathViewer,

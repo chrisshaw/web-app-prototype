@@ -9,9 +9,12 @@ import Card, { CardHeader, CardContent, CardActions } from 'mui-next/Card'
 import { withStyles, withTheme } from 'mui-next/styles'
 import Style from './FocusArea.css'
 
+import FocusAreaAdder from '../FocusAreaAdder/FocusAreaAdder'
 import SubjectIcon from '../SubjectIcon/SubjectIcon'
 
-import { globalGetFocusAreaById } from '../../reducers'
+import {
+    globalGetFocusAreaWithRelevanceById,
+} from '../../reducers'
 
 export const FocusAreaIcon = props => {
     let ligature = 'school'
@@ -47,7 +50,7 @@ export const FocusAreaIcon = props => {
     )
 }
 
-const FocusAreaIconButton = props => (
+export const FocusAreaIconButton = props => (
     <Button onClick={props.clickHandler}>
         {!props.disableIcon && <FocusAreaIcon icon={props.icon} className={Style.iconButton}/>}
         {props.icon}
@@ -132,19 +135,24 @@ const FocusAreaHeader = props => {
 }
 
 export const FocusArea = props => (
-    <Card className={Style.focusArea}>
-        <FocusAreaHeader
-            name={props.focusArea.name}
-            subject={props.focusArea.subject}
-            course={props.focusArea.course}
-            relevance={props.focusArea.relevance}
-        />
-        <FocusAreaActionBar actions={props.actions} />
-    </Card>
+    <div>
+        <Card className={Style.focusArea}>
+            <FocusAreaHeader
+                name={props.focusArea.name}
+                subject={props.focusArea.subject}
+                course={props.focusArea.course}
+                relevance={props.focusArea.relevance}
+            />
+            <FocusAreaActionBar actions={props.actions} />
+        </Card>
+        <FocusAreaAdder addHandler={props.addHandler} />
+    </div>
 )
 
 const mapStateToProps = (state, props) => ({
-    focusArea: globalGetFocusAreaById(state, props.focusAreaId)
+    focusArea: globalGetFocusAreaWithRelevanceById(state, props.relevantFocusAreaId)
 })
 
-export default connect(mapStateToProps)(FocusArea)
+export default connect(
+    mapStateToProps
+)(FocusArea)

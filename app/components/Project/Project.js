@@ -37,7 +37,7 @@ class Project extends Component {
                     <FocusAreaList
                         className={Style.focusAreaList}
                         projectId={this.props.projectId}
-                        focusAreas={this.props.project.fa}
+                        relevantFocusAreas={this.props.project.fa}
                     /> : 
                     <Typography type='subheading' align='center'>No focus areas found for this topic.</Typography>
                 }
