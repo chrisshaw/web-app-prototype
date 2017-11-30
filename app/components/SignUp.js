@@ -4,7 +4,6 @@ import {Grid, Row, Col} from 'react-bootstrap';
 import RaisedButton from 'material-ui/RaisedButton';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
-import muiThemeable from 'material-ui/styles/muiThemeable';
 import helper from '../helper';
 import { signUpFields } from '../actions';
 
@@ -14,7 +13,7 @@ var signUpObj = {email: "",
                     last: "",
                     school:" ",
                     verify:"", 
-                    selectedrole: "",
+                    selectedRole: "",
                     description: "",
                     error: false,
                     errorMsg: ""} 
@@ -22,17 +21,17 @@ class SignUp extends Component{
     constructor(props){
         super(props);
         this.props.dispatch(signUpFields(signUpObj)); 
-        if (this.props.signupfields) {
-            signUpObj = { email: this.props.signupfields.email, 
-                    password : this.props.signupfields.password, 
-                    first: this.props.signupfields.first,
-                    last: this.props.signupfields.last,
-                    school: this.props.signupfields.school,
-                    verify: this.props.signupfields.verify, 
-                    selectedrole:  this.props.signupfields.selectedrole,
-                    description: this.props.signupfields.description,
-                    error: this.props.signupfields.error,
-                    errorMsg: this.props.signupfields.errorMsg};  
+        if (this.props.signupFields) {
+            signUpObj = { email: this.props.signupFields.email, 
+                    password : this.props.signupFields.password, 
+                    first: this.props.signupFields.first,
+                    last: this.props.signupFields.last,
+                    school: this.props.signupFields.school,
+                    verify: this.props.signupFields.verify, 
+                    selectedRole:  this.props.signupFields.selectedRole,
+                    description: this.props.signupFields.description,
+                    error: this.props.signupFields.error,
+                    errorMsg: this.props.signupFields.errorMsg};  
         }
        
         this.state = signUpObj;
@@ -78,83 +77,83 @@ class SignUp extends Component{
             // this.setState({company: e.target.value})
         }
         if (e.target.id === 'role') {
-            signUpObj.selectedrole =   e.target.value;
-            // this.setState({selectedrole:  e.target.value })
+            signUpObj.selectedRole =   e.target.value;
+            // this.setState({selectedRole:  e.target.value })
             signUpObj.description = this.props.roles.map((role, index) => {
                 if (role.name === e.target.value){
                     return role.description
                 }
             })
-            this.setState({selectedrole: e.target.value, description: signUpObj.description});
+            this.setState({selectedRole: e.target.value, description: signUpObj.description});
             this.props.dispatch(signUpFields(signUpObj));   
         }
     }
     handleClose(){ 
         // clear local and server error messages
-        if (this.props.loginerror) helper.loginError(false, "", this.props.dispatch);
+        if (this.props.loginError) helper.loginError(false, "", this.props.dispatch);
         // local validation
-        if (this.props.signupfields.error) this.setState({error: false, errorMsg: ""});
+        if (this.props.signupFields.error) this.setState({error: false, errorMsg: ""});
     }
     // componentWillMount(){
-    //             if (this.props.signupfields) {
-    //         signUpObj = { email: this.props.signupfields.email, 
-    //                 password : this.props.signupfields.password, 
-    //                 first: this.props.signupfields.first,
-    //                 last: this.props.signupfields.last,
-    //                 school: this.props.signupfields.school,
-    //                 verify: this.props.signupfields.verify, 
-    //                 selectedrole:  this.props.signupfields.selectedrole,
-    //                 description: this.props.signupfields.description,
-    //                 error: this.props.signupfields.error,
-    //                 errorMsg: this.props.signupfields.errorMsg};  
+    //             if (this.props.signupFields) {
+    //         signUpObj = { email: this.props.signupFields.email, 
+    //                 password : this.props.signupFields.password, 
+    //                 first: this.props.signupFields.first,
+    //                 last: this.props.signupFields.last,
+    //                 school: this.props.signupFields.school,
+    //                 verify: this.props.signupFields.verify, 
+    //                 selectedRole:  this.props.signupFields.selectedRole,
+    //                 description: this.props.signupFields.description,
+    //                 error: this.props.signupFields.error,
+    //                 errorMsg: this.props.signupFields.errorMsg};  
     //     }
          
     // }
     handleSubmit(){    
         // handles local and database errors
-        if ((!this.props.signupfields.email) || (this.props.signupfields.email.length < 8)){
+        if ((!this.props.signupFields.email) || (this.props.signupFields.email.length < 8)){
             // error - email required
             signUpObj.errorMsg = "Please provide a valid email address for the new username."
             this.setState({error: true, errorMsg: signUpObj.errorMsg})
             signUpObj.error = true;
             this.props.dispatch(signUpFields(signUpObj));
             // helper.loginError(false, msg, this.props.dispatch);
-       } else if ((!this.props.signupfields.first) || (this.props.signupfields.first.length < 2)) {
+       } else if ((!this.props.signupFields.first) || (this.props.signupFields.first.length < 2)) {
             // error - first name required
             signUpObj.errorMsg = "Please provide a valid first name."
             this.setState({error: true, errorMsg: signUpObj.errorMsg})
             signUpObj.error = true;
             this.props.dispatch(signUpFields(signUpObj));
-        } else if ((!this.props.signupfields.last) || (this.props.signupfields.last.length < 2)) {
+        } else if ((!this.props.signupFields.last) || (this.props.signupFields.last.length < 2)) {
             // error - last name required
             signUpObj.errorMsg = "Please provide a valid last name.";
             signUpObj.error = true;
              this.setState({error: true, errorMsg: signUpObj.errorMsg})
              this.props.dispatch(signUpFields(signUpObj));
-        } else if ((!this.props.signupfields.school) || (this.props.signupfields.school.length < 2)) {
+        } else if ((!this.props.signupFields.school) || (this.props.signupFields.school.length < 2)) {
             signUpObj.errorMsg = "Please provide a valid school name.";
             signUpObj.error = true;
             this.setState({error: true, errorMsg: signUpObj.errorMsg})
             this.props.dispatch(signUpFields(signUpObj));
-        } else if (this.props.signupfields.selectedrole === 'Please Select a Role') {
+        } else if (this.props.signupFields.selectedRole === 'Please Select a Role') {
             signUpObj.errorMsg =  "Please provide a valid application access role for this user."
             signUpObj.error = true;
              this.setState({error: true, errorMsg: signUpObj.errorMsg})
              this.props.dispatch(signUpFields(signUpObj));
-        } else if ((!this.props.signupfields.password) || (this.props.signupfields.password.length < 8)) {
+        } else if ((!this.props.signupFields.password) || (this.props.signupFields.password.length < 8)) {
             // error - password required
             signUpObj.errorMsg =  "Please provide a valid password of length 8 characters with one capital letter and at least 2 numbers. No special characters e.g. %, & * etc."      
             signUpObj.error = true;
             this.setState({error: true, errorMsg: signUpObj.errorMsg})
             this.props.dispatch(signUpFields(signUpObj));
-        } else if (!this.props.signupfields.verify){
+        } else if (!this.props.signupFields.verify){
             // error - please verify password
             signUpObj.errorMsg =  "Please verify your password.";
             signUpObj.error = true;
             this.setState({error: true, errorMsg: signUpObj.errorMsg})
             // this.setState({error: true, errorMsg: msg})
             this.props.dispatch(signUpFields(signUpObj));
-        } else if (this.props.signupfields.verify !== this.props.signupfields.password){
+        } else if (this.props.signupFields.verify !== this.props.signupFields.password){
             // error - passwords dont match
             signUpObj.errorMsg =  "Passwords do not match - please verify."
             signUpObj.error = true;
@@ -163,7 +162,7 @@ class SignUp extends Component{
             this.props.dispatch(signUpFields(signUpObj));
         } else {
             // if all ok then submit to server
-            helper.signUpUsers(this.props.signupfields.email, this.props.signupfields.password, this.props.signupfields.first, this.props.signupfields.last, this.props.signupfields.school,  this.props.signupfields.selectedrole, this.props.dispatch,  this.props.router);
+            helper.signUpUsers(this.props.signupFields.email, this.props.signupFields.password, this.props.signupFields.first, this.props.signupFields.last, this.props.signupFields.school,  this.props.signupFields.selectedRole, this.props.dispatch,  this.props.router);
             // reset fields
             signUpObj = {email: '', 
                         password : '', 
@@ -171,7 +170,7 @@ class SignUp extends Component{
                         last: '',
                         school: '',
                         verify: '', 
-                        selectedrole: 'Please Select a Role',
+                        selectedRole: 'Please Select a Role',
                         description: '',
                         error: false, 
                         errorMsg: ""};
@@ -189,7 +188,7 @@ class SignUp extends Component{
                 onTouchTap={this.handleClose}
             />
             ];
-            // console.log(this.props.signupfields.selectedrole)
+            // console.log(this.props.signupFields.selectedRole)
         if (this.props.roles) {
             var rolesList = this.props.roles.map((role, index) => {
                 return  <option key={role._id} value={role.name}>{role.name}</option>     
@@ -197,7 +196,7 @@ class SignUp extends Component{
         } 
         return( 
           
-           <div> { this.props.signupfields ? (<div className="form-signin">
+           <div> { this.props.signupFields ? (<div className="form-signin">
 
                 { this.props.signupok ? <div className='text-center format-signup-msg-item'>User successfully saved!</div> : ""}
                 <Row>
@@ -213,7 +212,7 @@ class SignUp extends Component{
                 <Row>
                     <Col xs={2} md={2}/>
                     <Col xs={8} md={8} className="text-center">
-                    { (this.props.loginerror || (this.state.error ))  ?  <Dialog
+                    { (this.props.loginError || (this.state.error ))  ?  <Dialog
                         bodyStyle={{fontSize: 13}}
                         titleStyle={{fontSize: 14, fontWeight: 'bold'}}
                         title="Sign Up Error"
@@ -223,7 +222,7 @@ class SignUp extends Component{
                         open= {true}
                         onRequestClose={this.handleClose}
                         >
-                        { this.props.loginerror ? this.props.errormsg : this.state.errorMsg }
+                        { this.props.loginError ? this.props.errorMsg : this.state.errorMsg }
                         </Dialog> : " "}
                         <label htmlFor="inputFirstName" className="sr-only">First Name</label>
                         <input value={this.state.first} onChange={(e)=>this.handleChange(e)} id="first" type="text" className="form-control auth-input" placeholder="First Name"  autoFocus="" minLength="10"
@@ -253,7 +252,7 @@ class SignUp extends Component{
                     <Col xs={2} md={2}/>
                     <Col xs={8} md={8} className="text-center">
                         <label htmlFor="inputRole" className="sr-only">Role</label>
-                        <select value={this.state.selectedrole} onChange={(e)=>this.handleChange(e)} id="role"  className="form-control auth-input">
+                        <select value={this.state.selectedRole} onChange={(e)=>this.handleChange(e)} id="role"  className="form-control auth-input">
                             <option defaultValue='Please Select a Role'>Please Select a Role</option>
                             {rolesList}
                         </select>
@@ -302,11 +301,11 @@ class SignUp extends Component{
 
 const mapStateToProps = (store) => {
     return {
-        loggedin: store.authState.loggedin,
+        loggedIn: store.authState.loggedIn,
         roles: store.authState.roles,
-        loginerror: store.authState.loginerror,
-        signupfields: store.authState.signupfields,
-        errormsg: store.authState.errormsg,
+        loginError: store.authState.loginError,
+        signupFields: store.authState.signupFields,
+        errorMsg: store.authState.errorMsg,
         signupok:  store.authState.signupok,
        
     }

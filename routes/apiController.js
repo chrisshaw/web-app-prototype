@@ -5,6 +5,10 @@ var path = require('path');
 var nodemailer = require("nodemailer");
 var fs = require('fs');
 const config = require('./dbconfig.js')[process.env.DB_MODE];
+const normalizr = require('normalizr')
+const normalize = normalizr.normalize
+const pathSchema = require('../schemas/path.js')
+const entitySchema = require('../schemas/entities.js')
 
 module.exports = function(app){
     const db = arangojs(config.dbHostPort);
@@ -53,7 +57,7 @@ module.exports = function(app){
                     // console.log(authPerm)
                     // console.log(permissions)
                     // console.log("((authPerm !== '' ) && (permissions.indexOf(authPerm) !== -1))", ((authPerm !== '' ) && (permissions.indexOf(authPerm) !== -1)));
-                    if ((authPerm !== '' ) && (permissions.indexOf(authPerm) !== -1)) {
+                    if ((authPerm !== '' ) && (permissions.includes(authPerm) !== -1)) {
                         // console.log('cool, permissions checked out');
                         resolve({success:true, userid: userId, username: username, userkey: userKey });
                     } else if (authPerm === '' ) {
@@ -64,7 +68,7 @@ module.exports = function(app){
                         reject();
                     }          
                 }).catch(error => {
-                    console.log(Date.now() + " Error (Get Perms from Database):");
+                    console.log(Date.now() + " Error (Get permissions from Database):");
                     reject();
                 }); 
             }).catch(error => {
@@ -114,11 +118,11 @@ module.exports = function(app){
     app.post('/login' , function(req, res, next){
         const foxxService = db.route('auth');
         foxxService.post('/login', req.body)
-        .then(response => {
+        .then( response => {
             res.setHeader("Set-Cookie",  'x-foxxsessid='+response.headers['x-foxxsessid']);
             return response.body;
         }).then(response => {
-            // get user role and perms
+            // get user role and permissions
             let userId = response.userid;
             let chgPwd = response.chgPwd;
             let username = response.username;
@@ -127,8 +131,8 @@ module.exports = function(app){
                 for v, e, p
                 in 2 outbound ${userId}
                 auth_hasRole, auth_hasPermission
-                collect role = p.vertices[1]._key into perms = p.vertices[2]._key
-                return { "role": role, "perms": perms }
+                collect role = p.vertices[1]._key into permissions = p.vertices[2]._key
+                return { "role": role, "permissions": permissions }
             `;
             db.query(query)
             .then(cursor => {  
@@ -137,17 +141,17 @@ module.exports = function(app){
                 // admin created users must change password on first login
                 const result = cursor._result;
                 // console.log(result);
-                res.json({success:true, id: userId, username: username, role: result[0].role, perms: result[0].perms, chgPwd: chgPwd});
+                res.json({success:true, id: userId, username: username, role: result[0].role, permissions: result[0].permissions, chgPwd: chgPwd});
             }).catch(error => {
-                console.log(Date.now() + " Error (Get Perms from Database):", error);
-                res.json();
+                console.log(Date.now() + " Error (Get permissions from Database):", error);
+                next(error)
             }) 
         }).catch(error => {
             // can send error to logs?
             console.log(Date.now() + " Error (Login):", error.response.body.errorMessage);
             // send basic success: false
             // send error to client for handling
-            res.json({success:false});
+            next(error)
         })
     })
     app.post('/signup' , function(req, res, next){
@@ -156,11 +160,11 @@ module.exports = function(app){
         // verify user is valid and then that they have the right permissions
         validateUser(req, res, "createAccounts")
         .then( response => {
-            // double check user perms on server side
+            // double check user permissions on server side
             // if user has the required permission manageusers in their permissions array in
-            // req.perms
+            // req.permissions
             let userObj = req.body;
-            // get perms and username of person doing the signup
+            // get permissions and username of person doing the signup
             let username = response.username;
             userObj.creator = username;
             // post/save data using foxx service for auth
@@ -187,12 +191,99 @@ module.exports = function(app){
                 res.json({success:false, auth: false, msg: error.response.body.errorMessage});
             })
         })
+
+    app.get('/api/path/focus_area_details/:id', function(req, res) {
+        const focusAreaId = `focusAreas/${req.params.id}`
+        console.log(focusAreaId)
+        const query = aql`let parents = FIRST(
+                            for c, e, p
+                            in 2 inbound ${focusAreaId}
+                            focusesOn, hasCourse
+                            return distinct {
+                                course: KEEP(p.vertices[1], '_id', 'name'),
+                                school: p.vertices[2]._id
+                            }
+                        )
+                        
+                        let focusAreas = (
+                            for f, e, p
+                            in 4 inbound ${focusAreaId}
+                            any alignsTo, focusesOn, hasCourse
+                            filter p.vertices[4] != null
+                                and IS_SAME_COLLECTION('courses', p.vertices[3])
+                                and IS_SAME_COLLECTION('schools', p.vertices[4])
+                                and p.vertices[4]._id == parents.school
+                            return distinct {
+                                // school: p.vertices[4]._id, // useful for debugging, not required in response
+                                course: p.vertices[3].name,
+                                _id: p.vertices[2]._id,
+                                _key: p.vertices[2]._key,
+                                name: p.vertices[2].name
+                            }
+                        )
+                        
+                        let standards = (
+                            for s
+                            in outbound ${focusAreaId}
+                            alignsTo
+                            filter IS_SAME_COLLECTION('standards', s)
+                                and s != null
+                            return distinct KEEP(s, '_id', '_key')
+                        )
+                        
+                        let projects = (
+                            for p
+                            in 2 any ${focusAreaId}
+                            alignsTo
+                            filter IS_SAME_COLLECTION('projects', p)
+                                and p != null
+                            return distinct {
+                                _id: p._id,
+                                _key: p._key,
+                                name: p.name,
+                                link: p.link,
+                                drivingQuestion: p.details.drivingQuestion
+                            }
+                        )
+
+                        let focusArea = DOCUMENT(${focusAreaId})
+
+                        return {
+                            'focusArea': focusArea,
+                            'focusAreas': focusAreas,
+                            'standards': standards,
+                            'projects': projects
+                        }`;
+
+      db.query(query)
+        .then((cursor) => cursor.all())
+        .then((result) => {
+          res.send(result);
+        })
+        .catch((error) => {
+          next(error)
+        });
+    });
+
+  app.get('/api/path/related_projects/:topic', function(req, res) {
+    const query = `for p in projects
+                    filter LENGTH(p.topics) > 0
+                        and '${req.params.topic}' in p.topics
+                    sort p.name desc
+                    return distinct MERGE(KEEP (p, '_id', '_key', 'name', 'link', 'topics'), { drivingQuestion: p.details.drivingQuestion })`;
+
+    db.query(query)
+      .then((cursor) => {
+        res.send(cursor._result);
+      })
+      .catch(() => {
+        res.sendStatus(500);
+      });
+  });
     
-     app.post('/api/path/project', function (req, res){
+     app.post('/api/path/project', (req, res, next) => {
         validateUser(req, res, "buildPath")
         .then( response => {
-            // intialise
-            // some pre-processing
 
             const constructQueryParams = queryObject => {
                 console.log(queryObject)
@@ -215,18 +306,17 @@ module.exports = function(app){
                 "The request body is",
                 "\n",
                 req.body
-            );
+            )
+
             const reqBody = req.body;
             const userKey = response.userkey;
-            const queryObject = {
-                userKey: userKey
-            };
+            const queryObject = { userKey }
 
             if ( reqBody.courses && reqBody.courses.length > 0 ) queryObject.courses = reqBody.courses.map( course => course._key );
-            if ( reqBody.grades && reqBody.grades.length > 0 ) queryObject.grades = reqBody.grades.map( grade => grade.name.toString().toLowerCase() );
-            if ( reqBody.subjects && reqBody.subjects.length > 0 ) queryObject.subjects = reqBody.subjects.map( subject => subject.name.toLowerCase() );
-            if ( reqBody.standards && reqBody.standards.length > 0 ) queryObject.standards = reqBody.standards.map( standard => standard.name.toLowerCase() );
-            if ( reqBody.topics && reqBody.topics.length > 0 ) queryObject.topics = reqBody.topics.map( topic => topic.name.toLowerCase() );
+            if ( reqBody.grades && reqBody.grades.length > 0 ) queryObject.grades = reqBody.grades.map( grade => grade.toString().toLowerCase() );
+            if ( reqBody.subjects && reqBody.subjects.length > 0 ) queryObject.subjects = reqBody.subjects.map( subject => subject.toLowerCase() );
+            if ( reqBody.standards && reqBody.standards.length > 0 ) queryObject.standards = reqBody.standards.map( standard => standard.toLowerCase() );
+            if ( reqBody.topics && reqBody.topics.length > 0 ) queryObject.topics = reqBody.topics.map( topic => topic.toLowerCase() );
             Object.keys(queryObject).forEach( key => console.log(key, ':', queryObject[key]));
 
             console.log('Constructing query string');
@@ -235,293 +325,25 @@ module.exports = function(app){
             const pathBuilderService = db.route('path');
             console.log('Query string:', encodedPath);
 
-            pathBuilderService.get(encodedPath)
-            .then( response => {
-                res
-                    .status(200)
-                    .json(response.body)
-            })
-            .catch( error => {
-                console.log(Date.now() + " Error (Getting paths from Database):", '\n', error );
-                res.json();
-            })
+            pathBuilderService
+                .get(encodedPath)
+                .then( response => {
+                    console.log(JSON.stringify(response.body))
+                    res.status(200).json(normalize(response.body, pathSchema))
+                })
+                .catch( error => {
+                    console.log(Date.now() + " Error (Getting paths from Database):", '\n', error );
+                    next(error);
+                })
 
 
         })
-        .catch((error) => {
+        .catch( error => {
             console.log(Date.now() + " Authentication Error");
             console.log(error);
-            res.json({success: false, error: "No Permissions to View Paths"})
+            next(error)
         });
     });
-
-    function sendToSummitEmail(email, filePath) {
-        // this part creates a reusable transporter using SMTP of gmail
-        return new Promise((resolve, reject) => {
-            var emailAccountPassword = process.env.TEAM_EMAIL || 'C0ffeeCreamer34';
-            var transporter = nodemailer.createTransport({
-                service: 'gmail',
-                host: 'smtp.gmail.com',
-                port: 465,
-                secure: true, // use SSL
-                auth: {
-                    user: 'nerdzquiz@gmail.com',
-                    pass:  emailAccountPassword ///to be removed and changed
-                }
-            });
-
-            transporter.verify(function(error, success) {
-                if (error) {
-                    console.log(error);
-                    reject(error);
-                } else {
-                    console.log('Server is ready to take our messages');
-                }
-            });
-            // var server = process.env.EMAIL_FROM_SERVER || "http://localhost:8080"
-            // var link = server + "/forgot/"; //API TO RESET PASSWORD
-            var text = 'You are receiving this email because you are a Sidekick Admin responsible for uploading the attached data into Summit./n The Sidekick Team';
-            var html = '<br><div style="text-align: right; height:30; width:100"><img src="cid:unique@sidekick" height="42" width="42" alt="Sidekick"/></div><p>You are receiving this email because you are a Sidekick Admin responsible for uploading the attached data into Summit.</p><br><h4>The Sidekick Team</h4>';
-            // var html = '<br><br><p>You are receiving this email because you are a Sidekick Admin responsible for uploading the attached data into Summit.</p><br><h4>The Sidekick Team</h4>';
-    //         html: 'Embedded image: <img src="cid:unique@kreata.ee"/>',
-        // attachments: [
-            var imgPath = __dirname + '/../public/assets/img/sidekick.png';
-            var mailOptions = {
-                from: '" Sidekick Education " <nerdzquiz@gmail.com>',
-                to: email,
-                subject: 'Send to Summit',
-                text: text,
-                html: html,
-                attachments: [{
-                    path: filePath
-                },
-                {
-                    filename: 'sidekick.png',
-                    path:  imgPath,
-                    cid: 'unique@sidekick' //same cid value as in the html img src
-                }]
-            };
-            //send the email
-            transporter.sendMail(mailOptions, function(error, info) {
-                if (error) {
-                    console.log(error)
-                    reject(error)
-                }
-                resolve(filePath)
-            })
-        })
-    }
-
-    function createInstructions(data){
-        console.log("data", data)
-        let studentArr = [];
-        for (var s = 0; s < data.length; s++ ){
-            let studentObj = {};   
-            let grade = 'dummygrade';
-            // console.log("grade"grade)
-            studentObj.name =  data[s].student.first + ' ' + data[s].student.last ;
-            studentObj.grade =  "dummy data" + s;  // this is dummy data
-            // for each project
-            let projArr = [];
-            console.log("s", s)
-            for (var j = 0; j < data[s].projects.length; j++){
-                let projObj = {};
-                projObj.name =  data[s].projects[j].name;   
-                // for each fa
-                let faArr = [];
-                 for (var i = 0; i <  data[s].projects[j].fa.length; i++){
-                    let faObj = {}
-                    faObj.course =  data[s].projects[j].fa[i].course;
-                    faObj.position = data[s].projects[j].fa[i].courseSequence;
-                    faObj.faProjSeq = data[s].projects[j].fa[i].name + '(' + data[s].projects[j].fa[i].projectSequence +')';
-                    faArr.push(faObj);          
-                }
-                projObj.fa = faArr; 
-                projArr.push(projObj);             
-             }
-             studentObj.project = projArr;
-             studentArr.push(studentObj)
-         } 
-        return studentArr; 
-    }
-    function saveNewPath(data, username) {
-        // save path to data base then after this send mail to sidekick for upload
-        return new Promise((resolve, reject) => {
-            var studentArr = [];
-            var newPathArr = [];
-            // var summitArr = []
-            // get latest ids
-            // for each student
-            // var instructionCounter = 0;
-            for (var s = 0; s < data.length; s++ ){
-                // for each project
-                let studentObj = {_id: data[s].student._id}
-                let projectsArr=[];
-                for (var j = 0; j < data[s].projects.length; j++){
-                    // prepare data for saving to db
-                    let faArr=[];
-                    // for each focus area
-                    for (var i = 0; i <  data[s].projects[j].fa.length; i++){
-                        // instructionCounter++;
-                        let faObj = {
-                            _id:   data[s].projects[j].fa[i]._id,
-                            _key:  data[s].projects[j].fa[i]._key,
-                            sequence: i+1
-                        }
-                        faArr.push(faObj);
-                        // for send to summit email
-                        // var instruction = 'Instruction ' + instructionCounter + ': Course: ' + data[s].projects[j].fa[i].course + ' -->  Project : ' + data[s].projects[j].name + ' --> INCLUDE --> Focus Area: ' + data[s].projects[j].fa[i].name + ' --> POSITION --> ' + data[s].projects[j].fa[i].courseSequence + ' --> UPDATE --> Title: ' + data[s].projects[j].fa[i].name + '(' + data[s].projects[j].fa[i].projectSequence +')';   
-                    } 
-
-                    if (faArr.length > 0 ){
-                        let projectsObj={ name: data[s].projects[j].name, fa: faArr, sequence: j+1}
-                        projectsArr.push(projectsObj);
-                    }      
-                }
-                // don't save empty paths
-                if (projectsArr.length !== 0){     
-                    studentObj.path = projectsArr;
-                    studentObj.active = true;
-                    studentObj.createdDate = Date.now();
-                    studentObj.createdBy = username;
-                    studentObj.updatedDate = null;
-                    studentObj.updatedBy = null;
-                    studentArr.push(studentObj)
-                }
-
-            }
-            
-            // rewrote update logic for  tran 
-            if ( studentArr.length > 0 ){       
-                const action = String(function (studentArr, username) {
-                    // This code will be executed inside ArangoDB!
-                    const db = require('@arangodb').db;
-                    const aql = require('@arangodb').aql;
-                    // get oldpath ids and store for use below
-                    let getOldPath = aql`for s in ${params.studentArr}
-                        let cpArr = (for c in outbound s onPath return c._id)
-                        for cp in currentPath
-                            filter cp._id in cpArr
-                            filter cp.active == true
-                        return { sid: s._id, previd: cp._id}`;
-                    params.prevPathIdArr = db._query(getOldPath).toArray();
-                    // insert the new path and store the new ids
-                    let insertNewPath = aql`for s in ${params.studentArr}
-                        INSERT s IN currentPath return {_from: s._id, _to: NEW._id}`;
-                    params.newPathIdArr = db._query(insertNewPath).toArray();  
-                    // insert newPathIdArr into onPath edge
-                    let insertonPathEdgeQuery = aql`for e in ${params.newPathIdArr} INSERT {_from: e._from, _to: e._to} IN onPath return NEW`;
-                    db._query(insertonPathEdgeQuery);
-                    // insert from: oldpathid to: newpathid into UpdateTo
-                    let insertUpdatedToEdgeQuery = aql`for old in ${params.prevPathIdArr}
-                        for new in ${params.newPathIdArr} 
-                        filter old.sid == new._from
-                        INSERT {_from: old.previd, _to: new._to} IN updatedTo return NEW`;           
-                    let insertUpdatedToEdgeResult = db._query(insertUpdatedToEdgeQuery);
-                    // set to old path to inactive 
-                    let updateToInactiveQuery = aql`for e in ${params.prevPathIdArr}
-                        for c in currentPath
-                            filter c._id == e.previd
-                            UPDATE c with {active: false, updatedDate:  DATE_NOW(), updatedBy:"TEST" }
-                        IN currentPath return NEW`;
-                    let updateToInactiveResult = db._query(updateToInactiveQuery);    
-                    return;
-                })
-
-
-                db.transaction({read: ['currentPath', 'onPath'], write: ['currentPath', 'onPath', 'updatedTo']},
-                action,
-                {studentArr: studentArr, user: username, prevPathIdArr:[], newPathIdArr: [] })
-                .then(() => {
-                    // all goodnow send to summit
-                    // let summitArr = createInstructions(data);   
-                    resolve(createInstructions(data));
-                }).catch((error)=>{
-                    console.log(error);
-                    reject(error);
-                })
-            } else {
-                // let summitArr = ;   
-                resolve(createInstructions(data)); // what to resolve?
-            }
-        })
-    }
-
-    app.post('/summit', function(req,res){
-        // sendtosummit is the required permission for this path
-        validateUser(req, res, "publish").then((response) =>{
-            // first save the data then send to summit
-            saveNewPath(req.body, response.username).then((summitArr) => {
-                // Waiting for updated query srted by query topic === Project
-                // waiting for confirmation where to send this data
-                // create file
-                console.log("summitArr", summitArr)
-                if (summitArr.length !== 0 ){
-                    // don't send to Summit Email if no data
-                    var user =  response.username.split('@');
-                    var fileName = __dirname + '/../public/assets/files/sendToSidekick_' + user[0] +'.'+ Date.now() + '.txt';
-                    var file = fs.createWriteStream(fileName);
-                    file.on('error', function(err) { 
-                        console.log(err)
-                        // return error msg
-                        res.json({success: false, error: "Problem creating file"})
-                    });
-
-                    // // loop through summit array and write it out
-                    // for (var u = 0 ; u < summitArr.length; u++){
-                    //     summitArr
-                    // }
-
-
-                    summitArr.forEach(function(v) { 
-                        // loop through summit array and write it out
-                        // for (var u = 0 ; u < v.length; u++){
-                            file.write("GRADE: " +v.grade + '\n');
-                            file.write("STUDENT:"  + v.name + '\n');
-                            for (var u = 0; u < v.project.length; u++){
-                                file.write('PROJECT: ' + v.project[u].name + '\n');
-                                // console.log(v.project[u].fa)
-                                for (var w = 0; w < v.project[u].fa.length; w++){
-                                   file.write('COURSE: ' + v.project[u].fa[w].course + '\n');
-                                //    file.write('POSITION: ' + v.project[u].fa[w].position + '\n');
-                                   file.write("TITLE: " + v.project[u].fa[w].faProjSeq + '\n');
-                                }
-                                
-                            }
-                            file.write("***************"  + '\n');
-                        // }
-                        // file.write(v + '\n');
-                    });
-                    file.end();
-                    // send as attachment to email
-                    // var adminEmail = "paths@sidekick.education, fiona.hegarty@icloud.com";
-                    var adminEmail = "fiona.hegarty@icloud.com";
-                    // need to pass file path
-                    sendToSummitEmail(adminEmail, fileName).then((fileName) => {
-                        // delete file - cant do here! gets delte
-                        fs.unlinkSync(fileName);
-                        // send OK msg the browser sending emails....res.sendStatus(200)
-                        res.json({success: true, successMsg: "Data successfully sent to Summit."});
-                    }).catch((error) => {
-                        console.log(error);
-                        //send error status code?
-                        res.json({success: false,  errorMsg:  "There was a problem sending data, please contact support."});
-                    })
-                } else {
-                     res.json({success: false,   errorMsg: "There was a problem sending data, please contact support."}); // catch error to say no data!!
-                }
-            }).catch((error) => {
-                console.log(error);
-                res.json({success: false, errorMsg:  "There was a problem sending data, please contact support."})
-            })
-
-        }).catch((error) => {
-            // User validation error
-            console.log(error);
-            //send error status code?
-            res.json({success: false, successMsg: error})
-        })
-    })
 
     app.get('/api/roles/all', function(req, res){
         // get roles from database
@@ -540,7 +362,88 @@ module.exports = function(app){
 
     })
 
-    app.get(`/api/user/:uid/focusAreas`, function(req, res){
+    app.get('/api/user/:userKey/entities', async (req, res, next) => {
+        const userKey = req.params.userKey
+        console.log(`>>> Focus Area and Course Data endpoint hit for ${userKey}`)
+
+        try {
+            const query = aql`
+                for v, e, p
+                in 3 outbound ${`auth_users/${userKey}`}
+                hasSection, hasCourse, focusesOn
+                filter IS_SAME_COLLECTION('courses', p.vertices[2])
+                    and IS_SAME_COLLECTION('focusAreas', p.vertices[3])
+                    and p.vertices[*] none == null
+                collect f = p.vertices[3] into c = p.vertices[2]
+                sort f.grade, f.subject, f.name
+                return MERGE(f, { course: FIRST(UNIQUE(c)) })            
+            `
+            const cursor = await db.query(query)
+            const details = await cursor.all()
+            const entities = normalize(details, entitySchema)
+            res.json( entities )
+        } catch (err) {
+            next(err)
+        }            
+    })
+
+    app.get('/api/pathbuilder/:userKey/options', async (req, res, next) => {
+        
+        const userKey = req.params.userKey
+        console.log(`>>> Options endpoint hit for ${userKey}.`)
+
+        try {
+            const query = aql`
+            let sources = MERGE(
+                for v, e, p
+                in 1..3 any ${`auth_users/${userKey}`}
+                hasSection, auth_hasRole
+                filter IS_SAME_COLLECTION('sections', p.vertices[1])
+                    and IS_SAME_COLLECTION('auth_users', p.vertices[2])
+                    and IS_SAME_COLLECTION('auth_roles', p.vertices[3])
+                    and PARSE_IDENTIFIER(p.vertices[3]._id).key == 'student'
+                    for t in [p.vertices[1], p.vertices[2]]
+                    collect type = PARSE_IDENTIFIER(t._id).collection into items = t
+                    return { [type]: UNIQUE(items) }
+            )
+            
+            for s in sources.auth_users
+                for v, e, p
+                in 5 outbound s
+                hasSection, hasCourse, focusesOn, any alignsTo
+                filter IS_SAME_COLLECTION('sections', p.vertices[1])
+                    and p.vertices[1] in sources.sections
+                    and IS_SAME_COLLECTION('courses', p.vertices[2])
+                    and IS_SAME_COLLECTION('focusAreas', p.vertices[3])
+                    and IS_SAME_COLLECTION('standards', p.vertices[4])
+                    and IS_SAME_COLLECTION('projects', p.vertices[5])
+                    and p.vertices[*] none == null
+                    and p.vertices[5].topics != null
+                    for t in p.vertices[5].topics
+                    collect student = KEEP(p.vertices[0], '_key', 'first', 'last', 'grade'),
+                        grade = p.vertices[0].grade,
+                        course = KEEP(p.vertices[2], '_key', 'name'),
+                        subject = p.vertices[3].subject,
+                        standard = p.vertices[4]._key,
+                        topic = t
+                    return {
+                        'students': student,
+                        'grades': grade,
+                        'courses': course,
+                        'subjects': subject,
+                        'standards': standard,
+                        'topics': topic
+                    }
+            `
+            const cursor = await db.query(query)
+            const options = await cursor.all()
+            res.json( { optionTable: options } )
+        } catch (err) {
+            next(err)
+        }
+    })
+
+    app.get(`/api/user/:uid/focusAreas`, async (req, res, next) => {
         const uid = req.params.uid;
 
         let query = aql`
@@ -549,16 +452,13 @@ module.exports = function(app){
             hasCourse, focusesOn
             return KEEP(focusArea, '_id', '_key', 'name')
         `;
-    //  console.log(query)
-        db.query(query)
-        .then(cursor => { 
-            // console.log("FA", cursor._result);
-            res.json({success: true, fa: cursor._result});
-        }).catch(error => {
-            console.log(Date.now() + " Error (Get FA from Database):", error);
-            res.json({success: false});
-        })  
-
+        try {
+            const cursor = await db.query(query)
+            const result = await cursor.all
+            res.json({ success: true, fa: result })
+        } catch (err) {
+            next(err)
+        }
     })
 
     app.get('/api/fa/:faKey', function(req, res){

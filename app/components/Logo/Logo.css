@@ -1,0 +1,27 @@
+.brand {
+    max-height: 100%;
+}
+
+.brandTopSpacing {
+    padding-top: 2rem;
+}
+
+.brandBottomSpacing {
+    padding-bottom: 2rem;
+}
+
+.brandLeftSpacing {
+    padding-left: 1rem;
+}
+
+.brandRightSpacing {
+    padding-right: 1rem;
+}
+
+.small {
+    max-width: 10rem;
+}
+
+.default {
+    max-width: 20rem;
+}

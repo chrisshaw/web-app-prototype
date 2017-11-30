@@ -22,116 +22,6 @@ var helpers = {
         }
         return "";
     },
-    submitCSVFile: function(e, dispatch){
-        var files = e.target.files || e.dataTransfer.files 
-        if (files) {
-            //send only the first one
-            var file = files[0];
-            //read the file content and prepare to send it
-            var reader = new FileReader();
-            reader.onload = function(e) {
-                var buffer = e.target.result;
-                var postObj = {
-                    name: file.name,
-                    buffer: buffer
-                };    
-                return axios.post('/csv/file', postObj).then(function(response){
-                    // console.log("response", response.data);
-                    //  added perms check res.json({success: false, auth: false})
-                    // handle no perms error auth == false too
-                    dispatch(actions.viewUploadedCSVData(response.data.results, response.data.error))          
-                }).catch((error) => {
-                // send message to client...needs work
-                console.log(error)
-                })
-            }
-            // reader.readAsBinaryString(file);
-             reader.readAsText(file);
-        }
-    },
-    saveCSVStudentData(data, dispatch){
-        let component = this;
-        // need to pass the auth header in the cookie to server
-        // let USER_TOKEN = helpers.getCookie("x-foxxsessid");
-
-        if (data){
-            return axios({
-                method: 'post',
-                url: '/csv/students/courses/data', 
-                data: data,
-                // headers: {'x-foxxsessid': USER_TOKEN}
-            })
-            .then(function(response) {           
-                // this will clear the data from the upload Page after saving....
-                // by settting csvdata to ""
-                dispatch(actions.viewUploadedCSVData(""));
-                // ***handle no perms error response.data.auth == false too
-                // success or catchure - return mesage to client this.props.dataupload = boolean
-                component.dataUploadStatus(response.data.success, response.data.error, dispatch);
-                return;               
-            }).catch((error) => {
-                // send message to client...needs work
-                console.log(error)
-            })
-        }
-    },
-    dataUploadStatus(response, error, dispatch){
-        dispatch(actions.returnUploadedStatus(response, error));
-    },
-    toggleDrawer: function(action, dispatch){
-        dispatch(actions.closePathBuilderDrawer(action))
-    },
-    // getGroups: function(reset, deletedispatch){
-    //     return axios.get('/api/teacher/group').then(function(response) {
-    //         // send results to redux store for use by Results component
-    //         dispatch(actions.updateGroupList(reset, false, 0, response.data));
-    //         return response.data;
-    //     })
-    // },
-    getGrades: function(reset, deleteGroup, dispatch){
-       var gradeArr = [{_id: 0, name: "6"}, {_id: 1, name: "7"},{_id: 2, name: "8"}, {_id: 3, name: "9"},{_id: 4, name: "10"}, {_id: 5, name: "11"}, {_id: 6, name: "12"}]
-       dispatch(actions.updateList(reset, deleteGroup, 0, 'UPDATE_GRADES', gradeArr));
-    },
-    getCourses: function(reset, deleteGroup, username, role, dispatch){
-        return axios
-                .get(`/api/user/${username}/courses/`)
-                .then(function(response) {
-                    // send results to redux store for use by Results component
-                    dispatch(actions.updateList(reset, deleteGroup, 0, 'UPDATE_COURSES', response.data));
-                    return;
-                })
-    },
-    getStandards: function(reset, deleteGroup, grade, dispatch){
-        // console.log("herloer get std")
-        /// parse array to a string for query.
-        // remove grade!!!!!!
-        let gradeString = "";
-        if (grade.length > 0) {
-            if (grade.length === 1){
-                gradeString = grade[0].name;
-            } else {
-                gradeString = grade[0].name;
-                for (var i = 1; i < grade.length; i++){
-                    gradeString +=  ',' + grade[i].name;
-                }
-            }
-        }
-        return axios.get('/api/standards/'+gradeString).then(function(response) {
-                // send results to redux store for use by Results component
-                /// need to put in an object with an id
-                //  console.log("standards" ,response.data)
-                var standardsArr = [];
-                for (var i = 0; i < response.data[0].length; i++){
-                    standardsArr.push({ _id: i, name: response.data[0][i]})
-                }
-                // id is not 0 so we can safely use as placeholder
-                dispatch(actions.updateList(reset, deleteGroup, 0, 'UPDATE_STANDARDS', standardsArr))
-                return;
-            }).catch((error) => {
-                // send message to client...needs work
-                console.log(error)
-            })
-    },
     saveSelectedFA(e, dispatch){
         // need name and id
        dispatch(actions.selectedFA(e));
@@ -148,27 +38,6 @@ var helpers = {
             // send message to client...needs work
             console.log(error)
         })   
-    },
-    getTopics(reset, deleteGroup, dispatch){
-        return axios.get('/api/topics/').then(function(response) {
-            // send results to redux store for use by Results component
-            /// need to put in an object with an id 
-            var topicArr = [];
-            for (var i = 0; i < response.data.length; i++){
-                // console.log("topics i", response.data[i])
-                topicArr.push({ _id: i, name: response.data[i].toLowerCase()})
-            }
-            dispatch(actions.updateList(reset, deleteGroup, 0, 'UPDATE_TOPICS', topicArr))  
-            return;
-        }).catch((error) => {
-            // send message to client...needs work
-            console.log(error)
-        })   
-    },
-
-    getSubjectContents(reset, deleteGroup, dispatch){
-        var subjectArr = [{_id: 0, name: "english"}, {_id: 1, name: "math"}, {_id: 2, name: "science"}, {_id: 3, name: "social studies"}]
-        dispatch(actions.updateList(reset, deleteGroup, 0, 'UPDATE_SUBJECTS', subjectArr))
     },
     // this path is for new query based on project
     getPathProjectAll(courses, grades, standards, topics, subjects, role, dispatch){
@@ -192,43 +61,7 @@ var helpers = {
             console.log("this is an error", error);
         })  
     },
-    // original query based on student and not group into projects
-    getPathsAll(courses, grades, standards, topics, subjects, role, dispatch){
-         var queryObj = {
-            courses: courses,
-            grades: grades,
-            standards: standards,
-            topics: topics,
-            subjects: subjects,
-            role: role
-        }
-         console.log("queryObj.topics", queryObj.topics)
-        dispatch(actions.updatePathList("", true, true));
-        return axios.post('/api/path/all', queryObj).then(function(response) {
-            console.log(response.data)
-            dispatch(actions.updatePathList(response.data, false, false));
-            return;
-         }).catch((error) => {
-            // send message to client...needs work
-            console.log(error)
-        })  
-    },
-    sendToSidekick(props){
-        return axios.post('/summit', props.paths).then(function(response) {
-            console.log("response.data.successMsg", response.data.successMsg)
-            if (response.data.success) {
-                props.dispatch(actions.setSuccess(response.data.success, response.data.successMsg));
-            } else if (!response.data.success){
-                props.dispatch(actions.setError(true, response.data.errorMsg));
-            }
-            return; 
-         }).catch((error) => {
-             console.log("error", error)
-            // send message to client...needs work
-            props.dispatch(actions.setError(true, response.data.errorMsg));
-        })  
 
-    },
     setErrorMsg(props){
         props.dispatch(actions.setError(false, ""))
     },
@@ -394,7 +227,7 @@ var helpers = {
                 router.push('/password');
                 // console.log('router', router);
             } else {
-                router.push('/buildpath');
+                router.push('/build-path');
             }
            
             return;
@@ -426,7 +259,7 @@ var helpers = {
                 data: userObj
         }).then(function(response) {  
             // captures error and sends any relevant message to UI
-            // handle no perms error auth == false 
+            // handle no permissions error auth == false 
             // console.log("response.data", response.data)
             dispatch(actions.userSignUp(response.data.success));
             dispatch(actions.userLoginError(!response.data.success, response.data.msg));
@@ -465,7 +298,7 @@ var helpers = {
     logout(dispatch, router){
         // send to api for auth
         // set logged in to false
-        dispatch(actions.userLogin({loggedin: false, username: null, perms: [], role: null}));
+        dispatch(actions.userLogin({loggedIn: false, username: null, permissions: [], role: null}));
         // clear redux store and reset
         dispatch(actions.userLogout());
         router.push('/login');

@@ -1,0 +1,11 @@
+.iconButton {
+    margin-right: 7%;
+}
+
+.actions {
+    justify-content: flex-end;
+}
+
+.focusArea + .focusArea {
+    margin-top: 1rem;
+}

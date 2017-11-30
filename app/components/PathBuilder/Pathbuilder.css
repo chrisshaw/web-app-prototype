@@ -1,0 +1,23 @@
+.pathbuilder {
+    display: grid;
+    grid-template-columns: [left-edge] 25fr [middle-start] 50fr [middle-end] 25fr [right-edge];
+    grid-template-rows: auto;
+    grid-template-areas:
+        "builder path details"
+}
+
+.queryArea {
+    grid-area: builder;
+}
+
+.pathArea {
+    grid-area: 1 / middle-start / 2 / right-edge;
+}
+
+.withDetails {
+    grid-area: 1 / middle-start / 2 / middle-end;
+}
+
+.detailArea {
+    grid-area: details;
+}

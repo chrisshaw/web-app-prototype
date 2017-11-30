@@ -1,10 +1,22 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'react-redux';
 import { Tabs, Tab } from 'material-ui/Tabs';
+
 import Snackbar from 'material-ui/Snackbar';
 import StudentsTab from './StudentsTab';
 import TeachersTab from './TeachersTab';
 import ClassTab from './ClassTab';
+
+// *** MUI MIGRATION ***
+// import Tabs, { Tab } from 'mui-next/Tabs'
+// import Style from './AdminPanel.css'
+//
+// const navItems = [
+//   {
+//       value: 'teachersTab',
+//       label: "Teachers and Administrators",
+//   }
+// ]
 
 const styles = {
   wrapper: {
@@ -29,7 +41,7 @@ class AdminPanel extends PureComponent {
   render() {
     const { isFlashMessageShowing, flashMessage } = this.props;
     return (
-      <div style={styles.wrapper}>
+      <div id="admin-table" style={styles.wrapper}>
         <Tabs>
           {this.isAdmin() && <Tab label="Teacher & Administrators">
             <TeachersTab/>

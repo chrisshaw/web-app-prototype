@@ -1,0 +1,27 @@
+.project {
+    display: flex;
+    flex-flow: row nowrap;
+}
+
+.project + .project {
+    margin-top: 2rem;
+}
+
+.projectNames {
+    flex: 2;
+    padding-right: 0.5rem;
+}
+
+.projectName {
+    position: sticky;
+    top: 2rem;
+    text-align: left;
+}
+
+.projectButton {
+    padding-left: 0 !important;
+}
+
+.focusAreaList {
+    flex: 11;
+}
