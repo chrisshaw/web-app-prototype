@@ -236,39 +236,6 @@ var helpers = {
             console.log(error)
         })  
     },
-
-    signUpUsers(email, password, first, last, school, role, dispatch, router){      
-        let userObj = { 
-            "username": email.toLowerCase(),
-            "password": password,
-            "first": first,
-            "last": last,
-            "school": school,
-            "role": role,
-            "chgPwd": 'true'
-        }
-        // reset the signup success message
-        dispatch(actions.userSignUp(false));
-        // let component = this;
-        // need to pass the auth header in the cookie to server
-        // let USER_TOKEN = helpers.getCookie("x-foxxsessid");
-        // send request to server
-        return axios({
-                method: 'post',
-                url: '/signup', 
-                data: userObj
-        }).then(function(response) {  
-            // captures error and sends any relevant message to UI
-            // handle no permissions error auth == false 
-            // console.log("response.data", response.data)
-            dispatch(actions.userSignUp(response.data.success));
-            dispatch(actions.userLoginError(!response.data.success, response.data.msg));
-            return;
-         }).catch((error) => {
-            // send message to client...needs work
-            console.log(error)
-        })  
-    },
     changePwd(pwd, dispatch, route) {
        
         let dataObj = {"password": pwd};

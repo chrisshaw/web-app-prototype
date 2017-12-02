@@ -1,21 +1,9 @@
-import { LOGGED_IN, LOGIN_ERROR, GET_ROLES, SIGN_UP_STATUS, SIGN_UP_FIELDS } from '../actions/auth/actionTypes';
+import { LOGGED_IN, LOGIN_ERROR, GET_ROLES, SIGN_UP_STATUS, SIGN_UP_FIELDS, SIGN_UP_USER, SIGN_UP_USER_SUCCESS, SIGN_UP_USER_FAILED } from '../actions/auth/actionTypes';
 
 const initialState = {
     loggedIn: false,
     permissions: [],
     loginError: false,
-    signupFields: {
-        email: '', 
-        password : '', 
-        first: '',
-        last: '',
-        company: '',
-        verify: '', 
-        selectedRole: 'Please Select a Role',
-        description: '',
-        error: false, 
-        errorMsg: ""
-    }
 }
 
 export default (state = initialState, action) => {
@@ -30,25 +18,10 @@ export default (state = initialState, action) => {
             });
         case LOGIN_ERROR:
             return Object.assign( { loginError: false }, state, { loginError: action.loginError, errorMsg: action.errorMsg }); 
-        case GET_ROLES:
-            return Object.assign( {}, state, { roles: action.roles } );
-        case SIGN_UP_STATUS:
-            return Object.assign( { signupOk: false }, state, { signupOk: action.signupOk, statusMsg: action.statusMsg }); 
-        case SIGN_UP_FIELDS:
-            return Object.assign( {
-                signupFields:  {
-                    email: '', 
-                    password : '', 
-                    first: '',
-                    last: '',
-                    school: '',
-                    verify: '', 
-                    selectedRole:  'Please Select a Role',
-                    description: '',
-                    error: false, 
-                    errorMsg: ""
-                }
-            }, state, { signupFields: action.signupFields }
+        case SIGN_UP_USER_SUCCESS:
+            return { ...state, signupOk: true } 
+        case SIGN_UP_USER_FAILED:
+            return { ...state, signupOk: false }
         );
     };      
     return state;

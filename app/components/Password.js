@@ -1,11 +1,6 @@
 import React, { Component } from 'react';
 import {connect } from 'react-redux';
-import {Grid, Row, Col} from 'react-bootstrap';
-import RaisedButton from 'material-ui/RaisedButton';
-import Dialog from 'material-ui/Dialog';
-import FlatButton from 'material-ui/FlatButton';
-import muiThemeable from 'material-ui/styles/muiThemeable';
-import helper from '../helper';
+import Button from 'mui-next/Button'
 
 class Password extends Component{
     constructor(props){
@@ -64,11 +59,10 @@ class Password extends Component{
     }
     render(){
         const actions = [
-            <FlatButton
-                label="Close"
-                onTouchTap={this.handleClose}
-            />
-            ];
+            <Button onClick={this.handleClose}>
+                Save
+            </Button>
+        ];
         return( 
             <div className="form-signin">
                 <Row>
@@ -125,7 +119,7 @@ class Password extends Component{
                 </Row>
                 <Row>
                     <Col xs={12} md={12} className="text-center">
-                        <RaisedButton style={{margin: 10}} secondary={true} containerElement='label' onTouchTap={this.handleSubmit}  label="Change Password" />
+                        <Button style={{margin: 10}} secondary={true} containerElement='label' onTouchTap={this.handleSubmit}  label="Change Password" />
                     </Col>
                  
                 </Row>
