@@ -22,7 +22,8 @@ export default (state = initialState, action) => {
             return { ...state, signupOk: true } 
         case SIGN_UP_USER_FAILED:
             return { ...state, signupOk: false }
-        );
+        default:
+            return state;
     };      
     return state;
 }

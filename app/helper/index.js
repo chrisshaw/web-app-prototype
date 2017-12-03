@@ -236,28 +236,7 @@ var helpers = {
             console.log(error)
         })  
     },
-    changePwd(pwd, dispatch, route) {
-       
-        let dataObj = {"password": pwd};
-        //  console.log("pwd", dataObj)
-        return axios({
-                method: 'post',
-                url: '/password', 
-                data: dataObj
-        }).then(function(response) {  
-            // handle false later!
-            if (response.data.success) {
-                route.push('/');
-            } else {
-               dispatch(actions.userLoginError(!response.data.success, response.data.msg));
-            }
-            return;
-         }).catch((error) => {
-            // send message to client...needs work
-            console.log(error)
-        })  
-        
-    },
+
     loginError(value, msg, dispatch){
          dispatch(actions.userLoginError(value, msg))
     },

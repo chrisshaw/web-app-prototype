@@ -27,7 +27,7 @@
     "deep-equal": "^1.0.1",
     "express": "^4.15.3",
     "lodash": "^4.17.4",
-    "material-ui": "npm:material-ui@next",
+    "material-ui": "^0.19.4",
     "material-ui-icons": "^1.0.0-beta.17",
     "material-ui-scrollable-tabs": "^1.0.0",
     "mui-next": "npm:material-ui@next",
