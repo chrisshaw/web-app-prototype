@@ -87,6 +87,6 @@ export default connect(
     {
         tryChangePassword
     }
-)(Password);
+)(PasswordForm);
 
 
