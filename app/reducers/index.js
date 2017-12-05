@@ -1,6 +1,5 @@
 import uuid from 'uuid';
 import { combineReducers } from 'redux';
-import update from 'immutability-helper';
 import studentsTabReducer from './studentsTab';
 import classReducer from './class';
 import authReducer from './auth'

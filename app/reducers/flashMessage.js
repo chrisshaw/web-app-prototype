@@ -3,6 +3,8 @@ import {
   HIDE_MESSAGE,
 } from '../actions/flashMessage/actionTypes';
 import { QUERYBUILDER_FETCH_PATHS_FAILED } from '../actions/pathbuilder/actionTypes'
+import { } from '../actions/auth'
+import { SIGN_UP_USER_FAILED, SIGN_UP_USER_SUCCESS } from '../actions/auth/actionTypes';
 
 const initialState = {
   isMessageShowing: false,
@@ -21,6 +23,10 @@ export default (state = initialState, action) => {
         isMessageShowing: true,
         message: action.payload.err
       })
+    case SIGN_UP_USER_SUCCESS:
+      return { ...state, isMessageShowing: true, message: action.payload.message }
+    case SIGN_UP_USER_FAILED:
+      return { ...state, isMessageShowing: true, message: action.payload.error }
     case HIDE_MESSAGE:
       return Object.assign({}, state, { isMessageShowing: false });
 

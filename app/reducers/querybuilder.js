@@ -127,7 +127,7 @@ export const getFilteredOptionsTable = (state, optionList) => {
 
 export const getGradeOptions = state => Array.from(new Set(getFilteredOptionsTable(state, 'grades').map( option => option.grades )))
 export const getCourseOptions = state => reduceToUniqueObjects(getFilteredOptionsTable(state, 'courses'), 'courses')
-export const getTopicOptions = state => Array.from(new Set(getFilteredOptionsTable(state, 'topics').map( option => option.topics )))
+export const getTopicOptions = state => Array.from(new Set(getFilteredOptionsTable(state, 'topics').map( option => option.topics ))) 
 export const getSubjectOptions = state => Array.from(new Set(getFilteredOptionsTable(state, 'subjects').map( option => option.subjects )))
 export const getStandardsOptions = state => Array.from(new Set(getFilteredOptionsTable(state, 'standards').map( option => option.standards )))
 export const getChosenStudents = state => reduceToUniqueObjects(getFilteredOptionsTable(state, 'students'), 'students')

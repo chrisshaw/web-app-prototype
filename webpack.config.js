@@ -80,10 +80,8 @@ module.exports = {
                     presets: [
                         ['env', { debug: true }],
                         ['react'],
-                        ['stage-0']
-                    ],
-                    plugins: [
-                        'transform-decorators-legacy'
+                        ['stage-0'],
+                        ['stage-1']
                     ]
                 }
             }
