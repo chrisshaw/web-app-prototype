@@ -8,7 +8,7 @@ import Style from './Signup.css'
 
 const Signup = props => (
     <main className={Style.signup}>
-        <SignupForm router={this.props.router} />  
+        <SignupForm router={props.router} />  
     </main>
 )
 

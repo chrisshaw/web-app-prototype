@@ -9,7 +9,7 @@ import Style from './Password.css'
 
 const Password = props => (
     <main className={Style.password}>
-        <PasswordForm router={this.props.router} />  
+        <PasswordForm router={props.router} />  
     </main>
 );
 

@@ -9,7 +9,7 @@ import Style from './Login.css'
 
 const Login = props => (
     <main className={Style.login}>
-        <LoginForm router={this.props.router} />  
+        <LoginForm router={props.router} />  
     </main>
 );
 
