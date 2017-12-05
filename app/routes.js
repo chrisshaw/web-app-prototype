@@ -1,12 +1,10 @@
 import React from "react";
 import ReactRouter from "react-router";
-// import IndexRoute from "react-router";
-// import PropsRoute from "react-router";
 import Main from "./components/Main/Main";
-import SignUpTab from "./components/SignUpTab";
+import SignUpTab from "./components/Signup/Signup";
 import Login from "./components/Login/Login";
 import Forbidden from "./components/Forbidden";
-import Password from "./components/Password";
+import Password from "./components/Password/Password";
 import validatePerms  from "./components/ValidatePerms";
 import PathBuilder from "./components/PathBuilder/PathBuilder";
 import AdminPanel from "./components/AdminPanel";

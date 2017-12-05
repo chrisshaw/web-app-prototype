@@ -1,8 +1,7 @@
-var arangojs = require('arangojs');
+const arangojs = require('arangojs') // var arangojs = require('arangojs');
 var Database = arangojs.Database;
 const aql = arangojs.aql;
 var path = require('path');
-var nodemailer = require("nodemailer");
 var fs = require('fs');
 const config = require('./dbconfig.js')[process.env.DB_MODE];
 const normalizr = require('normalizr')
