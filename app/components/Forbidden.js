@@ -1,6 +1,6 @@
 import React from 'react';
 
-const Forbidden = (
+const Forbidden = props  => (
     <div>
         Unauthorized!
     </div>
