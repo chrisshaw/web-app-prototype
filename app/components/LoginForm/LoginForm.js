@@ -88,4 +88,6 @@ const mapStateToProps = (store) => {
         errorMsg: store.authState.errorMsg,
     }
 }
-export default connect(mapStateToProps)(LoginForm);
+export default connect(
+    mapStateToProps
+)(LoginForm);
