@@ -18,7 +18,8 @@ import {
     SUCCESS_PATH_RELATED_PROJECTS,
     ERROR_PATH_RELATED_PROJECTS,
     PATHVIEWER_CHANGE_CURRENT_PATH,
-    PATHVIEWER_CLEAR_DETAILS
+    PATHVIEWER_CLEAR_DETAILS,
+    REQUEST_RECOMMENDATION,
 } from '../actions/pathbuilder/actionTypes'
 
 
@@ -104,6 +105,10 @@ export const projectReducer = (state = projectInitialState, action) => {
                     fa: addNewList
                 }
             }
+        case REQUEST_RECOMMENDATION:
+            console.log('> action', action.payload);
+            console.log('> state', state)
+            return state;
         default:
             return state
     }

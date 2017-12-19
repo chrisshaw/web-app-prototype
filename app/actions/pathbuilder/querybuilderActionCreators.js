@@ -172,6 +172,7 @@ export const tryFetchPathsWithQueryBuilder = query => async dispatch => {
         const pathResponse = await callApi('post', 'path/project', query)
         // Once we see the data, we can see what error handling we need.
         if (true) {
+            console.log('> paths', pathResponse)
             const paths = pathResponse.data
             dispatch(showPathsFromQueryBuilder(paths))
         } else {

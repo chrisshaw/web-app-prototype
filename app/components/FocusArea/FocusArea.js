@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
+import { bindActionCreators } from 'redux'
 
 import Button from 'mui-next/Button'
 import Icon from 'mui-next/Icon'
@@ -15,6 +16,10 @@ import SubjectIcon from '../SubjectIcon/SubjectIcon'
 import {
     globalGetFocusAreaWithRelevanceById,
 } from '../../reducers'
+import { changeRecommendation } from '../../actions/pathbuilder/pathviewerActionCreators'
+
+import { ThumbUp, ThumbDown } from 'material-ui-icons';
+import IconButton from 'mui-next/IconButton'
 
 export const FocusAreaIcon = props => {
     let ligature = 'school'
@@ -96,8 +101,25 @@ const styles = theme => ({
     },
     secondary: {
         backgroundColor: theme.palette.secondary[500]
-    }
+    },
 })
+
+const inlineStyles = {
+    CardHeader: {
+        width: 'calc(100% - 125px)'
+    },
+    iconButtonStyle: {
+        padding: 0,
+        height: 30,
+        width: 36
+    },
+    iconButtonColor: {
+        color: '#e9e9e9'
+    },
+    iconButtonSelected: {
+        color: '#7c7c7c'
+    }
+}
 
 const StyledAvatar = withStyles(styles, { withTheme: true })(ColoredAvatar)
 
@@ -120,39 +142,97 @@ const RelevanceIndicator = ({subject, relevance}) => {
     )
 }
 
-const FocusAreaHeader = props => {
-    const { subject, name, relevance, course, ...rest } = props
-    
+const FocusAreaHeader = ({subject, name, relevance, course, projectName, id, changeRecommendation, recommendation, ...rest}) => {
+
     const focusAreaAvatar = <RelevanceIndicator subject={subject} relevance={relevance} />
 
     return (
-        <CardHeader
-            avatar={focusAreaAvatar}
-            title={name}
-            subheader={course}
-        />
+        <div className={Style.faHeaderWrapper}>
+            <CardHeader
+                avatar={focusAreaAvatar}
+                title={name}
+                subheader={course}
+            />
+            <div className={Style.faHeaderRecommendation}>
+                <div className={Style.faHeaderRecommendationText}>
+                    Recommendation
+                </div>
+                <div className={Style.faHeaderRecommendationButtons}>
+                    <IconButton
+                        style={inlineStyles.iconButtonStyle}
+                        onClick={() => {
+                            changeRecommendation({
+                                topic: projectName,
+                                fa: id,
+                                action: 'like',
+                            })
+                        }}
+                    >
+                        <ThumbUp
+                            style={recommendation === ''
+                                ? inlineStyles.iconButtonColor
+                                : recommendation === 'dislike'
+                                    ? inlineStyles.iconButtonColor
+                                    : inlineStyles.iconButtonSelected
+                            }
+                        />
+                    </IconButton>
+                    <IconButton
+                        style={inlineStyles.iconButtonStyle}
+                        onClick={() => {
+                            changeRecommendation({
+                                topic: projectName,
+                                fa: id,
+                                action: 'dislike',
+                            })
+                        }}
+                    >
+                        <ThumbDown
+                            style={recommendation === ''
+                                ? inlineStyles.iconButtonColor
+                                : recommendation === 'like'
+                                    ? inlineStyles.iconButtonColor
+                                    : inlineStyles.iconButtonSelected
+                            }/>
+                    </IconButton>
+                </div>
+            </div>
+        </div>
     )
 }
 
-export const FocusArea = props => (
-    <div>
-        <Card className={Style.focusArea}>
-            <FocusAreaHeader
-                name={props.focusArea.name}
-                subject={props.focusArea.subject}
-                course={props.focusArea.course}
-                relevance={props.focusArea.relevance}
-            />
-            <FocusAreaActionBar actions={props.actions} />
-        </Card>
-        <FocusAreaAdder addHandler={props.addHandler} />
-    </div>
-)
+export const FocusArea = props => {
+    return (
+        <div>
+            <Card className={Style.focusArea}>
+                <FocusAreaHeader
+                    changeRecommendation={props.changeRecommendation}
+                    projectName={props.projectName}
+                    recommendation={props.recommendation}
+                    name={props.focusArea.name}
+                    subject={props.focusArea.subject}
+                    course={props.focusArea.course}
+                    relevance={props.focusArea.relevance}
+                    id={props.focusArea._id}
+                />
+                <FocusAreaActionBar actions={props.actions}/>
+            </Card>
+            <FocusAreaAdder addHandler={props.addHandler}/>
+        </div>
+    )
+}
 
 const mapStateToProps = (state, props) => ({
     focusArea: globalGetFocusAreaWithRelevanceById(state, props.relevantFocusAreaId)
 })
 
+const mapDispatchToProps = (dispatch) => bindActionCreators({
+    changeRecommendation,
+},
+    dispatch,
+)
+
 export default connect(
-    mapStateToProps
+    mapStateToProps,
+    mapDispatchToProps,
 )(FocusArea)
