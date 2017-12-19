@@ -7,7 +7,8 @@ import {
     PATHVIEWER_CLEAR_DETAILS,
     PATHVIEWER_FETCH_FOCUS_AREA_OPTIONS,
     PATHVIEWER_LOAD_FOCUS_AREA_OPTIONS,
-    PATHVIEWER_FETCH_FOCUS_AREA_OPTIONS_FAILED
+    PATHVIEWER_FETCH_FOCUS_AREA_OPTIONS_FAILED,
+    REQUEST_RECOMMENDATION,
 } from './actionTypes'
 
 import callApi from '../../helper/api'
@@ -81,5 +82,23 @@ export const tryFetchFocusAreaOptions = userKey => async dispatch => {
     } catch (error) {
         console.log(error)
         dispatch(fetchFocusAreaOptionsFailed(error))
+    }
+}
+
+export const changeRecommendation = data => async dispatch => {
+    try {
+        const payload = await callApi('post', '/recommendation', data)
+        // Once we see the data, we can see what error handling we need.
+        if (!!payload) {
+            dispatch({
+                type: REQUEST_RECOMMENDATION,
+                payload,
+            })
+        } else {
+            throw new Error('Something went wrong.')
+        }
+    } catch (err) {
+        console.log(err)
+        dispatch(fetchPathsWithQueryBuilderFailed(err))
     }
 }

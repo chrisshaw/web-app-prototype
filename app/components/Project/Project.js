@@ -17,6 +17,16 @@ class Project extends Component {
     }
 
     render() {
+        let recommendations = [];
+        if (this.props.project.fa.length) {
+            this.props.project.fa.forEach(fa => {
+                recommendations.push({
+                    id: fa.split('_')[0],
+                    recommendation: ''
+                })
+            })
+        }
+
         return (
             <div className={Style.project}>
                 <aside className={Style.projectNames}>
@@ -33,13 +43,15 @@ class Project extends Component {
                         </Button>
                     </div>
                 </aside>
-                {this.props.project.fa.length ? 
-                    <FocusAreaList
+                {this.props.project.fa.length
+                    ? <FocusAreaList
+                        projectName={this.props.project.name}
                         className={Style.focusAreaList}
                         projectId={this.props.projectId}
                         relevantFocusAreas={this.props.project.fa}
-                    /> : 
-                    <Typography type='subheading' align='center'>No focus areas found for this topic.</Typography>
+                        recommendations={recommendations}
+                    />
+                    : <Typography type='subheading' align='center'>No focus areas found for this topic.</Typography>
                 }
             </div>
         )

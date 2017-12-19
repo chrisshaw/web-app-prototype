@@ -9,3 +9,27 @@
 .focusArea + .focusArea {
     margin-top: 1rem;
 }
+
+.faHeaderWrapper {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.faHeaderRecommendation {
+    align-self: center;
+    margin: 0 16px 0 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.faHeaderRecommendationText {
+    font-size: 14px;
+}
+
+.faHeaderRecommendationButtons {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}

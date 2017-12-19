@@ -284,7 +284,6 @@ module.exports = function(app){
      app.post('/api/path/project', (req, res, next) => {
         validateUser(req, res, "buildPath")
         .then( response => {
-
             const constructQueryParams = queryObject => {
                 console.log(queryObject)
                 return Object.entries(queryObject).reduce( (queryString, [key, value], i, entries) => {
@@ -328,10 +327,11 @@ module.exports = function(app){
             pathBuilderService
                 .get(encodedPath)
                 .then( response => {
-                    console.log(JSON.stringify(response.body))
+                    console.log('--- Normalized response', normalize(response.body, pathSchema))
                     res.status(200).json(normalize(response.body, pathSchema))
+
                 })
-                .catch( error => {
+                .catch(error => {
                     console.log(Date.now() + " Error (Getting paths from Database):", '\n', error );
                     next(error);
                 })
@@ -674,6 +674,139 @@ module.exports = function(app){
           return result;
         }
     });
+
+
+    // like / dislike recommendation
+    app.post('/api/recommendation', async(req, res) => {
+        if (!(req.body.fa && req.body.action && req.body.topic)) {
+            return res.status(404).send({
+                status: 404,
+                info: 'MISSING_DATA'
+            });
+        }
+
+        try {
+            const user = await validateUser(req, res, "");
+            const userId = user.userid;
+            const action = req.body.action;
+            const focusAreaId = req.body.fa;
+            const topicName = req.body.topic;
+
+            const topicData = await db.collection('topics').firstExample({ name: topicName });
+            const topicId = topicData._id;
+
+            console.log('--- Action ', action.toUpperCase(), 'for:', '\n',
+                'FA id:', focusAreaId, '\n',
+                'User id:', userId, '\n',
+                'Topic:', topicName, '\n',
+                'Topic id:', topicId);
+
+            const transaction = String((params) => {
+                const db = require('@arangodb').db;
+                const aql = require('@arangodb').aql;
+
+                const { action, userId, topicId, focusAreaId } = params;
+
+                const isLike = action === 'like';
+                const likeCount = +isLike;
+                const dislikeCount = 1 - likeCount;
+
+                const focusAreaQuery = aql`
+                                upsert { _from: ${topicId}, _to: ${focusAreaId} }
+                                insert {
+                                    _from: ${topicId},
+                                    _to: ${focusAreaId},
+                                    likes: ${likeCount},
+                                    dislikes: ${dislikeCount},
+                                    created: DATE_NOW(),
+                                    creator: ${userId}
+                                }
+
+                                update {
+                                    likes: HAS(OLD, 'likes') 
+                                        ? OLD.likes + ${likeCount} 
+                                        : ${likeCount},
+                                    dislikes: HAS(OLD, 'dislikes') 
+                                        ? OLD.dislikes + ${dislikeCount} 
+                                        : ${dislikeCount},
+                                    lastUpdated: DATE_NOW(),
+                                    updatedBy: ${userId}
+                                } in focusesOn
+                                return KEEP(NEW, '_id', '_rev')`;
+
+                const standardQuery = aql`
+                                let standardIds = (
+                                    for s in alignsTo
+                                        filter IS_SAME_COLLECTION('standards', s._to)
+                                        and s._from == ${focusAreaId}
+                                        return s._to
+                                )
+
+                                for id in standardIds
+                                    upsert { _from: ${topicId}, _to: id }
+                                    insert {
+                                        _from: ${topicId},
+                                        _to: id,
+                                        likes: ${likeCount},
+                                        dislikes: ${dislikeCount},
+                                        created: DATE_NOW(),
+                                        creator: ${userId}
+                                    }
+
+                                update {
+                                    likes: HAS(OLD, 'likes')
+                                        ? OLD.likes + ${likeCount}
+                                        : ${likeCount},
+                                    dislikes: HAS(OLD, 'dislikes')
+                                        ? OLD.dislikes + ${dislikeCount}
+                                        : ${dislikeCount},
+                                    lastUpdated: DATE_NOW(),
+                                    updatedBy: ${userId}
+                                } in alignsTo
+                                return KEEP(NEW, '_id', '_rev')`;
+
+                const updatedFocusArea = db._query(focusAreaQuery).toArray();
+                const updatedStandards = db._query(standardQuery).toArray();
+                const updatedConnections = [...updatedFocusArea, ...updatedStandards];
+
+                const updatedQuery = aql`
+                                    for updatedConnection in ${updatedConnections}
+                                        insert {
+                                            _from: ${userId},
+                                            _to: updatedConnection._id,
+                                            updatedTo: updatedConnection._rev,
+                                            action: ${action},
+                                            created: DATE_NOW(),
+                                            creator: 'testData'
+                                        } in updated
+                                        return NEW._id`;
+
+                const updates = db._query(updatedQuery).toArray();
+                return { userId, topicId, focusAreaId, action, updatedQuery }
+            });
+
+            const result =  await db.transaction(
+                { write: ['focusesOn', 'alignsTo', 'updated'] },
+                transaction,
+                { userId, action, topicId, focusAreaId }
+            );
+
+            return res.status(200).json({
+                status: 200,
+                info: 'OK',
+                data: result
+            })
+
+        } catch (err) {
+            console.log('--- Error \n', err);
+            return res.status(500).send({
+                status: 500,
+                info: 'ERROR',
+                data: err
+            });
+        }
+    });
+
 
     app.use(function(req, res){
         db.get()

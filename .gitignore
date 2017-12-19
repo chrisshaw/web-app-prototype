@@ -4,6 +4,7 @@ dumps
 data
 dbsettings.sh
 .vs_code
+.idea
 
 
 # Elastic Beanstalk Files
