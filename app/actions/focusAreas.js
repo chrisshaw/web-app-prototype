@@ -7,13 +7,18 @@ import {
 export const selectFocusArea = (focusArea) => (dispatch) => {
   dispatch(requestFocusAreaInfo());
 
-  // let fa = focusArea;
-  //   console.log('-- fa', fa)
-  // while (typeof focusArea !== "string") {
-  //     fa = fa[0];
-  // }
-  const focusAreaKey = focusArea.split('/')[1].split('_').shift();
-  //console.log('-- fa key', focusAreaKey)
+  let fa = focusArea;
+  function parseArray(target) {
+      if (typeof target !== "string") {
+          let item = target[0];
+          parseArray(item);
+      } else {
+          fa = target
+      }
+  }
+  parseArray(focusArea);
+
+  const focusAreaKey = fa.split('/')[1].split('_').shift();
 
   return fetch('/api/path/focus_area_details/' + focusAreaKey)
     .then((response) => {

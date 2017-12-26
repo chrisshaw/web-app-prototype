@@ -188,7 +188,7 @@ export const tryFetchPathsWithQueryBuilder = query => async dispatch => {
                     }
                 }
             }
-            console.log('-- processed\n', pathResponse.data)
+            // console.log('-- processed\n', pathResponse.data)
 
             const paths = pathResponse.data
             dispatch(showPathsFromQueryBuilder(paths))
