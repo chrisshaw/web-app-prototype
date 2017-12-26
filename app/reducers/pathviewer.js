@@ -79,7 +79,8 @@ export const projectReducer = (state = projectInitialState, action) => {
                 ...state,
                 [action.payload.projectId]: {
                     name: state[action.payload.projectId]['name'],
-                    fa: upNewList
+                    fa: upNewList,
+                    recommendations: state[action.payload.projectId]['recommendations']
                 }
             }
         case PATHVIEWER_MOVE_DOWN_FOCUS_AREA:
@@ -90,7 +91,8 @@ export const projectReducer = (state = projectInitialState, action) => {
                 ...state,
                 [action.payload.projectId]: {
                     name: state[action.payload.projectId]['name'],
-                    fa: downNewList
+                    fa: downNewList,
+                    recommendations: state[action.payload.projectId]['recommendations']
                 }
             }        
         case PATHVIEWER_ADD_FOCUS_AREA:
@@ -105,9 +107,24 @@ export const projectReducer = (state = projectInitialState, action) => {
                     fa: addNewList
                 }
             }
+
+
+
         case REQUEST_RECOMMENDATION:
-            console.log('> action', action.payload);
-            console.log('> state', state)
+            const response = action.payload.data.data;
+            for (let key in state) {
+                state[key].recommendations.forEach((item, i) => {
+                    if (response.focusAreaId === item.id) {
+                        state[key].recommendations[i].recommendation = response.action;
+                    }
+                })
+            }
+            console.log('-- action', response);
+            console.log('-- state', state);
+
+
+
+
             return state;
         default:
             return state

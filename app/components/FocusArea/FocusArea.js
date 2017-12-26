@@ -142,9 +142,19 @@ const RelevanceIndicator = ({subject, relevance}) => {
     )
 }
 
-const FocusAreaHeader = ({subject, name, relevance, course, projectName, id, changeRecommendation, recommendation, ...rest}) => {
+const FocusAreaHeader = ({subject, name, relevance, course, projectName, id,
+    changeRecommendation, recommendations, ...rest}) => {
 
     const focusAreaAvatar = <RelevanceIndicator subject={subject} relevance={relevance} />
+
+    let recommendation = '';
+    if (recommendations && recommendations.length) {
+        recommendations.forEach(item => {
+            if (id === item.id) {
+                recommendation = item.recommendation;
+            }
+        });
+    }
 
     return (
         <div className={Style.faHeaderWrapper}>
@@ -165,7 +175,7 @@ const FocusAreaHeader = ({subject, name, relevance, course, projectName, id, cha
                                 topic: projectName,
                                 fa: id,
                                 action: 'like',
-                            })
+                            });
                         }}
                     >
                         <ThumbUp
@@ -208,7 +218,7 @@ export const FocusArea = props => {
                 <FocusAreaHeader
                     changeRecommendation={props.changeRecommendation}
                     projectName={props.projectName}
-                    recommendation={props.recommendation}
+                    recommendations={props.recommendations}
                     name={props.focusArea.name}
                     subject={props.focusArea.subject}
                     course={props.focusArea.course}

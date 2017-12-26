@@ -782,7 +782,7 @@ module.exports = function(app){
                                         return NEW._id`;
 
                 const updates = db._query(updatedQuery).toArray();
-                return { userId, topicId, focusAreaId, action, updatedQuery }
+                return { userId, topicId, focusAreaId, action }
             });
 
             const result =  await db.transaction(
