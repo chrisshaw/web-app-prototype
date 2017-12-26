@@ -17,15 +17,6 @@ class Project extends Component {
     }
 
     render() {
-        let recommendations = [];
-        if (this.props.project.fa.length) {
-            this.props.project.fa.forEach(fa => {
-                recommendations.push({
-                    id: fa.split('_')[0],
-                    recommendation: ''
-                })
-            })
-        }
 
         return (
             <div className={Style.project}>
@@ -49,9 +40,13 @@ class Project extends Component {
                         className={Style.focusAreaList}
                         projectId={this.props.projectId}
                         relevantFocusAreas={this.props.project.fa}
-                        recommendations={recommendations}
+                        recommendations={this.props.project.recommendations}
                     />
-                    : <Typography type='subheading' align='center'>No focus areas found for this topic.</Typography>
+                    : <Typography
+                        type='subheading'
+                        align='center'>
+                        No focus areas found for this topic.
+                    </Typography>
                 }
             </div>
         )

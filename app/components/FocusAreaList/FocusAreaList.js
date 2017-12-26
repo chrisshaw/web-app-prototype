@@ -51,14 +51,6 @@ export class FocusAreaList extends Component {
             { type: 'remove', handler: this.handleRemove(i) }
         ]
 
-        let rec = '';
-        let faId = focusAreaId.split('_')[0];
-        this.props.recommendations.forEach(item => {
-            if (item.id === faId) {
-                rec = item.recommendation;
-            }
-        });
-
         return (
             <FocusArea
                 projectName={this.props.projectName}
@@ -66,7 +58,7 @@ export class FocusAreaList extends Component {
                 relevantFocusAreaId={focusAreaId}
                 actions={actions}
                 addHandler={this.handleAdd(i)}
-                recommendation={rec}
+                recommendations={this.props.recommendations}
             />
         )
     }
