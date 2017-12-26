@@ -99,6 +99,5 @@ export const changeRecommendation = data => async dispatch => {
         }
     } catch (err) {
         console.log(err)
-        dispatch(fetchPathsWithQueryBuilderFailed(err))
     }
 }

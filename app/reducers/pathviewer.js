@@ -119,13 +119,8 @@ export const projectReducer = (state = projectInitialState, action) => {
                     }
                 })
             }
-            console.log('-- action', response);
-            console.log('-- state', state);
 
-
-
-
-            return state;
+            return { ...state };
         default:
             return state
     }
