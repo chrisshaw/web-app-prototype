@@ -50,16 +50,17 @@ var helpers = {
             role: role
         }
         dispatch(actions.updatePathList("", true, true));
-        return axios.post('/api/path/project', queryObj).then( function(response) {
-            console.log(response.data);
-            dispatch(actions.updatePathList(response.data, false, false));            
-        }
-            // post the ids to the db to get names back then add them to the results set before sending paths to the store
-            // this is expensive calc as we will need 2  * 3 = 6 for loops each of order n3 (n-cubed)
-        ).catch((error) => {
-            // send message to client...needs work
-            console.log("this is an error", error);
-        })  
+        return axios.post('/api/path/project', queryObj)
+            .then((response) => {
+                    dispatch(actions.updatePathList(response.data, false, false));
+                }
+                // post the ids to the db to get names back then add them to the results set before sending paths to the store
+                // this is expensive calc as we will need 2  * 3 = 6 for loops each of order n3 (n-cubed)
+            )
+            .catch((error) => {
+                // send message to client...needs work
+                console.log("this is an error", error);
+            })
     },
 
     setErrorMsg(props){

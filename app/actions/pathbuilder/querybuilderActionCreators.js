@@ -172,6 +172,24 @@ export const tryFetchPathsWithQueryBuilder = query => async dispatch => {
         const pathResponse = await callApi('post', 'path/project', query)
         // Once we see the data, we can see what error handling we need.
         if (true) {
+
+            if (pathResponse.data.entities && pathResponse.data.entities.projects) {
+                let projects = pathResponse.data.entities.projects;
+                for (let key in projects) {
+                    let recommendations = [];
+                    if (projects[key].fa && projects[key].fa.length > 0) {
+                        projects[key].fa.forEach(item => {
+                            recommendations.push({
+                                id: item.split('_')[0],
+                                recommendation: ''
+                            });
+                        });
+                        projects[key].recommendations = recommendations;
+                    }
+                }
+            }
+            // console.log('-- processed\n', pathResponse.data)
+
             const paths = pathResponse.data
             dispatch(showPathsFromQueryBuilder(paths))
         } else {

@@ -18,7 +18,8 @@ import {
     SUCCESS_PATH_RELATED_PROJECTS,
     ERROR_PATH_RELATED_PROJECTS,
     PATHVIEWER_CHANGE_CURRENT_PATH,
-    PATHVIEWER_CLEAR_DETAILS
+    PATHVIEWER_CLEAR_DETAILS,
+    REQUEST_RECOMMENDATION,
 } from '../actions/pathbuilder/actionTypes'
 
 
@@ -78,7 +79,8 @@ export const projectReducer = (state = projectInitialState, action) => {
                 ...state,
                 [action.payload.projectId]: {
                     name: state[action.payload.projectId]['name'],
-                    fa: upNewList
+                    fa: upNewList,
+                    recommendations: state[action.payload.projectId]['recommendations']
                 }
             }
         case PATHVIEWER_MOVE_DOWN_FOCUS_AREA:
@@ -89,7 +91,8 @@ export const projectReducer = (state = projectInitialState, action) => {
                 ...state,
                 [action.payload.projectId]: {
                     name: state[action.payload.projectId]['name'],
-                    fa: downNewList
+                    fa: downNewList,
+                    recommendations: state[action.payload.projectId]['recommendations']
                 }
             }        
         case PATHVIEWER_ADD_FOCUS_AREA:
@@ -104,6 +107,20 @@ export const projectReducer = (state = projectInitialState, action) => {
                     fa: addNewList
                 }
             }
+
+
+
+        case REQUEST_RECOMMENDATION:
+            const response = action.payload.data.data;
+            for (let key in state) {
+                state[key].recommendations.forEach((item, i) => {
+                    if (response.focusAreaId === item.id) {
+                        state[key].recommendations[i].recommendation = response.action;
+                    }
+                })
+            }
+
+            return { ...state };
         default:
             return state
     }
