@@ -6,7 +6,19 @@ import {
 
 export const selectFocusArea = (focusArea) => (dispatch) => {
   dispatch(requestFocusAreaInfo());
-  const focusAreaKey = focusArea.split('/')[1].split('_').shift();
+
+  let fa = focusArea;
+  function parseArray(target) {
+      if (typeof target !== "string") {
+          let item = target[0];
+          parseArray(item);
+      } else {
+          fa = target
+      }
+  }
+  parseArray(focusArea);
+
+  const focusAreaKey = fa.split('/')[1].split('_').shift();
 
   return fetch('/api/path/focus_area_details/' + focusAreaKey)
     .then((response) => {

@@ -49,7 +49,6 @@ class PathViewer extends React.Component {
     render() {
         const { className, ...others } = this.props
         let content = null
-
         if (this.props.isLoading) {
             content = <Loader {...this.props} />
         } else if (this.props.pathCount) {

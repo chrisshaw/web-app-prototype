@@ -53,10 +53,12 @@ export class FocusAreaList extends Component {
 
         return (
             <FocusArea
+                projectName={this.props.projectName}
                 key={i}
                 relevantFocusAreaId={focusAreaId}
                 actions={actions}
                 addHandler={this.handleAdd(i)}
+                recommendations={this.props.recommendations}
             />
         )
     }

@@ -17,6 +17,7 @@ class Project extends Component {
     }
 
     render() {
+
         return (
             <div className={Style.project}>
                 <aside className={Style.projectNames}>
@@ -33,13 +34,19 @@ class Project extends Component {
                         </Button>
                     </div>
                 </aside>
-                {this.props.project.fa.length ? 
-                    <FocusAreaList
+                {this.props.project.fa.length
+                    ? <FocusAreaList
+                        projectName={this.props.project.name}
                         className={Style.focusAreaList}
                         projectId={this.props.projectId}
                         relevantFocusAreas={this.props.project.fa}
-                    /> : 
-                    <Typography type='subheading' align='center'>No focus areas found for this topic.</Typography>
+                        recommendations={this.props.project.recommendations}
+                    />
+                    : <Typography
+                        type='subheading'
+                        align='center'>
+                        No focus areas found for this topic.
+                    </Typography>
                 }
             </div>
         )
