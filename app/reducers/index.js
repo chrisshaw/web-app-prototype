@@ -1,10 +1,11 @@
 import uuid from 'uuid';
 import { combineReducers } from 'redux';
-import studentsTabReducer from './studentsTab';
+import studentsTabReducer, {
+  getStudents, getCurrentStudentById, getCurrentId
+} from './studentsTab';
 import classReducer from './class';
 import authReducer from './auth'
-import teachersAndAdminsReducer from './teachersAndAdmins';
-import flashMessageReducer from './flashMessage';
+import flashMessageReducer, { getFlashMessageStatus, getFlashMessage } from './flashMessage';
 import queryBuilderReducer, {
     getPotentialGrades,
     getPotentialCourses,
@@ -16,7 +17,8 @@ import queryBuilderReducer, {
     getSelectedStandards,
     getSelectedSubjects,
     getSelectedTopics,
-    getChosenStudents
+    getChosenStudents,
+    getTopicOptions
 } from './querybuilder'
 import pathViewerReducer, { 
     getLoaderState,
@@ -45,7 +47,6 @@ import pathViewerReducer, {
     pathViewer: pathViewerReducer,
     authState : authReducer,
     studentsTab: studentsTabReducer,
-    teachersAndAdmins: teachersAndAdminsReducer,
     flashMessage: flashMessageReducer,
     classState: classReducer,
     queryBuilder: queryBuilderReducer
@@ -82,6 +83,12 @@ export const globalGetCurrentProjects = state => getCurrentProjects(state.pathVi
 export const globalGetFocusAreaById = (state, id) => getFocusAreaById(state.pathViewer, id)
 export const globalGetFocusAreaOptions = state => getFocusAreaOptions(state.pathViewer)
 export const globalGetFocusAreaWithRelevanceById = (state, id) => getFocusAreaWithRelevanceById(state.pathViewer, id)
+export const globalGetStudents = state => getStudents(state.studentsTab)
+export const globalGetCurrentId = state => getCurrentId(state.studentsTab)
+export const globalGetCurrentStudentById = (state, id) => getCurrentStudentById(state.studentsTab, id)
+export const globalGetAllTopics = state => getTopicOptions(state.queryBuilder)
+export const globalGetFlashMessageStatus = state => getFlashMessageStatus(state.flashMessage)
+export const globalGetFlashMessage = state => getFlashMessage(state.flashMessage)
 
 // to handle clearing store on logout
 export default (state, action) => {
