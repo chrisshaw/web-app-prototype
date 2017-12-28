@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux'
 import helper from '../../helper';
 import NavBar from '../NavBar/NavBar';
-import injectTapEventPlugin from 'react-tap-event-plugin';
 import Style from './Main.css'
 import FlashMessage from '../FlashMessage/FlashMessage';
 
@@ -11,7 +10,6 @@ class Main extends Component{
         super(props);
         // get initial data
         // helper.getUserFA(this.props.userId, this.props.dispatch);
-        injectTapEventPlugin();
     }
 
     handleLogout = () => {
