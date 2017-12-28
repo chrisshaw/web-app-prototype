@@ -6,6 +6,8 @@ import Button from 'mui-next/Button'
 import Icon from 'mui-next/Icon'
 import Avatar from 'mui-next/Avatar'
 import Card, { CardHeader, CardContent, CardActions } from 'mui-next/Card'
+import IconButton from 'mui-next/IconButton'
+import Typography from 'mui-next/Typography'
 
 import { withStyles, withTheme } from 'mui-next/styles'
 import Style from './FocusArea.css'
@@ -19,7 +21,6 @@ import {
 import { changeRecommendation } from '../../actions/pathbuilder/pathviewerActionCreators'
 
 import { ThumbUp, ThumbDown } from 'material-ui-icons';
-import IconButton from 'mui-next/IconButton'
 
 export const FocusAreaIcon = props => {
     let ligature = 'school'
@@ -48,11 +49,16 @@ export const FocusAreaIcon = props => {
         case 'show more':
             ligature = 'more_horiz'
             break
+        case 'like':
+            ligature = 'thumb_up'
+            break
+        case 'dislike':
+            ligature = 'thumb_down'
         default:
             ligature = ligature
     }
     return (
-        <Icon className={props.className}>
+        <Icon className={props.className} {...props}>
             {ligature}
         </Icon>
     )
@@ -167,9 +173,9 @@ const FocusAreaHeader = ({subject, name, relevance, course, projectName, id,
                 subheader={course}
             />
             <div className={Style.faHeaderRecommendation}>
-                <div className={Style.faHeaderRecommendationText}>
-                    Recommendation
-                </div>
+                <Typography type='caption' align='center'>
+                    Feedback
+                </Typography>
                 <div className={Style.faHeaderRecommendationButtons}>
                     <IconButton
                         style={inlineStyles.iconButtonStyle}
@@ -181,7 +187,8 @@ const FocusAreaHeader = ({subject, name, relevance, course, projectName, id,
                             });
                         }}
                     >
-                        <ThumbUp
+                        <FocusAreaIcon
+                            icon='like'
                             style={recommendation === ''
                                 ? inlineStyles.iconButtonColor
                                 : recommendation === 'dislike'
@@ -200,13 +207,15 @@ const FocusAreaHeader = ({subject, name, relevance, course, projectName, id,
                             })
                         }}
                     >
-                        <ThumbDown
+                        <FocusAreaIcon
+                            icon='dislike'
                             style={recommendation === ''
                                 ? inlineStyles.iconButtonColor
                                 : recommendation === 'like'
                                     ? inlineStyles.iconButtonColor
                                     : inlineStyles.iconButtonSelected
-                            }/>
+                            }
+                        />
                     </IconButton>
                 </div>
             </div>

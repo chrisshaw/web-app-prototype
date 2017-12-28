@@ -24,10 +24,6 @@
     justify-content: center;
 }
 
-.faHeaderRecommendationText {
-    font-size: 14px;
-}
-
 .faHeaderRecommendationButtons {
     display: flex;
     flex-direction: row;
