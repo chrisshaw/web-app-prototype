@@ -1,5 +1,5 @@
 import React from 'react'
-import Typography from 'mui-next/Typography'
+import Typography from 'material-ui/Typography'
 import Style from './EmptyState.css'
 
 const states = {

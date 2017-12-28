@@ -1,9 +1,9 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import Subheader from 'mui-next/List/ListSubheader'
-import Button from 'mui-next/Button'
-import Typography from 'mui-next/Typography/Typography'
-import Divider from 'mui-next/Divider'
+import Subheader from 'material-ui/List/ListSubheader'
+import Button from 'material-ui/Button'
+import Typography from 'material-ui/Typography/Typography'
+import Divider from 'material-ui/Divider'
 
 import Project from '../Project/Project'
 import FocusAreaList from '../FocusAreaList/FocusAreaList'

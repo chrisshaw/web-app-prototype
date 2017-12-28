@@ -1,10 +1,10 @@
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
-import Chip from 'mui-next/Chip';
+import Chip from 'material-ui/Chip';
 import ChipList from './ChipList/ChipList'
-import Button from 'mui-next/Button';
-import Icon from 'mui-next/Icon'
-import IconButton from 'mui-next/IconButton';
+import Button from 'material-ui/Button';
+import Icon from 'material-ui/Icon'
+import IconButton from 'material-ui/IconButton';
 import { FocusAreaIconButton } from './FocusArea/FocusArea'
 
 const INTERESTS_MIN_HEIGHT = 40;

@@ -10,8 +10,8 @@ import {Router, browserHistory} from 'react-router';
 
 
 // // This file should not need to be changed
-import { MuiThemeProvider, createMuiTheme } from 'mui-next/styles'
-import { green, purple, gray } from 'mui-next/colors'
+import { MuiThemeProvider, createMuiTheme } from 'material-ui/styles'
+import { green, purple, gray } from 'material-ui/colors'
 
 const theme = createMuiTheme({
     palette: {

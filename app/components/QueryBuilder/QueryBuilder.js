@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
-import Button from 'mui-next/Button'
+import Button from 'material-ui/Button'
 import helper from '../../helper';
 import { connect } from 'react-redux';
 import InputSection from '../InputSection/InputSection'
-import Typography from 'mui-next/Typography'
+import Typography from 'material-ui/Typography'
 import Style from './QueryBuilder.css'
 
 import {
