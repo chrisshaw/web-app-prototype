@@ -45,6 +45,9 @@ export const FocusAreaIcon = props => {
         case 'details':
             ligature = 'info'
             break
+        case 'show more':
+            ligature = 'more_horiz'
+            break
         default:
             ligature = ligature
     }

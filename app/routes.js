@@ -7,7 +7,7 @@ import Forbidden from "./components/Forbidden";
 import Password from "./components/Password/Password";
 import validatePerms  from "./components/ValidatePerms";
 import PathBuilder from "./components/PathBuilder/PathBuilder";
-import AdminPanel from "./components/AdminPanel";
+import AdminPanel from "./components/AdminPanel/AdminPanel";
 import {Router, Route, hashHistory, browserHistory, IndexRoute} from "react-router";
 
 var routes = (

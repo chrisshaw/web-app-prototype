@@ -1,8 +1,11 @@
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
-import Chip from 'material-ui/Chip';
-import FlatButton from 'material-ui/FlatButton';
-import FontIcon from 'material-ui/FontIcon';
+import Chip from 'mui-next/Chip';
+import ChipList from './ChipList/ChipList'
+import Button from 'mui-next/Button';
+import Icon from 'mui-next/Icon'
+import IconButton from 'mui-next/IconButton';
+import { FocusAreaIconButton } from './FocusArea/FocusArea'
 
 const INTERESTS_MIN_HEIGHT = 40;
 
@@ -73,26 +76,13 @@ class StudentInterests extends PureComponent {
   render() {
     return (
       <div>
-        <div style={this.state.isAllInterestsShowing ? styles.wrapperShowAll : styles.wrapper}
-             ref={(interestsWrapper) => { this.interestsWrapper = interestsWrapper; }}
-        >
-          {this.getJoinedInterests().map((interest, index) => {
-            return <Chip style={styles.chip}
-                         labelStyle={styles.chipLabel}
-                         key={index}
-            >
-              {interest}
-            </Chip>
-          })}
-        </div>
-        {!this.state.isAllInterestsShowing &&
-          <div style={styles.moreBtnWrapper}>
-            <FontIcon className="material-icons" style={styles.ellipsisIcon}>more_horiz</FontIcon>
-            <FlatButton label="Show more"
-                        onClick={this.handleClickMoreBtn}
-            />
+          <div style={this.state.isAllInterestsShowing ? styles.wrapperShowAll : styles.wrapper}
+              ref={(interestsWrapper) => { this.interestsWrapper = interestsWrapper; }}
+          >
+              <ChipList items={this.getJoinedInterests()} />
           </div>
-        }
+          {!this.state.isAllInterestsShowing && <FocusAreaIconButton icon='show more' clickHandler={this.handleClickMoreBtn} />
+          }
       </div>
     );
   }

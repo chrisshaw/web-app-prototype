@@ -44,9 +44,9 @@ export const fetchStudentsList = () => (dispatch, getState) => {
     });
 };
 
-export const selectEditableStudent = (student) => ({
+export const selectEditableStudent = (studentId) => ({
   type: SELECT_EDITABLE_STUDENT,
-  student,
+  studentId,
 });
 
 export const addStudentInterest = (studentId, interestsCategory, interest) => ({
@@ -56,11 +56,11 @@ export const addStudentInterest = (studentId, interestsCategory, interest) => ({
   interest,
 });
 
-export const deleteStudentInterest = (studentId, interestsCategory, interestIndex) => ({
+export const deleteStudentInterest = (studentId, interestsCategory, interest) => ({
   type: DELETE_STUDENT_INTEREST,
   studentId,
   interestsCategory,
-  interestIndex,
+  interest,
 });
 
 const requestSaveStudentInterests = () => ({

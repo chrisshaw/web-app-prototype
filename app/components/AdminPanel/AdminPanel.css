@@ -1,7 +1,3 @@
-.wrapper {
-    margin: '0 25px';
-}
-
-.snackbar {
-    text-align: 'center';
+.main {
+    padding: 3rem;
 }

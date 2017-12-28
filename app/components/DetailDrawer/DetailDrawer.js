@@ -50,7 +50,7 @@ const DetailDrawer = props => {
         classes
     } = props
 
-    let title = 'Bye!'
+    let title = 'Closing'
     if (detailType === 'focus area' && currentFocusArea) {
         title = detailFocusArea.name
     } else if (detailType === 'related projects' && currentPathRelatedProjects) {
@@ -73,7 +73,6 @@ const DetailDrawer = props => {
                 {detailType === 'focus area' && currentFocusArea && <FocusAreaDetails details={{ ...currentFocusArea, potentialPeerTeachers }} />}
                 {detailType === 'related projects' && currentPathRelatedProjects && <RelatedProjectsDetails details={currentPathRelatedProjects} />}
                 {isFocusAreaFetching || isRelatedProjectsFetching && <Loader />}
-            
             </DetailDrawerContent>
         </Drawer>
     );
