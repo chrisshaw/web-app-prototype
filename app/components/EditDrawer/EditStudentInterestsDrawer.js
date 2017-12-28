@@ -5,7 +5,7 @@ import AppBar from 'material-ui/AppBar';
 import IconButton from 'material-ui/IconButton';
 import NavigationClose from 'material-ui/svg-icons/navigation/close';
 import { Tabs, Tab } from 'material-ui/Tabs';
-import InterestsTab from './InterestsTab';
+import InterestsTab from '../InterestsTab';
 
 const EditStudentInterestsDrawer = ({ open, student, onCloseClick, onAddInterest, onDeleteInterest, onSaveInterests }) => (
   <Drawer open={open}

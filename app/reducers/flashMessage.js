@@ -34,3 +34,11 @@ export default (state = initialState, action) => {
       return state;
   }
 };
+
+/*
+
+SELECTORS
+
+*/
+export const getFlashMessageStatus = state => state.isMessageShowing
+export const getFlashMessage = state => state.message

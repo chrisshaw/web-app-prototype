@@ -9,7 +9,7 @@ import {
   TableRowColumn,
 } from 'material-ui/Table';
 import FlatButton from 'material-ui/FlatButton';
-import InterestsCol from './InterestsCol';
+import InterestsCol from '../InterestsCol';
 
 const StudentsList = ({ students, onEditInterestsClick }) => {
   if (!students.length) {

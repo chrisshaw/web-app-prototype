@@ -1,13 +1,13 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'react-redux';
-import StudentsList from './StudentsList';
-import EditStudentInterestsDrawer from './EditStudentInterestsDrawer';
+import StudentsList from '../StudentsList';
+import EditStudentInterestsDrawer from '../EditStudentInterestsDrawer';
 import {
   selectEditableStudent,
   addStudentInterest,
   deleteStudentInterest,
   saveStudentInterests,
-} from '../actions/studentsTab';
+} from '../../actions/studentsTab';
 
 class StudentsTab extends PureComponent {
   constructor(props) {

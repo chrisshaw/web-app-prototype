@@ -4,6 +4,7 @@ import helper from '../../helper';
 import NavBar from '../NavBar/NavBar';
 import injectTapEventPlugin from 'react-tap-event-plugin';
 import Style from './Main.css'
+import FlashMessage from '../FlashMessage/FlashMessage';
 
 class Main extends Component{
     constructor(props){
@@ -30,6 +31,7 @@ class Main extends Component{
                     />
                 }
                 {React.cloneElement(this.props.children, {username: this.props.username})}
+                <FlashMessage/>
             </div>
         )
     }
