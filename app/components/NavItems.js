@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import Tabs, {Tab} from 'mui-next/Tabs'
+import Tabs, {Tab} from 'material-ui/Tabs'
 import { Link } from 'react-router';
 
 

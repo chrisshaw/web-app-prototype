@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import {connect } from 'react-redux';
-import Button from 'mui-next/Button'
+import Button from 'material-ui/Button'
 import { tryChangePassword } from '../../actions/auth'
 
 class PasswordForm extends Component{

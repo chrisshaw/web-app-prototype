@@ -2,11 +2,11 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
 import DropdownList from 'react-widgets/lib/DropdownList'
-import Card, { CardHeader, CardContent, CardActions } from 'mui-next/Card'
-import Button from 'mui-next/Button'
+import Card, { CardHeader, CardContent, CardActions } from 'material-ui/Card'
+import Button from 'material-ui/Button'
 
-import { withStyles } from 'mui-next/styles'
-import { grey } from 'mui-next/colors'
+import { withStyles } from 'material-ui/styles'
+import { grey } from 'material-ui/colors'
 import Style from './FocusAreaAdder.css'
 import { FocusAreaIconButton } from '../FocusArea/FocusArea'
 

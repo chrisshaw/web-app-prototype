@@ -1,11 +1,11 @@
 import React, {Component} from 'react';
-import AppBar from 'mui-next/AppBar';
-import Toolbar from 'mui-next/Toolbar';
+import AppBar from 'material-ui/AppBar';
+import Toolbar from 'material-ui/Toolbar';
 import Style from './NavBar.css'
 import Logo from '../Logo/Logo'
 import NavItems from '../NavItems'
-import IconButton from 'mui-next/IconButton'
-import Icon from 'mui-next/Icon'
+import IconButton from 'material-ui/IconButton'
+import Icon from 'material-ui/Icon'
 import { connect } from 'react-redux';
 
 class NavBar extends Component {

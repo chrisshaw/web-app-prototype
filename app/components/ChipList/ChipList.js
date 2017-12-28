@@ -1,5 +1,5 @@
 import React from 'react'
-import Chip from 'mui-next/Chip'
+import Chip from 'material-ui/Chip'
 import Style from './ChipList.css'
 
 const ChipList = props => (

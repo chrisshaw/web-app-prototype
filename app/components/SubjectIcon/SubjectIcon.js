@@ -1,6 +1,6 @@
 import React, { Compoenent } from 'react'
-import SvgIcon from 'mui-next/SvgIcon'
-import Icon from 'mui-next/Icon'
+import SvgIcon from 'material-ui/SvgIcon'
+import Icon from 'material-ui/Icon'
 
 export const MathIcon = props => (
     <SvgIcon {...props}>
