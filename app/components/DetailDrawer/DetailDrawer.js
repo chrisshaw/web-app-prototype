@@ -1,12 +1,12 @@
 import React from 'react';
 import { connect } from 'react-redux'
-import { withStyles } from 'mui-next/styles'
+import { withStyles } from 'material-ui/styles'
 import Style from './DetailDrawer.css'
-import Drawer from 'mui-next/Drawer';
-import Toolbar from 'mui-next/Toolbar';
-import Icon from 'mui-next/Icon'
-import IconButton from 'mui-next/IconButton';
-import Typography from 'mui-next/Typography'
+import Drawer from 'material-ui/Drawer';
+import Toolbar from 'material-ui/Toolbar';
+import Icon from 'material-ui/Icon'
+import IconButton from 'material-ui/IconButton';
+import Typography from 'material-ui/Typography'
 
 import DetailDrawerContent, { FocusAreaDetails, RelatedProjectsDetails } from '../DetailDrawerContent/DetailDrawerContent'
 import Loader from '../Loader/Loader'

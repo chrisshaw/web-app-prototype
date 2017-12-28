@@ -6,22 +6,15 @@ import uuid from 'uuid';
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux';
 
-import {
-  red500,
-  grey500,
-  greenA700,
-} from 'material-ui/styles/colors';
-import SvgIcon from 'material-ui/SvgIcon';
-import PathList from '../PathList/PathList'
-
 // MUI-NEXT MIGRATION
-import Paper from 'mui-next/Paper'
-import Button from 'mui-next/Button'
-import Tabs, { Tab } from 'mui-next/Tabs'
-import IconButton from 'mui-next/IconButton'
-import Icon from 'mui-next/Icon'
-import Chip from 'mui-next/Chip'
+import Paper from 'material-ui/Paper'
+import Button from 'material-ui/Button'
+import Tabs, { Tab } from 'material-ui/Tabs'
+import IconButton from 'material-ui/IconButton'
+import Icon from 'material-ui/Icon'
+import Chip from 'material-ui/Chip'
 
+import PathList from '../PathList/PathList'
 import ChipList from '../ChipList/ChipList'
 import Loader from '../Loader/Loader'
 import EmptyState from '../EmptyState/EmptyState'

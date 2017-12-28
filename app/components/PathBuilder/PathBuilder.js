@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import QueryBuilder from '../QueryBuilder/QueryBuilder';
 import helper from '../../helper';
 import {connect } from 'react-redux';
-import Paper from 'mui-next/Paper';
+import Paper from 'material-ui/Paper';
 import PathViewer from '../PathViewer/PathViewer';
 import Style from './Pathbuilder.css'
 import DetailDrawer from '../DetailDrawer/DetailDrawer'

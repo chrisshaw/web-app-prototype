@@ -1,8 +1,8 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { withStyles } from 'mui-next/styles'
-import Table, { TableHead, TableBody, TableRow, TableCell } from 'mui-next/Table'
-import Button from 'mui-next/Button'
+import { withStyles } from 'material-ui/styles'
+import Table, { TableHead, TableBody, TableRow, TableCell } from 'material-ui/Table'
+import Button from 'material-ui/Button'
 import Style from './StudentTable.css'
 import InterestsCol from '../InterestsCol'
 

@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
 import helper from '../../helper';
 import { connect } from 'react-redux';
-import Chip from 'mui-next/Chip';
+import Chip from 'material-ui/Chip';
 import Multiselect from 'react-widgets/lib/Multiselect'
 import 'react-widgets/dist/css/react-widgets.css'
-import Typography from 'mui-next/Typography'
+import Typography from 'material-ui/Typography'
 import Style from './InputSection.css'
 
 class InputSection extends Component {

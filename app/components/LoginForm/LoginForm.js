@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import {connect } from 'react-redux';
-import Button from 'mui-next/Button'
-import TextField from 'mui-next/TextField'
-import Typography from 'mui-next/Typography'
+import Button from 'material-ui/Button'
+import TextField from 'material-ui/TextField'
+import Typography from 'material-ui/Typography'
 import helper from '../../helper';
 import Style from './LoginForm.css'
 import Logo from '../Logo/Logo'

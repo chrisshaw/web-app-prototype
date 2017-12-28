@@ -1,10 +1,10 @@
 import React from 'react'
-import Chip from 'mui-next/Chip'
-import Typography from 'mui-next/Typography'
+import Chip from 'material-ui/Chip'
+import Typography from 'material-ui/Typography'
 import Style from './DetailDrawerContent.css'
-import Toolbar from 'mui-next/Toolbar'
-import IconButton from 'mui-next/IconButton'
-import Icon from 'mui-next/Icon'
+import Toolbar from 'material-ui/Toolbar'
+import IconButton from 'material-ui/IconButton'
+import Icon from 'material-ui/Icon'
 
 import ChipList from '../ChipList/ChipList'
 

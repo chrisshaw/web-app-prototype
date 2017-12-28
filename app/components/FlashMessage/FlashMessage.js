@@ -1,6 +1,6 @@
 import React from 'react'
 import { connect } from 'react-redux'
-import Snackbar from 'mui-next/Snackbar'
+import Snackbar from 'material-ui/Snackbar'
 
 import { globalGetFlashMessage, globalGetFlashMessageStatus } from '../../reducers'
 

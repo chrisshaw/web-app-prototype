@@ -1,11 +1,11 @@
 import React, { PureComponent, Component } from 'react';
 import { connect } from 'react-redux'
 
-import Drawer from 'mui-next/Drawer';
-import Icon from 'mui-next/Icon'
-import IconButton from 'mui-next/IconButton';
-import Typography from 'mui-next/Typography'
-import Button from 'mui-next/Button'
+import Drawer from 'material-ui/Drawer';
+import Icon from 'material-ui/Icon'
+import IconButton from 'material-ui/IconButton';
+import Typography from 'material-ui/Typography'
+import Button from 'material-ui/Button'
 
 import InputSection from '../InputSection/InputSection'
 import DetailDrawerContent, { DetailSection } from '../DetailDrawerContent/DetailDrawerContent'

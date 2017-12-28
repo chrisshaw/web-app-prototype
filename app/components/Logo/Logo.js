@@ -1,6 +1,6 @@
 import React from 'react'
 import Style from './Logo.css'
-import Typography from 'mui-next/Typography'
+import Typography from 'material-ui/Typography'
 
 const Logo = props => {
     let sizeClass = '';
