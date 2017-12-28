@@ -12,7 +12,6 @@ import {Router, browserHistory} from 'react-router';
 // // This file should not need to be changed
 import { MuiThemeProvider, createMuiTheme } from 'mui-next/styles'
 import { green, purple, gray } from 'mui-next/colors'
-import OldMuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 
 const theme = createMuiTheme({
     palette: {
@@ -22,13 +21,11 @@ const theme = createMuiTheme({
 })
 
 const App = () => (
-    <OldMuiThemeProvider>
-        <MuiThemeProvider theme={theme}>
-            <Provider store={configureStore()}>
-                {routes}
-            </Provider>
-        </MuiThemeProvider>
-    </OldMuiThemeProvider>
+    <MuiThemeProvider theme={theme}>
+        <Provider store={configureStore()}>
+            {routes}
+        </Provider>
+    </MuiThemeProvider>
 )
 
 ReactDOM.render(

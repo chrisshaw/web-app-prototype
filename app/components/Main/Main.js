@@ -31,7 +31,7 @@ class Main extends Component{
                     />
                 }
                 {React.cloneElement(this.props.children, {username: this.props.username})}
-                <FlashMessage/>
+                <FlashMessage />
             </div>
         )
     }
