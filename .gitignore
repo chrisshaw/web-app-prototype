@@ -5,6 +5,7 @@ data
 dbsettings.sh
 .vs_code
 .idea
+.env
 
 
 # Elastic Beanstalk Files
