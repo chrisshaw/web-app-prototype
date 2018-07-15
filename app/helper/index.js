@@ -208,7 +208,6 @@ var helpers = {
         }
         // send request to server
         return axios.post('/login', userObj).then(function(response) {
-            let msg = "Invalid username or password - please try again";
             // sets login to true or false as appropriate
             // saves the role and permssions and user data
             // dispatch(actions.userPerms(response.data));
@@ -216,7 +215,6 @@ var helpers = {
             dispatch(fetchStudentsList());
             dispatch(fetchCoursesList());
             // captures error and sends any relevant message to UI
-            dispatch(actions.userLoginError(!response.data.success, msg));
             // successful login route to default page
             // capture redirect and make change passowrd
             // console.log("chg pwd:", response.data.chgPwd);
@@ -233,6 +231,8 @@ var helpers = {
          }).catch((error) => {
             // send message to client...needs work
             console.log(error)
+            let msg = "Invalid username or password - please try again";
+            dispatch(actions.userLoginError(!response.data.success, msg));
         })  
     },
 

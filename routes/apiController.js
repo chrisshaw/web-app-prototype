@@ -115,6 +115,20 @@ module.exports = function(app){
     })
 
     app.post('/login' , function(req, res, next){
+        /* *** Mock Data ***
+        ** 
+        ** Just using this for demo purposes so...
+        ** 
+        */
+        const mockLoggedInUser = require('../tests/mock-data/loginResponse')
+        return res.json(mockLoggedInUser);
+
+        /* *** Actual Endpoint ***
+        **
+        ** We don't want this to run.
+        **
+        */
+
         const foxxService = db.route('auth');
         foxxService.post('/login', req.body)
         .then( response => {
@@ -265,6 +279,21 @@ module.exports = function(app){
     });
 
   app.get('/api/path/related_projects/:topic', function(req, res) {
+    /* *** Test data ***
+    **
+    ** Because we just use this for demos
+    **
+    */
+   
+    const mockRelatedProjects = require('../tests/mock-data/relatedProjectResponse')
+    return res.json(mockRelatedProjects)
+
+    /* *** Actual Endpoint ***
+    **
+    ** We don't want this to run.
+    **
+    */    
+
     const query = `for p in projects
                     filter LENGTH(p.topics) > 0
                         and '${req.params.topic}' in p.topics
@@ -280,7 +309,22 @@ module.exports = function(app){
       });
   });
     
-     app.post('/api/path/project', (req, res, next) => {
+    app.post('/api/path/project', (req, res, next) => {
+
+        /* *** Mock Data ***
+        ** 
+        ** Just using this for demo purposes so...
+        ** 
+        */
+
+       const mockPaths = require('../tests/mock-data/projectResponse')
+       return res.json(normalize(mockPaths, pathSchema));
+
+       /* *** Actual Endpoint ***
+       **
+       ** We don't want this to run.
+       **
+       */        
         validateUser(req, res, "buildPath")
         .then( response => {
             const constructQueryParams = queryObject => {
@@ -362,6 +406,22 @@ module.exports = function(app){
     })
 
     app.get('/api/user/:userKey/entities', async (req, res, next) => {
+
+/* Test with mock data
+        **
+        ** We're only using this with demos so...
+        **
+        **/
+
+        const mockEntityData = require('../tests/mock-data/focusAreaAndCourseResponse')
+        return res.json( normalize(mockEntityData, entitySchema) )
+
+        /* Here's the real endpoint
+        ** Hopefully this doesn't work
+        **
+        **
+        */
+
         const userKey = req.params.userKey
         console.log(`>>> Focus Area and Course Data endpoint hit for ${userKey}`)
 
@@ -387,7 +447,24 @@ module.exports = function(app){
     })
 
     app.get('/api/pathbuilder/:userKey/options', async (req, res, next) => {
+
+
+        /* Test with mock data
+        **
+        ** We're only using this with demos so...
+        **
+        **/
+
+        const mockOptions = require('../tests/mock-data/optionsResponse.js')
+        return res.json( { optionTable: mockOptions } )
+
         
+        /* Here's the real endpoint
+        ** Hopefully this doesn't work
+        **
+        **
+        */
+
         const userKey = req.params.userKey
         console.log(`>>> Options endpoint hit for ${userKey}.`)
 
@@ -498,7 +575,8 @@ module.exports = function(app){
             console.log(Date.now() + " Error (Get Topics from Database):", error);
             res.json();
         })
-    }) 
+    })
+
     app.get('/api/standards/:grade?', function(req, res){
         let grades = req.params.grade;
         let queryGrades = [];
@@ -797,7 +875,7 @@ module.exports = function(app){
             })
 
         } catch (err) {
-            console.log('--- Error \n', err);
+            console.log('--- Recommendation Endpoint Error \n', err);
             return res.status(500).send({
                 status: 500,
                 info: 'ERROR',

@@ -70,7 +70,6 @@ class LoginForm extends Component{
                     margin="normal"
                 />
                 <Button
-                    raised
                     onClick={this.handleSubmit}
                     color="primary"
                 >

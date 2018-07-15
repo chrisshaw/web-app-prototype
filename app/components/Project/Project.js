@@ -25,7 +25,7 @@ class Project extends Component {
                         <Divider light />
                         <Typography type='title'>{this.props.project.name}</Typography>
                         <Button
-                            dense
+                            dense="true"
                             onClick={this.handleViewRelatedProjects}
                             className={Style.projectButton}
                             disableRipple

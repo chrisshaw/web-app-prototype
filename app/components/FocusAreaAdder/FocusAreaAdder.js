@@ -21,7 +21,7 @@ import {
 const styles = theme => ({
     rule: {
         flex: 1,
-        borderBottom: `1px solid ${theme.palette.shades.light.text.lightDivider}`
+        borderBottom: `1px solid ${theme.palette.divider}`
     },
     button: {
         flex: 0,

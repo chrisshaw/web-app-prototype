@@ -12,7 +12,8 @@ import {
     globalGetRelatedProjectsLoaderStatus,
     globalGetFocusArea,
     globalGetRelatedProjects,
-    globalGetPathCount
+    globalGetPathCount,
+    globalIsLoggedIn
 } from '../../reducers'
 
 const PathBuilderDrawer = props => (
@@ -29,6 +30,7 @@ class PathBuilder extends Component{
             isRelatedProjectsFetching,
             currentFocusArea,
             currentPathRelatedProjects,
+            isLoggedIn,
             ...props
         } = this.props
 
@@ -37,7 +39,7 @@ class PathBuilder extends Component{
 
         return (
             <main className={Style.pathbuilder}>
-                <PathBuilderDrawer className={Style.queryArea}/> 
+                {isLoggedIn && <PathBuilderDrawer className={Style.queryArea}/>}
                 <PathViewer className={`${Style.pathArea} ${openDrawer && Style.withDetails}`}/>
                 {props.pathCount > 0 && <DetailDrawer className={Style.detailArea} open={openDrawer} loading={isLoading} />}
             </main>
@@ -50,7 +52,8 @@ const mapStateToProps = state => ({
     currentFocusArea: globalGetFocusArea(state),
     isFocusAreaInfoFetching: globalGetFocusAreaLoaderStatus(state),
     currentPathRelatedProjects: globalGetRelatedProjects(state),
-    isRelatedProjectsFetching: globalGetRelatedProjectsLoaderStatus(state)
+    isRelatedProjectsFetching: globalGetRelatedProjectsLoaderStatus(state),
+    isLoggedIn: globalIsLoggedIn(state)
 })
 
 export default connect(

@@ -1,5 +1,6 @@
 import uuid from 'uuid';
 import { combineReducers } from 'redux';
+import { isLoggedIn } from './auth'
 import studentsTabReducer, {
   getStudents, getCurrentStudentById, getCurrentId
 } from './studentsTab';
@@ -52,6 +53,7 @@ import pathViewerReducer, {
     queryBuilder: queryBuilderReducer
 })
 
+export const globalIsLoggedIn = state => isLoggedIn(state.authState)
 export const globalGetPotentialGrades = state => getPotentialGrades(state.queryBuilder)
 export const globalGetPotentialCourses = state => getPotentialCourses(state.queryBuilder)
 export const globalGetPotentialTopics = state => getPotentialTopics(state.queryBuilder)
