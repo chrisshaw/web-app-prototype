@@ -229,7 +229,7 @@ export const detailReducer = (state = detailInitialState, action) => {
                 ...state,
                 detailType: 'focus area',
                 isFocusAreaInfoFetching: false,
-                currentFocusArea: action.focusArea.pop(),
+                currentFocusArea: action.focusArea.slice().pop(),
             };
         case ERROR_FOCUS_AREA_INFO:
             return {
@@ -284,7 +284,7 @@ SELECTORS
 */
 
 // Helpers
-const findPotentialTeachers = (focusArea, paths) => {
+const findPotentialTeachers =   (focusArea, paths) => {
     if (!focusArea) return null
     let potentialTeachers = [];
     for (let path of paths) {

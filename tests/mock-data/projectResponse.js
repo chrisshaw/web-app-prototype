@@ -4,10 +4,22 @@ module.exports = [
             {
                 _id: 'users/student1',
                 name: 'John Doe',
+                masteredFocusAreas: [
+                    {
+                        _id: 'focusAreas/1',
+                        lastUpdated: new Date()
+                    }
+                ]
             },
             {
                 _id: 'users/student2',
-                name: 'Jane Doe'
+                name: 'Jane Doe',
+                masteredFocusAreas: [
+                    {
+                        _id: 'focusAreas/2',
+                        lastUpdated: new Date()
+                    }
+                ]                
             }
         ],
         projectsOnPath: [
@@ -15,23 +27,23 @@ module.exports = [
                 name: 'Lions, tigers, and bears, oh my!',
                 fa: [
                     {
-                        _id: 'f5',
+                        _id: 'focusAreas/f5',
                         relevance: 'Highly Relevant'
                     },
                     {
-                        _id: 'f1',
+                        _id: 'focusAreas/f1',
                         relevance: 'Highly Relevant'
                     },
                     {
-                        _id: 'f4',
+                        _id: 'focusAreas/f4',
                         relevance: 'Supporting Concept'
                     },
                     {
-                        _id: 'f3',
+                        _id: 'focusAreas/f3',
                         relevance: 'Relevant'
                     },
                     {
-                        _id: 'f2',
+                        _id: 'focusAreas/f2',
                         relevance: 'Relevant'
                     }
                 ]

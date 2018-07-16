@@ -205,7 +205,20 @@ module.exports = function(app){
             })
         })
 
-    app.get('/api/path/focus_area_details/:id', function(req, res) {
+    app.get('/api/path/focus_area_details/:id', function(req, res, next) {
+        /* *** Mock Data ***
+        ** 
+        ** Just using this for demo purposes so...
+        ** 
+        */
+        const mockFocusArea = require('../tests/mock-data/focusAreaDetailResponse')
+        return res.json(mockFocusArea)
+
+        /* *** Actual Endpoint ***
+        **
+        ** We don't want this to run.
+        **
+        */
         const focusAreaId = `focusAreas/${req.params.id}`
         console.log(focusAreaId)
         const query = aql`let parents = FIRST(
@@ -284,7 +297,7 @@ module.exports = function(app){
     ** Because we just use this for demos
     **
     */
-   
+
     const mockRelatedProjects = require('../tests/mock-data/relatedProjectResponse')
     return res.json(mockRelatedProjects)
 

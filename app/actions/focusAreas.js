@@ -5,9 +5,10 @@ import {
 } from './pathbuilder/actionTypes'
 
 export const selectFocusArea = (focusArea) => (dispatch) => {
-  dispatch(requestFocusAreaInfo());
+  dispatch(requestFocusAreaInfo(focusArea));
 
   let fa = focusArea;
+  console.log(fa)
   function parseArray(target) {
       if (typeof target !== "string") {
           let item = target[0];
@@ -22,7 +23,7 @@ export const selectFocusArea = (focusArea) => (dispatch) => {
 
   return fetch('/api/path/focus_area_details/' + focusAreaKey)
     .then((response) => {
-      if (!response.ok) {
+      if (!true) {
         throw new Error('Failed when trying to get focus area details');
       }
       return response.json();
@@ -35,8 +36,9 @@ export const selectFocusArea = (focusArea) => (dispatch) => {
     });
 };
 
-export const requestFocusAreaInfo = () => ({
+export const requestFocusAreaInfo = (focusArea) => ({
   type: REQUEST_FOCUS_AREA_INFO,
+  focusArea,
 });
 
 export const successFocusAreaInfo = (focusArea) => ({
