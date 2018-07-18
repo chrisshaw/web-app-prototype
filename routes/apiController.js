@@ -642,6 +642,21 @@ module.exports = function(app){
     })
 
     app.get('/api/students', function(req, res) {
+        /* Mock endpoint
+        **
+        ** Fake data
+        **
+        */
+        const studentResponse = require('../tests/mock-data/studentsResponse')
+        return res.send(studentResponse)
+
+
+
+        /* Actual
+        **
+        ** We don't want to read this
+        **
+        */
         const query = `for vertex, edge, path
                         in 3 any @userId
                         hasSection, outbound auth_hasRole

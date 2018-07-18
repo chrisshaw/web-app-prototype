@@ -89,12 +89,12 @@ class EditDrawer extends Component {
                         data={topics}
                         changeHandler={this.handleInterestChange(currentStudentId, 'humor')}
                     />
-                    <Button
+                    {/* <Button
                         onClick={this.handleSaveInterests}
                         color='primary'
                     >
                         Save Interests
-                    </Button>
+                    </Button> */}
                 </DetailDrawerContent>}
             </Drawer>
         )
