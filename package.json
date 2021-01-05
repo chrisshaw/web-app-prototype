@@ -21,7 +21,7 @@
   "homepage": "",
   "dependencies": {
     "arangojs": "^5.8.0",
-    "axios": "^0.17.1",
+    "axios": "^0.21.1",
     "body-parser": "^1.18.3",
     "cookie-parser": "^1.4.4",
     "deep-equal": "^1.0.1",
