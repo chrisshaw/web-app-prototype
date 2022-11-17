@@ -56,7 +56,7 @@
     "dotenv": "^6.2.0",
     "extract-text-webpack-plugin": "^3.0.2",
     "file-loader": "^1.1.11",
-    "html-webpack-plugin": "^2.30.1",
+    "html-webpack-plugin": "^5.5.0",
     "nodemon": "^1.18.10",
     "redux-devtools": "^3.5.0",
     "style-loader": "^0.19.1",
